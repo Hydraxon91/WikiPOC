@@ -1,23 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from "react";
+import WikiList from "./Components/WikiList";
+import CreatePage from "./Components/CreatePage.js";
+import EditPage from "./Components/EditPage";
 
 function App() {
+  const [wikiPages, setWikiPages] = useState([
+    { id: 1, title: 'Page 1', content: 'Content for Page 1' },
+    { id: 2, title: 'Page 2', content: 'Content for Page 2' },
+  ]);
+
+  const handleCreate = (newPage) => {
+    setWikiPages([...wikiPages, { id: wikiPages.length + 1, ...newPage }]);
+  };
+
+  const handleDelete = (id) => {
+    setWikiPages(wikiPages.filter((page) => page.id !== id));
+  };
+
+  const handleEdit = (updatedPage) => {
+    setWikiPages(
+      wikiPages.map((page) => (page.id === updatedPage.id ? { ...page, ...updatedPage } : page))
+    );
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <WikiList pages={wikiPages} onDelete={handleDelete} />
+      <CreatePage onSubmit={handleCreate} />
+      {wikiPages.map((page) => (
+        <EditPage key={page.id} page={page} onSave={handleEdit} />
+      ))}
     </div>
   );
 }
