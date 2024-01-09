@@ -11,8 +11,7 @@ const WikiList = ({ pages, onDelete }) => {
           <li key={page.id}>
             <Link to={`/page/${page.id}`}>
               <strong>{page.title}</strong>
-            </Link>
-            : {page.content}
+            </Link> 
             <button onClick={() => onDelete(page.id)}>Delete</button>
             <Link to={`/edit/${page.id}`}>
               <button>Edit</button>

@@ -1,23 +1,24 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 const WikiPage = ({ pages }) => {
   const { id } = useParams();
   const page = pages.find((p) => p.id.toString() === id);
-  const navigate = useNavigate();
 
-  const handleBack = () => {
-    navigate('/');
-  };
   return (
     <div>
       {page && (
         <div>
           <h2>{page.title}</h2>
-          <p>{page.content}</p>
+          <div dangerouslySetInnerHTML={{ __html: page.content }} />
         </div>
       )}
-      <button onClick={handleBack}>Back to Home</button>
+      <Link to={`/`}>
+        <button >Back to Home</button>
+      </Link>
+      <Link to={`/edit/${page.id}`}>
+              <button>Edit</button>
+      </Link>
     </div>
   );
 };
