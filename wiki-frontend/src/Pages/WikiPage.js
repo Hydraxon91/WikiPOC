@@ -15,7 +15,8 @@ const WikiPage = ({ pages }) => {
           {page.paragraphs.map((paragraph, index) => (
             <div key={index}>
               <h3>{paragraph.title}</h3>
-              <p>{paragraph.content}</p>
+              {/* <p>{paragraph.content}</p> */}
+              <div dangerouslySetInnerHTML={{ __html: paragraph.content }} /> 
             </div>
           ))}
         </div>

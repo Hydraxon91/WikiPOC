@@ -12,6 +12,7 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
 
   useEffect(() => {
     if (page) {
+      console.log(page);
       setTitle(page.title);
       setParagraphs([...page.paragraphs]);
       setNewPage(false);
