@@ -1,9 +1,14 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const WikiPage = ({ pages }) => {
   const { id } = useParams();
   const page = pages.find((p) => p.id.toString() === id);
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate('/');
+  };
   return (
     <div>
       {page && (
@@ -12,6 +17,7 @@ const WikiPage = ({ pages }) => {
           <p>{page.content}</p>
         </div>
       )}
+      <button onClick={handleBack}>Back to Home</button>
     </div>
   );
 };

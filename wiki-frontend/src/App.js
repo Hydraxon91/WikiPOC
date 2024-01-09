@@ -11,7 +11,6 @@ function App() {
     { id: 2, title: 'Page 2', content: 'Content for Page 2' },
   ]);
 
-  const [selectedPage, setSelectedPage] = useState(null);
 
   const handleCreate = (newPage) => {
     setWikiPages([...wikiPages, { id: wikiPages.length + 1, ...newPage }]);
@@ -27,18 +26,16 @@ function App() {
     );
   };
 
-  const handlePageClick = (page) => {
-    setSelectedPage(page);
-  };
+
 
   return (
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<WikiList pages={wikiPages} onDelete={handleDelete} onPageClick={handlePageClick} />} />
+          <Route path="/" element={<WikiList pages={wikiPages} onDelete={handleDelete}/>} />
           <Route path="/create" element={<CreatePage onSubmit={handleCreate} />} />
           <Route path="/edit/:id" element={<EditPage pages={wikiPages} onSave={handleEdit} />} />
-          <Route path="/page/:id" element={<WikiPage pages={wikiPages} page={selectedPage} />} />
+          <Route path="/page/:id" element={<WikiPage pages={wikiPages} />} />
         </Routes>
       </div>
     </Router>

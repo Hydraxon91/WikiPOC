@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const WikiList = ({ pages, onDelete, onPageClick }) => {
+const WikiList = ({ pages, onDelete }) => {
 
   return (
     <div>
@@ -9,11 +9,14 @@ const WikiList = ({ pages, onDelete, onPageClick }) => {
       <ul>
         {pages.map((page) => (
           <li key={page.id}>
-            <Link onClick={(onPageClick(page))} to={`/page/${page.id}`}>
+            <Link to={`/page/${page.id}`}>
               <strong>{page.title}</strong>
             </Link>
             : {page.content}
             <button onClick={() => onDelete(page.id)}>Delete</button>
+            <Link to={`/edit/${page.id}`}>
+              <button>Edit</button>
+            </Link>
            </li>
         ))}
       </ul>

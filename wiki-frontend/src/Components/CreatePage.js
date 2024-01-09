@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import {useNavigate } from 'react-router-dom';
 
 const CreatePage = ({ onSubmit }) => {
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -8,6 +10,7 @@ const CreatePage = ({ onSubmit }) => {
     onSubmit({ title, content });
     setTitle('');
     setContent('');
+    navigate('/');
   };
 
   return (

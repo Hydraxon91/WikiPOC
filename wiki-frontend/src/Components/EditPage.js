@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
-const EditPage = ({ page, onSave }) => {
+const EditPage = ({ pages, onSave }) => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const page = pages.find((p) => p.id.toString() === id);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -11,6 +15,7 @@ const EditPage = ({ page, onSave }) => {
 
   const handleSave = () => {
     onSave({ ...page, title, content });
+    navigate('/');
   };
 
   return (
