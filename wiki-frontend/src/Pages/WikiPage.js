@@ -17,7 +17,7 @@ const WikiPage = ({ pages }) => {
         <button >Back to Home</button>
       </Link>
       <Link to={`/edit/${page.id}`}>
-              <button>Edit</button>
+        <button>Edit</button>
       </Link>
     </div>
   );
