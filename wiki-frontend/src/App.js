@@ -32,7 +32,7 @@ function App() {
       <div>
         <Routes>
           <Route path="/" element={<WikiList pages={wikiPages} onDelete={handleDelete}/>} />
-          <Route path="/create" element={<EditPage onSave={handleEdit} onSubmit={handleCreate}/>} />
+          <Route path="/create" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate}/>} />
           <Route path="/edit/:id" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate} />} />
           <Route path="/page/:id" element={<WikiPage pages={wikiPages} />} />
         </Routes>

@@ -10,7 +10,13 @@ const WikiPage = ({ pages }) => {
       {page && (
         <div>
           <h2>{page.title}</h2>
-          <div dangerouslySetInnerHTML={{ __html: page.content }} />
+          {/* <div dangerouslySetInnerHTML={{ __html: page.content }} /> */}
+          {page.paragraphs.map((paragraph, index) => (
+            <div key={index}>
+              <h3>{paragraph.title}</h3>
+              <p>{paragraph.content}</p>
+            </div>
+          ))}
         </div>
       )}
       <Link to={`/`}>
