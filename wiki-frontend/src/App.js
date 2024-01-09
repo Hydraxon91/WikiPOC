@@ -6,8 +6,22 @@ import WikiPage from "./Pages/WikiPage.js";
 
 function App() {
   const [wikiPages, setWikiPages] = useState([
-    { id: 1, title: 'Page 1', content: 'Content for Page 1' },
-    { id: 2, title: 'Page 2', content: 'Content for Page 2' },
+    {
+      id: 1,
+      title: 'Page 1',
+      paragraphs: [
+        { title: 'Paragraph 1', content: 'Content for Paragraph 1' },
+        { title: 'Paragraph 2', content: 'Content for Paragraph 2' },
+      ],
+    },
+    {
+      id: 2,
+      title: 'Page 2',
+      paragraphs: [
+        { title: 'Intro', content: 'Introduction to Page 2' },
+        { title: 'Conclusion', content: 'Conclusion for Page 2' },
+      ],
+    },
   ]);
 
 
@@ -33,8 +47,8 @@ function App() {
         <Routes>
           <Route path="/" element={<WikiList pages={wikiPages} onDelete={handleDelete}/>} />
           <Route path="/create" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate}/>} />
-          <Route path="/edit/:id" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate} />} />
-          <Route path="/page/:id" element={<WikiPage pages={wikiPages} />} />
+          <Route path="/edit/:title" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate} />} />
+          <Route path="/page/:title" element={<WikiPage pages={wikiPages} />} />
         </Routes>
       </div>
     </Router>

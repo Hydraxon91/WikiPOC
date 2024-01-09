@@ -2,8 +2,9 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 const WikiPage = ({ pages }) => {
-  const { id } = useParams();
-  const page = pages.find((p) => p.id.toString() === id);
+  const { title  } = useParams();
+  const decodedTitle = decodeURIComponent(title);
+  const page = pages.find((p) => p.title === decodedTitle);
 
   return (
     <div>

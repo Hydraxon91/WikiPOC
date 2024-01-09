@@ -9,7 +9,7 @@ const WikiList = ({ pages, onDelete }) => {
       <ul>
         {pages.map((page) => (
           <li key={page.id}>
-            <Link to={`/page/${page.id}`}>
+            <Link to={`/page/${encodeURIComponent(page.title)}`}>
               <strong>{page.title}</strong>
             </Link> 
             <button onClick={() => onDelete(page.id)}>Delete</button>
