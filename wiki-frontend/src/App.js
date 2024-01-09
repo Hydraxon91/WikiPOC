@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import { BrowserRouter as Router, Route, Switch, Routes } from 'react-router-dom';
 import WikiList from "./Components/WikiList";
 import CreatePage from "./Components/CreatePage.js";
 import EditPage from "./Components/EditPage";
@@ -31,14 +32,17 @@ function App() {
   };
 
   return (
-    <div>
-      <WikiList pages={wikiPages} onDelete={handleDelete} onPageClick={handlePageClick} />
-      <CreatePage onSubmit={handleCreate} />
-      {wikiPages.map((page) => (
-        <EditPage key={page.id} page={page} onSave={handleEdit} />
-      ))}
-      {selectedPage && <WikiPage page={selectedPage}></WikiPage>}
-    </div>
+    <Router>
+      <div>
+        <Routes>
+          <Route path="/" element={<WikiList pages={wikiPages} onDelete={handleDelete} onPageClick={handlePageClick} />} />
+          <Route path="/create" element={<CreatePage onSubmit={handleCreate} />} />
+          <Route path="/edit/:id" element={<EditPage pages={wikiPages} onSave={handleEdit} />} />
+          <Route path="/page/:id" element={<WikiPage pages={wikiPages} page={selectedPage} />} />
+        </Routes>
+      </div>
+    </Router>
+    
   );
 }
 
