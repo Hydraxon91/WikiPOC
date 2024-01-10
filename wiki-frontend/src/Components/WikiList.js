@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useStyleContext } from './contexts/StyleContext';
 
 const WikiList = ({ pages }) => {
-
+  const { styles }  = useStyleContext();
   return (
       <div className="sidebar">
-        <div class="logo">
-					<a href="/"><img src='/img/logo.png' alt="logo"/></a>
+        <div className="logo">
+					<a href="/"><img src={styles.logo} alt="logo"/></a>
 				</div>
         <div className="navigation">
           <h3>Wiki Pages</h3>

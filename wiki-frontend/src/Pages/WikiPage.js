@@ -1,11 +1,13 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import '../Styles/style.css';
+import { useStyleContext } from '../Components/contexts/StyleContext';
 
 const WikiPage = ({ pages }) => {
   const { title  } = useParams();
   const decodedTitle = decodeURIComponent(title);
   const page = pages.find((p) => p.title === decodedTitle);
+  const { styles }  = useStyleContext();
 
   const renderParagraphs = (content, hasParagraphImage) => {
     const lines = content.split('\n');
@@ -40,8 +42,8 @@ const WikiPage = ({ pages }) => {
             <div key={`paragraph-${index}`}>
               <h2>{paragraph.title}</h2>
               {paragraph.paragraphImage && paragraph.paragraphImage !== "" && (
-                <div className="articleRight">
-                  <div className="articleRightInner">
+                <div className="articleRight" style={{backgroundColor: styles.articleRightColor}}>
+                  <div className="articleRightInner" style={{backgroundColor: styles.articleRightInnerColor}}>
                     <img className='paragraphImage' src={paragraph.paragraphImage} alt="logo"/>
                   </div>
                   This is a test div

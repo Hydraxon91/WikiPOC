@@ -5,8 +5,10 @@ import WikiPage from "./Pages/WikiPage.js";
 import MainPage from "./Pages/MainPage.js";
 import HomeComponent from "./Components/HomeComponent.js";
 import EditWikiComponent from "./Components/EditWikiComponent.js";
+import { StyleProvider  } from "./Components/contexts/StyleContext.js";
 
 function App() {
+
   const [wikiPages, setWikiPages] = useState([
     {
       id: 1,
@@ -51,18 +53,18 @@ function App() {
 
   return (
     <Router>
-      <div>
-        <Routes>
-          <Route path="/" element={<MainPage pages={wikiPages}/>} > 
-            <Route path="/" element={<HomeComponent pages={wikiPages} />} />
-            <Route path="/page/:title" element={<WikiPage pages={wikiPages} />} />
-            <Route path="/edit/:id" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate} />} />
-            <Route path="/create" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate}/>} />
-            <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}></Route>
-          </Route>
-          
-        </Routes>
-      </div>
+        <StyleProvider>
+          <Routes>
+            <Route path="/" element={<MainPage pages={wikiPages}/>} > 
+              <Route path="/" element={<HomeComponent pages={wikiPages} />} />
+              <Route path="/page/:title" element={<WikiPage pages={wikiPages} />} />
+              <Route path="/edit/:id" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate} />} />
+              <Route path="/create" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate}/>} />
+              <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}></Route>
+            </Route>
+            
+          </Routes>
+        </StyleProvider>
     </Router>
     
   );

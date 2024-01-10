@@ -1,25 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const WikiStyles = () => {
-  const [logo, setLogo] = useState('/img/logo.png');
-  const [wikiName, setWikiName] = useState('Your Wiki');
-  const [bodyColor, setBodyColor] = useState('#507ced');
-  const [articleRightColor, setArticleRightColor] = useState('#3c5fb8');
-  const [articleRightInnerColor, setArticleRightInnerColor] = useState('#2b4ea6');
-  const [articleColor, setArticleColor] = useState('#526cad');
-  const [footerListLinkTextColor, setFooterListLinkTextColor] = useState('#1d305e');
-  const [footerListTextColor, setFooterListTextColor] = useState('#233a71');
+  const [styles, setStyles] = useState({
+    logo: '/img/logo.png',
+    wikiName: 'Your Wiki',
+    bodyColor: '#507ced',
+    articleRightColor: '#3c5fb8',
+    articleRightInnerColor: '#2b4ea6',
+    articleColor: '#526cad',
+    footerListLinkTextColor: '#1d305e',
+    footerListTextColor: '#233a71',
+  });
 
-  return {
-    logo, setLogo,
-    wikiName, setWikiName,
-    bodyColor, setBodyColor,
-    articleRightColor, setArticleRightColor,
-    articleRightInnerColor, setArticleRightInnerColor,
-    articleColor, setArticleColor,
-    footerListLinkTextColor, setFooterListLinkTextColor,
-    footerListTextColor, setFooterListTextColor,
+  useEffect(() => {
+    console.log("aaaaaaaaaaaaaaaaaaaaa");
+    console.log(styles);
+  }, [styles]);
+
+  const updateStyles = (newStyles) => {
+    // console.log(newStyles);
+    // setStyles(newStyles);
+    setStyles((prevStyles) => ({ ...prevStyles, ...newStyles }));
+    console.log("style updated");
   };
+
+  return { styles, updateStyles };
 };
 
 export default WikiStyles;
