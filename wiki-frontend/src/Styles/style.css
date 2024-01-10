@@ -462,6 +462,7 @@ div.articleRightInner {
 	font-size: 0.875em;
 	border-top: 1px solid #a7d7f9;
 	border-bottom: 1px solid #a7d7f9;
+	height: fit-content;
 }
 .article p {
 	line-height: inherit;
@@ -606,6 +607,12 @@ span.user {
 	margin-bottom: 0.5em;
 }
 
+.paragraphDiv{
+	height: fit-content;
+}
+.paragraphImage{
+	height: 11em;
+}
 @media screen and (max-width: 850px) {
 	#searchInput {
 		width: 110px;

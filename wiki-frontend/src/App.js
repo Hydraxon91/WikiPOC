@@ -10,14 +10,23 @@ function App() {
     {
       id: 1,
       title: 'Page 1',
+      siteSub: 'SiteSub1',
+      roleNote: 'RoleNote1',
       paragraphs: [
-        { title: 'Paragraph 1', content: 'Content for Paragraph 1' },
-        { title: 'Paragraph 2', content: 'Content for Paragraph 2' },
+        { 
+          title: 'Paragraph 1', 
+          content: 'Content for Paragraph 1', 
+          paragraphImage:'https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg',
+          paragraphImageText: 'This is a test image'
+        },
+        { title: 'Paragraph 2', content: 'Content for Paragraph 2', paragraphImage: '', paragraphImageTest: '' },
       ],
     },
     {
       id: 2,
       title: 'Page 2',
+      siteSub: 'SiteSub1',
+      roleNote: 'RoleNote2',
       paragraphs: [
         { title: 'Intro', content: 'Introduction to Page 2' },
         { title: 'Conclusion', content: 'Conclusion for Page 2' },

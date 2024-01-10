@@ -7,6 +7,8 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
   const page = id ? pages.find((p) => p.id.toString() === id) : null;
 
   const [title, setTitle] = useState('');
+  const [siteSub, setSiteSub] = useState('');
+  const [roleNote, setRoleNote] = useState('');
   const [newPage, setNewPage] = useState(true);
   const [paragraphs, setParagraphs] = useState([]);
 
@@ -14,6 +16,8 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
     if (page) {
       console.log(page);
       setTitle(page.title);
+      setRoleNote(page.roleNote);
+      setSiteSub(page.siteSub);
       setParagraphs([...page.paragraphs]);
       setNewPage(false);
     }
@@ -54,6 +58,22 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
           type="text" 
           value={title} 
           onChange={(e) => setTitle(e.target.value)} 
+        />
+      </div>
+      <div className='editDiv'>
+        <label className="editLabel">Page SiteSub:</label>
+        <input 
+          type="text" 
+          value={siteSub} 
+          onChange={(e) => setSiteSub(e.target.value)} 
+        />
+      </div>
+      <div className='editDiv'>
+        <label className="editLabel">Page RoleNote:</label>
+        <input 
+          type="text" 
+          value={roleNote} 
+          onChange={(e) => setRoleNote(e.target.value)} 
         />
       </div>
       <div>
