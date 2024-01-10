@@ -613,6 +613,11 @@ span.user {
 .paragraphImage{
 	height: 11em;
 }
+
+.emptyField {
+	font-weight: bold;
+  	color: red;
+}
 @media screen and (max-width: 850px) {
 	#searchInput {
 		width: 110px;

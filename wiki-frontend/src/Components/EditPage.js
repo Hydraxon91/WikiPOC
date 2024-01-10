@@ -11,6 +11,7 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
   const [roleNote, setRoleNote] = useState('');
   const [newPage, setNewPage] = useState(true);
   const [paragraphs, setParagraphs] = useState([]);
+  const [emptyFields, setEmptyFields] = useState([]);
 
   useEffect(() => {
     if (page) {
@@ -24,7 +25,7 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
   }, [page]);
 
   const handleAddParagraph = () => {
-    setParagraphs([...paragraphs, { title: '', content: '' }]);
+    setParagraphs([...paragraphs, { title: '', content: '', siteSub: '',  roleNote: '', paragraphImage: '', paragraphImageText: ''}]);
   };
 
   const handleRemoveParagraph = (index) => {
@@ -40,6 +41,23 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
   };
 
   const handleSave = () => {
+    const requiredFields = ['title', 'content'];
+
+    const emptyFields = paragraphs.reduce((emptyFields, paragraph, index) => {
+      const missingFields = requiredFields.filter((field) => !paragraph[field]);
+      if (missingFields.length > 0) {
+        emptyFields.push(index);
+      }
+      return emptyFields;
+    }, []);
+
+    if (emptyFields.length > 0 || !title) {
+      setEmptyFields(emptyFields);
+      alert('Please make sure to have a title for all paragraphs content content.'); // You can replace this with a more user-friendly notification
+      return;
+    }
+
+    setEmptyFields([]);
     newPage ?  onSubmit({ title, paragraphs }) : onSave({ ...page, title, paragraphs });
     navigate('/');
   };
@@ -48,6 +66,7 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
     e.target.style.height = 'auto';
     e.target.style.height = e.target.scrollHeight + 'px';
   };
+
 
   return (
     <div className="article">
@@ -61,7 +80,7 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
         />
       </div>
       <div className='editDiv'>
-        <label className="editLabel">Page SiteSub:</label>
+        <label className="editLabel">Page SiteSub [Not required]</label>
         <input 
           type="text" 
           value={siteSub} 
@@ -69,7 +88,7 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
         />
       </div>
       <div className='editDiv'>
-        <label className="editLabel">Page RoleNote:</label>
+        <label className="editLabel">Page RoleNote [Not required]</label>
         <input 
           type="text" 
           value={roleNote} 
@@ -79,7 +98,7 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
       <div>
         {paragraphs.map((paragraph, index) => (
           <div key={index}>
-            <div className='editDiv'>
+            <div className={`editDiv ${emptyFields.includes(index) ? 'emptyField' : ''}`}>
               <label className="editLabel">Paragraph Title:</label>
               <input
                 type="text"
@@ -88,7 +107,7 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
                 className='inputField'
               />
             </div>
-            <div className='editDiv'>
+            <div className={`editDiv ${emptyFields.includes(index) ? 'emptyField' : ''}`}>
               <label className="editLabel">Paragraph Content:</label>
               <textarea
                 value={paragraph.content}
@@ -99,6 +118,25 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
                 className='inputField'
               />
             </div>
+            <div className='editDiv'>
+              <label className="editLabel">Paragraph Image [Not required]</label>
+              <input
+                type="text"
+                value={paragraph.paragraphImage}
+                onChange={(e) => handleParagraphChange(index, 'paragraphImage', e.target.value)}
+                className='inputField'
+              />
+            </div>
+            <div className='editDiv'>
+              <label className="editLabel">Paragraph Image Text [Not required]</label>
+              <input
+                type="text"
+                value={paragraph.paragraphImageText}
+                onChange={(e) => handleParagraphChange(index, 'paragraphImageText', e.target.value)}
+                className='inputField'
+              />
+            </div>
+
             <button onClick={() => handleRemoveParagraph(index)}>Remove Paragraph</button>
           </div>
         ))}
