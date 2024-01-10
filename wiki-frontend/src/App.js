@@ -49,9 +49,11 @@ function App() {
           <Route path="/" element={<MainPage pages={wikiPages}/>} > 
             <Route path="/" element={<HomeComponent pages={wikiPages} />} />
             <Route path="/page/:title" element={<WikiPage pages={wikiPages} />} />
+            <Route path="/edit/:id" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate} />} />
+            <Route path="/create" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate}/>} />
           </Route>
-          <Route path="/create" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate}/>} />
-          <Route path="/edit/:id" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate} />} />
+          {/* <Route path="/create" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate}/>} /> */}
+          {/* <Route path="/edit/:id" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate} />} /> */}
           
         </Routes>
       </div>
