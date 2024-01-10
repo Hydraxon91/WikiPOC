@@ -13,13 +13,12 @@ const MainPage = ({ children, pages }) => {
             {/* Render children, which will be the specific WikiPage component */}
             <Outlet />
           </div>
+          <div class="pagefooter">
+            This is a footer | Template by <a href="http://html5-templates.com/" target="_blank" rel="nofollow">HTML5 Templates</a>
+            <div class="footerlinks">
+              <a href="#">Privacy policy</a> <a href="#">About</a> <a href="#">Terms and conditions</a> <a href="#">Cookie statement</a> <a href="#">Developers</a>
+            </div>
         </div>
-        <main>{children}</main>
-        <div class="pagefooter">
-          This is a footer | Template by <a href="http://html5-templates.com/" target="_blank" rel="nofollow">HTML5 Templates</a>
-          <div class="footerlinks">
-            <a href="#">Privacy policy</a> <a href="#">About</a> <a href="#">Terms and conditions</a> <a href="#">Cookie statement</a> <a href="#">Developers</a>
-          </div>
         </div>
       </div>
     </div>

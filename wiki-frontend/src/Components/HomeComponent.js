@@ -12,10 +12,7 @@ const HomeComponent = ({ pages }) => {
           </Link>
         </li>
       ))}
-    </ul>,
-    <Link key="create-new-page-link" to="/create">
-      Create New Page
-    </Link>,
+    </ul>
   ];
 };
 

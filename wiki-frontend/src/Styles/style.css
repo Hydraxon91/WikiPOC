@@ -290,7 +290,7 @@ p.siteSub {
 	font-size: 92%;
 }
 body {
-	background: url(img/body-top.png) repeat-x top left #f6f6f6;
+	background:#507ced;
 }
 ul {
 	list-style-type: none;
@@ -318,18 +318,22 @@ a:hover {
 .sidebar {
 	float: left;
 	width: 9em;
-	padding: 3px 1.5em 10px 1.3em;
+	padding: 2em 1em 1em 1em;
 	position: absolute;
 }
 .sidebar h3 {
 	font-size: 0.75em;
-	color: #4d4d4d;
-	font-weight: normal;
+	color: #252525;
+	font-weight: bolder;
 	margin: 0.5em 0 0 0;
 	padding: 0.25em 0;
 	cursor: default;
 	border: 0;
-	border-bottom: 1px solid #D8D8D8;
+	border-bottom: 1px solid #333333;
+}
+.sidebar a{
+	color: #1d305e;
+	font-weight: bold;
 }
 .sidebar li {
 	line-height: 1.125em;
@@ -342,7 +346,7 @@ div.articleRight {
 	border: 1px solid #c8ccd1;
 	padding: 3px;
 	float: right;
-	background-color: #f8f9fa;
+	background-color: #3c5fb8;;
 	font-size: 94%;
 	text-align: center;
 	overflow: hidden;
@@ -355,7 +359,7 @@ div.articleRight {
 div.articleRightInner {
 	border: 1px solid #c8ccd1;
 	padding: 3px;
-	background-color: #f8f9fa;
+	background-color: #2b4ea6;
 	font-size: 94%;
 	text-align: center;
 	overflow: hidden;
@@ -373,7 +377,7 @@ div.articleRightInner {
 	text-align: right;
 	padding: 0.8em 1.4em;
 	font-size: 0.72em;
-	color: #777;
+	color: #252525;
 	letter-spacing: 0.017em;
 }
 .headerLinks a{
@@ -455,13 +459,13 @@ div.articleRightInner {
 }
 .article {
 	padding: 1.25em 1.5em 1.5em 1.5em;
-	border-left: 1px solid #a7d7f9;
-	border-right: 1px solid #a7d7f9;
-	background: #FFF;
+	border-left: 1px solid #f3f3f3;
+	border-right: 1px solid #f3f3f3;
+	background: #526cad;
 	line-height: 1.6;
 	font-size: 0.875em;
-	border-top: 1px solid #a7d7f9;
-	border-bottom: 1px solid #a7d7f9;
+	border-top: 1px solid #f3f3f3;
+	border-bottom: 1px solid #f3f3f3;
 	height: fit-content;
 }
 .article p {
@@ -582,6 +586,7 @@ span.user {
 .pagefooter a {
 	display: inline-block;
 	margin-right: 1em;
+	color: #233a71;
 }
 
 .editButton {
