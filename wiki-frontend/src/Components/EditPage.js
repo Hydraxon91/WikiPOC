@@ -40,35 +40,53 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
     navigate('/');
   };
 
+  const autoExpand = (e) => {
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
+  };
+
   return (
-    <div>
+    <div className="article">
       <h2>{newPage? 'Create Page' : 'Edit Page' }</h2>
-      <label>Page Title:</label>
-      <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
-      <br />
+      <div className='editDiv'>
+        <label className="editLabel">Page Title:</label>
+        <input 
+          type="text" 
+          value={title} 
+          onChange={(e) => setTitle(e.target.value)} 
+        />
+      </div>
       <div>
         {paragraphs.map((paragraph, index) => (
           <div key={index}>
-            <label>Paragraph Title:</label>
-            <input
-              type="text"
-              value={paragraph.title}
-              onChange={(e) => handleParagraphChange(index, 'title', e.target.value)}
-            />
-            <br />
-            <label>Paragraph Content:</label>
-            <textarea
-              value={paragraph.content}
-              onChange={(e) => handleParagraphChange(index, 'content', e.target.value)}
-            />
-            <br />
+            <div className='editDiv'>
+              <label className="editLabel">Paragraph Title:</label>
+              <input
+                type="text"
+                value={paragraph.title}
+                onChange={(e) => handleParagraphChange(index, 'title', e.target.value)}
+                className='inputField'
+              />
+            </div>
+            <div className='editDiv'>
+              <label className="editLabel">Paragraph Content:</label>
+              <textarea
+                value={paragraph.content}
+                onChange={(e) => {
+                  handleParagraphChange(index, 'content', e.target.value);
+                  autoExpand(e);
+                }}
+                className='inputField'
+              />
+            </div>
             <button onClick={() => handleRemoveParagraph(index)}>Remove Paragraph</button>
           </div>
         ))}
       </div>
-      <br />
+
       <button onClick={handleAddParagraph}>Add Paragraph</button>
       <br />
+
       <button onClick={handleSave}>Save</button>
     </div>
   );
