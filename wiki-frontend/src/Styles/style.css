@@ -456,6 +456,7 @@ div.articleRightInner {
 .article {
 	padding: 1.25em 1.5em 1.5em 1.5em;
 	border-left: 1px solid #a7d7f9;
+	border-right: 1px solid #a7d7f9;
 	background: #FFF;
 	line-height: 1.6;
 	font-size: 0.875em;
@@ -581,6 +582,30 @@ span.user {
 	display: inline-block;
 	margin-right: 1em;
 }
+
+.editButton {
+	width: 1em;
+	height: 1em;
+	margin-bottom: 0.2em;
+	/* float: right; */
+	margin-left: 1em;
+}
+
+.inputField {
+	width: 100%;
+	height: auto;
+	padding-bottom: 8px;
+	padding-left: 8px;
+	margin-right: 1em;
+  }
+.editLabel{
+	font-weight: bold;
+}
+.editDiv{
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
 @media screen and (max-width: 850px) {
 	#searchInput {
 		width: 110px;
