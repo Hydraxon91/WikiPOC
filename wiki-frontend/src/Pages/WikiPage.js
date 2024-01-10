@@ -10,8 +10,14 @@ const WikiPage = ({ pages }) => {
   return (
     <div>
       {page && (
-        <div>
-          <h2>{page.title}</h2>
+        <div className="article">
+          <h2>
+            {page.title}
+            <Link to={`/edit/${page.id}`}>
+              <img className = "editButton" src="/img/edit.png" alt="Edit" />
+            </Link>
+          </h2>
+          
           {/* <div dangerouslySetInnerHTML={{ __html: page.content }} /> */}
           {page.paragraphs.map((paragraph, index) => (
             <div key={index}>
@@ -22,12 +28,6 @@ const WikiPage = ({ pages }) => {
           ))}
         </div>
       )}
-      <Link to={`/`}>
-        <button >Back to Home</button>
-      </Link>
-      <Link to={`/edit/${page.id}`}>
-        <button>Edit</button>
-      </Link>
     </div>
   );
 };
