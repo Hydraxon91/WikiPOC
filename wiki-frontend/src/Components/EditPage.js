@@ -58,7 +58,7 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
     }
 
     setEmptyFields([]);
-    newPage ?  onSubmit({ title, paragraphs }) : onSave({ ...page, title, paragraphs });
+    newPage ?  onSubmit({ title, paragraphs, siteSub, roleNote }) : onSave({ ...page, title, paragraphs, siteSub, roleNote });
     navigate('/');
   };
 

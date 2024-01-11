@@ -7,7 +7,7 @@ const WikiList = ({ pages }) => {
   return (
       <div className="sidebar">
         <div className="logo">
-					<a href="/"><img src={styles.logo} alt="logo"/></a>
+					<Link to="/"><img src={styles.logo} alt="logo"/></Link>
 				</div>
         <div className="navigation">
           <h3>Wiki Pages</h3>
