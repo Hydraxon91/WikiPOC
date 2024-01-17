@@ -1,4 +1,6 @@
-﻿namespace wiki_backend.Models;
+﻿using wiki_backend.Objects;
+
+namespace wiki_backend.Models;
 
 public class WikiPage
 {
