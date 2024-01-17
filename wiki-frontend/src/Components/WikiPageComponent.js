@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import '../Styles/style.css';
-import { useStyleContext } from '../Components/contexts/StyleContext';
+import { useStyleContext } from './contexts/StyleContext';
 
-const WikiPage = ({ pages }) => {
+const WikiPageComponent = ({ pages }) => {
   const { title  } = useParams();
   const decodedTitle = decodeURIComponent(title);
   const page = pages.find((p) => p.title === decodedTitle);
@@ -58,4 +58,4 @@ const WikiPage = ({ pages }) => {
   );
 };
 
-export default WikiPage;
+export default WikiPageComponent;

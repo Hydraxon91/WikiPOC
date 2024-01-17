@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { BrowserRouter as Router, Route, Switch, Routes } from 'react-router-dom';
 import EditPage from "./Components/EditPage";
-import WikiPage from "./Pages/WikiPage.js";
+import WikiPageComponent from "./Components/WikiPageComponent.js";
 import MainPage from "./Pages/MainPage.js";
 import HomeComponent from "./Components/HomeComponent.js";
 import EditWikiComponent from "./Components/EditWikiComponent.js";
@@ -57,7 +57,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MainPage pages={wikiPages}/>} > 
               <Route path="/" element={<HomeComponent pages={wikiPages} />} />
-              <Route path="/page/:title" element={<WikiPage pages={wikiPages} />} />
+              <Route path="/page/:title" element={<WikiPageComponent pages={wikiPages} />} />
               <Route path="/edit/:id" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate} />} />
               <Route path="/create" element={<EditPage pages={wikiPages} onSave={handleEdit} onSubmit={handleCreate}/>} />
               <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}></Route>

@@ -13,15 +13,14 @@ const WikiStyles = () => {
   });
 
   useEffect(() => {
-    console.log("aaaaaaaaaaaaaaaaaaaaa");
-    console.log(styles);
+    //console.log(styles);
   }, [styles]);
 
   const updateStyles = (newStyles) => {
     // console.log(newStyles);
     // setStyles(newStyles);
     setStyles((prevStyles) => ({ ...prevStyles, ...newStyles }));
-    console.log("style updated");
+    //console.log("style updated");
   };
 
   return { styles, updateStyles };
