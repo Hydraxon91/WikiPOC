@@ -188,3 +188,4 @@ $RECYCLE.BIN/
 .idea/
 wiki-backend/wiki-backend/bin/Debug/net7.0/appsettings.Development.json
 wiki-backend/wiki-backend/bin/Debug/net7.0/appsettings.json
+wiki-backend/wiki-backend/obj/rider.project.model.nuget.info
