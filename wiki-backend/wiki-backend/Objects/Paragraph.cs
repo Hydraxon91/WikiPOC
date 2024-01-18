@@ -1,4 +1,4 @@
-﻿namespace wiki_backend.Models;
+﻿namespace wiki_backend.Objects;
 
 public class Paragraph
 {
