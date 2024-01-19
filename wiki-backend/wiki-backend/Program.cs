@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 AddCors();
 AddDbContext();
+AddServices();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -15,13 +16,16 @@ var app = builder.Build();
 
 app.UseCors();
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+// }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowLocalhost");
+app.UseCors();
 
 app.UseAuthorization();
 
@@ -52,4 +56,10 @@ void AddCors()
 void AddDbContext()
 {
     builder.Services.AddDbContext<WikiDbContext>();
+}
+
+void AddServices()
+{
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
 }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.Models;
+using wiki_backend.Objects;
 
 namespace wiki_backend.DatabaseServices;
 
@@ -13,19 +15,27 @@ public class WikiDbContext : IdentityDbContext
         : base(options)
     {
         _configuration = configuration;
+        if(Database.IsRelational()) Database.Migrate();
     }
     public DbSet<WikiPage> WikiPages { get; set; }
+    public DbSet<Paragraph> Paragraphs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<WikiPage>()
+            .HasMany(w => w.Paragraphs)
+            .WithOne()
+            .HasForeignKey(p => p.WikiPageId); 
         // Add any additional model configuration here
         // For example, configuring relationships, setting primary keys, etc.
     }
-    public void ConfigureServices(IServiceCollection services)
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // Add DbContext with IConfiguration dependency
-        services.AddDbContext<WikiDbContext>(options =>
-            options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
-        
+        var connectionString = _configuration.GetConnectionString("DefaultConnection");
+        Console.WriteLine(connectionString);
+        optionsBuilder.UseSqlServer(connectionString);
     }
 }
