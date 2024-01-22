@@ -172,25 +172,26 @@ namespace wiki_backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Paragraph",
+                name: "Paragraphs",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    WikiPageId = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ParagraphImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ParagraphImageText = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WikiPageId = table.Column<int>(type: "int", nullable: true)
+                    ParagraphImageText = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Paragraph", x => x.Id);
+                    table.PrimaryKey("PK_Paragraphs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Paragraph_WikiPages_WikiPageId",
+                        name: "FK_Paragraphs_WikiPages_WikiPageId",
                         column: x => x.WikiPageId,
                         principalTable: "WikiPages",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -233,8 +234,8 @@ namespace wiki_backend.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Paragraph_WikiPageId",
-                table: "Paragraph",
+                name: "IX_Paragraphs_WikiPageId",
+                table: "Paragraphs",
                 column: "WikiPageId");
         }
 
@@ -257,7 +258,7 @@ namespace wiki_backend.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Paragraph");
+                name: "Paragraphs");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -12,8 +12,8 @@ using wiki_backend.DatabaseServices;
 namespace wiki_backend.Migrations
 {
     [DbContext(typeof(WikiDbContext))]
-    [Migration("20240119164459_InitialMigration4")]
-    partial class InitialMigration4
+    [Migration("20240122165651_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -223,6 +223,40 @@ namespace wiki_backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("wiki_backend.Models.Paragraph", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ParagraphImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ParagraphImageText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WikiPageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WikiPageId");
+
+                    b.ToTable("Paragraphs");
+                });
+
             modelBuilder.Entity("wiki_backend.Models.WikiPage", b =>
                 {
                     b.Property<int>("Id")
@@ -246,38 +280,6 @@ namespace wiki_backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("WikiPages");
-                });
-
-            modelBuilder.Entity("wiki_backend.Objects.Paragraph", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ParagraphImage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ParagraphImageText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("WikiPageId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WikiPageId");
-
-                    b.ToTable("Paragraphs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -331,7 +333,7 @@ namespace wiki_backend.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("wiki_backend.Objects.Paragraph", b =>
+            modelBuilder.Entity("wiki_backend.Models.Paragraph", b =>
                 {
                     b.HasOne("wiki_backend.Models.WikiPage", null)
                         .WithMany("Paragraphs")

@@ -1,4 +1,4 @@
-﻿using wiki_backend.Objects;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace wiki_backend.Models;
 
@@ -8,5 +8,5 @@ public class WikiPage
     public string Title { get; set; }
     public string SiteSub { get; set; }
     public string RoleNote { get; set; }
-    public virtual ICollection<Paragraph> Paragraphs { get; set; } = new List<Paragraph>();
+    public virtual List<Paragraph> Paragraphs { get; set; }
 }
