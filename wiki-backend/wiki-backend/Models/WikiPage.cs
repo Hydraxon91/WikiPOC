@@ -8,5 +8,5 @@ public class WikiPage
     public string Title { get; set; }
     public string SiteSub { get; set; }
     public string RoleNote { get; set; }
-    public virtual List<Paragraph> Paragraphs { get; set; }
+    public ICollection<Paragraph> Paragraphs { get; set; } = new List<Paragraph>();
 }

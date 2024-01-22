@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
 
@@ -32,6 +33,20 @@ public class WikiPagesController : ControllerBase
             return NotFound();
 
         return Ok(wikiPage);
+    }
+    
+    [HttpGet("{id}/paragraphs")]
+    public ActionResult<WikiPage> GetWikiPageParagraphs(int id)
+    {
+        var wikiPage = _context.WikiPages.Include(wp => wp.Paragraphs).FirstOrDefault(wp => wp.Id == id);
+
+        if (wikiPage == null)
+            return NotFound();
+
+        // Check if Paragraphs is null, and return an empty list if it is
+        var paragraphs = wikiPage.Paragraphs ?? new List<Paragraph>();
+
+        return Ok(paragraphs);
     }
     
     [HttpPost]
