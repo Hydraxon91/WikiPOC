@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.DatabaseServices;
+using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
 
 namespace wiki_backend.Controllers;
@@ -10,24 +11,24 @@ namespace wiki_backend.Controllers;
 [Route("api/[controller]")]
 public class WikiPagesController : ControllerBase
 {
-    private readonly WikiDbContext _context;
+    private readonly IWikiPageRepository _wikiPageRepository;
     
-    public WikiPagesController(WikiDbContext context)
+    public WikiPagesController(IWikiPageRepository wikiPageRepository)
     {
-        _context = context;
+        _wikiPageRepository = wikiPageRepository;
     }
     
     [HttpGet]
-    public ActionResult<IEnumerable<WikiPage>> GetWikiPages()
+    public async Task<ActionResult<IEnumerable<WikiPage>>> GetWikiPages()
     {
-        var wikiPages = _context.WikiPages.Include(wp => wp.Paragraphs).ToList();
+        var wikiPages = await _wikiPageRepository.GetAllAsync();
         return Ok(wikiPages);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<WikiPage> GetWikiPage(int id)
+    public async Task<ActionResult<WikiPage>> GetWikiPage(int id)
     {
-        var wikiPage = _context.WikiPages.Include(wp => wp.Paragraphs).FirstOrDefault(wp => wp.Id == id);
+        var wikiPage = await _wikiPageRepository.GetByIdAsync(id);
 
         if (wikiPage == null)
             return NotFound();
@@ -36,9 +37,9 @@ public class WikiPagesController : ControllerBase
     }
     
     [HttpGet("{id}/paragraphs")]
-    public ActionResult<WikiPage> GetWikiPageParagraphs(int id)
+    public async Task<ActionResult<IEnumerable<Paragraph>>> GetWikiPageParagraphs(int id)
     {
-        var wikiPage = _context.WikiPages.Include(wp => wp.Paragraphs).FirstOrDefault(wp => wp.Id == id);
+        var wikiPage = await _wikiPageRepository.GetByIdAsync(id);
 
         if (wikiPage == null)
             return NotFound();
@@ -50,59 +51,30 @@ public class WikiPagesController : ControllerBase
     }
     
     [HttpPost]
-    public ActionResult<WikiPage> CreateWikiPage([FromBody] WikiPage wikiPage)
+    public async Task<ActionResult<WikiPage>> CreateWikiPage([FromBody] WikiPage wikiPage)
     {
-        _context.WikiPages.Add(wikiPage);
-        _context.SaveChanges();
+        await _wikiPageRepository.AddAsync(wikiPage);
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateWikiPage(int id, [FromBody] WikiPage updatedWikiPage)
+    public async Task<IActionResult> UpdateWikiPage(int id, [FromBody] WikiPage updatedWikiPage)
     {
-        var existingWikiPage = _context.WikiPages
-            .Include(wp => wp.Paragraphs)  
-            .FirstOrDefault(wp => wp.Id == id);
+        var existingWikiPage = await _wikiPageRepository.GetByIdAsync(id);
 
         if (existingWikiPage == null)
             return NotFound();
-        
-        existingWikiPage.Title = updatedWikiPage.Title;
 
-        // Update properties of the Paragraphs (assuming Paragraphs is a list)
-        foreach (var updatedParagraph in updatedWikiPage.Paragraphs)
-        {
-            var existingParagraph = existingWikiPage.Paragraphs.FirstOrDefault(p => p.Id == updatedParagraph.Id);
-
-            if (existingParagraph != null)
-            {
-                existingParagraph.Title = updatedParagraph.Title;
-                existingParagraph.Content = updatedParagraph.Content;
-                // Update other properties as needed
-            }
-            else
-            {
-                // Handle the case where a new paragraph is added in the update
-                existingWikiPage.Paragraphs.Add(updatedParagraph);
-            }
-        }
-
-        _context.SaveChanges();
+        await _wikiPageRepository.UpdateAsync(existingWikiPage, updatedWikiPage);
 
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteWikiPage(int id)
+    public async Task<IActionResult> DeleteWikiPage(int id)
     {
-        var wikiPageToDelete = _context.WikiPages.Find(id);
-
-        if (wikiPageToDelete == null)
-            return NotFound();
-
-        _context.WikiPages.Remove(wikiPageToDelete);
-        _context.SaveChanges();
+        await _wikiPageRepository.DeleteAsync(id);
 
         return NoContent();
     }
