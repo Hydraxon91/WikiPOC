@@ -1,4 +1,5 @@
 using wiki_backend.DatabaseServices;
+using wiki_backend.DatabaseServices.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,4 +63,7 @@ void AddServices()
 {
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
+
+    builder.Services.AddTransient<IWikiPageRepository, WikiPageRepository>();
+    builder.Services.AddTransient<IParagraphRepository, ParagraphRepository>();
 }
