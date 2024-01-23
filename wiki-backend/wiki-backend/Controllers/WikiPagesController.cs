@@ -20,14 +20,14 @@ public class WikiPagesController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<WikiPage>> GetWikiPages()
     {
-        var wikiPages = _context.WikiPages.ToList();
+        var wikiPages = _context.WikiPages.Include(wp => wp.Paragraphs).ToList();
         return Ok(wikiPages);
     }
 
     [HttpGet("{id}")]
     public ActionResult<WikiPage> GetWikiPage(int id)
     {
-        var wikiPage = _context.WikiPages.Find(id);
+        var wikiPage = _context.WikiPages.Include(wp => wp.Paragraphs).FirstOrDefault(wp => wp.Id == id);
 
         if (wikiPage == null)
             return NotFound();
@@ -61,12 +61,32 @@ public class WikiPagesController : ControllerBase
     [HttpPut("{id}")]
     public IActionResult UpdateWikiPage(int id, [FromBody] WikiPage updatedWikiPage)
     {
-        var existingWikiPage = _context.WikiPages.Find(id);
+        var existingWikiPage = _context.WikiPages
+            .Include(wp => wp.Paragraphs)  
+            .FirstOrDefault(wp => wp.Id == id);
 
         if (existingWikiPage == null)
             return NotFound();
-
+        
         existingWikiPage.Title = updatedWikiPage.Title;
+
+        // Update properties of the Paragraphs (assuming Paragraphs is a list)
+        foreach (var updatedParagraph in updatedWikiPage.Paragraphs)
+        {
+            var existingParagraph = existingWikiPage.Paragraphs.FirstOrDefault(p => p.Id == updatedParagraph.Id);
+
+            if (existingParagraph != null)
+            {
+                existingParagraph.Title = updatedParagraph.Title;
+                existingParagraph.Content = updatedParagraph.Content;
+                // Update other properties as needed
+            }
+            else
+            {
+                // Handle the case where a new paragraph is added in the update
+                existingWikiPage.Paragraphs.Add(updatedParagraph);
+            }
+        }
 
         _context.SaveChanges();
 
