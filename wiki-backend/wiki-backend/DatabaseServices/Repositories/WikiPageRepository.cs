@@ -47,15 +47,28 @@ public class WikiPageRepository : IWikiPageRepository
             {
                 existingParagraph.Title = updatedParagraph.Title;
                 existingParagraph.Content = updatedParagraph.Content;
-                // Update other properties as needed
+                existingParagraph.ParagraphImage = updatedParagraph.ParagraphImage;
+                existingParagraph.ParagraphImageText = updatedParagraph.ParagraphImageText;
+                //existingParagraph.WikiPage = updatedWikiPage;
             }
             else
             {
                 // Handle the case where a new paragraph is added in the update
+                await _context.Paragraphs.AddAsync(updatedParagraph);
                 existingWikiPage.Paragraphs.Add(updatedParagraph);
             }
         }
 
+        // Remove paragraphs that are not present in the updatedWikiPage
+        var paragraphsToRemove = existingWikiPage.Paragraphs
+            .Where(existingParagraph => updatedWikiPage.Paragraphs.All(updatedParagraph => updatedParagraph.Id != existingParagraph.Id))
+            .ToList();
+
+        foreach (var paragraphToRemove in paragraphsToRemove)
+        {
+            _context.Paragraphs.Remove(paragraphToRemove);
+            existingWikiPage.Paragraphs.Remove(paragraphToRemove);
+        }
         await _context.SaveChangesAsync();
     }
 
