@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const EditPage = ({ pages, onSave, onSubmit }) => {
+const EditPage = ({ page, onSave, onSubmit }) => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const page = id ? pages.find((p) => p.id.toString() === id) : null;
 
   const [title, setTitle] = useState('');
   const [siteSub, setSiteSub] = useState('');
@@ -15,7 +13,6 @@ const EditPage = ({ pages, onSave, onSubmit }) => {
 
   useEffect(() => {
     if (page) {
-      console.log(page);
       setTitle(page.title);
       setRoleNote(page.roleNote);
       setSiteSub(page.siteSub);

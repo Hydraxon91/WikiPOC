@@ -5,10 +5,10 @@ const HomeComponent = ({ pages }) => {
   return [
     <h2 key="wiki-pages-heading">Wiki Pages</h2>,
     <ul key="wiki-pages-list">
-      {pages.map((page) => (
-        <li key={page.id}>
-          <Link to={`/page/${encodeURIComponent(page.title)}`}>
-            <strong>{page.title}</strong>
+      {pages.map((page, index) => (
+        <li key={index}>
+          <Link to={`/page/${encodeURIComponent(page)}`}>
+            <strong>{page}</strong>
           </Link>
         </li>
       ))}

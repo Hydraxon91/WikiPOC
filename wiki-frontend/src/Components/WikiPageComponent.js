@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import '../Styles/style.css';
 import { useStyleContext } from './contexts/StyleContext';
+import { getWikiPageByTitle } from '../Api/wikiApi';
 
-const WikiPageComponent = ({ pages }) => {
+const WikiPageComponent = ({setCurrentWikiPage, page}) => {
   const { title  } = useParams();
   const decodedTitle = decodeURIComponent(title);
-  const page = pages.find((p) => p.title === decodedTitle);
   const { styles }  = useStyleContext();
+
+  useEffect(() => {
+    fetchPage();
+  }, [decodedTitle]);
+
+  const fetchPage = async () => {
+    try {
+      const data = await getWikiPageByTitle(decodedTitle);
+      // setPage(data);
+      console.log(data);
+      setCurrentWikiPage(data);
+    } catch (error) {
+      console.error('Error fetching page:', error);
+      // Handle error, e.g., redirect to an error page
+    }
+  };
 
   const renderParagraphs = (content, hasParagraphImage) => {
     const lines = content.split('\n');
@@ -32,7 +48,7 @@ const WikiPageComponent = ({ pages }) => {
         <>
           <h1>
             {page.title}
-            <Link to={`/edit/${page.id}`}>
+            <Link to={`/page/${page.title}/edit`}>
               <img className = "editButton" src="/img/edit.png" alt="Edit" />
             </Link>
           </h1>
