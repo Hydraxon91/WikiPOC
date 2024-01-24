@@ -12,6 +12,11 @@ public class WikiPageRepository : IWikiPageRepository
         _context = context;
     }
 
+    public async Task<IEnumerable<string>> GetAllTitlesAsync()
+    {
+        var titles = await _context.WikiPages.Select(page => page.Title).ToListAsync();
+        return titles;
+    }
     public async Task<IEnumerable<WikiPage>> GetAllAsync()
     {
         return await _context.WikiPages.Include(wp => wp.Paragraphs).ToListAsync();
@@ -20,6 +25,13 @@ public class WikiPageRepository : IWikiPageRepository
     public async Task<WikiPage?> GetByIdAsync(int id)
     {
         return await _context.WikiPages.Include(wp => wp.Paragraphs).SingleOrDefaultAsync(wp => wp.Id == id);
+    }
+
+    public async Task<WikiPage?> GetByTitleAsync(string title)
+    {
+        return await _context.WikiPages
+            .Include(p => p.Paragraphs) // Include paragraphs if needed
+            .FirstOrDefaultAsync(p => p.Title == title);
     }
 
     public async Task AddAsync(WikiPage wikiPage)

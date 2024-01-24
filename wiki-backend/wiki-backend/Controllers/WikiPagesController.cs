@@ -24,14 +24,34 @@ public class WikiPagesController : ControllerBase
         var wikiPages = await _wikiPageRepository.GetAllAsync();
         return Ok(wikiPages);
     }
+    
+    [HttpGet("GetTitles")]
+    public async Task<ActionResult<IEnumerable<string>>> GetWikiPageTitles()
+    {
+        var wikiPageTitles = await _wikiPageRepository.GetAllTitlesAsync();
+        return Ok(wikiPageTitles);
+    }
 
-    [HttpGet("{id}")]
+    [HttpGet("GetById/{id}")]
     public async Task<ActionResult<WikiPage>> GetWikiPage(int id)
     {
         var wikiPage = await _wikiPageRepository.GetByIdAsync(id);
 
         if (wikiPage == null)
             return NotFound();
+
+        return Ok(wikiPage);
+    }
+    
+    [HttpGet("GetByTitle/{title}")]
+    public async Task<ActionResult<WikiPage>> GetWikiPageByTitle(string title)
+    {
+        var wikiPage = await _wikiPageRepository.GetByTitleAsync(title);
+
+        if (wikiPage == null)
+        {
+            return NotFound(); // Return 404 if the page is not found
+        }
 
         return Ok(wikiPage);
     }

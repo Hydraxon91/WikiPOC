@@ -12,10 +12,10 @@ const WikiList = ({ pages }) => {
         <div className="navigation">
           <h3>Wiki Pages</h3>
           <ul>
-            {pages.map((page) => (
-              <li key={page.id}>
-                <Link to={`/page/${encodeURIComponent(page.title)}`}>
-                  {page.title}
+            {pages.map((page, index) => (
+              <li key={index}>
+                <Link to={`/page/${encodeURIComponent(page)}`}>
+                  {page}
                 </Link>
               </li>
             ))}
