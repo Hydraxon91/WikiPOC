@@ -28,6 +28,7 @@ public class ParagraphRepository : IParagraphRepository
             return null; // Or throw an exception indicating that the wiki page was not found
         }
 
+        paragraph.WikiPage = wikiPage;
         wikiPage.Paragraphs.Add(paragraph);
         
         await _context.Paragraphs.AddAsync(paragraph);

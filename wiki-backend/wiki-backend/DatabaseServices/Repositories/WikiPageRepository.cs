@@ -24,6 +24,11 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task AddAsync(WikiPage wikiPage)
     {
+        foreach (var paragraph in wikiPage.Paragraphs)
+        {
+            paragraph.WikiPage = wikiPage;
+            paragraph.WikiPageId = wikiPage.Id;
+        }
         _context.WikiPages.Add(wikiPage);
         await _context.SaveChangesAsync();
     }
