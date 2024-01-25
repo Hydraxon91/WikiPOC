@@ -66,4 +66,5 @@ void AddServices()
 
     builder.Services.AddTransient<IWikiPageRepository, WikiPageRepository>();
     builder.Services.AddTransient<IParagraphRepository, ParagraphRepository>();
+    builder.Services.AddTransient<IStyleRepository, StyleRepository>();
 }

@@ -16,6 +16,7 @@ public class WikiDbContext : IdentityDbContext
     }
     public DbSet<WikiPage> WikiPages { get; set; }
     public DbSet<Paragraph> Paragraphs { get; set; }
+    public DbSet<StyleModel> Styles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
