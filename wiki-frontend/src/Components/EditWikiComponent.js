@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStyleContext } from './contexts/StyleContext';
 
+
 const EditWikiComponent = () => {
   const navigate = useNavigate();
   const { styles, updateStyles, setStyles } = useStyleContext();
@@ -24,39 +25,83 @@ const EditWikiComponent = () => {
 
   return (
     <div>
-      <h2>Admin Page</h2>
-      <div>
-        <label>Logo URL:</label>
-        <input type="text" value={newStyles.logo} onChange={(e) => handleChange('logo', e.target.value)} />
+      <h2 className="mb-4">Admin Page</h2>
+      <div className="form-group">
+        <label className="mb-4">Logo URL:</label>
+        <input type="text" 
+          value={newStyles.logo} 
+          style={{marginLeft: "0.5rem"}} 
+          onChange={(e) => handleChange('logo', e.target.value)} />
       </div>
-      <div>
-        <label>Wiki Name:</label>
-        <input type="text" value={newStyles.wikiName} onChange={(e) => handleChange('wikiName', e.target.value)} />
+
+      <div className="form-group">
+        <label className="mb-4">Wiki Name:</label>
+        <input type="text" 
+          value={newStyles.wikiName}
+          style={{marginLeft: "0.5rem"}} 
+          onChange={(e) => handleChange('wikiName', e.target.value)} />
       </div>
-      <div>
-        <label>Body Color:</label>
-        <input type="text" value={newStyles.bodyColor} onChange={(e) => handleChange('bodyColor', e.target.value)} />
+
+      <div className="form-group">
+        <label className="mb-4">Body Color:</label>
+        <input type="color" 
+          className="form-control-color align-middle"
+          style={{marginLeft: "0.5rem"}}  
+          value={newStyles.bodyColor} 
+          title="Choose your color"
+          onChange={(e) => handleChange('bodyColor', e.target.value)} />
       </div>
-      <div>
-        <label>Article Color:</label>
-        <input type="text" value={newStyles.articleColor} onChange={(e) => handleChange('articleColor', e.target.value)} />
+
+      <div className="form-group">
+        <label className="mb-4">Article Color:</label>
+        <input type="color" 
+          className="form-control-color align-middle"
+          style={{marginLeft: "0.5rem"}}  
+          value={newStyles.articleColor} 
+          title="Choose your color"
+          onChange={(e) => handleChange('articleColor', e.target.value)} />
       </div>
-      <div>
-        <label>Article Right Color:</label>
-        <input type="text" value={newStyles.articleRightColor} onChange={(e) => handleChange('articleRightColor', e.target.value)} />
+
+      <div className="form-group">
+        <label className="mb-4">Article Right Color:</label>
+        <input type="color" 
+          className=" form-control-color align-middle"
+          style={{marginLeft: "0.5rem"}} 
+          value={newStyles.articleRightColor}
+          title="Choose your color"
+          onChange={(e) => handleChange('articleRightColor', e.target.value)} />
       </div>
-      <div>
-        <label>Article Right Inner Color:</label>
-        <input type="text" value={newStyles.articleRightInnerColor} onChange={(e) => handleChange('articleRightInnerColor', e.target.value)} />
+
+      <div className="form-group">
+        <label className="mb-4">Article Right Inner Color:</label>
+        <input type="color" 
+          className="form-control-color align-middle"
+          style={{marginLeft: "0.5rem"}}  
+          value={newStyles.articleRightInnerColor}
+          title="Choose your color"
+          onChange={(e) => handleChange('articleRightInnerColor', e.target.value)} />
       </div>
-      <div>
-        <label>Sidebar and Footer Text Color:</label>
-        <input type="text" value={newStyles.footerListTextColor} onChange={(e) => handleChange('footerListTextColor', e.target.value)} />
+
+      <div className="form-group">
+        <label className="mb-4">Sidebar and Footer Text Color:</label>
+        <input type="color" 
+          className="form-control-color align-middle"
+          style={{marginLeft: "0.5rem"}} 
+          value={newStyles.footerListTextColor}
+          title="Choose your color"
+          onChange={(e) => handleChange('footerListTextColor', e.target.value)} />
       </div>
-      <div>
-        <label>Sidebar and Footer Link Color:</label>
-        <input type="text" value={newStyles.footerListLinkTextColor} onChange={(e) => handleChange('footerListLinkTextColor', e.target.value)} />
+
+      <div className="form-group">
+        <label className="mb-4">Sidebar and Footer Link Color:</label>
+        <input type="color" 
+          className="form-control-color align-middle"
+          style={{marginLeft: "0.5rem"}} 
+          value={newStyles.footerListLinkTextColor} 
+          title="Choose your color"
+          onChange={(e) => handleChange('footerListLinkTextColor', e.target.value)} />
       </div>
+
       <button onClick={handleUpdate}>Update</button>
     </div>
   );
