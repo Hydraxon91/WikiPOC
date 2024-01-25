@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
-
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { fetchCurrentStyles, updateStyles } from '../../Api/wikiApi';
 const StyleContext = createContext();
 
 export const StyleProvider = ({ children }) => {
@@ -14,12 +14,13 @@ export const StyleProvider = ({ children }) => {
     footerListTextColor: '#233a71',
   });
 
-  const updateStyles = (newStyles) => {
-    setStyles((prevStyles) => ({ ...prevStyles, ...newStyles }));
-  };
+
+  useEffect(() => {
+    fetchCurrentStyles(setStyles);
+  }, []);
 
   return (
-    <StyleContext.Provider value={{ styles, updateStyles }}>
+    <StyleContext.Provider value={{ styles, updateStyles, setStyles }}>
       {children}
     </StyleContext.Provider>
   );

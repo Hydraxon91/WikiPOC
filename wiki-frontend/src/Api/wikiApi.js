@@ -82,3 +82,37 @@ export const deleteWikiPage = async (id) =>{
       const data = await response.json();
       return data;
 };
+
+export const fetchCurrentStyles = async (setStyles) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/Style`); // Replace with your actual endpoint
+    if (!response.ok) {
+      throw new Error(`Failed to fetch default styles. Status: ${response.status}`);
+    }
+    const data = await response.json();
+    setStyles(data);
+  } catch (error) {
+    console.error('Error fetching default styles:', error);
+  }
+};
+
+export const updateStyles = async (newStyles) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/Style`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newStyles),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to update styles. Status: ${response.status}`);
+    }
+
+    const updatedData = await response.json();
+    // setStyles(updatedData);
+  } catch (error) {
+    console.error('Error updating styles:', error);
+  }
+};

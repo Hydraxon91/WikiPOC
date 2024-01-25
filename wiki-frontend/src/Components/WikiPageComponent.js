@@ -16,8 +16,6 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
   const fetchPage = async () => {
     try {
       const data = await getWikiPageByTitle(decodedTitle);
-      // setPage(data);
-      console.log(data);
       setCurrentWikiPage(data);
     } catch (error) {
       console.error('Error fetching page:', error);

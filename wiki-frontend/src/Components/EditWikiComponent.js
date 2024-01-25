@@ -4,7 +4,7 @@ import { useStyleContext } from './contexts/StyleContext';
 
 const EditWikiComponent = () => {
   const navigate = useNavigate();
-  const { styles, updateStyles } = useStyleContext();
+  const { styles, updateStyles, setStyles } = useStyleContext();
 
   const [newStyles, setNewStyles] = useState(styles);
 
@@ -17,8 +17,10 @@ const EditWikiComponent = () => {
   const handleUpdate = () => {
     console.log("Handle Update clicked");
     updateStyles(newStyles);
+    setStyles(newStyles);
     navigate('/');
   };
+  
 
   return (
     <div>

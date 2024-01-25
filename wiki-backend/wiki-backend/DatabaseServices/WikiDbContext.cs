@@ -78,7 +78,21 @@ public class WikiDbContext : IdentityDbContext
                 Content = "Example content 4"
             }
             );
-        
+
+        modelBuilder.Entity<StyleModel>().HasData(
+            new StyleModel
+            {
+                Id = 1,
+                Logo = "/img/logo.png",
+                WikiName = "Your Wiki",
+                BodyColor = "red",
+                ArticleRightColor = "#3c5fb8",
+                ArticleRightInnerColor = "#2b4ea6",
+                ArticleColor = "#526cad",
+                FooterListLinkTextColor = "#1d305e",
+                FooterListTextColor = "#233a71"
+            }
+        );
         // Add any additional model configuration here
         // For example, configuring relationships, setting primary keys, etc.
     }
