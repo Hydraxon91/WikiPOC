@@ -60,7 +60,7 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
                   <div className="articleRightInner" style={{backgroundColor: styles.articleRightInnerColor}}>
                     <img className='paragraphImage' src={paragraph.paragraphImage} alt="logo"/>
                   </div>
-                  This is a test div
+                  {paragraph.paragraphImageText}
                 </div>
               )}
               {renderParagraphs(paragraph.content, Boolean(paragraph.paragraphImage))}

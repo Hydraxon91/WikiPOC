@@ -50,7 +50,7 @@ const EditPage = ({ page, onSave, onSubmit }) => {
 
     if (emptyFields.length > 0 || !title) {
       setEmptyFields(emptyFields);
-      alert('Please make sure to have a title for all paragraphs content content.'); // You can replace this with a more user-friendly notification
+      alert('Please make sure to have a title for all paragraphs content.');
       return;
     }
 

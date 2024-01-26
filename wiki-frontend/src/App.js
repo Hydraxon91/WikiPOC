@@ -18,9 +18,9 @@ function App() {
     // Fetch WikiPages when the component mounts
     fetchWikiPageTitles();
   }, []);
-  // useEffect(() => {
-  //   console.log(currentWikiPage);
-  // }, [currentWikiPage]);
+  useEffect(() => {
+    fetchWikiPageTitles();
+  }, [wikiPageTitles]);
 
   const fetchWikiPageTitles = async () => {
     try {
