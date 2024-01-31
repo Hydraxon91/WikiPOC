@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const HomeComponent = ({ pages }) => {
+  useEffect(() => {
+
+  }, [pages]);
+
   return [
     <h2 key="wiki-pages-heading">Wiki Pages</h2>,
     <ul key="wiki-pages-list">

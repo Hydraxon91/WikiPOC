@@ -1,43 +1,40 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link, useParams} from 'react-router-dom';
 import '../Styles/style.css';
 import { useStyleContext } from './contexts/StyleContext';
-import { getWikiPageByTitle } from '../Api/wikiApi';
 
-const WikiPageComponent = ({setCurrentWikiPage, page}) => {
-  const { title  } = useParams();
-  const decodedTitle = decodeURIComponent(title);
+const WikiPageComponent = ({page, setDecodedTitle}) => {
   const { styles }  = useStyleContext();
-
+  const { title } = useParams();
+  const decodedTitle = decodeURIComponent(title);
   const targetRef = useRef(null);
   const [pTitles, setPTitles] = useState([]);
   const [isContentsVisible, setIsContentsVisible] = useState(true);
 
   useEffect(() => {
-    fetchPage();
+    if (page) {
+      const paragraphTitles = page.paragraphs.map((paragraph) => paragraph.title).slice(1);
+      setPTitles(paragraphTitles);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    if (setDecodedTitle) {
+      setDecodedTitle(decodedTitle);
+    }
   }, [decodedTitle]);
 
   const toggleContentsVisibility = () => {
     setIsContentsVisible(!isContentsVisible);
   };
 
-  const scrollToParagraph = (index) => {
+  const scrollToParagraph = () => {
     if (targetRef.current) {
       targetRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  const fetchPage = async () => {
-    try {
-      const data = await getWikiPageByTitle(decodedTitle);
-      setCurrentWikiPage(data);
-      const paragraphTitles = data.paragraphs.map((paragraph) => paragraph.title).slice(1);
-      setPTitles(paragraphTitles);
-
-    } catch (error) {
-      console.error('Error fetching page:', error);
-    }
-  };
+  
   const parseLinks = (text) => {
     const linkRegex = /<Link to="(.*?)">(.*?)<\/Link>/g;
     let match;
@@ -91,7 +88,7 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
   return (
     <>
       {page && (
-        <>
+        <div style={{minWidth: "45%"}}>
           <h1>
             {page.title}
             <Link to={`/page/${page.title}/edit`}>
@@ -138,7 +135,7 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
 
             </div>
           ))}
-        </>
+        </div>
       )}
     </>
   );

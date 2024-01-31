@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { useStyleContext } from './contexts/StyleContext';
 
 const WikiList = ({ pages }) => {
   const { styles }  = useStyleContext();
+
+  useEffect(() => {
+
+  }, [pages]);
+  
   return (
       <div className="sidebar">
         <div className="logo">
