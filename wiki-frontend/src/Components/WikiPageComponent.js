@@ -27,10 +27,41 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
     const lines = content.split('\n');
     const additionalLines = hasParagraphImage ? Math.max(7 - lines.length, 0) : 0;
   
+    const parseLinks = (text) => {
+      const linkRegex = /<Link to="(.*?)">(.*?)<\/Link>/g;
+      let match;
+      const elements = [];
+  
+      let lastIndex = 0;
+      while ((match = linkRegex.exec(text)) !== null) {
+        const plainText = text.substring(lastIndex, match.index);
+        if (plainText) {
+          elements.push(<span key={`text-${lastIndex}`}>{plainText}</span>);
+        }
+  
+        const linkPath = match[1];
+        const linkLabel = match[2];
+        elements.push(
+          <Link key={`link-${match.index}`} to={linkPath}>
+            {linkLabel}
+          </Link>
+        );
+  
+        lastIndex = match.index + match[0].length;
+      }
+  
+      const remainingText = text.substring(lastIndex);
+      if (remainingText) {
+        elements.push(<span key={`text-${lastIndex}`}>{remainingText}</span>);
+      }
+  
+      return elements;
+    };
+
     return (
       <>
         {lines.map((line, lineIndex) => (
-          <p key={lineIndex}>{line}</p>
+          <p key={lineIndex}>{parseLinks(line)}</p>
         ))}
         {Array.from({ length: additionalLines }).map((_, i) => (
           <br key={`empty-line-${i}`} />
