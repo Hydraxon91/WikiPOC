@@ -52,6 +52,7 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
           </h1>
           <p class="siteSub">{`${page.siteSub}`}</p>
           <p class="roleNote">{`${page.roleNote}`}</p>
+          <div>{page.introductionParagraph}</div>
           {page.paragraphs.map((paragraph, index) => (
             <div key={`paragraph-${index}`}>
               <h2>{paragraph.title}</h2>
