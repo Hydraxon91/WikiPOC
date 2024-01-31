@@ -52,7 +52,6 @@ public class WikiDbContext : IdentityDbContext
                 Id = 1,
                 IntroductionParagraph = true,
                 WikiPageId = 1,
-                Title = "Example Paragraph 1",
                 Content = "Example content 1",
                 ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
                 ParagraphImageText = "Example ParagraphImageText 1"

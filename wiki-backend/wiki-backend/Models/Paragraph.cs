@@ -14,8 +14,8 @@ public class Paragraph
     public WikiPage? WikiPage { get; set; }
 
     public bool IntroductionParagraph { get; set; } = false;
-    public string Title { get; set; }
-    public string Content { get; set; }
+    public string? Title { get; set; }
+    public string? Content { get; set; }
     public string? ParagraphImage { get; set; }
     public string? ParagraphImageText { get; set; }
 }

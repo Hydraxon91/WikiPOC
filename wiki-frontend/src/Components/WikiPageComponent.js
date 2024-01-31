@@ -9,17 +9,22 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
   const decodedTitle = decodeURIComponent(title);
   const { styles }  = useStyleContext();
 
+  const [pTitles, setPTitles] = useState([]);
+
   useEffect(() => {
     fetchPage();
   }, [decodedTitle]);
+
 
   const fetchPage = async () => {
     try {
       const data = await getWikiPageByTitle(decodedTitle);
       setCurrentWikiPage(data);
+      const paragraphTitles = data.paragraphs.map((paragraph) => paragraph.title).filter((title) => title !== null);
+      setPTitles(paragraphTitles);
+
     } catch (error) {
       console.error('Error fetching page:', error);
-      // Handle error, e.g., redirect to an error page
     }
   };
 
@@ -81,8 +86,10 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
               <img className = "editButton" src="/img/edit.png" alt="Edit" />
             </Link>
           </h1>
+
           <p class="siteSub">{`${page.siteSub}`}</p>
           <p class="roleNote">{`${page.roleNote}`}</p>
+
           {page.paragraphs.map((paragraph, index) => (
             <div key={`paragraph-${index}`}>
               {!paragraph.introductionParagraph && <h2>{paragraph.title}</h2>}
@@ -94,7 +101,24 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
                   {paragraph.paragraphImageText}
                 </div>
               )}
+
+              {index === 0 && pTitles.length > 0 && 
+              (<div className='contentsPanel'>
+                <div class="hidePanel">[hide]</div>
+                <div class="showPanel">[show]</div>
+                <div class="contentsHeader">Contents</div>
+                <ul style={{display: 'block'}}>
+                  {pTitles.map((paragraphTitle, titleIndex) => (
+                      <li key={`title-${titleIndex}`}>
+                        <span>{`${titleIndex + 1}`}</span>
+                        <Link to={`#${paragraphTitle}`}>{paragraphTitle}</Link>
+                      </li>
+                    ))}
+                </ul>
+              </div>)}
+
               {renderParagraphs(paragraph.content, Boolean(paragraph.paragraphImage))}
+
             </div>
           ))}
         </>
