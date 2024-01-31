@@ -12,8 +12,7 @@ public class Paragraph
     [ForeignKey(nameof(WikiPageId))]
     [JsonIgnore]
     public WikiPage? WikiPage { get; set; }
-
-    public bool IntroductionParagraph { get; set; } = false;
+    
     public string? Title { get; set; }
     public string? Content { get; set; }
     public string? ParagraphImage { get; set; }

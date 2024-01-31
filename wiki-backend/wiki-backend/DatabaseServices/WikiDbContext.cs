@@ -48,45 +48,31 @@ public class WikiDbContext : IdentityDbContext
                 // IntroductionParagraph = "Introduction Paragraph 2"
             }
         );
-        
-        // modelBuilder.Entity<Paragraph>().HasData(
-        //     new Paragraph
-        //     {
-        //         Id = 1,
-        //         IntroductionParagraph = true,
-        //         WikiPageId = 1,
-        //         Content = "Example content 1",
-        //         ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
-        //         ParagraphImageText = "Example ParagraphImageText 1"
-        //     },
-        //     new Paragraph
-        //     {
-        //         Id = 2,
-        //         WikiPageId = 1,
-        //         Title = "Example Paragraph 2",
-        //         Content = "Example content 2"
-        //     },
-        //     new Paragraph
-        //     {
-        //         Id = 3,
-        //         WikiPageId = 2,
-        //         Title = "Example Paragraph 3",
-        //         Content = "Example content 3",
-        //         ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
-        //         ParagraphImageText = "Example ParagraphImageText3"
-        //     },
-        //     new Paragraph
-        //     {
-        //         Id = 4,
-        //         WikiPageId = 2,
-        //         Title = "Example Paragraph 4",
-        //         Content = "Example content 4"
-        //     }
-        //     );
+
+        modelBuilder.Entity<Paragraph>().HasData(
+            new Paragraph
+            {
+                Id = 1,
+                WikiPageId = 1,
+                Title = "Example Paragraph 1",
+                Content = "Example content 1",
+                ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
+                ParagraphImageText = "Example ParagraphImageText 1"
+            },
+            new Paragraph
+            {
+                Id = 2,
+                WikiPageId = 2,
+                Title = "Example Paragraph 2",
+                Content = "Example content 2",
+                ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
+                ParagraphImageText = "<Link to=\"/page/Example%20Page%201\"> This links to Example page 1 </Link>"
+            }
+        );
         
         // Seed Paragraph data with Bogus
         modelBuilder.Entity<Paragraph>().HasData(
-            Enumerable.Range(1, 10).Select(index => new Paragraph
+            Enumerable.Range(3, 15).Select(index => new Paragraph
             {
                 Id = index,
                 WikiPageId = faker.Random.Number(1, 2), // Randomly assign to WikiPage 1 or 2
