@@ -34,7 +34,7 @@ public class WikiDbContext : IdentityDbContext
                 Title = "Example Page 1",
                 SiteSub = "Example SiteSub 1",
                 RoleNote = "Example RoleNote 1",
-                IntroductionParagraph = "Introduction Paragraph 1"
+                // IntroductionParagraph = "Introduction Paragraph 1"
             },
             new WikiPage
             {
@@ -42,7 +42,7 @@ public class WikiDbContext : IdentityDbContext
                 Title = "Example Page 2",
                 SiteSub = "Example SiteSub 2",
                 RoleNote = "Example RoleNote 2",
-                IntroductionParagraph = "Introduction Paragraph 2"
+                // IntroductionParagraph = "Introduction Paragraph 2"
             }
         );
         
@@ -50,6 +50,7 @@ public class WikiDbContext : IdentityDbContext
             new Paragraph
             {
                 Id = 1,
+                IntroductionParagraph = true,
                 WikiPageId = 1,
                 Title = "Example Paragraph 1",
                 Content = "Example content 1",
