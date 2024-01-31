@@ -10,17 +10,21 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
   const { styles }  = useStyleContext();
 
   const [pTitles, setPTitles] = useState([]);
+  const [isContentsVisible, setIsContentsVisible] = useState(true);
 
   useEffect(() => {
     fetchPage();
   }, [decodedTitle]);
 
+  const toggleContentsVisibility = () => {
+    setIsContentsVisible(!isContentsVisible);
+  };
 
   const fetchPage = async () => {
     try {
       const data = await getWikiPageByTitle(decodedTitle);
       setCurrentWikiPage(data);
-      const paragraphTitles = data.paragraphs.map((paragraph) => paragraph.title).filter((title) => title !== null);
+      const paragraphTitles = data.paragraphs.map((paragraph) => paragraph.title).slice(1);
       setPTitles(paragraphTitles);
 
     } catch (error) {
@@ -102,22 +106,25 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
                 </div>
               )}
 
-              {index === 0 && pTitles.length > 0 && 
-              (<div className='contentsPanel'>
-                <div class="hidePanel">[hide]</div>
-                <div class="showPanel">[show]</div>
-                <div class="contentsHeader">Contents</div>
-                <ul style={{display: 'block'}}>
-                  {pTitles.map((paragraphTitle, titleIndex) => (
-                      <li key={`title-${titleIndex}`}>
-                        <span>{`${titleIndex + 1}`}</span>
-                        <Link to={`#${paragraphTitle}`}>{paragraphTitle}</Link>
-                      </li>
-                    ))}
-                </ul>
-              </div>)}
-
               {renderParagraphs(paragraph.content, Boolean(paragraph.paragraphImage))}
+
+              {index === 0 && pTitles.length > 0 && 
+                (
+                  <div className={`contentsPanel ${isContentsVisible ? '' : 'minimizedPanel'}`}>
+                    <div class="hidePanel"  onClick={toggleContentsVisibility}>[hide]</div>
+                    <div class="showPanel"  onClick={toggleContentsVisibility}>[show]</div>
+                    <div class="contentsHeader">Contents</div>
+                    <ul style={{ display: isContentsVisible ? 'block' : 'none' }}>
+                      {pTitles.map((paragraphTitle, titleIndex) => (
+                          <li key={`title-${titleIndex}`}>
+                            <span>{`${titleIndex + 1}`}</span>
+                            <Link to={`#${paragraphTitle}`}>{paragraphTitle}</Link>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )
+              }
 
             </div>
           ))}
