@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "RfUEUITyo2hShuEyB2x7zyCK9U1cqTpYH0GZLbtYxEC/bwNiNIafA3MDeveRorQt3Zef/WZWl2XH1tll9t4nKQ==",
+  "dgSpecHash": "paiiNKRV0hVIwvaGceZGV5bHCXAq5DeZxkyzJPycbQqVJ4dHWbkRMV7/+2Og2UsYRGk7l6pZ1tWM6mQRd3UzPw==",
   "success": true,
   "projectFilePath": "C:\\Users\\kukan\\Documents\\Codecool\\JobHunt\\WikiPOC\\wiki-backend\\wiki-backend\\wiki-backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kukan\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\kukan\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
+    "C:\\Users\\kukan\\.nuget\\packages\\bogus\\35.4.0\\bogus.35.4.0.nupkg.sha512",
     "C:\\Users\\kukan\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\kukan\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\7.0.15\\microsoft.aspnetcore.cryptography.internal.7.0.15.nupkg.sha512",
     "C:\\Users\\kukan\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\7.0.15\\microsoft.aspnetcore.cryptography.keyderivation.7.0.15.nupkg.sha512",

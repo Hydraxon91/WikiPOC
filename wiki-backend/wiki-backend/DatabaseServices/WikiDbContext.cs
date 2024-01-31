@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.Models;
+using Bogus;
 
 namespace wiki_backend.DatabaseServices;
 
@@ -22,6 +23,8 @@ public class WikiDbContext : IdentityDbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        var faker = new Faker();
+        
         modelBuilder.Entity<WikiPage>().HasMany(wp => wp.Paragraphs)
             .WithOne(p => p.WikiPage)
             .HasForeignKey(p => p.WikiPageId)
@@ -46,41 +49,52 @@ public class WikiDbContext : IdentityDbContext
             }
         );
         
+        // modelBuilder.Entity<Paragraph>().HasData(
+        //     new Paragraph
+        //     {
+        //         Id = 1,
+        //         IntroductionParagraph = true,
+        //         WikiPageId = 1,
+        //         Content = "Example content 1",
+        //         ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
+        //         ParagraphImageText = "Example ParagraphImageText 1"
+        //     },
+        //     new Paragraph
+        //     {
+        //         Id = 2,
+        //         WikiPageId = 1,
+        //         Title = "Example Paragraph 2",
+        //         Content = "Example content 2"
+        //     },
+        //     new Paragraph
+        //     {
+        //         Id = 3,
+        //         WikiPageId = 2,
+        //         Title = "Example Paragraph 3",
+        //         Content = "Example content 3",
+        //         ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
+        //         ParagraphImageText = "Example ParagraphImageText3"
+        //     },
+        //     new Paragraph
+        //     {
+        //         Id = 4,
+        //         WikiPageId = 2,
+        //         Title = "Example Paragraph 4",
+        //         Content = "Example content 4"
+        //     }
+        //     );
+        
+        // Seed Paragraph data with Bogus
         modelBuilder.Entity<Paragraph>().HasData(
-            new Paragraph
+            Enumerable.Range(1, 10).Select(index => new Paragraph
             {
-                Id = 1,
-                IntroductionParagraph = true,
-                WikiPageId = 1,
-                Content = "Example content 1",
-                ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
-                ParagraphImageText = "Example ParagraphImageText 1"
-            },
-            new Paragraph
-            {
-                Id = 2,
-                WikiPageId = 1,
-                Title = "Example Paragraph 2",
-                Content = "Example content 2"
-            },
-            new Paragraph
-            {
-                Id = 3,
-                WikiPageId = 2,
-                Title = "Example Paragraph 3",
-                Content = "Example content 3",
-                ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
-                ParagraphImageText = "Example ParagraphImageText3"
-            },
-            new Paragraph
-            {
-                Id = 4,
-                WikiPageId = 2,
-                Title = "Example Paragraph 4",
-                Content = "Example content 4"
-            }
-            );
-
+                Id = index,
+                WikiPageId = faker.Random.Number(1, 2), // Randomly assign to WikiPage 1 or 2
+                Title = $"Example Paragraph {index}",
+                Content = faker.Lorem.Paragraphs(5), // Generate bogus lorem ipsum-like content
+            }).ToArray()
+        );
+        
         modelBuilder.Entity<StyleModel>().HasData(
             new StyleModel
             {

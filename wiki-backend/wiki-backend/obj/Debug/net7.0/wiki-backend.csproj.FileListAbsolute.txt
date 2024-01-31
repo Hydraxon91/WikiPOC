@@ -80,3 +80,6 @@ C:\Users\kukan\Documents\Codecool\JobHunt\WikiPOC\wiki-backend\wiki-backend\bin\
 C:\Users\kukan\Documents\Codecool\JobHunt\WikiPOC\wiki-backend\wiki-backend\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
 C:\Users\kukan\Documents\Codecool\JobHunt\WikiPOC\wiki-backend\wiki-backend\bin\Debug\net7.0\Mono.TextTemplating.dll
 C:\Users\kukan\Documents\Codecool\JobHunt\WikiPOC\wiki-backend\wiki-backend\bin\Debug\net7.0\System.CodeDom.dll
+C:\Users\kukan\Documents\Codecool\JobHunt\WikiPOC\wiki-backend\wiki-backend\bin\Debug\net7.0\package-lock.json
+C:\Users\kukan\Documents\Codecool\JobHunt\WikiPOC\wiki-backend\wiki-backend\bin\Debug\net7.0\package.json
+C:\Users\kukan\Documents\Codecool\JobHunt\WikiPOC\wiki-backend\wiki-backend\bin\Debug\net7.0\Bogus.dll
