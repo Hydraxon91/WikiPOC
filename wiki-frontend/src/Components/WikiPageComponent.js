@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import '../Styles/style.css';
 import { useStyleContext } from './contexts/StyleContext';
@@ -9,6 +9,7 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
   const decodedTitle = decodeURIComponent(title);
   const { styles }  = useStyleContext();
 
+  const targetRef = useRef(null);
   const [pTitles, setPTitles] = useState([]);
   const [isContentsVisible, setIsContentsVisible] = useState(true);
 
@@ -18,6 +19,12 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
 
   const toggleContentsVisibility = () => {
     setIsContentsVisible(!isContentsVisible);
+  };
+
+  const scrollToParagraph = (index) => {
+    if (targetRef.current) {
+      targetRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const fetchPage = async () => {
@@ -70,7 +77,9 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
     return (
       <>
         {lines.map((line, lineIndex) => (
-          <p key={lineIndex}>{parseLinks(line)}</p>
+          <p key={lineIndex} id={`paragraph-${lineIndex}`} ref={targetRef}>
+            {parseLinks(line)}
+          </p>
         ))}
         {Array.from({ length: additionalLines }).map((_, i) => (
           <br key={`empty-line-${i}`} />
@@ -115,12 +124,14 @@ const WikiPageComponent = ({setCurrentWikiPage, page}) => {
                     <div class="showPanel"  onClick={toggleContentsVisibility}>[show]</div>
                     <div class="contentsHeader">Contents</div>
                     <ul style={{ display: isContentsVisible ? 'block' : 'none' }}>
-                      {pTitles.map((paragraphTitle, titleIndex) => (
-                          <li key={`title-${titleIndex}`}>
-                            <span>{`${titleIndex + 1}`}</span>
-                            <Link to={`#${paragraphTitle}`}>{paragraphTitle}</Link>
-                          </li>
-                        ))}
+                    {pTitles.map((paragraphTitle, titleIndex) => (
+                      <li key={`title-${titleIndex}`}>
+                        <span>{`${titleIndex + 1}`}</span>
+                        <Link to="#" onClick={() => scrollToParagraph(titleIndex)}>
+                          {paragraphTitle}
+                        </Link>
+                      </li>
+                    ))}
                     </ul>
                   </div>
                 )
