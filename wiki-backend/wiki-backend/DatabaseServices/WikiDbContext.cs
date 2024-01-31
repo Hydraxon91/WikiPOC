@@ -85,7 +85,7 @@ public class WikiDbContext : IdentityDbContext
                 Id = 1,
                 Logo = "/img/logo.png",
                 WikiName = "Your Wiki",
-                BodyColor = "red",
+                BodyColor = "#507ced",
                 ArticleRightColor = "#3c5fb8",
                 ArticleRightInnerColor = "#2b4ea6",
                 ArticleColor = "#526cad",

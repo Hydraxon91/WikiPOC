@@ -8,7 +8,7 @@ const MainPage = ({ pages }) => {
   const { styles }  = useStyleContext();
 
   return (
-    <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", height: "100vh"}}>
+    <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh"}}>
       <div>
         <WikiList pages={pages} />
         <div className="mainsection">
