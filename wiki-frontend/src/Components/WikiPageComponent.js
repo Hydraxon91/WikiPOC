@@ -36,6 +36,9 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
 
   
   const parseLinks = (text) => {
+    if (text === null) {
+      return text;
+    }
     const linkRegex = /<Link to="(.*?)">(.*?)<\/Link>/g;
     let match;
     const elements = [];
@@ -44,7 +47,8 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
     while ((match = linkRegex.exec(text)) !== null) {
       const plainText = text.substring(lastIndex, match.index);
       if (plainText) {
-        elements.push(<span key={`text-${lastIndex}`}>{plainText}</span>);
+        // elements.push(<span key={`text-${lastIndex}`}>{plainText}</span>);
+        elements.push(plainText);
       }
 
       const linkPath = match[1];
@@ -66,17 +70,14 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
     return elements;
   };
 
+
+
   const renderParagraphs = (content, hasParagraphImage) => {
-    const lines = content.split('\n');
-    const additionalLines = hasParagraphImage ? Math.max(7 - lines.length, 0) : 0;
+    const additionalLines = hasParagraphImage ? Math.max(9 - content.split('<p>').length, 0) : 0;
   
     return (
       <>
-        {lines.map((line, lineIndex) => (
-          <p key={lineIndex} id={`paragraph-${lineIndex}`} ref={targetRef}>
-            {parseLinks(line)}
-          </p>
-        ))}
+        <div dangerouslySetInnerHTML={{ __html: content }} />
         {Array.from({ length: additionalLines }).map((_, i) => (
           <br key={`empty-line-${i}`} />
         ))}
@@ -108,6 +109,7 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
                     <img className='paragraphImage' src={paragraph.paragraphImage} alt="logo" />
                   </div>
                   {parseLinks(paragraph.paragraphImageText)}
+                  
                 </div>
               )}
 
