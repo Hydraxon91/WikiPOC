@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import WikiPageComponent from './WikiPageComponent';
+import ReactQuillComponent from './ReactQuillComponent';
 
 const EditPage = ({ page, onSave, onSubmit, setCurrentWikiPage }) => {
   const navigate = useNavigate();
@@ -34,7 +35,17 @@ const EditPage = ({ page, onSave, onSubmit, setCurrentWikiPage }) => {
 
 
   const handleAddParagraph = () => {
-    const updatedParagraphs =[...paragraphs, { title: '', content: '', siteSub: '',  roleNote: '', paragraphImage: '', paragraphImageText: ''}]
+    const updatedParagraphs = [
+      ...paragraphs,
+      {
+        title: '',
+        content: '',
+        siteSub: '',
+        roleNote: '',
+        paragraphImage: '',
+        paragraphImageText: ''
+      }
+    ];
     setParagraphs(updatedParagraphs);
     updateTemporaryPage(title, siteSub, roleNote, updatedParagraphs);
   };
@@ -152,13 +163,17 @@ const EditPage = ({ page, onSave, onSubmit, setCurrentWikiPage }) => {
               </div>
               <div className={`editDiv ${emptyFields.includes(index) ? 'emptyField' : ''}`}>
                 <label className="editLabel">Paragraph Content:</label>
-                <textarea
+                {/* <textarea
                   value={paragraph.content}
                   onChange={(e) => {
                     handleParagraphChange(index, 'content', e.target.value);
                     autoExpand(e);
                   }}
                   className='inputField'
+                /> */}
+                <ReactQuillComponent
+                  handleChange={(value) => handleParagraphChange(index, 'content', value)}
+                  content={paragraph.content}
                 />
               </div>
               <div className='editDiv'>
