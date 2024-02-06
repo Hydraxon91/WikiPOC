@@ -5,7 +5,7 @@ using wiki_backend.Services.Authentication;
 namespace wiki_backend.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
