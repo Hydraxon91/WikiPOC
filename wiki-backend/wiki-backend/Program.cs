@@ -10,11 +10,6 @@ using wiki_backend.Services.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
-
-
-
 // Add services to the container.
 AddCors();
 AddDbContext();
@@ -51,6 +46,7 @@ app.MapControllers();
 if (Environment.GetEnvironmentVariable("Environment") != "Testing")
 {
     AddRoles();
+    AddAdmin();
 }
 
 app.Run();
@@ -180,10 +176,41 @@ void AddRoles()
 
 async Task CreateAdminRole(RoleManager<IdentityRole> roleManager)
 {
-    await roleManager.CreateAsync(new IdentityRole(builder.Configuration["Roles:Admin"]));
+    await roleManager.CreateAsync(new IdentityRole("Admin"));
 }
 
 async Task CreateUserRole(RoleManager<IdentityRole> roleManager)
 {
-    await roleManager.CreateAsync(new IdentityRole(builder.Configuration["Roles:User"]));
+    await roleManager.CreateAsync(new IdentityRole("User"));
+}
+
+void AddAdmin()
+{
+    var tAdmin = CreateAdminIfNotExists();
+    tAdmin.Wait();
+}
+
+async Task CreateAdminIfNotExists()
+{
+    using var scope = app.Services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+    var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
+    if (adminInDb == null)
+    {
+        Console.WriteLine(Environment.GetEnvironmentVariable("ADMINUSER_PASSWORD"));
+        var adminName = Environment.GetEnvironmentVariable("ADMINUSER_USERNAME");
+        var admin = new IdentityUser
+        {
+            UserName = adminName,
+            Email = Environment.GetEnvironmentVariable("ADMINUSER_EMAIL"),
+        };
+        
+        var adminCreated = await userManager.CreateAsync(admin, Environment.GetEnvironmentVariable("ADMINUSER_PASSWORD"));
+
+        if (adminCreated.Succeeded)
+        {
+            await userManager.AddToRoleAsync(admin, "Admin");
+        }
+    }
 }
