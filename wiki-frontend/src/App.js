@@ -8,6 +8,8 @@ import HomeComponent from "./Components/HomeComponent.js";
 import EditWikiComponent from "./Components/EditWikiComponent.js";
 import { StyleProvider  } from "./Components/contexts/StyleContext.js";
 import { getWikiPageTitles, createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle } from "./Api/wikiApi.js";
+import LoginPageComponent from "./Components/LoginPageComponent.js";
+import { CookiesProvider, useCookies } from "react-cookie";
 
 function App() {
 
@@ -15,6 +17,8 @@ function App() {
   const [currentWikiPage, setCurrentWikiPage] = useState(null);
 
   const [decodedTitle, setDecodedTitle] = useState(null);
+
+  const [cookies, setCookie] = useCookies(["jwt_token"]);
 
   useEffect(() => {
     // Fetch WikiPages when the component mounts
@@ -79,22 +83,28 @@ function App() {
     }
   };
 
+  const handleLogin = (user, expirationDate) => {
+    setCookie("jwt_token", user, { path: "/", expires: expirationDate})
+  }
+
   return (
-    <Router>
-        <StyleProvider>
-          <Routes>
-            <Route path="/" element={<MainPage pages={wikiPageTitles}/>} > 
-              <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
-              <Route path="/page/:title" element={<WikiPageComponent page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
-              <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} onSave={handleEdit} onSubmit={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
-              <Route path="/create" element={<EditPage onSave={handleEdit} onSubmit={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
-              <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}></Route>
-            </Route>
-            
-          </Routes>
-        </StyleProvider>
-    </Router>
-    
+    <CookiesProvider>
+      <Router>
+          <StyleProvider>
+            <Routes>
+              <Route path="/" element={<MainPage pages={wikiPageTitles} cookies={cookies}/>} > 
+                <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
+                <Route path="/page/:title" element={<WikiPageComponent page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
+                <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} onSave={handleEdit} onSubmit={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
+                <Route path="/create" element={<EditPage onSave={handleEdit} onSubmit={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
+                <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}/>
+                <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
+              </Route>
+              
+            </Routes>
+          </StyleProvider>
+      </Router>
+    </CookiesProvider>
   );
 }
 

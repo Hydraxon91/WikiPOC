@@ -1,18 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet  } from 'react-router-dom';
 import WikiList from '../Components/WikiList';
 import { useStyleContext } from '../Components/contexts/StyleContext';
+import { jwtDecode } from 'jwt-decode';
 
-
-const MainPage = ({ pages }) => {
+const MainPage = ({ pages, cookies }) => {
   const { styles }  = useStyleContext();
+  const [userName, setUserName] = useState("Not logged in");
+
+  useEffect(()=>{
+    // console.log(cookies["jwt_token"]);
+    const decoded = jwtDecode(cookies["jwt_token"]);
+    // console.log(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
+    setUserName(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
+  }, [cookies])
 
   return (
     <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh"}}>
       <div>
         <WikiList pages={pages} />
         <div className="mainsection">
-          <div className="headerLinks">HeaderLink</div>
+          <div className="headerLinks">{userName}</div>
           <div className="article" style={{backgroundColor: styles.articleColor}}>
             {/* Render children, which will be the specific WikiPage component */}
             <Outlet />
