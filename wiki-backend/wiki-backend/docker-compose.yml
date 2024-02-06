@@ -10,6 +10,15 @@ services:
       - "5000:80"  # Adjust the port mapping as needed
     depends_on:
       - sql-server
+    environment:
+      ASPNETCORE_CONNECTIONSTRING: ${ASPNETCORE_CONNECTIONSTRING}
+      ADMINUSER_EMAIL: ${ADMINUSER_EMAIL}
+      ADMINUSER_PASSWORD: ${ADMINUSER_PASSWORD}
+      ADMINUSER_USERNAME: ${ADMINUSER_USERNAME}
+      JWT_ISSUER_SIGNING_KEY: ${JWT_ISSUER_SIGNING_KEY}
+      JWT_VALID_AUDIENCE: ${JWT_VALID_AUDIENCE}
+      JWT_VALID_ISSUER: ${JWT_VALID_ISSUER}
+      JWT_TOKEN_TIME: ${JWT_TOKEN_TIME}
 
   sql-server:
     image: mcr.microsoft.com/mssql/server
