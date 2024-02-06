@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:5000'; // Replace with your actual backend API URL
+const BASE_URL = 'http://localhost:5000';
 
 export const getWikiPages = async () => {
   const response = await fetch(`${BASE_URL}/api/WikiPages`);
