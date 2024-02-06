@@ -1,41 +1,25 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Identity;
+using wiki_backend.Services.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration;
 
-builder.Services.AddAuthentication(x =>
-{
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x =>
-{
-    x.TokenValidationParameters = new TokenValidationParameters
-    {
-       ValidIssuer = config["JwtSettings:Issuer"],
-       ValidAudience = config["JwtSettings:Audience"],
-       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSettings:Key"]!)),
-       ValidateIssuer = true,
-       ValidateAudience = true,
-       ValidateLifetime = true,
-       ValidateIssuerSigningKey = true
-    };
-});
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(IdentityData.AdminUserPolicyName, p => p.RequireClaim(IdentityData.AdminUserClaimName, "true"));
-});
+
+
+
 
 // Add services to the container.
 AddCors();
 AddDbContext();
 AddServices();
+AddAuthentication();
+AddIdentity();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -97,4 +81,49 @@ void AddServices()
     builder.Services.AddTransient<IWikiPageRepository, WikiPageRepository>();
     builder.Services.AddTransient<IParagraphRepository, ParagraphRepository>();
     builder.Services.AddTransient<IStyleRepository, StyleRepository>();
+    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<ITokenServices, TokenServices>();
+}
+
+void AddAuthentication()
+{
+    builder.Services.AddAuthentication(x =>
+    {
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer(x =>
+    {
+        x.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER"),
+            ValidAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE"),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY")!)),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true
+        };
+    });
+    
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy(IdentityData.AdminUserPolicyName, p => p.RequireClaim(IdentityData.AdminUserClaimName, "true"));
+    });
+}
+
+void AddIdentity()
+{
+    builder.Services.AddIdentityCore<IdentityUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+    })
+        .AddRoles<IdentityRole>()
+        .AddEntityFrameworkStores<WikiDbContext>();
 }
