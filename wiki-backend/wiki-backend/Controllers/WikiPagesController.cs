@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
+using wiki_backend.Identity;
 using wiki_backend.Models;
 
 namespace wiki_backend.Controllers;
@@ -70,6 +72,7 @@ public class WikiPagesController : ControllerBase
         return Ok(paragraphs);
     }
     
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost]
     public async Task<ActionResult<WikiPage>> CreateWikiPage([FromBody] WikiPage wikiPage)
     {
@@ -77,7 +80,7 @@ public class WikiPagesController : ControllerBase
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
     }
-
+    
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateWikiPage(int id, [FromBody] WikiPage updatedWikiPage)
     {
@@ -91,6 +94,7 @@ public class WikiPagesController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteWikiPage(int id)
     {
