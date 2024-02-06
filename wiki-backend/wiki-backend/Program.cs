@@ -48,6 +48,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+if (Environment.GetEnvironmentVariable("Environment") != "Testing")
+{
+    AddRoles();
+}
+
 app.Run();
 
 void AddCors()
@@ -159,4 +164,26 @@ void ConfigureSwagger()
             }
         });
     });
+}
+
+void AddRoles()
+{
+    using var scope = app.Services.CreateScope();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    var tAdmin = CreateAdminRole(roleManager);
+    tAdmin.Wait();
+
+    var tUser = CreateUserRole(roleManager);
+    tUser.Wait();
+}
+
+async Task CreateAdminRole(RoleManager<IdentityRole> roleManager)
+{
+    await roleManager.CreateAsync(new IdentityRole(builder.Configuration["Roles:Admin"]));
+}
+
+async Task CreateUserRole(RoleManager<IdentityRole> roleManager)
+{
+    await roleManager.CreateAsync(new IdentityRole(builder.Configuration["Roles:User"]));
 }
