@@ -13,7 +13,14 @@ public class TokenServices : ITokenServices
     public string CreateToken(IdentityUser user, string role)
     {
         var expirationMinutes = int.TryParse(Environment.GetEnvironmentVariable("JWT_TOKEN_TIME"), out int expirationFromEnv) ? expirationFromEnv : 30;
-        throw new NotImplementedException();
+        var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
+        var token = CreateJwtToken(
+            CreateClaims(user, role),
+            CreateSigningCredentials(),
+            expiration
+        );
+        var tokenHandler = new JwtSecurityTokenHandler();
+        return tokenHandler.WriteToken(token);
     }
     
     private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, DateTime expiration) =>
