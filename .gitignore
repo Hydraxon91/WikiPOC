@@ -298,3 +298,4 @@ yarn-debug.log*
 yarn-error.log*
 wiki-backend/wiki-backend/appsettings.Development.json
 wiki-backend/wiki-backend/appsettings.json
+wiki-backend/wiki-backend/.env
