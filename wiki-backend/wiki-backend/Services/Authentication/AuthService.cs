@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using wiki_backend.DatabaseServices;
+using wiki_backend.Identity;
 
 namespace wiki_backend.Services.Authentication;
 
@@ -24,6 +26,7 @@ public class AuthService : IAuthService
             return FailedRegistration(result, email, username);
         
         await _userManager.AddToRoleAsync(user, role);
+        await _userManager.AddClaimAsync(user, new Claim(IdentityData.UserClaimName, "true"));
         return new AuthResult(true, email, username, "");
     }
 
