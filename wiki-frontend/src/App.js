@@ -10,6 +10,7 @@ import { StyleProvider  } from "./Components/contexts/StyleContext.js";
 import { getWikiPageTitles, createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle } from "./Api/wikiApi.js";
 import LoginPageComponent from "./Components/LoginPageComponent.js";
 import { CookiesProvider, useCookies } from "react-cookie";
+import RegisterPageComponent from "./Components/RegisterPageComponent.jsx";
 
 function App() {
 
@@ -110,6 +111,7 @@ function App() {
                 <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
                 <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}/>
                 <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
+                <Route path="/register" element = {<RegisterPageComponent/>}/>
               </Route>
               
             </Routes>
