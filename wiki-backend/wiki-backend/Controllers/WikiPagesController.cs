@@ -91,7 +91,7 @@ public class WikiPagesController : ControllerBase
 
         await _wikiPageRepository.UpdateAsync(existingWikiPage, updatedWikiPage);
 
-        return NoContent();
+        return Ok(new { Message = "WikiPage updated successfully" });
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
@@ -100,6 +100,6 @@ public class WikiPagesController : ControllerBase
     {
         await _wikiPageRepository.DeleteAsync(id);
 
-        return NoContent();
+        return Ok(new { Message = "WikiPage deleted successfully" });
     }
 }
