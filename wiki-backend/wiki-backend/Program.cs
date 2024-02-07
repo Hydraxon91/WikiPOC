@@ -169,11 +169,17 @@ void AddRoles()
     using var scope = app.Services.CreateScope();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    var tAdmin = CreateAdminRole(roleManager);
-    tAdmin.Wait();
+    if (!roleManager.RoleExistsAsync("Admin").Result)
+    {
+        var tAdmin = CreateAdminRole(roleManager);
+        tAdmin.Wait();
+    }
 
-    var tUser = CreateUserRole(roleManager);
-    tUser.Wait();
+    if (!roleManager.RoleExistsAsync("User").Result)
+    {
+        var tUser = CreateUserRole(roleManager);
+        tUser.Wait();
+    }
 }
 
 async Task CreateAdminRole(RoleManager<IdentityRole> roleManager)

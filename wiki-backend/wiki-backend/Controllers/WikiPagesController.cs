@@ -80,7 +80,7 @@ public class WikiPagesController : ControllerBase
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
     }
-    
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateWikiPage(int id, [FromBody] WikiPage updatedWikiPage)
     {
