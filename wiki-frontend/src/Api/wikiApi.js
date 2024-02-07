@@ -36,11 +36,12 @@ export const getWikiPageById = async (id) => {
     return data;
   };
 
-export const createWikiPage = async (newPage) => {
+export const createWikiPage = async (newPage, token) => {
   const response = await fetch(`${BASE_URL}/api/WikiPages`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify(newPage),
   });
@@ -51,11 +52,12 @@ export const createWikiPage = async (newPage) => {
   return data;
 };
 
-export const updateWikiPage = async (id, updatedPage) => {
+export const updateWikiPage = async (id, updatedPage, token) => {
     const response = await fetch(`${BASE_URL}/api/WikiPages/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(updatedPage),
     });
@@ -66,11 +68,12 @@ export const updateWikiPage = async (id, updatedPage) => {
     return data;
   };
 
-export const deleteWikiPage = async (id) =>{
+export const deleteWikiPage = async (id, token) =>{
     const response = await fetch(`${BASE_URL}/api/WikiPages/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
 
