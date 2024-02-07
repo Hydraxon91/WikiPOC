@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import WikiPageComponent from './WikiPageComponent';
 import ReactQuillComponent from './ReactQuillComponent';
 
-const EditPage = ({ page, onSave, onSubmit, setCurrentWikiPage }) => {
+const EditPage = ({ page, handleEdit, handleCreate, setCurrentWikiPage }) => {
   const navigate = useNavigate();
 
   const [temporaryPage, setTemporaryPage] = useState(null);
@@ -94,7 +95,7 @@ const EditPage = ({ page, onSave, onSubmit, setCurrentWikiPage }) => {
 
   const handleSave = () => {
     const requiredFields = ['title', 'content'];
-
+  
     const emptyFields = paragraphs.reduce((emptyFields, paragraph, index) => {
       const missingFields = requiredFields.filter((field) => !paragraph[field]);
       if (missingFields.length > 0) {
@@ -102,22 +103,32 @@ const EditPage = ({ page, onSave, onSubmit, setCurrentWikiPage }) => {
       }
       return emptyFields;
     }, []);
-
+  
     if (emptyFields.length > 0 || !title) {
       setEmptyFields(emptyFields);
       alert('Please make sure to have a title for all paragraphs content.');
       return;
     }
-
+  
     setEmptyFields([]);
-    setCurrentWikiPage(temporaryPage);
-    newPage ?  onSubmit(temporaryPage) : onSave({ ...page, title, paragraphs, siteSub, roleNote });
-    navigate(`/page/${title}`);
-  };
+  
+    const savePromise = newPage
+      ? handleCreate(temporaryPage)
+      : handleEdit({ ...page, title, paragraphs, siteSub, roleNote });
 
-  const autoExpand = (e) => {
-    e.target.style.height = 'auto';
-    e.target.style.height = e.target.scrollHeight + 'px';
+    console.log(savePromise);
+
+    savePromise
+      .then((data) => {
+        // console.log(data);
+        setCurrentWikiPage(temporaryPage);
+        navigate(`/page/${title}`);
+      })
+      .catch((error) => {
+        console.error("Error during save:", error);
+        // Use toast.error to display an error message
+        toast.error('An error occurred while saving. Please try again.');
+      });
   };
 
 

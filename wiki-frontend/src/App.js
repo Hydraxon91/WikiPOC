@@ -54,33 +54,44 @@ function App() {
   };
 
 
-  const handleCreate = async (newPage) => {
-    try {
-      const createdPage = await createWikiPage(newPage);
-      setWikiPageTitles([...wikiPageTitles, createdPage.Title]);
-    } catch (error) {
-      console.error("Error creating WikiPage:", error);
-    }
+  const handleCreate = (newPage) => {
+    console.log('Inside handleCreate');
+    return createWikiPage(newPage, cookies["jwt_token"])
+      .then((createdPage) => {
+        console.log('createWikiPage resolved:', createdPage);
+        setWikiPageTitles([...wikiPageTitles, createdPage.Title]);
+        return createdPage; // Ensure you're returning a value
+      })
+      .catch((error) => {
+        console.error("Error creating WikiPage:", error);
+        throw error; // Rethrow the error to propagate it to the next .catch
+      });
   };
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteWikiPage(id);
-      setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
-    } catch (error) {
-      console.error("Error deleting WikiPage:", error);
-    }
+  
+  const handleDelete = (id) => {
+    deleteWikiPage(id, cookies["jwt_token"])
+      .then(() => {
+        setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
+      })
+      .catch((error) => {
+        console.error("Error deleting WikiPage:", error);
+      });
   };
-
-  const handleEdit = async (updatedPage, id) => {
-    try {
-      const updatedWikiPage = await updateWikiPage(updatedPage.id, updatedPage);
-      setWikiPageTitles((prevPages) =>
-        prevPages.map((page) => (page=== updatedWikiPage.Title ? updatedWikiPage.Title : page))
-      );
-    } catch (error) {
-      console.error("Error updating WikiPage:", error);
-    }
+  
+  const handleEdit = (updatedPage) => {
+    // console.log('Inside handleEdit');
+    return updateWikiPage(updatedPage.id, updatedPage, cookies["jwt_token"])
+      .then((updatedWikiPage) => {
+        console.log('updateWikiPage resolved:', updatedWikiPage);
+        setWikiPageTitles((prevPages) =>
+          prevPages.map((page) => (page === updatedWikiPage.Title ? updatedWikiPage.Title : page))
+        );
+        return updatedWikiPage; // Ensure you're returning a value
+      })
+      .catch((error) => {
+        console.error("Error updating WikiPage:", error);
+        throw error; // Rethrow the error to propagate it to the next .catch
+      });
   };
 
   const handleLogin = (user, expirationDate) => {
@@ -95,8 +106,8 @@ function App() {
               <Route path="/" element={<MainPage pages={wikiPageTitles} cookies={cookies}/>} > 
                 <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
                 <Route path="/page/:title" element={<WikiPageComponent page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
-                <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} onSave={handleEdit} onSubmit={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
-                <Route path="/create" element={<EditPage onSave={handleEdit} onSubmit={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
+                <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
+                <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
                 <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}/>
                 <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
               </Route>
