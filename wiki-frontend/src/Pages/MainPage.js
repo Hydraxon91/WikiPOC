@@ -9,10 +9,15 @@ const MainPage = ({ pages, cookies }) => {
   const [userName, setUserName] = useState("Not logged in");
 
   useEffect(()=>{
-    // console.log(cookies["jwt_token"]);
-    const decoded = jwtDecode(cookies["jwt_token"]);
-    // console.log(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
-    setUserName(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
+    if (cookies["jwt_token"]) {
+      // console.log(cookies["jwt_token"]);
+      const decoded = jwtDecode(cookies["jwt_token"]);
+      // console.log(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
+      setUserName(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
+    }
+    else{
+      setUserName("Not logged in")
+    }
   }, [cookies])
 
   return (
