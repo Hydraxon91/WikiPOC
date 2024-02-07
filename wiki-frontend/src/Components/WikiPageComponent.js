@@ -97,8 +97,8 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
             </Link>
           </h1>
 
-          <p class="siteSub">{`${page.siteSub}`}</p>
-          <p class="roleNote">{`${page.roleNote}`}</p>
+          <p className="siteSub">{`${page.siteSub}`}</p>
+          <p className="roleNote">{`${page.roleNote}`}</p>
 
           {page.paragraphs.map((paragraph, index) => (
             <div key={`paragraph-${index}`}>
@@ -118,9 +118,9 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
               {index === 0 && pTitles.length > 0 && 
                 (
                   <div className={`contentsPanel ${isContentsVisible ? '' : 'minimizedPanel'}`}>
-                    <div class="hidePanel"  onClick={toggleContentsVisibility}>[hide]</div>
-                    <div class="showPanel"  onClick={toggleContentsVisibility}>[show]</div>
-                    <div class="contentsHeader">Contents</div>
+                    <div className="hidePanel"  onClick={toggleContentsVisibility}>[hide]</div>
+                    <div className="showPanel"  onClick={toggleContentsVisibility}>[show]</div>
+                    <div className="contentsHeader">Contents</div>
                     <ul style={{ display: isContentsVisible ? 'block' : 'none' }}>
                     {pTitles.map((paragraphTitle, titleIndex) => (
                       <li key={`title-${titleIndex}`}>
