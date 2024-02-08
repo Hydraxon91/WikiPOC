@@ -177,4 +177,48 @@ public class WikiPagesController : ControllerBase
 
         return Ok(new { Message = "WikiPage deleted successfully" });
     }
+    
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [HttpGet("GetSubmittedPageTitles")]
+    public async Task<ActionResult<IEnumerable<string>>> GetSubmittedPages()
+    {
+        var titles = await _wikiPageRepository.GetSubmittedPageTitlesAsync();
+
+        return Ok(titles);
+    }
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [HttpGet("GetSubmittedPageByTitle/{title}")]
+    public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedPageByTitle(string title)
+    {
+        var wikiPage = await _wikiPageRepository.GetSubmittedPageByTitleAsync(title);
+
+        if (wikiPage == null)
+        {
+            return NotFound(); // Return 404 if the page is not found
+        }
+
+        return Ok(wikiPage);
+    }
+    
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [HttpGet("GetSubmittedUpdates")]
+    public async Task<ActionResult<IEnumerable<string>>> GetSubmittedUpdates()
+    {
+        var titles = await _wikiPageRepository.GetSubmittedUpdateTitlesAsync();
+
+        return Ok(titles);
+    }
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [HttpGet("GetSubmittedUpdateByTitle/{title}")]
+    public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedUpdateByTitle(string title)
+    {
+        var wikiPage = await _wikiPageRepository.GetSubmittedUpdateByTitleAsync(title);
+
+        if (wikiPage == null)
+        {
+            return NotFound(); // Return 404 if the page is not found
+        }
+
+        return Ok(wikiPage);
+    }
 }

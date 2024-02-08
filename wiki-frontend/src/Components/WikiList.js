@@ -2,17 +2,42 @@ import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import { useStyleContext } from './contexts/StyleContext';
 import { useUserContext } from '../Components/contexts/UserContextProvider';
+import { getNewPageTitles, getUpdatePageTitles } from "../Api/wikiApi";
 
-const WikiList = ({ pages, handleLogout }) => {
+const WikiList = ({ pages, handleLogout, cookies}) => {
   const { styles }  = useStyleContext();
   const {decodedTokenContext, updateUser} = useUserContext();
   const [role, setRole] = useState(null);
+  const [pagesWaitingForApproval, setPagesWaitingForApproval] = useState();
+  const [updatesWaitingForApproval, setUpdatesWaitingForApproval] = useState();
 
   useEffect(() => {
     if (decodedTokenContext) {
-      setRole(decodedTokenContext["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
+      var role = decodedTokenContext["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      setRole(role);
+      if (role === "Admin") {
+        fetchNewPageTitles(cookies["jwt_token"]);
+        fetchUpdatePageTitles(cookies["jwt_token"]);
+      }
     }
   }, [decodedTokenContext]);
+
+  const fetchNewPageTitles = async (token) => {
+    try {
+      const pages = await getNewPageTitles(token);
+      setPagesWaitingForApproval(pages.length);
+    } catch (error) {
+      console.error("Error fetching WikiPages:", error);
+    }
+  };
+  const fetchUpdatePageTitles = async (token) => {
+    try {
+      const updates = await getUpdatePageTitles(token);
+      setUpdatesWaitingForApproval(updates.length);
+    } catch (error) {
+      console.error("Error fetching WikiPages:", error);
+    }
+  };
 
   const UserTools = () =>{
     return role==="Admin" ?
@@ -20,6 +45,12 @@ const WikiList = ({ pages, handleLogout }) => {
       <>
         <h3>Admin Tools</h3>
           <ul>
+              <li>
+                Pages Awaiting for Approval: {pagesWaitingForApproval}
+              </li>
+              <li>
+                Updates Awaiting for Approval: {updatesWaitingForApproval}
+              </li>
               <li>
                 <Link key="create-new-page-link" to="/create">
                   Create New Page

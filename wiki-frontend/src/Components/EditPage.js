@@ -140,14 +140,14 @@ const EditPage = ({ page, handleEdit, handleCreate, setCurrentWikiPage }) => {
     <div style={{display: 'flex'}}>
       <div className="article" style={{minWidth: "45%", marginRight: '1vw'}}>
         <h2>{newPage? 'Create Page' : 'Edit Page' }</h2>
-        <div className='editDiv'>
+        {newPage && <div className='editDiv'>
           <label className="editLabel">Page Title:</label>
           <input 
             type="text" 
             value={title} 
             onChange={(e) =>handleFieldChange('title', e.target.value)} 
           />
-        </div>
+        </div>}
         <div className='editDiv'>
           <label className="editLabel">Page SiteSub [Not required]</label>
           <input 

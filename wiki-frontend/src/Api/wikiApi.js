@@ -148,3 +148,66 @@ export const updateStyles = async (newStyles) => {
     console.error('Error updating styles:', error);
   }
 };
+
+export const getNewPageTitles = async (token) => {
+  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedPageTitles`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to get WikiPage Titles. Status: ${response.status}`);
+  }
+  const data = await response.json();
+  return data;
+};
+
+
+export const getNewPageByTitle = async (title, token) => {
+  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedPageByTitle/${title}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to get WikiPage. Status: ${response.status}`);
+  }
+  const data = await response.json();
+  return data;
+};
+
+export const getUpdatePageTitles = async (token) => {
+  console.log(token);
+  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedUpdates`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to get WikiPage Titles. Status: ${response.status}`);
+  }
+  const data = await response.json();
+  return data;
+};
+
+
+export const getUpdatePageByTitle = async (title, token) => {
+  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedUpdateByTitle/${title}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to get WikiPage. Status: ${response.status}`);
+  }
+  const data = await response.json();
+  return data;
+};

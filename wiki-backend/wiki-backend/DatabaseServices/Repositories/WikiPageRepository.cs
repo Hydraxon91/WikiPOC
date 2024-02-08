@@ -32,7 +32,8 @@ public class WikiPageRepository : IWikiPageRepository
     public async Task<WikiPage?> GetByTitleAsync(string title)
     {
         return await _context.WikiPages
-            .Include(p => p.Paragraphs) // Include paragraphs if needed
+            .Where(page => !(page is UserSubmittedWikiPage))
+            .Include(p => p.Paragraphs) 
             .FirstOrDefaultAsync(p => p.Title == title);
     }
 
@@ -130,5 +131,31 @@ public class WikiPageRepository : IWikiPageRepository
             _context.WikiPages.Remove(wikiPage);
             await _context.SaveChangesAsync();
         }
+    }
+    
+    public async Task<IEnumerable<string>> GetSubmittedPageTitlesAsync()
+    {
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage).Select(page => page.Title).ToListAsync();
+    }
+    
+    public async Task<UserSubmittedWikiPage?> GetSubmittedPageByTitleAsync(string title)
+    {
+        return await _context.UserSubmittedWikiPages
+            .Where(page => page.IsNewPage==true)
+            .Include(p => p.Paragraphs) 
+            .FirstOrDefaultAsync(p => p.Title == title);
+    }
+    
+    public async Task<IEnumerable<string>> GetSubmittedUpdateTitlesAsync()
+    {
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false).Select(page => page.Title).ToListAsync();
+    }
+    
+    public async Task<UserSubmittedWikiPage?> GetSubmittedUpdateByTitleAsync(string title)
+    {
+        return await _context.UserSubmittedWikiPages
+            .Where(page => page.IsNewPage==false)
+            .Include(p => p.Paragraphs) 
+            .FirstOrDefaultAsync(p => p.Title == title);
     }
 }
