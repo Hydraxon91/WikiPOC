@@ -73,15 +73,23 @@ public class WikiPagesController : ControllerBase
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpPost]
+    [HttpPost("admin")]
     public async Task<ActionResult<WikiPage>> CreateWikiPage([FromBody] WikiPage wikiPage)
     {
         await _wikiPageRepository.AddAsync(wikiPage);
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
     }
+    
+    // [Authorize(Policy = IdentityData.UserPolicyName)]
+    // [HttpPost("user")]
+    // public async Task<ActionResult<WikiPage>> CreateWikiPageForUser([FromBody] WikiPage wikiPage)
+    // {
+    //     // Implementation for regular user
+    // }
+    
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpPut("{id}")]
+    [HttpPut("admin/{id}")]
     public async Task<IActionResult> UpdateWikiPage(int id, [FromBody] WikiPage updatedWikiPage)
     {
         var existingWikiPage = await _wikiPageRepository.GetByIdAsync(id);

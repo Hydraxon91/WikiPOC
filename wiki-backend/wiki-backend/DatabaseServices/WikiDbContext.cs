@@ -16,6 +16,7 @@ public class WikiDbContext : IdentityDbContext
         if(Database.IsRelational()) Database.Migrate();
     }
     public DbSet<WikiPage> WikiPages { get; set; }
+    public DbSet<UserSubmittedWikiPage> UserSubmittedWikiPages { get; set; }
     public DbSet<Paragraph> Paragraphs { get; set; }
     public DbSet<StyleModel> Styles { get; set; }
 
