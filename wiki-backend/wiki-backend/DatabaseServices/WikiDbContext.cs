@@ -109,7 +109,7 @@ public class WikiDbContext : IdentityDbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING");
-        //Console.WriteLine(connectionString);
+        // Console.WriteLine(connectionString);
         optionsBuilder.UseSqlServer(connectionString);
     }
     
