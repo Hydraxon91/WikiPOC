@@ -31,6 +31,12 @@ public class WikiDbContext : IdentityDbContext
             .HasForeignKey(p => p.WikiPageId)
             .HasPrincipalKey(p => p.Id);
         
+        modelBuilder.Entity<UserSubmittedWikiPage>().HasBaseType<WikiPage>()
+            .HasOne(uswp => uswp.WikiPage)
+            .WithMany()
+            .HasForeignKey(uswp => uswp.WikiPageId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
         modelBuilder.Entity<WikiPage>().HasData(
             new WikiPage
             {
