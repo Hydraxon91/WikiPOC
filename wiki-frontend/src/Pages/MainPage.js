@@ -2,30 +2,33 @@ import React, { useEffect, useState } from 'react';
 import { Outlet  } from 'react-router-dom';
 import WikiList from '../Components/WikiList';
 import { useStyleContext } from '../Components/contexts/StyleContext';
-import { jwtDecode } from 'jwt-decode';
+import { useUserContext } from '../Components/contexts/UserContextProvider';
 
-const MainPage = ({ pages, cookies }) => {
+const MainPage = ({ pages, decodedToken }) => {
   const { styles }  = useStyleContext();
+  const { updateUser } = useUserContext();
   const [userName, setUserName] = useState("Not logged in");
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(()=>{
-    if (cookies["jwt_token"]) {
-      // console.log(cookies["jwt_token"]);
-      const decoded = jwtDecode(cookies["jwt_token"]);
-      // console.log(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
-      setUserName(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
+    console.log(decodedToken);
+    if (decodedToken) {
+      updateUser(decodedToken);
+      setUserName(decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
+      setUserRole("Role: " +decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
     }
     else{
       setUserName("Not logged in")
+      setUserRole(null);
     }
-  }, [cookies])
+  }, [decodedToken])
 
   return (
     <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh"}}>
       <div>
         <WikiList pages={pages} />
         <div className="mainsection">
-          <div className="headerLinks">{userName}</div>
+          <div className="headerLinks">{userName} {userRole}</div>
           <div className="article" style={{backgroundColor: styles.articleColor}}>
             {/* Render children, which will be the specific WikiPage component */}
             <Outlet />

@@ -10,6 +10,8 @@ import { StyleProvider  } from "./Components/contexts/StyleContext.js";
 import { getWikiPageTitles, createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle } from "./Api/wikiApi.js";
 import LoginPageComponent from "./Components/LoginPageComponent.js";
 import { CookiesProvider, useCookies } from "react-cookie";
+import { jwtDecode } from 'jwt-decode';
+import { UserContextProvider } from "./Components/contexts/UserContextProvider.js";
 import RegisterPageComponent from "./Components/RegisterPageComponent.jsx";
 
 function App() {
@@ -20,11 +22,21 @@ function App() {
   const [decodedTitle, setDecodedTitle] = useState(null);
 
   const [cookies, setCookie] = useCookies(["jwt_token"]);
+  const [decodedToken, setDecodedToken] = useState(null);
 
   useEffect(() => {
+    if (cookies["jwt_token"]) {
+      setDecodedToken(jwtDecode(cookies["jwt_token"]));
+    }
+    
     // Fetch WikiPages when the component mounts
     fetchWikiPageTitles();
-  }, []);
+  }, [cookies["jwt_token"]]); // Trigger the effect when the token changes
+
+  // useEffect(() => {
+  //   // Fetch WikiPages when the component mounts
+  //   fetchWikiPageTitles();
+  // }, []);
 
   useEffect(() => {
     fetchWikiPageTitles();
@@ -101,22 +113,23 @@ function App() {
 
   return (
     <CookiesProvider>
-      <Router>
-          <StyleProvider>
-            <Routes>
-              <Route path="/" element={<MainPage pages={wikiPageTitles} cookies={cookies}/>} > 
-                <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
-                <Route path="/page/:title" element={<WikiPageComponent page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
-                <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
-                <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
-                <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}/>
-                <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
-                <Route path="/register" element = {<RegisterPageComponent/>}/>
-              </Route>
-              
-            </Routes>
-          </StyleProvider>
-      </Router>
+      <UserContextProvider>
+        <Router>
+            <StyleProvider>
+              <Routes>
+                <Route path="/" element={<MainPage pages={wikiPageTitles} decodedToken={decodedToken}/>} > 
+                  <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
+                  <Route path="/page/:title" element={<WikiPageComponent page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
+                  <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
+                  <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
+                  <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}/>
+                  <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
+                  <Route path="/register" element = {<RegisterPageComponent/>}/>
+                </Route>
+              </Routes>
+            </StyleProvider>
+        </Router>
+      </UserContextProvider>
     </CookiesProvider>
   );
 }
