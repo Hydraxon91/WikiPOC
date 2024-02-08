@@ -14,6 +14,8 @@ public class UserSubmittedWikiPage : WikiPage
 
     public bool Approved { get; set; } = false;
     
+    public bool IsNewPage { get; set; }
+    
     // public UserSubmittedWikiPage()
     // {
     //     WikiPage ??= new WikiPage();

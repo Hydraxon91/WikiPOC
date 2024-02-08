@@ -24,7 +24,9 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task<WikiPage?> GetByIdAsync(int id)
     {
-        return await _context.WikiPages.Include(wp => wp.Paragraphs).SingleOrDefaultAsync(wp => wp.Id == id);
+        return await _context.WikiPages
+            .Include(wp => wp.Paragraphs)
+            .SingleOrDefaultAsync(wp => wp.Id == id);
     }
 
     public async Task<WikiPage?> GetByTitleAsync(string title)
@@ -42,6 +44,17 @@ public class WikiPageRepository : IWikiPageRepository
             paragraph.WikiPageId = wikiPage.Id;
         }
         _context.WikiPages.Add(wikiPage);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task AddUserSubmittedPageAsync(UserSubmittedWikiPage wikiPage)
+    {
+        foreach (var paragraph in wikiPage.Paragraphs)
+        {
+            paragraph.WikiPage = wikiPage;
+            paragraph.WikiPageId = wikiPage.Id;
+        }
+        _context.UserSubmittedWikiPages.Add(wikiPage);
         await _context.SaveChangesAsync();
     }
 
@@ -84,9 +97,32 @@ public class WikiPageRepository : IWikiPageRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage)
+    {
+        foreach (var paragraph in updatedWikiPage.Paragraphs)
+        {
+            paragraph.WikiPage = updatedWikiPage;
+            paragraph.WikiPageId = updatedWikiPage.Id;
+        }
+        _context.UserSubmittedWikiPages.Add(updatedWikiPage);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task DeleteAsync(int id)
     {
         var wikiPage = await _context.WikiPages.Include(wp => wp.Paragraphs).SingleOrDefaultAsync(wp => wp.Id == id);
+
+        if (wikiPage != null)
+        {
+            _context.Paragraphs.RemoveRange(wikiPage.Paragraphs);
+            _context.WikiPages.Remove(wikiPage);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task DeleteUserSubmittedAsync(int id)
+    {
+        var wikiPage = await _context.UserSubmittedWikiPages.Include(wp => wp.Paragraphs).SingleOrDefaultAsync(wp => wp.Id == id);
 
         if (wikiPage != null)
         {
