@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useStyleContext } from './contexts/StyleContext';
 import { toast } from 'react-toastify';
 import WikiPageComponent from './WikiPageComponent';
 import ReactQuillComponent from './ReactQuillComponent';
+import { useUserContext } from './contexts/UserContextProvider';
 
 const EditPage = ({ page, handleEdit, handleCreate, setCurrentWikiPage }) => {
   const navigate = useNavigate();
@@ -14,6 +16,8 @@ const EditPage = ({ page, handleEdit, handleCreate, setCurrentWikiPage }) => {
   const [newPage, setNewPage] = useState(true);
   const [paragraphs, setParagraphs] = useState([]);
   const [emptyFields, setEmptyFields] = useState([]);
+
+  const {decodedTokenContext} = useUserContext();
 
   useEffect(() => {
     if (page) {

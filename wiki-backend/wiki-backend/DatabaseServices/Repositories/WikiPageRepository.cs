@@ -14,7 +14,7 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task<IEnumerable<string>> GetAllTitlesAsync()
     {
-        var titles = await _context.WikiPages.Select(page => page.Title).ToListAsync();
+        var titles = await _context.WikiPages.Where(page => !(page is UserSubmittedWikiPage)).Select(page => page.Title).ToListAsync();
         return titles;
     }
     public async Task<IEnumerable<WikiPage>> GetAllAsync()

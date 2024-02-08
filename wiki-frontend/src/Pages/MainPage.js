@@ -11,7 +11,7 @@ const MainPage = ({ pages, decodedToken, handleLogout }) => {
   const [userRole, setUserRole] = useState(null);
 
   useEffect(()=>{
-    console.log(decodedToken);
+    // console.log(decodedToken);
     if (decodedToken) {
       updateUser(decodedToken);
       setUserName(decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);

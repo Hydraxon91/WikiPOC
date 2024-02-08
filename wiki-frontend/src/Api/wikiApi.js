@@ -36,8 +36,17 @@ export const getWikiPageById = async (id) => {
     return data;
   };
 
-export const createWikiPage = async (newPage, token) => {
-  const response = await fetch(`${BASE_URL}/api/WikiPages`, {
+export const createWikiPage = async (newPage, token, decodedToken) => {
+  console.log(decodedToken);
+  var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+  var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+  var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin` : `${BASE_URL}/api/WikiPages/user`;
+  if (role !== "Admin") {
+    newPage = { ...newPage, isNewPage: true, submittedBy: `${userName}`};
+  }
+  console.log('Request Data:', JSON.stringify(newPage));
+
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -52,14 +61,34 @@ export const createWikiPage = async (newPage, token) => {
   return data;
 };
 
-export const updateWikiPage = async (id, updatedPage, token) => {
-    const response = await fetch(`${BASE_URL}/api/WikiPages/${id}`, {
-      method: 'PUT',
+
+export const updateWikiPage = async (id, updatedPage, token, decodedToken) => {
+    var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+    var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin/${id}` : `${BASE_URL}/api/WikiPages/user`;
+    var method = role==="Admin"? "PUT" : "POST";
+
+    var postBody = updateWikiPage;
+
+    if (role !== "Admin") {
+      console.log("notadmin");
+      postBody = { 
+        ...updatedPage,
+        wikiPage: updatedPage,
+        wikiPageId: id,
+        isNewPage: false,
+        submittedBy: `${userName}`
+      };
+    }
+    console.log('Request Data:', JSON.stringify(postBody));
+
+    const response = await fetch(url, {
+      method: method,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify(updatedPage),
+      body: JSON.stringify(postBody),
     });
     if (!response.ok) {
       throw new Error(`Failed to update WikiPage. Status: ${response.status}`);
@@ -69,7 +98,7 @@ export const updateWikiPage = async (id, updatedPage, token) => {
   };
 
 export const deleteWikiPage = async (id, token) =>{
-    const response = await fetch(`${BASE_URL}/api/WikiPages/${id}`, {
+    const response = await fetch(`${BASE_URL}/api/WikiPages/admin/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

@@ -69,7 +69,7 @@ function App() {
 
   const handleCreate = (newPage) => {
     console.log('Inside handleCreate');
-    return createWikiPage(newPage, cookies["jwt_token"])
+    return createWikiPage(newPage, cookies["jwt_token"], decodedToken)
       .then((createdPage) => {
         console.log('createWikiPage resolved:', createdPage);
         setWikiPageTitles([...wikiPageTitles, createdPage.Title]);
@@ -93,7 +93,7 @@ function App() {
   
   const handleEdit = (updatedPage) => {
     // console.log('Inside handleEdit');
-    return updateWikiPage(updatedPage.id, updatedPage, cookies["jwt_token"])
+    return updateWikiPage(updatedPage.id, updatedPage, cookies["jwt_token"], decodedToken)
       .then((updatedWikiPage) => {
         console.log('updateWikiPage resolved:', updatedWikiPage);
         setWikiPageTitles((prevPages) =>

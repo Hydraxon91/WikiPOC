@@ -85,6 +85,12 @@ public class WikiPagesController : ControllerBase
     [HttpPost("user")]
     public async Task<ActionResult<WikiPage>> CreateWikiPageForUser([FromBody] UserSubmittedWikiPage wikiPage)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+            return BadRequest(errors);
+        }
+        
         await _wikiPageRepository.AddUserSubmittedPageAsync(wikiPage);
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
@@ -118,17 +124,23 @@ public class WikiPagesController : ControllerBase
         return Ok(new { Message = "WikiPage updated successfully" });
     }
     
+    //This method returns 400 for some reason, will need to check later
     [Authorize(Policy = IdentityData.UserPolicyName)]
     [HttpPut("user/{id}")]
-    public async Task<IActionResult> UpdateWikiPageForUser([FromBody] UserSubmittedWikiPage updatedWikiPage)
+    public async Task<IActionResult> UpdateWikiPageForUser(int id, [FromBody] UserSubmittedWikiPage updatedWikiPage)
     {
-        // var idToGet = updatedWikiPage.WikiPageId;
-        // var oldWikiPage = await _wikiPageRepository.GetByIdAsync((int)idToGet);
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+            return BadRequest(errors);
+        }
+
+        Console.WriteLine(updatedWikiPage);
         if (updatedWikiPage.WikiPage == null)
         {
             return BadRequest("Wikipage is missing from the updatedWikipage");
         }
-        await _wikiPageRepository.AddUserSubmittedPageAsync(updatedWikiPage);
+        await _wikiPageRepository.UserSubmittedUpdateAsync(updatedWikiPage);
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = updatedWikiPage.Id }, updatedWikiPage);
     }
@@ -149,7 +161,7 @@ public class WikiPagesController : ControllerBase
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpDelete("{id}")]
+    [HttpDelete("admin/{id}")]
     public async Task<IActionResult> DeleteWikiPageForAdmin(int id)
     {
         await _wikiPageRepository.DeleteAsync(id);

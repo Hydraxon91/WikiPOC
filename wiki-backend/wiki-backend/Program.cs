@@ -68,7 +68,8 @@ void AddCors()
             policy
                 .WithOrigins("http://localhost:3000", "http://localhost:3001") // Allow requests from your client's origin
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
     });
 }
