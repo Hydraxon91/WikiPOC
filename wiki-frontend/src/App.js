@@ -21,7 +21,7 @@ function App() {
 
   const [decodedTitle, setDecodedTitle] = useState(null);
 
-  const [cookies, setCookie] = useCookies(["jwt_token"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["jwt_token"]);
   const [decodedToken, setDecodedToken] = useState(null);
 
   useEffect(() => {
@@ -108,8 +108,14 @@ function App() {
   };
 
   const handleLogin = (user, expirationDate) => {
-    setCookie("jwt_token", user, { path: "/", expires: expirationDate})
+    setCookie("jwt_token", user, { path: "/", expires: expirationDate});
   }
+
+  const handleLogout = (updateUser) => {
+    updateUser(null);
+    removeCookie("jwt_token", { path: "/" });
+    setDecodedToken(null);
+  };
 
   return (
     <CookiesProvider>
@@ -117,7 +123,7 @@ function App() {
         <Router>
             <StyleProvider>
               <Routes>
-                <Route path="/" element={<MainPage pages={wikiPageTitles} decodedToken={decodedToken}/>} > 
+                <Route path="/" element={<MainPage pages={wikiPageTitles} decodedToken={decodedToken} handleLogout={handleLogout}/>} > 
                   <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
                   <Route path="/page/:title" element={<WikiPageComponent page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
                   <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />

@@ -4,7 +4,7 @@ import WikiList from '../Components/WikiList';
 import { useStyleContext } from '../Components/contexts/StyleContext';
 import { useUserContext } from '../Components/contexts/UserContextProvider';
 
-const MainPage = ({ pages, decodedToken }) => {
+const MainPage = ({ pages, decodedToken, handleLogout }) => {
   const { styles }  = useStyleContext();
   const { updateUser } = useUserContext();
   const [userName, setUserName] = useState("Not logged in");
@@ -26,7 +26,7 @@ const MainPage = ({ pages, decodedToken }) => {
   return (
     <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh"}}>
       <div>
-        <WikiList pages={pages} />
+        <WikiList pages={pages} handleLogout={handleLogout} />
         <div className="mainsection">
           <div className="headerLinks">{userName} {userRole}</div>
           <div className="article" style={{backgroundColor: styles.articleColor}}>

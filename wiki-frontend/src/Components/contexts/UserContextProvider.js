@@ -3,13 +3,13 @@ import React, { createContext, useContext, useState } from 'react';
 const UserContext = createContext(null);
 
 export const UserContextProvider = ({ children }) => {
-  const [decodedToken, setDecodedToken] = useState(null);
+  const [decodedTokenContext, setDecodedTokenContext] = useState(null);
   const updateUser = (newUser) => {
-    setDecodedToken(newUser);
+    setDecodedTokenContext(newUser);
   };
 
   return (
-    <UserContext.Provider value={{ decodedToken, updateUser }}>
+    <UserContext.Provider value={{ decodedTokenContext, updateUser }}>
       {children}
     </UserContext.Provider>
   );
