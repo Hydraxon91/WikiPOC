@@ -180,17 +180,17 @@ public class WikiPagesController : ControllerBase
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpGet("GetSubmittedPageTitles")]
-    public async Task<ActionResult<IEnumerable<string>>> GetSubmittedPages()
+    public async Task<ActionResult<IEnumerable<Tuple<string, int>>>> GetSubmittedPages()
     {
-        var titles = await _wikiPageRepository.GetSubmittedPageTitlesAsync();
+        var titles = await _wikiPageRepository.GetSubmittedPageTitlesAndIdAsync();
 
         return Ok(titles);
     }
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpGet("GetSubmittedPageByTitle/{title}")]
-    public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedPageByTitle(string title)
+    [HttpGet("GetSubmittedPageById/{id}")]
+    public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedPageById(int id)
     {
-        var wikiPage = await _wikiPageRepository.GetSubmittedPageByTitleAsync(title);
+        var wikiPage = await _wikiPageRepository.GetSubmittedPageByIdAsync(id);
 
         if (wikiPage == null)
         {
@@ -204,15 +204,15 @@ public class WikiPagesController : ControllerBase
     [HttpGet("GetSubmittedUpdates")]
     public async Task<ActionResult<IEnumerable<string>>> GetSubmittedUpdates()
     {
-        var titles = await _wikiPageRepository.GetSubmittedUpdateTitlesAsync();
+        var titles = await _wikiPageRepository.GetSubmittedUpdateTitlesAndIdAsync();
 
         return Ok(titles);
     }
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpGet("GetSubmittedUpdateByTitle/{title}")]
-    public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedUpdateByTitle(string title)
+    [HttpGet("GetSubmittedUpdateById/{id}")]
+    public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedUpdateByTitle(int id)
     {
-        var wikiPage = await _wikiPageRepository.GetSubmittedUpdateByTitleAsync(title);
+        var wikiPage = await _wikiPageRepository.GetSubmittedUpdateByIdAsync(id);
 
         if (wikiPage == null)
         {

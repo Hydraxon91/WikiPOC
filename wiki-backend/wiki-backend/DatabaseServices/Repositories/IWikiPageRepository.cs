@@ -14,8 +14,8 @@ public interface IWikiPageRepository
     Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage);
     Task DeleteAsync(int id);
     Task DeleteUserSubmittedAsync(int id);
-    Task<IEnumerable<string>> GetSubmittedPageTitlesAsync();
-    Task<UserSubmittedWikiPage?> GetSubmittedPageByTitleAsync(string title);
-    Task<IEnumerable<string>> GetSubmittedUpdateTitlesAsync();
-    Task<UserSubmittedWikiPage?> GetSubmittedUpdateByTitleAsync(string title);
+    Task<IEnumerable<Tuple<string, int>>> GetSubmittedPageTitlesAndIdAsync();
+    Task<UserSubmittedWikiPage?> GetSubmittedPageByIdAsync(int id);
+    Task<IEnumerable<Tuple<string, int>>> GetSubmittedUpdateTitlesAndIdAsync();
+    Task<UserSubmittedWikiPage?> GetSubmittedUpdateByIdAsync(int id);
 }

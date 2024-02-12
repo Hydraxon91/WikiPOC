@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore;
 using wiki_backend.Models;
 
 namespace wiki_backend.DatabaseServices.Repositories;
@@ -133,29 +134,29 @@ public class WikiPageRepository : IWikiPageRepository
         }
     }
     
-    public async Task<IEnumerable<string>> GetSubmittedPageTitlesAsync()
+    public async Task<IEnumerable<Tuple<string, int>>> GetSubmittedPageTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage).Select(page => page.Title).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage).Select(page => new Tuple<string, int>(page.Title, page.Id)).ToListAsync();
     }
     
-    public async Task<UserSubmittedWikiPage?> GetSubmittedPageByTitleAsync(string title)
+    public async Task<UserSubmittedWikiPage?> GetSubmittedPageByIdAsync(int id)
     {
         return await _context.UserSubmittedWikiPages
             .Where(page => page.IsNewPage==true)
             .Include(p => p.Paragraphs) 
-            .FirstOrDefaultAsync(p => p.Title == title);
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
     
-    public async Task<IEnumerable<string>> GetSubmittedUpdateTitlesAsync()
+    public async Task<IEnumerable<Tuple<string, int>>> GetSubmittedUpdateTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false).Select(page => page.Title).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false).Select(page => new Tuple<string, int>(page.Title, page.Id)).ToListAsync();
     }
     
-    public async Task<UserSubmittedWikiPage?> GetSubmittedUpdateByTitleAsync(string title)
+    public async Task<UserSubmittedWikiPage?> GetSubmittedUpdateByIdAsync(int id)
     {
         return await _context.UserSubmittedWikiPages
             .Where(page => page.IsNewPage==false)
             .Include(p => p.Paragraphs) 
-            .FirstOrDefaultAsync(p => p.Title == title);
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 }
