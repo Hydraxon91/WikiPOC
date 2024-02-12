@@ -13,6 +13,7 @@ import { CookiesProvider, useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
 import { UserContextProvider } from "./Components/contexts/UserContextProvider.js";
 import RegisterPageComponent from "./Components/RegisterPageComponent.jsx";
+import UserRequestsPageComponent from "./Components/UserRequestsPageComponent.js";
 
 function App() {
 
@@ -132,6 +133,8 @@ function App() {
                   <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}/>
                   <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
                   <Route path="/register" element = {<RegisterPageComponent/>}/>
+                  <Route path="/user-submissions" element = {<UserRequestsPageComponent></UserRequestsPageComponent>}/>
+                  <Route path="/user-updates" element = {<UserRequestsPageComponent></UserRequestsPageComponent>}/>
                 </Route>
               </Routes>
             </StyleProvider>
