@@ -196,7 +196,7 @@ export const getUpdatePageTitles = async (token) => {
 };
 
 
-export const getUpdatePageByTitle = async (title, token) => {
+export const getUpdatePageById = async (title, token) => {
   const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedUpdateByTitle/${title}`, {
     method: 'GET',
     headers: {

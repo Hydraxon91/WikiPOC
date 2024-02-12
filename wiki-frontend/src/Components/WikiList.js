@@ -46,10 +46,14 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
         <h3>Admin Tools</h3>
           <ul>
               <li>
-                Pages Awaiting for Approval: {pagesWaitingForApproval}
+                <Link key="approve-new-page-link" to="/user-submissions">
+                  Pages Awaiting for Approval: {pagesWaitingForApproval}
+                </Link>
               </li>
               <li>
-                Updates Awaiting for Approval: {updatesWaitingForApproval}
+                <Link key="approve-page-update-link" to="/user-updates">
+                  Updates Awaiting for Approval: {updatesWaitingForApproval}
+                </Link>
               </li>
               <li>
                 <Link key="create-new-page-link" to="/create">
