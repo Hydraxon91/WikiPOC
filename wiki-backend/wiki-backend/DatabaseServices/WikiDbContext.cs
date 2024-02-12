@@ -106,11 +106,13 @@ public class WikiDbContext : IdentityDbContext
         // For example, configuring relationships, setting primary keys, etc.
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING");
-        // Console.WriteLine(connectionString);
-        optionsBuilder.UseSqlServer(connectionString);
-    }
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING");
+    //     // Console.WriteLine(connectionString);
+    //     optionsBuilder.UseSqlServer(connectionString);
+    //     optionsBuilder.EnableSensitiveDataLogging();
+    //     optionsBuilder.EnableDetailedErrors();
+    // }
     
 }
