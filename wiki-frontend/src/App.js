@@ -93,7 +93,8 @@ function App() {
   
   const handleEdit = (updatedPage) => {
     // console.log('Inside handleEdit');
-    return updateWikiPage(updatedPage.id, updatedPage, cookies["jwt_token"], decodedToken)
+    console.log(updatedPage);
+    return updateWikiPage(updatedPage, cookies["jwt_token"], decodedToken)
       .then((updatedWikiPage) => {
         console.log('updateWikiPage resolved:', updatedWikiPage);
         setWikiPageTitles((prevPages) =>
