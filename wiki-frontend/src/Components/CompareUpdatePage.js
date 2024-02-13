@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { getUpdatePageById, getWikiPageByTitle } from '../Api/wikiApi';
-import WikiPageComponent from './WikiPageComponent';
+import CompareUpdatePageComponent from './CompareUpdatePageComponent';
 
 const CompareUpdatePage = () => {
     const location = useLocation();
@@ -50,9 +50,9 @@ const CompareUpdatePage = () => {
             originalPage &&
             (
                 <>
-                    <WikiPageComponent page={originalPage}></WikiPageComponent>
+                    <CompareUpdatePageComponent page={originalPage}></CompareUpdatePageComponent>
                     <div style={{ borderRight: '1px solid #ccc', margin: '0 10px' }}></div>
-                    <WikiPageComponent page={updatePage}></WikiPageComponent>
+                    <CompareUpdatePageComponent page={updatePage}></CompareUpdatePageComponent>
                 </>
             )
         }
