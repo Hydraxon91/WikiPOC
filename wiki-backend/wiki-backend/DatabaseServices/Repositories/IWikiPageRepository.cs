@@ -11,6 +11,7 @@ public interface IWikiPageRepository
     Task AddAsync(WikiPage wikiPage);
     Task AddUserSubmittedPageAsync(UserSubmittedWikiPage wikiPage);
     Task UpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage);
+    Task AcceptUserSubmittedUpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage);
     Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage);
     Task DeleteAsync(int id);
     Task DeleteUserSubmittedAsync(int id);

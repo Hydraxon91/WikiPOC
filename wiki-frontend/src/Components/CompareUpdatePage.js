@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { getUpdatePageById, getWikiPageByTitle } from '../Api/wikiApi';
+import { toast } from 'react-toastify';
+import { getUpdatePageById, getWikiPageByTitle, acceptUserSubmittedUpdate, declineUserSubmittedWikiPage } from '../Api/wikiApi';
 import CompareUpdatePageComponent from './CompareUpdatePageComponent';
+import '../Styles/compareupdates.css';
 
 const CompareUpdatePage = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+
     const [cookies] = useCookies(['jwt_token']);
     const [originalPage, setOriginalPage] = useState();
     const [updatePage, setUpdatePage] = useState();
@@ -44,19 +48,49 @@ const CompareUpdatePage = () => {
         }
       };
 
+      const handleAccept = () => {
+        acceptUserSubmittedUpdate(updatePage, originalPage.id, cookies["jwt_token"])
+          .then(() => {
+            // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
+            alert("Succesfully updated page");
+            navigate(`/page/${updatePage.title}`);
+          })
+          .catch((error) => {
+            console.error("Error updating WikiPage:", error);
+          });
+      };
+
+      const handleDecline = () => {
+        declineUserSubmittedWikiPage(updatePage.id, cookies["jwt_token"])
+          .then(() => {
+            // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
+            alert("Declined Change");
+            navigate(`/page/${updatePage.title}`);
+          })
+          .catch((error) => {
+            console.error("Error deleting WikiPage:", error);
+          });
+      };
+
       return (
-        <div style={{display: 'flex'}}>
-        {
-            originalPage &&
-            (
-                <>
-                    <CompareUpdatePageComponent page={originalPage}></CompareUpdatePageComponent>
-                    <div style={{ borderRight: '1px solid #ccc', margin: '0 10px' }}></div>
-                    <CompareUpdatePageComponent page={updatePage}></CompareUpdatePageComponent>
-                </>
-            )
-        }
-        </div>
+        <>
+            <div className='compareUpdatePageButtonsDiv'>
+                <button className='compareUpdatePageButtons' onClick={() => handleAccept()}>Accept Change</button>
+                <button className='compareUpdatePageButtons' onClick={() => handleDecline()}>Discard Change</button>
+            </div>
+            <div style={{display: 'flex'}}>
+            {
+                originalPage &&
+                (
+                    <>
+                        <CompareUpdatePageComponent page={originalPage}></CompareUpdatePageComponent>
+                        <div style={{ borderRight: '1px solid #ccc', margin: '0 10px' }}></div>
+                        <CompareUpdatePageComponent page={updatePage} originalPage={originalPage}></CompareUpdatePageComponent>
+                    </>
+                )
+            }
+            </div>
+        </>
       )
 }
 

@@ -207,5 +207,76 @@ export const getUpdatePageById = async (id, token) => {
     throw new Error(`Failed to get WikiPage. Status: ${response.status}`);
   }
   const data = await response.json();
+  // console.log(data);
   return data;
+};
+
+export const acceptUserSubmittedUpdate = async (updatedPage, id, token) => {
+  try {
+     // Set the id of all paragraphs to 0
+     const updatedPageWithZeroIds = {
+      ...updatedPage,
+      paragraphs: updatedPage.paragraphs.map(paragraph => ({ ...paragraph, id: 0, wikiPageId: id })),
+    };
+
+    console.log('Request Data:', JSON.stringify(updatedPageWithZeroIds));
+    console.log('Request Data:', id);
+    
+
+    const response = await fetch(`${BASE_URL}/api/WikiPages/AdminAccept/${id}`, {
+      method: "PATCH",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedPageWithZeroIds),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json(); // Attempt to read error details from the response body
+      throw new Error(`Failed to Update WikiPage. Status: ${response.status}. Details: ${JSON.stringify(errorData)}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error in acceptUserSubmittedUpdate:', error);
+    // You can choose to handle the error here or rethrow it
+    throw error;
+  }
+};
+
+export const acceptUserSubmittedPage = async (updatedPage, token) => {
+  const response = await fetch(`${BASE_URL}/api/WikiPages/AdminAccept`, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(updatedPage),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to Accept WikiPage. Status: ${response.status}`);
+  }
+  const data = await response.json();
+  return data;
+};
+
+export const declineUserSubmittedWikiPage = async (id, token) =>{
+  console.log(id);
+  const response = await fetch(`${BASE_URL}/api/WikiPages/AdminDecline/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      // Handle the error, you can throw an exception or return an error object
+      throw new Error(`Failed to delete WikiPage. Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
 };

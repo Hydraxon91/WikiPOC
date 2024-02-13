@@ -34,7 +34,7 @@ public class WikiPagesController : ControllerBase
         return Ok(wikiPageTitles);
     }
 
-    [HttpGet("GetById/{id}")]
+    [HttpGet("GetById/{id:int}")]
     public async Task<ActionResult<WikiPage>> GetWikiPage(int id)
     {
         var wikiPage = await _wikiPageRepository.GetByIdAsync(id);
@@ -58,7 +58,7 @@ public class WikiPagesController : ControllerBase
         return Ok(wikiPage);
     }
     
-    [HttpGet("{id}/paragraphs")]
+    [HttpGet("{id:int}/paragraphs")]
     public async Task<ActionResult<IEnumerable<Paragraph>>> GetWikiPageParagraphs(int id)
     {
         var wikiPage = await _wikiPageRepository.GetByIdAsync(id);
@@ -97,7 +97,7 @@ public class WikiPagesController : ControllerBase
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpPost("adminaccept")]
+    [HttpPost("AdminAccept")]
     public async Task<ActionResult<WikiPage>> AcceptCreatedPageForUser([FromBody] UserSubmittedWikiPage userSubmittedWikiPage)
     {
         WikiPage wikiPage = userSubmittedWikiPage;
@@ -111,7 +111,7 @@ public class WikiPagesController : ControllerBase
     
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpPut("admin/{id}")]
+    [HttpPut("admin/{id:int}")]
     public async Task<IActionResult> UpdateWikiPageForAdmin(int id, [FromBody] WikiPage updatedWikiPage)
     {
         var existingWikiPage = await _wikiPageRepository.GetByIdAsync(id);
@@ -126,7 +126,7 @@ public class WikiPagesController : ControllerBase
     
     //This method returns 400 for some reason, will need to check later
     [Authorize(Policy = IdentityData.UserPolicyName)]
-    [HttpPut("user/{id}")]
+    [HttpPut("user/{id:int}")]
     public async Task<IActionResult> UpdateWikiPageForUser(int id, [FromBody] UserSubmittedWikiPage updatedWikiPage)
     {
         if (!ModelState.IsValid)
@@ -145,23 +145,23 @@ public class WikiPagesController : ControllerBase
         return CreatedAtAction(nameof(GetWikiPage), new { id = updatedWikiPage.Id }, updatedWikiPage);
     }
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpPut("adminaccept/{id}")]
+    [HttpPatch("AdminAccept/{id:int}")]
     public async Task<IActionResult> AcceptUpdateWikiPageForUser(int id, [FromBody] UserSubmittedWikiPage userSubmittedWikiPage)
     {
-        WikiPage updatedWikiPage = userSubmittedWikiPage;
+        // WikiPage updatedWikiPage = userSubmittedWikiPage;
         var existingWikiPage = await _wikiPageRepository.GetByIdAsync(id);
 
         if (existingWikiPage == null)
             return NotFound();
 
-        await _wikiPageRepository.UpdateAsync(existingWikiPage, updatedWikiPage);
+        await _wikiPageRepository.AcceptUserSubmittedUpdateAsync(existingWikiPage, userSubmittedWikiPage);
         await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
 
         return Ok(new { Message = "WikiPage updated successfully" });
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpDelete("admin/{id}")]
+    [HttpDelete("admin/{id:int}")]
     public async Task<IActionResult> DeleteWikiPageForAdmin(int id)
     {
         await _wikiPageRepository.DeleteAsync(id);
@@ -170,12 +170,12 @@ public class WikiPagesController : ControllerBase
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpDelete("user/{id}")]
+    [HttpDelete("AdminDecline/{id:int}")]
     public async Task<IActionResult> DeleteUserSubmittedWikiPage(int id)
     {
         await _wikiPageRepository.DeleteUserSubmittedAsync(id);
 
-        return Ok(new { Message = "WikiPage deleted successfully" });
+        return Ok(new { Message = "UserSubmittedWikiPage deleted successfully" });
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
@@ -187,7 +187,7 @@ public class WikiPagesController : ControllerBase
         return Ok(titles);
     }
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpGet("GetSubmittedPageById/{id}")]
+    [HttpGet("GetSubmittedPageById/{id:int}")]
     public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedPageById(int id)
     {
         var wikiPage = await _wikiPageRepository.GetSubmittedPageByIdAsync(id);
@@ -209,16 +209,17 @@ public class WikiPagesController : ControllerBase
         return Ok(titles);
     }
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpGet("GetSubmittedUpdateById/{id}")]
+    [HttpGet("GetSubmittedUpdateById/{id:int}")]
     public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedUpdateByTitle(int id)
     {
         var wikiPage = await _wikiPageRepository.GetSubmittedUpdateByIdAsync(id);
-
+        
         if (wikiPage == null)
         {
             return NotFound(); // Return 404 if the page is not found
         }
-
+        //No idea why, but without the line below the Id will be 0
+        wikiPage.Id = id;
         return Ok(wikiPage);
     }
 }

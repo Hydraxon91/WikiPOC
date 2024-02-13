@@ -65,27 +65,59 @@ public class WikiPageRepository : IWikiPageRepository
         existingWikiPage.Title = updatedWikiPage.Title;
         existingWikiPage.RoleNote = updatedWikiPage.RoleNote;
         existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
+        
+        // Remove paragraphs that are not present in the updatedWikiPage
+        var paragraphsToRemove = existingWikiPage.Paragraphs
+            .Where(existingParagraph => updatedWikiPage.Paragraphs.All(updatedParagraph => updatedParagraph.Id != existingParagraph.Id))
+            .ToList();
+        
+        foreach (var paragraphToRemove in paragraphsToRemove)
+        {
+            _context.Paragraphs.Remove(paragraphToRemove);
+            existingWikiPage.Paragraphs.Remove(paragraphToRemove);
+        }
+
+        // Create a dictionary for efficient lookup
+        var existingParagraphsDict = existingWikiPage.Paragraphs.ToDictionary(p => p.Id);
 
         foreach (var updatedParagraph in updatedWikiPage.Paragraphs)
         {
-            var existingParagraph = existingWikiPage.Paragraphs.FirstOrDefault(p => p.Id == updatedParagraph.Id);
-
-            if (existingParagraph != null)
+            // Check if the updated paragraph exists
+            if (existingParagraphsDict.TryGetValue(updatedParagraph.Id, out var existingParagraph))
             {
+                // Update existing paragraph
                 existingParagraph.Title = updatedParagraph.Title;
                 existingParagraph.Content = updatedParagraph.Content;
                 existingParagraph.ParagraphImage = updatedParagraph.ParagraphImage;
                 existingParagraph.ParagraphImageText = updatedParagraph.ParagraphImageText;
-                //existingParagraph.WikiPage = updatedWikiPage;
             }
             else
             {
-                // Handle the case where a new paragraph is added in the update
-                await _context.Paragraphs.AddAsync(updatedParagraph);
-                existingWikiPage.Paragraphs.Add(updatedParagraph);
+                // Create a new instance of Paragraph
+                var newParagraph = new Paragraph
+                {
+                    Title = updatedParagraph.Title,
+                    Content = updatedParagraph.Content,
+                    ParagraphImage = updatedParagraph.ParagraphImage,
+                    ParagraphImageText = updatedParagraph.ParagraphImageText,
+                    WikiPageId = existingWikiPage.Id
+                };
+
+                // Add the new instance to both collections
+                _context.Paragraphs.Add(newParagraph);
+                existingWikiPage.Paragraphs.Add(newParagraph);
             }
         }
 
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task AcceptUserSubmittedUpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage)
+    {
+        existingWikiPage.Title = updatedWikiPage.Title;
+        existingWikiPage.RoleNote = updatedWikiPage.RoleNote;
+        existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
+        
         // Remove paragraphs that are not present in the updatedWikiPage
         var paragraphsToRemove = existingWikiPage.Paragraphs
             .Where(existingParagraph => updatedWikiPage.Paragraphs.All(updatedParagraph => updatedParagraph.Id != existingParagraph.Id))
@@ -96,9 +128,41 @@ public class WikiPageRepository : IWikiPageRepository
             _context.Paragraphs.Remove(paragraphToRemove);
             existingWikiPage.Paragraphs.Remove(paragraphToRemove);
         }
-        await _context.SaveChangesAsync();
+        
+        // Create a dictionary for efficient lookup
+    var existingParagraphsDict = existingWikiPage.Paragraphs.ToDictionary(p => p.Id);
+
+    foreach (var updatedParagraph in updatedWikiPage.Paragraphs)
+    {
+        // Check if the updated paragraph exists
+        if (existingParagraphsDict.TryGetValue(updatedParagraph.Id, out var existingParagraph))
+        {
+            // Update existing paragraph
+            existingParagraph.Title = updatedParagraph.Title;
+            existingParagraph.Content = updatedParagraph.Content;
+            existingParagraph.ParagraphImage = updatedParagraph.ParagraphImage;
+            existingParagraph.ParagraphImageText = updatedParagraph.ParagraphImageText;
+        }
+        else
+        {
+            // Create a new instance of Paragraph
+            var newParagraph = new Paragraph
+            {
+                Title = updatedParagraph.Title,
+                Content = updatedParagraph.Content,
+                ParagraphImage = updatedParagraph.ParagraphImage,
+                ParagraphImageText = updatedParagraph.ParagraphImageText,
+                WikiPageId = existingWikiPage.Id
+            };
+
+            // Add the new instance to both collections
+            _context.Paragraphs.Add(newParagraph);
+            existingWikiPage.Paragraphs.Add(newParagraph);
+        }
     }
 
+    await _context.SaveChangesAsync();
+    }
     public async Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage)
     {
         foreach (var paragraph in updatedWikiPage.Paragraphs)
