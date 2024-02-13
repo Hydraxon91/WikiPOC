@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useParams} from 'react-router-dom';
+import { Link, useParams, useLocation} from 'react-router-dom';
 import '../Styles/style.css';
 import { useStyleContext } from './contexts/StyleContext';
 
@@ -7,6 +7,7 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
   const { styles }  = useStyleContext();
   const { title } = useParams();
   const decodedTitle = decodeURIComponent(title);
+  const location = useLocation();
   const targetRef = useRef(null);
   const [pTitles, setPTitles] = useState([]);
   const [isContentsVisible, setIsContentsVisible] = useState(true);
@@ -90,6 +91,17 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
     <>
       {page && (
         <div style={{minWidth: "45%"}}>
+          {
+            location.pathname.match(/^\/user-updates\/(\d+)$/) && (
+              <>
+              {page.approved === false ? (
+                <h1>User Submitted Update</h1>
+              ) : (
+                <h1>Original Page</h1>
+              )}
+            </>
+            )
+          }
           <h1>
             {page.title}
             <Link to={`/page/${page.title}/edit`}>
@@ -101,7 +113,7 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
           <p className="roleNote">{`${page.roleNote}`}</p>
 
           {page.paragraphs.map((paragraph, index) => (
-            <div key={`paragraph-${index}`}>
+            <div key={`paragraph-${index}`} className={page.approved === false ? 'update-paragraph' : ''}>
               {index!==0 && <h2>{paragraph.title}</h2>}
               {paragraph.paragraphImage && paragraph.paragraphImage !== "" && (
                 <div className="articleRight" style={{ backgroundColor: styles.articleRightColor }}>

@@ -640,6 +640,11 @@ span.user {
 	font-weight: bold;
   	color: red;
 }
+
+.update-paragraph {
+	background-color: #ffe6e6; /* light red background for update lines */
+  }
+  
 @media screen and (max-width: 850px) {
 	#searchInput {
 		width: 110px;

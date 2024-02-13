@@ -14,6 +14,7 @@ import { jwtDecode } from 'jwt-decode';
 import { UserContextProvider } from "./Components/contexts/UserContextProvider.js";
 import RegisterPageComponent from "./Components/RegisterPageComponent.jsx";
 import UserRequestsPageComponent from "./Components/UserRequestsPageComponent.js";
+import CompareUpdatePage from "./Components/CompareUpdatePage.js";
 
 function App() {
 
@@ -41,12 +42,14 @@ function App() {
 
   useEffect(() => {
     fetchWikiPageTitles();
+    // console.log(currentWikiPage.id);
   }, [currentWikiPage]);
 
   const fetchPage = async () => {
     try {
       const data = await getWikiPageByTitle(decodedTitle);
       setCurrentWikiPage(data);
+      // console.log(data);
     } catch (error) {
       console.error('Error fetching page:', error);
     }
@@ -135,6 +138,7 @@ function App() {
                   <Route path="/register" element = {<RegisterPageComponent/>}/>
                   <Route path="/user-submissions" element = {<UserRequestsPageComponent></UserRequestsPageComponent>}/>
                   <Route path="/user-updates" element = {<UserRequestsPageComponent></UserRequestsPageComponent>}/>
+                  <Route path="/user-updates/:id" element = {<CompareUpdatePage></CompareUpdatePage>}/>
                 </Route>
               </Routes>
             </StyleProvider>
