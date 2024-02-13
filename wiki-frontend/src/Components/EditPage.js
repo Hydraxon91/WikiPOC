@@ -125,7 +125,7 @@ const EditPage = ({ page, handleEdit, handleCreate, setCurrentWikiPage }) => {
     savePromise
       .then((data) => {
         // console.log(data);
-        setCurrentWikiPage(temporaryPage);
+        // setCurrentWikiPage(temporaryPage);
         navigate(`/page/${title}`);
       })
       .catch((error) => {
