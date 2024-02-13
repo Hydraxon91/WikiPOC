@@ -65,14 +65,13 @@ export const createWikiPage = async (newPage, token, decodedToken) => {
 export const updateWikiPage = async (updatedPage, token, decodedToken) => {
     var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
     var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-    var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin/${updatedPage.id}` : `${BASE_URL}/api/WikiPages/user`;
-    var method = role==="Admin"? "PUT" : "POST";
+    var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin/${updatedPage.id}` : `${BASE_URL}/api/WikiPages/user/${updatedPage.id}`;
 
     if (role !== "Admin") {
       console.log("notadmin");
       updatedPage = { 
         ...updatedPage,
-        wikiPage: updatedPage,
+        // wikiPage: updatedPage,
         wikiPageId: updatedPage.id,
         isNewPage: false,
         submittedBy: `${userName}`
@@ -82,7 +81,7 @@ export const updateWikiPage = async (updatedPage, token, decodedToken) => {
     console.log('Request Data:', updatedPage.id);
 
     const response = await fetch(url, {
-      method: method,
+      method: "PUT",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
@@ -164,8 +163,8 @@ export const getNewPageTitles = async (token) => {
 };
 
 
-export const getNewPageByTitle = async (title, token) => {
-  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedPageByTitle/${title}`, {
+export const getNewPageByTitle = async (id, token) => {
+  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedPageById/${id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -180,7 +179,7 @@ export const getNewPageByTitle = async (title, token) => {
 };
 
 export const getUpdatePageTitles = async (token) => {
-  console.log(token);
+  // console.log(token);
   const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedUpdates`, {
     method: 'GET',
     headers: {
@@ -196,8 +195,8 @@ export const getUpdatePageTitles = async (token) => {
 };
 
 
-export const getUpdatePageById = async (title, token) => {
-  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedUpdateByTitle/${title}`, {
+export const getUpdatePageById = async (id, token) => {
+  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedUpdateById/${id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
