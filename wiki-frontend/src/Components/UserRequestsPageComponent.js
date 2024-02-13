@@ -39,7 +39,7 @@ const UserRequestsPageComponent = () => {
       <ul key="wiki-pages-list">
         {pages &&  pages.map((pageTuple, index) => (
           <li key={index}>
-            <Link to={`/page/${encodeURIComponent(pageTuple.item2)}`}>
+            <Link to={`/user-updates/${encodeURIComponent(pageTuple.item2)}`}>
               <strong>{pageTuple.item1}</strong>
             </Link>
           </li>
