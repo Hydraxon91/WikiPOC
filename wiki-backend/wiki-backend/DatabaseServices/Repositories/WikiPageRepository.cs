@@ -103,6 +103,7 @@ public class WikiPageRepository : IWikiPageRepository
     {
         foreach (var paragraph in updatedWikiPage.Paragraphs)
         {
+            paragraph.Id = 0;
             paragraph.WikiPage = updatedWikiPage;
             paragraph.WikiPageId = updatedWikiPage.Id;
         }

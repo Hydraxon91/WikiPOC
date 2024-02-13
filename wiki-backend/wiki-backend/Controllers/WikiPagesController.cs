@@ -136,10 +136,10 @@ public class WikiPagesController : ControllerBase
         }
 
         Console.WriteLine(updatedWikiPage);
-        if (updatedWikiPage.WikiPage == null)
-        {
-            return BadRequest("Wikipage is missing from the updatedWikipage");
-        }
+        // if (updatedWikiPage.WikiPage == null)
+        // {
+        //     return BadRequest("Wikipage is missing from the updatedWikipage");
+        // }
         await _wikiPageRepository.UserSubmittedUpdateAsync(updatedWikiPage);
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = updatedWikiPage.Id }, updatedWikiPage);
