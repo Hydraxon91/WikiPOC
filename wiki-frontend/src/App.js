@@ -15,6 +15,7 @@ import { UserContextProvider } from "./Components/contexts/UserContextProvider.j
 import RegisterPageComponent from "./Components/RegisterPageComponent.jsx";
 import UserRequestsPageComponent from "./Components/UserRequestsPageComponent.js";
 import CompareUpdatePage from "./Components/CompareUpdatePage.js";
+import CheckUserSubmittedPage from "./Components/CheckUserSubmittedPage.js";
 
 function App() {
 
@@ -136,9 +137,10 @@ function App() {
                   <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}/>
                   <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
                   <Route path="/register" element = {<RegisterPageComponent/>}/>
-                  <Route path="/user-submissions" element = {<UserRequestsPageComponent></UserRequestsPageComponent>}/>
-                  <Route path="/user-updates" element = {<UserRequestsPageComponent></UserRequestsPageComponent>}/>
-                  <Route path="/user-updates/:id" element = {<CompareUpdatePage></CompareUpdatePage>}/>
+                  <Route path="/user-submissions" element = {<UserRequestsPageComponent/>}/>
+                  <Route path="/user-submissions/:id" element = {<CheckUserSubmittedPage/>}/>
+                  <Route path="/user-updates" element = {<UserRequestsPageComponent/>}/>
+                  <Route path="/user-updates/:id" element = {<CompareUpdatePage/>}/>
                 </Route>
               </Routes>
             </StyleProvider>
