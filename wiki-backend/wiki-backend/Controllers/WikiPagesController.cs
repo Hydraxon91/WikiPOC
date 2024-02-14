@@ -100,12 +100,17 @@ public class WikiPagesController : ControllerBase
     [HttpPost("AdminAccept")]
     public async Task<ActionResult<WikiPage>> AcceptCreatedPageForUser([FromBody] UserSubmittedWikiPage userSubmittedWikiPage)
     {
-        WikiPage wikiPage = userSubmittedWikiPage;
-        
-        await _wikiPageRepository.AddAsync(wikiPage);
-
+        var wikiPage = new WikiPage
+        {
+            Id = 0,
+            Title = userSubmittedWikiPage.Title,
+            SiteSub = userSubmittedWikiPage.SiteSub,
+            RoleNote = userSubmittedWikiPage.RoleNote,
+            Paragraphs = userSubmittedWikiPage.Paragraphs
+        };
         await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
-
+        await _wikiPageRepository.AddAsync(wikiPage);
+        
         return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
     }
     
@@ -191,12 +196,14 @@ public class WikiPagesController : ControllerBase
     public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedPageById(int id)
     {
         var wikiPage = await _wikiPageRepository.GetSubmittedPageByIdAsync(id);
-
+        
         if (wikiPage == null)
         {
             return NotFound(); // Return 404 if the page is not found
         }
 
+        //For some reason the returned object has the Id of zero, need to look into it further
+        wikiPage.Id = id;
         return Ok(wikiPage);
     }
     
