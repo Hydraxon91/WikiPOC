@@ -42,6 +42,7 @@ public class WikiPageRepository : IWikiPageRepository
     {
         foreach (var paragraph in wikiPage.Paragraphs)
         {
+            paragraph.Id = 0;
             paragraph.WikiPage = wikiPage;
             paragraph.WikiPageId = wikiPage.Id;
         }
