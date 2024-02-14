@@ -31,20 +31,7 @@ function App() {
     if (cookies["jwt_token"]) {
       setDecodedToken(jwtDecode(cookies["jwt_token"]));
     }
-    
-    // Fetch WikiPages when the component mounts
-    fetchWikiPageTitles();
   }, [cookies["jwt_token"]]); // Trigger the effect when the token changes
-
-  // useEffect(() => {
-  //   // Fetch WikiPages when the component mounts
-  //   fetchWikiPageTitles();
-  // }, []);
-
-  useEffect(() => {
-    fetchWikiPageTitles();
-    // console.log(currentWikiPage.id);
-  }, [currentWikiPage]);
 
   const fetchPage = async () => {
     try {
@@ -61,15 +48,6 @@ function App() {
       fetchPage(decodedTitle);
     }
   }, [decodedTitle]);
-
-  const fetchWikiPageTitles = async () => {
-    try {
-      const pages = await getWikiPageTitles();
-      setWikiPageTitles(pages);
-    } catch (error) {
-      console.error("Error fetching WikiPages:", error);
-    }
-  };
 
 
   const handleCreate = (newPage) => {
@@ -129,7 +107,7 @@ function App() {
         <Router>
             <StyleProvider>
               <Routes>
-                <Route path="/" element={<MainPage pages={wikiPageTitles} decodedToken={decodedToken} handleLogout={handleLogout} cookies={cookies}/>} > 
+                <Route path="/" element={<MainPage pages={wikiPageTitles} decodedToken={decodedToken} handleLogout={handleLogout} cookies={cookies} setWikiPageTitles = {setWikiPageTitles}/>} > 
                   <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
                   <Route path="/page/:title" element={<WikiPageComponent page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
                   <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />

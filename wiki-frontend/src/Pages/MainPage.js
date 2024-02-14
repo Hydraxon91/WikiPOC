@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Outlet  } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import WikiList from '../Components/WikiList';
 import { useStyleContext } from '../Components/contexts/StyleContext';
 import { useUserContext } from '../Components/contexts/UserContextProvider';
+import { getWikiPageTitles } from '../Api/wikiApi';
 
-const MainPage = ({ pages, decodedToken, handleLogout, cookies }) => {
+const MainPage = ({ pages, decodedToken, handleLogout, cookies, setWikiPageTitles }) => {
+  const location = useLocation();
   const { styles }  = useStyleContext();
   const { updateUser } = useUserContext();
   const [userName, setUserName] = useState("Not logged in");
@@ -22,6 +24,20 @@ const MainPage = ({ pages, decodedToken, handleLogout, cookies }) => {
       setUserRole(null);
     }
   }, [decodedToken])
+
+  useEffect(() => {
+    // Fetch WikiPages when the component mounts
+    fetchWikiPageTitles();
+  }, [location]);
+
+  const fetchWikiPageTitles = async () => {
+    try {
+      const pages = await getWikiPageTitles();
+      setWikiPageTitles(pages);
+    } catch (error) {
+      console.error("Error fetching WikiPages:", error);
+    }
+  };
 
   return (
     <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh"}}>
