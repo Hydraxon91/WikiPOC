@@ -14,12 +14,12 @@ const UserRequestsPageComponent = () => {
     const fetchPage = async () => {
         try {
             if (location.pathname === '/user-submissions') {
-                const data = await getNewPageTitles(cookies['jwt_token'])
-                setPages(data)
+                const data = await getNewPageTitles(cookies['jwt_token']);
+                setPages(data);
             }
             else if (location.pathname === '/user-updates') {
-                const data = await getUpdatePageTitles(cookies['jwt_token'])
-                setPages(data)
+                const data = await getUpdatePageTitles(cookies['jwt_token']);
+                setPages(data);
             }
         } catch (error) {
           console.error('Error fetching page:', error);
@@ -39,7 +39,7 @@ const UserRequestsPageComponent = () => {
       <ul key="wiki-pages-list">
         {pages &&  pages.map((pageTuple, index) => (
           <li key={index}>
-            <Link to={`/user-updates/${encodeURIComponent(pageTuple.item2)}`}>
+            <Link to={`${location.pathname}/${encodeURIComponent(pageTuple.item2)}`}>
               <strong>{pageTuple.item1}</strong>
             </Link>
           </li>
