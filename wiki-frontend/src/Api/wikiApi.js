@@ -163,7 +163,7 @@ export const getNewPageTitles = async (token) => {
 };
 
 
-export const getNewPageByTitle = async (id, token) => {
+export const getNewPageById = async (id, token) => {
   const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedPageById/${id}`, {
     method: 'GET',
     headers: {
@@ -175,6 +175,7 @@ export const getNewPageByTitle = async (id, token) => {
     throw new Error(`Failed to get WikiPage. Status: ${response.status}`);
   }
   const data = await response.json();
+  // console.log(data);
   return data;
 };
 
@@ -263,7 +264,7 @@ export const acceptUserSubmittedPage = async (updatedPage, token) => {
 };
 
 export const declineUserSubmittedWikiPage = async (id, token) =>{
-  console.log(id);
+  // console.log(id);
   const response = await fetch(`${BASE_URL}/api/WikiPages/AdminDecline/${id}`, {
       method: 'DELETE',
       headers: {
