@@ -53,7 +53,7 @@ const CompareUpdatePage = () => {
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             alert("Succesfully updated page");
-            navigate(`/page/${updatePage.title}`);
+            navigate(`/user-updates`);
           })
           .catch((error) => {
             console.error("Error updating WikiPage:", error);
@@ -65,7 +65,7 @@ const CompareUpdatePage = () => {
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             alert("Declined Change");
-            navigate(`/page/${updatePage.title}`);
+            navigate(`/user-updates`);
           })
           .catch((error) => {
             console.error("Error deleting WikiPage:", error);
