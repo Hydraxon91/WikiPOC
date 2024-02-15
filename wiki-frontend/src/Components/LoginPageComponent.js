@@ -51,10 +51,12 @@ export default function LoginPageComponent({handleLogin}){
             if (response?.token) {
                 login(response.token);
                 setShowSuccessMessage(true);
-                setTimeout(() => {
-                    setShowSuccessMessage(false);
-                    navigate("/");
-                }, 3000);
+                // setTimeout(() => {
+                //     setShowSuccessMessage(false);
+                //     navigate("/");
+                // }, 3000);
+                alert('Succesfully logged in!');
+                navigate('/');
             }
             else{
                 if (response['Bad credentials'][0] === 'Invalid email' || 'Invalid Username') {
@@ -83,7 +85,7 @@ export default function LoginPageComponent({handleLogin}){
                     <div className="login-inputboxholder">
                         <div className={emailInputClass}>
                             <input type="text" required onClick={InputClick} onChange={(e) => setEmail(e.target.value)}></input>
-                            <label for="emailInput">Email</label>
+                            <label for="emailInput">Email/Username</label>
                             <h3 className="invalid-email-text">invalid email or username</h3>
                         </div>
                         <div className={passwordInputClass}>
