@@ -1,0 +1,229 @@
+﻿using NUnit.Framework;
+using Moq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using wiki_backend.DatabaseServices;
+using wiki_backend.Models;
+using wiki_backend.DatabaseServices.Repositories;
+
+namespace UnitTests.RepositoryTests;
+[TestFixture]
+public class WikiPageRepositoryTests
+{
+    private WikiPageRepository _wikiPageRepository;
+    private WikiDbContext _wikiDbContext;
+    // private Mock<WikiDbContext> _mockContext;
+
+    [SetUp]
+    public void Setup()
+    {
+        // Use an in-memory database for testing
+        var options = new DbContextOptionsBuilder<WikiDbContext>()
+            .UseInMemoryDatabase(databaseName: "TestDatabase")
+            .Options;
+
+        // Use AddDbContext to configure the WikiDbContext
+        _wikiDbContext = new WikiDbContext(options, configuration: null); 
+        _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
+        // _mockContext = new Mock<WikiDbContext>(options); 
+        _wikiPageRepository = new WikiPageRepository(_wikiDbContext);
+    }
+    
+    [TearDown]
+    public void TearDown()
+    {
+        // Dispose the context to release the in-memory database
+        _wikiDbContext.Dispose();
+    }
+    
+    [Test]
+    public async Task GetAllAsync_ShouldReturnAllWikiPages()
+    {
+        // Arrange
+        var testData = new List<WikiPage> { new WikiPage { Id = 1, Title = "Page 1" }, new WikiPage { Id = 2, Title = "Page 2" } };
+        var mockRepository = new Mock<IWikiPageRepository>();
+        mockRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(testData);
+
+        // Act
+        var result = await mockRepository.Object.GetAllAsync();
+
+        // Assert
+        Assert.IsNotNull(result);
+        CollectionAssert.AreEqual(testData, result);
+        // Additional assertions based on your test data and expectations
+    }
+
+    [Test]
+    public async Task GetByIdAsync_ShouldReturnWikiPageById()
+    {
+        // Arrange
+        var testData = new WikiPage { Id = 1, Title = "Test Page" };
+        var mockRepository = new Mock<IWikiPageRepository>();
+        mockRepository.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(testData);
+
+        // Act
+        var result = await mockRepository.Object.GetByIdAsync(1);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(testData.Id, result.Id);
+        Assert.AreEqual(testData.Title, result.Title);
+        // Additional assertions based on your test data and expectations
+    }
+    
+    [Test]
+    public async Task GetAllTitlesAsync_ShouldReturnAllWikiPageTitles()
+    {
+        // Arrange
+        var testData = new List<WikiPage>
+        {
+            new WikiPage { Id = 1, Title = "Page 1" },
+            new WikiPage { Id = 2, Title = "Page 2" },
+            new WikiPage { Id = 3, Title = "Page 3" }
+        };
+            
+        var expectedTitles = testData.Select(page => page.Title);
+            
+        var mockRepository = new Mock<IWikiPageRepository>();
+        mockRepository.Setup(repo => repo.GetAllTitlesAsync()).ReturnsAsync(expectedTitles);
+
+        // Act
+        var result = await mockRepository.Object.GetAllTitlesAsync();
+
+        // Assert
+        Assert.IsNotNull(result);
+        CollectionAssert.AreEqual(expectedTitles, result);
+        // Additional assertions based on your test data and expectations
+    }
+    
+    [Test]
+    public async Task GetByTitleAsync_ShouldReturnWikiPageForValidTitle()
+    {
+        // Arrange
+        var expectedTitle = "Page 1";
+        var expectedWikiPage = new WikiPage { Id = 1, Title = expectedTitle };
+
+        var mockRepository = new Mock<IWikiPageRepository>();
+        mockRepository.Setup(repo => repo.GetByTitleAsync(expectedTitle)).ReturnsAsync(expectedWikiPage);
+
+        // Act
+        var result = await mockRepository.Object.GetByTitleAsync(expectedTitle);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedWikiPage, result);
+        // Additional assertions based on your test data and expectations
+    }
+
+    [Test]
+    public async Task GetByTitleAsync_ShouldReturnNullForInvalidTitle()
+    {
+        // Arrange
+        var invalidTitle = "Nonexistent Page";
+            
+        var mockRepository = new Mock<IWikiPageRepository>();
+        mockRepository.Setup(repo => repo.GetByTitleAsync(invalidTitle)).ReturnsAsync(null as WikiPage);
+
+        // Act
+        var result = await mockRepository.Object.GetByTitleAsync(invalidTitle);
+
+        // Assert
+        Assert.IsNull(result);
+        // Additional assertions based on your test data and expectations
+    }
+    
+    [Test]
+    public async Task AddAsync_ShouldAddWikiPageWithAssociatedParagraphs()
+    {
+        // Arrange
+        var wikiPageToAdd = new WikiPage
+        {
+            Id = 10,
+            Title = "Example WikiPage",
+            RoleNote = "Example RoleNote",
+            SiteSub = "Example SiteSub",
+            Paragraphs = new List<Paragraph>
+            {
+                new Paragraph
+                {
+                    Id = 10,
+                    Title = "Paragraph 1",
+                    Content = "Content 1",
+                },
+                new Paragraph
+                {
+                    Id = 11,
+                    Title = "Paragraph 2",
+                    Content = "Content 2",
+                }
+            }
+        };
+
+        // Act
+        await _wikiPageRepository.AddAsync(wikiPageToAdd);
+        await _wikiDbContext.SaveChangesAsync(); // Save changes to the in-memory database
+
+        // Assert
+        // Check if the WikiPage is added to the context
+        CollectionAssert.Contains(_wikiDbContext.WikiPages.ToList(), wikiPageToAdd);
+
+        // Check if Paragraphs are added with correct associations
+        var paragraphsList = await _wikiDbContext.Paragraphs.ToListAsync();
+        foreach (var paragraph in wikiPageToAdd.Paragraphs)
+        {
+            Assert.AreEqual(wikiPageToAdd.Id, paragraph.WikiPageId);
+            Assert.AreSame(wikiPageToAdd, paragraph.WikiPage);
+            CollectionAssert.Contains(paragraphsList, paragraph);
+        }
+    }
+
+        [Test]
+        public async Task AddUserSubmittedPageAsync_ShouldAddUserSubmittedWikiPageWithAssociatedParagraphs()
+        {
+            // Arrange
+            var userSubmittedWikiPageToAdd = new UserSubmittedWikiPage
+            {
+                Id = 11,
+                Title = "New Page",
+                RoleNote = "Example RoleNote",
+                SiteSub = "Example SiteSub",
+                SubmittedBy = "Tester",
+                IsNewPage = true,
+                Paragraphs = new List<Paragraph>
+                {
+                    new Paragraph {Id = 11, Title = "Paragraph 1", Content = "Content 1" },
+                    new Paragraph {Id = 12, Title = "Paragraph 2", Content = "Content 2" },
+                }
+            };
+
+            // Act
+            await _wikiPageRepository.AddUserSubmittedPageAsync(userSubmittedWikiPageToAdd);
+            await _wikiDbContext.SaveChangesAsync(); // Save changes to the in-memory database
+            
+            // Log the UserSubmittedWikiPages for debugging
+            var userSubmittedPages = _wikiDbContext.UserSubmittedWikiPages.ToList();
+            Console.WriteLine("UserSubmittedWikiPages in database:");
+            foreach (var page in userSubmittedPages)
+            {
+                Console.WriteLine($"Id: {page.Id}, Title: {page.Title}");
+            }
+            
+            // Assert
+            // Check if the WikiPage is added to the context
+            CollectionAssert.Contains(_wikiDbContext.WikiPages.ToList(), userSubmittedWikiPageToAdd);
+            // var addedWikiPage = _wikiDbContext.UserSubmittedWikiPages.FirstOrDefault(wp => wp.Id == userSubmittedWikiPageToAdd.Id);
+            // Assert.NotNull(addedWikiPage);
+
+            // Check if Paragraphs are added with correct associations
+            var paragraphsList = await _wikiDbContext.Paragraphs.ToListAsync(); // Convert DbSet to List
+            foreach (var paragraph in userSubmittedWikiPageToAdd.Paragraphs)
+            {
+                Assert.AreEqual(userSubmittedWikiPageToAdd.Id, paragraph.WikiPageId);
+                Assert.AreSame(userSubmittedWikiPageToAdd, paragraph.WikiPage);
+
+                // Use CollectionAssert.Contains for collections
+                CollectionAssert.Contains(paragraphsList, paragraph);
+            }
+        }
+}

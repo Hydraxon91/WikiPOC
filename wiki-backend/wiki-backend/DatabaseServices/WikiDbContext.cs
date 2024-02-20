@@ -15,6 +15,12 @@ public class WikiDbContext : IdentityDbContext
         _configuration = configuration;
         if(Database.IsRelational()) Database.Migrate();
     }
+    
+    // Parameterless constructor for Moq (only for testing purposes)
+    public WikiDbContext() : base()
+    {
+        // Parameterless constructor
+    }
     public DbSet<WikiPage> WikiPages { get; set; }
     public DbSet<UserSubmittedWikiPage> UserSubmittedWikiPages { get; set; }
     public DbSet<Paragraph> Paragraphs { get; set; }

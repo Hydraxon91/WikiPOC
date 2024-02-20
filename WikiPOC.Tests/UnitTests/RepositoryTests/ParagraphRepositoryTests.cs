@@ -5,7 +5,7 @@ using Moq;
 using System.Threading.Tasks;
 
 namespace UnitTests.RepositoryTests;
-
+[TestFixture]
 public class ParagraphRepositoryTests
 {
     [Test]
