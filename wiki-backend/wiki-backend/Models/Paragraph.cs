@@ -8,6 +8,7 @@ namespace wiki_backend.Models;
 public class Paragraph
 {
     public int Id { get; set; }
+    [Required(ErrorMessage = "WikiPageId is required.")]
     public int WikiPageId { get; set; }
     [ForeignKey(nameof(WikiPageId))]
     [JsonIgnore]
