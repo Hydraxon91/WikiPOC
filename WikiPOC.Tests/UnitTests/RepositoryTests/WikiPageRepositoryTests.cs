@@ -13,20 +13,20 @@ public class WikiPageRepositoryTests
 {
     private WikiPageRepository _wikiPageRepository;
     private WikiDbContext _wikiDbContext;
-    // private Mock<WikiDbContext> _mockContext;
 
     [SetUp]
     public void Setup()
     {
+        // Generate a unique database name based on the test name
+        var databaseName = $"TestDatabase_{TestContext.CurrentContext.Test.Name}";
         // Use an in-memory database for testing
         var options = new DbContextOptionsBuilder<WikiDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDatabase")
+            .UseInMemoryDatabase(databaseName: databaseName)
             .Options;
 
         // Use AddDbContext to configure the WikiDbContext
         _wikiDbContext = new WikiDbContext(options, configuration: null); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
-        // _mockContext = new Mock<WikiDbContext>(options); 
         _wikiPageRepository = new WikiPageRepository(_wikiDbContext);
     }
     
@@ -34,6 +34,7 @@ public class WikiPageRepositoryTests
     public void TearDown()
     {
         // Dispose the context to release the in-memory database
+        _wikiDbContext.Database.EnsureDeleted();
         _wikiDbContext.Dispose();
     }
     
@@ -178,52 +179,54 @@ public class WikiPageRepositoryTests
         }
     }
 
-        [Test]
-        public async Task AddUserSubmittedPageAsync_ShouldAddUserSubmittedWikiPageWithAssociatedParagraphs()
+    [Test]
+    public async Task AddUserSubmittedPageAsync_ShouldAddUserSubmittedWikiPageWithAssociatedParagraphs()
+    {
+        // Arrange
+        var userSubmittedWikiPageToAdd = new UserSubmittedWikiPage
         {
-            // Arrange
-            var userSubmittedWikiPageToAdd = new UserSubmittedWikiPage
+            Id = 3,
+            Title = "New Page",
+            RoleNote = "Example RoleNote",
+            SiteSub = "Example SiteSub",
+            SubmittedBy = "Tester",
+            IsNewPage = true,
+            Paragraphs = new List<Paragraph>
             {
-                Id = 11,
-                Title = "New Page",
-                RoleNote = "Example RoleNote",
-                SiteSub = "Example SiteSub",
-                SubmittedBy = "Tester",
-                IsNewPage = true,
-                Paragraphs = new List<Paragraph>
-                {
-                    new Paragraph {Id = 11, Title = "Paragraph 1", Content = "Content 1" },
-                    new Paragraph {Id = 12, Title = "Paragraph 2", Content = "Content 2" },
-                }
-            };
-
-            // Act
-            await _wikiPageRepository.AddUserSubmittedPageAsync(userSubmittedWikiPageToAdd);
-            await _wikiDbContext.SaveChangesAsync(); // Save changes to the in-memory database
-            
-            // Log the UserSubmittedWikiPages for debugging
-            var userSubmittedPages = _wikiDbContext.UserSubmittedWikiPages.ToList();
-            Console.WriteLine("UserSubmittedWikiPages in database:");
-            foreach (var page in userSubmittedPages)
-            {
-                Console.WriteLine($"Id: {page.Id}, Title: {page.Title}");
+                new Paragraph {Id = 11, Title = "Paragraph 1", Content = "Content 1" },
+                new Paragraph {Id = 12, Title = "Paragraph 2", Content = "Content 2" },
             }
+        };
+
+        // Act
+        await _wikiPageRepository.AddUserSubmittedPageAsync(userSubmittedWikiPageToAdd);
+        await _wikiDbContext.SaveChangesAsync(); // Save changes to the in-memory database
             
-            // Assert
-            // Check if the WikiPage is added to the context
-            CollectionAssert.Contains(_wikiDbContext.WikiPages.ToList(), userSubmittedWikiPageToAdd);
-            // var addedWikiPage = _wikiDbContext.UserSubmittedWikiPages.FirstOrDefault(wp => wp.Id == userSubmittedWikiPageToAdd.Id);
-            // Assert.NotNull(addedWikiPage);
-
-            // Check if Paragraphs are added with correct associations
-            var paragraphsList = await _wikiDbContext.Paragraphs.ToListAsync(); // Convert DbSet to List
-            foreach (var paragraph in userSubmittedWikiPageToAdd.Paragraphs)
-            {
-                Assert.AreEqual(userSubmittedWikiPageToAdd.Id, paragraph.WikiPageId);
-                Assert.AreSame(userSubmittedWikiPageToAdd, paragraph.WikiPage);
-
-                // Use CollectionAssert.Contains for collections
-                CollectionAssert.Contains(paragraphsList, paragraph);
-            }
+        // Log the UserSubmittedWikiPages for debugging
+        var userSubmittedPages = _wikiDbContext.UserSubmittedWikiPages.ToList();
+        Console.WriteLine("UserSubmittedWikiPages in database:");
+        foreach (var page in userSubmittedPages)
+        {
+            Console.WriteLine($"Id: {page.Id}, Title: {page.Title}");
         }
+            
+        // Assert
+        // Check if the WikiPage is added to the context
+        CollectionAssert.Contains(_wikiDbContext.WikiPages.ToList(), userSubmittedWikiPageToAdd);
+        // var addedWikiPage = _wikiDbContext.UserSubmittedWikiPages.FirstOrDefault(wp => wp.Id == userSubmittedWikiPageToAdd.Id);
+        // Assert.NotNull(addedWikiPage);
+
+        // Check if Paragraphs are added with correct associations
+        var paragraphsList = await _wikiDbContext.Paragraphs.ToListAsync(); // Convert DbSet to List
+        foreach (var paragraph in userSubmittedWikiPageToAdd.Paragraphs)
+        {
+            Assert.AreEqual(userSubmittedWikiPageToAdd.Id, paragraph.WikiPageId);
+            Assert.AreSame(userSubmittedWikiPageToAdd, paragraph.WikiPage);
+
+            // Use CollectionAssert.Contains for collections
+            CollectionAssert.Contains(paragraphsList, paragraph);
+        }
+    }
+    
+    
 }

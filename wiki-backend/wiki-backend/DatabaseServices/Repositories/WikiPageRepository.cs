@@ -132,38 +132,38 @@ public class WikiPageRepository : IWikiPageRepository
         }
         
         // Create a dictionary for efficient lookup
-    var existingParagraphsDict = existingWikiPage.Paragraphs.ToDictionary(p => p.Id);
+        var existingParagraphsDict = existingWikiPage.Paragraphs.ToDictionary(p => p.Id);
 
-    foreach (var updatedParagraph in updatedWikiPage.Paragraphs)
-    {
-        // Check if the updated paragraph exists
-        if (existingParagraphsDict.TryGetValue(updatedParagraph.Id, out var existingParagraph))
+        foreach (var updatedParagraph in updatedWikiPage.Paragraphs)
         {
-            // Update existing paragraph
-            existingParagraph.Title = updatedParagraph.Title;
-            existingParagraph.Content = updatedParagraph.Content;
-            existingParagraph.ParagraphImage = updatedParagraph.ParagraphImage;
-            existingParagraph.ParagraphImageText = updatedParagraph.ParagraphImageText;
-        }
-        else
-        {
-            // Create a new instance of Paragraph
-            var newParagraph = new Paragraph
+            // Check if the updated paragraph exists
+            if (existingParagraphsDict.TryGetValue(updatedParagraph.Id, out var existingParagraph))
             {
-                Title = updatedParagraph.Title,
-                Content = updatedParagraph.Content,
-                ParagraphImage = updatedParagraph.ParagraphImage,
-                ParagraphImageText = updatedParagraph.ParagraphImageText,
-                WikiPageId = existingWikiPage.Id
-            };
+                // Update existing paragraph
+                existingParagraph.Title = updatedParagraph.Title;
+                existingParagraph.Content = updatedParagraph.Content;
+                existingParagraph.ParagraphImage = updatedParagraph.ParagraphImage;
+                existingParagraph.ParagraphImageText = updatedParagraph.ParagraphImageText;
+            }
+            else
+            {
+                // Create a new instance of Paragraph
+                var newParagraph = new Paragraph
+                {
+                    Title = updatedParagraph.Title,
+                    Content = updatedParagraph.Content,
+                    ParagraphImage = updatedParagraph.ParagraphImage,
+                    ParagraphImageText = updatedParagraph.ParagraphImageText,
+                    WikiPageId = existingWikiPage.Id
+                };
 
-            // Add the new instance to both collections
-            _context.Paragraphs.Add(newParagraph);
-            existingWikiPage.Paragraphs.Add(newParagraph);
+                // Add the new instance to both collections
+                _context.Paragraphs.Add(newParagraph);
+                existingWikiPage.Paragraphs.Add(newParagraph);
+            }
         }
-    }
 
-    await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
     public async Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage)
     {
