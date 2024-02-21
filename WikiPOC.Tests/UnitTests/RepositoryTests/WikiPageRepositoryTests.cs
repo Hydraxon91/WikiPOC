@@ -494,4 +494,24 @@ public class WikiPageRepositoryTests
         Assert.AreEqual(userSubmittedPage.Title, result.Title);
         CollectionAssert.AreEqual(userSubmittedPage.Paragraphs, result.Paragraphs);
     }
+    [Test]
+    public async Task GetSubmittedUpdateTitlesAndIdAsync_ShouldReturnSubmittedUpdateTitlesAndIds()
+    {
+        // Arrange
+        var submittedUpdatePages = new List<UserSubmittedWikiPage>
+        {
+            new UserSubmittedWikiPage { Id = 1, Title = "Page 1", IsNewPage = false, RoleNote = "Test", SiteSub = "Test", SubmittedBy = "Test" },
+            new UserSubmittedWikiPage { Id = 2, Title = "Page 2", IsNewPage = false, RoleNote = "Test", SiteSub = "Test", SubmittedBy = "Test" },
+            new UserSubmittedWikiPage { Id = 3, Title = "Page 3", IsNewPage = true, RoleNote = "Test", SiteSub = "Test", SubmittedBy = "Test" } // Should not be included
+        };
+        await _wikiDbContext.UserSubmittedWikiPages.AddRangeAsync(submittedUpdatePages);
+        await _wikiDbContext.SaveChangesAsync();
+
+        // Act
+        var result = await _wikiPageRepository.GetSubmittedUpdateTitlesAndIdAsync();
+
+        // Assert
+        var expected = submittedUpdatePages.Where(page => !page.IsNewPage).Select(page => new Tuple<string, int>(page.Title, page.Id));
+        CollectionAssert.AreEquivalent(expected, result);
+    }
 }
