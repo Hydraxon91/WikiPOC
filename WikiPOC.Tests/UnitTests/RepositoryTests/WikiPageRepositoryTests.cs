@@ -442,4 +442,25 @@ public class WikiPageRepositoryTests
         var deletedParagraphs = await _wikiDbContext.Paragraphs.Where(p => p.WikiPageId == userSubmittedWikiPageToDelete.Id).ToListAsync();
         CollectionAssert.IsEmpty(deletedParagraphs);
     }
+    
+    [Test]
+    public async Task GetSubmittedPageTitlesAndIdAsync_ShouldReturnSubmittedPageTitlesAndIds()
+    {
+        // Arrange
+        var submittedPages = new List<UserSubmittedWikiPage>
+        {
+            new UserSubmittedWikiPage { Id = 1, Title = "Page 1", IsNewPage = true, RoleNote = "Test", SiteSub = "Test", SubmittedBy = "Test"},
+            new UserSubmittedWikiPage { Id = 2, Title = "Page 2", IsNewPage = true, RoleNote = "Test", SiteSub = "Test", SubmittedBy = "Test" },
+            new UserSubmittedWikiPage { Id = 3, Title = "Page 3", IsNewPage = false, RoleNote = "Test", SiteSub = "Test", SubmittedBy = "Test"} // Should not be included
+        };
+        await _wikiDbContext.UserSubmittedWikiPages.AddRangeAsync(submittedPages);
+        await _wikiDbContext.SaveChangesAsync();
+
+        // Act
+        var result = await _wikiPageRepository.GetSubmittedPageTitlesAndIdAsync();
+
+        // Assert
+        var expected = submittedPages.Where(page => page.IsNewPage).Select(page => new Tuple<string, int>(page.Title, page.Id));
+        CollectionAssert.AreEquivalent(expected, result);
+    }
 }
