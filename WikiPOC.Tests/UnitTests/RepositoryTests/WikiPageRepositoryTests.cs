@@ -27,6 +27,7 @@ public class WikiPageRepositoryTests
         // Use AddDbContext to configure the WikiDbContext
         _wikiDbContext = new WikiDbContext(options, configuration: null); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
+        _wikiDbContext.Database.EnsureDeleted();
         _wikiPageRepository = new WikiPageRepository(_wikiDbContext);
     }
     
@@ -185,7 +186,7 @@ public class WikiPageRepositoryTests
         // Arrange
         var userSubmittedWikiPageToAdd = new UserSubmittedWikiPage
         {
-            Id = 3,
+            Id = 1,
             Title = "New Page",
             RoleNote = "Example RoleNote",
             SiteSub = "Example SiteSub",
@@ -234,14 +235,14 @@ public class WikiPageRepositoryTests
         // Arrange
         var existingWikiPage = new WikiPage
         {
-            Id = 12,
+            Id = 1,
             Title = "Existing Page",
             RoleNote = "Existing RoleNote",
             SiteSub = "Existing SiteSub",
             Paragraphs = new List<Paragraph>
             {
-                new Paragraph { Id = 18, Title = "Existing Paragraph 1", Content = "Existing Content 1" },
-                new Paragraph { Id = 19, Title = "Existing Paragraph 2", Content = "Existing Content 2" }
+                new Paragraph { Id = 1, Title = "Existing Paragraph 1", Content = "Existing Content 1" },
+                new Paragraph { Id = 2, Title = "Existing Paragraph 2", Content = "Existing Content 2" }
             }
         };
         
@@ -253,14 +254,14 @@ public class WikiPageRepositoryTests
         
         var updatedWikiPage = new WikiPage
         {
-            Id = 12,
+            Id = 1,
             Title = "Updated Page",
             RoleNote = "Updated RoleNote",
             SiteSub = "Updated SiteSub",
             Paragraphs = new List<Paragraph>
             {
-                new Paragraph { Id = 18, Title = "Updated Paragraph 1", Content = "Updated Content 1" },
-                new Paragraph { Id = 20, Title = "New Paragraph 3", Content = "New Content 3" }
+                new Paragraph { Id = 1, Title = "Updated Paragraph 1", Content = "Updated Content 1" },
+                new Paragraph { Id = 3, Title = "New Paragraph 3", Content = "New Content 3" }
             }
         };
 
