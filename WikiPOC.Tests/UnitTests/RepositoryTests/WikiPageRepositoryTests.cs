@@ -380,4 +380,66 @@ public class WikiPageRepositoryTests
             CollectionAssert.Contains(paragraphsList, paragraph);
         }
     }
+    
+    [Test]
+    public async Task DeleteAsync_ShouldDeleteWikiPageAndAssociatedParagraphs()
+    {
+        // Arrange
+        var wikiPageToDelete = new WikiPage
+        {
+            Id = 1,
+            Title = "To be deleted",
+            RoleNote = "RoleNote",
+            SiteSub = "SiteSub",
+            Paragraphs = new List<Paragraph>
+            {
+                new Paragraph { Id = 1, Title = "Paragraph 1", Content = "Content 1" },
+                new Paragraph { Id = 2, Title = "Paragraph 2", Content = "Content 2" }
+            }
+        };
+        await _wikiPageRepository.AddAsync(wikiPageToDelete);
+
+        // Act
+        await _wikiPageRepository.DeleteAsync(wikiPageToDelete.Id);
+        await _wikiDbContext.SaveChangesAsync();
+
+        // Assert
+        var deletedWikiPage = await _wikiDbContext.WikiPages.FindAsync(wikiPageToDelete.Id);
+        Assert.Null(deletedWikiPage);
+
+        var deletedParagraphs = await _wikiDbContext.Paragraphs.Where(p => p.WikiPageId == wikiPageToDelete.Id).ToListAsync();
+        CollectionAssert.IsEmpty(deletedParagraphs);
+    }
+
+    [Test]
+    public async Task DeleteUserSubmittedAsync_ShouldDeleteUserSubmittedWikiPageAndAssociatedParagraphs()
+    {
+        // Arrange
+        var userSubmittedWikiPageToDelete = new UserSubmittedWikiPage
+        {
+            Id = 1,
+            Title = "To be deleted",
+            RoleNote = "RoleNote",
+            SiteSub = "SiteSub",
+            SubmittedBy = "Tester",
+            IsNewPage = true,
+            Paragraphs = new List<Paragraph>
+            {
+                new Paragraph { Id = 1, Title = "Paragraph 1", Content = "Content 1" },
+                new Paragraph { Id = 2, Title = "Paragraph 2", Content = "Content 2" }
+            }
+        };
+        await _wikiPageRepository.AddUserSubmittedPageAsync(userSubmittedWikiPageToDelete);
+
+        // Act
+        await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPageToDelete.Id);
+        await _wikiDbContext.SaveChangesAsync();
+
+        // Assert
+        var deletedUserSubmittedWikiPage = await _wikiDbContext.UserSubmittedWikiPages.FindAsync(userSubmittedWikiPageToDelete.Id);
+        Assert.Null(deletedUserSubmittedWikiPage);
+
+        var deletedParagraphs = await _wikiDbContext.Paragraphs.Where(p => p.WikiPageId == userSubmittedWikiPageToDelete.Id).ToListAsync();
+        CollectionAssert.IsEmpty(deletedParagraphs);
+    }
 }
