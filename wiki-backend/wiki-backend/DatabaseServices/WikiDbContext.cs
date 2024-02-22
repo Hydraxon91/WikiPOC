@@ -37,7 +37,8 @@ public class WikiDbContext : IdentityDbContext
             .HasForeignKey(p => p.WikiPageId)
             .HasPrincipalKey(p => p.Id);
         
-        modelBuilder.Entity<UserSubmittedWikiPage>().HasBaseType<WikiPage>()
+        modelBuilder.Entity<UserSubmittedWikiPage>()
+            .HasBaseType<WikiPage>()
             .HasOne(uswp => uswp.WikiPage)
             .WithMany()
             .HasForeignKey(uswp => uswp.WikiPageId)
@@ -102,8 +103,74 @@ public class WikiDbContext : IdentityDbContext
             }
         );
 
+        // modelBuilder.Entity<Paragraph>().HasData(
+        //     paragraphs1.Concat(paragraphs2).ToList()
+        // );
+
+        modelBuilder.Entity<UserSubmittedWikiPage>().HasData(
+            new UserSubmittedWikiPage
+            {
+                Id = 3,
+                Title = "User Submitted Page",
+                SiteSub = "User Submitted SiteSub",
+                RoleNote = "User Submitted RoleNote", 
+                SubmittedBy = "tester",
+                IsNewPage = true
+            },
+            new UserSubmittedWikiPage
+            {
+                Id = 4,
+                WikiPageId = 1,
+                Title = "Example Page 1",
+                SiteSub = "Example SiteSub 1 Update",
+                RoleNote = "Example RoleNote 1 Update", 
+                SubmittedBy = "tester",
+                IsNewPage = false,
+            }
+        );
+
+        var paragraphs3 = new List<Paragraph>()
+        {
+            new Paragraph
+            {
+                Id = 13,
+                WikiPageId = 3,
+                Title = "User Submitted Paragraph 1",
+                Content = "User Submitted Content 1",
+                ParagraphImage = "https://i.kym-cdn.com/entries/icons/original/000/029/079/hellothere.jpg",
+                ParagraphImageText = "Hello there"
+            },
+            new Paragraph
+            {
+                Id = 14,
+                WikiPageId = 3,
+                Title = "User Submitted Paragraph 2",
+                Content = "User Submitted Content 2",
+                ParagraphImage = "https://i.ytimg.com/vi/jAB3mMdS0xE/maxresdefault.jpg",
+                ParagraphImageText = "General Kenobi"
+            },
+            new Paragraph
+            {
+                Id = 15,
+                WikiPageId = 4,
+                Title = "New Paragraph 1",
+                Content = "Helldivers never die!",
+                ParagraphImage = "https://i.ytimg.com/vi/nhhICroqfpU/hq720_live.jpg",
+                ParagraphImageText = "Helldivers never die!"
+            },
+            new Paragraph
+            {
+                Id = 16,
+                WikiPageId = 4,
+                Title = "Liber-Tea",
+                Content = "Liber-Tea is a funny line haha",
+                ParagraphImage = "https://i.kym-cdn.com/photos/images/original/002/760/001/66d",
+                ParagraphImageText = "Time for a nice cup of Liber-Tea"
+            }
+        };
+        
         modelBuilder.Entity<Paragraph>().HasData(
-            paragraphs1.Concat(paragraphs2).ToList()
+            paragraphs1.Concat(paragraphs2).Concat(paragraphs3).ToList()
         );
         
         modelBuilder.Entity<StyleModel>().HasData(
