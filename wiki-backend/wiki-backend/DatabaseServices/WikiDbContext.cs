@@ -43,6 +43,46 @@ public class WikiDbContext : IdentityDbContext
             .HasForeignKey(uswp => uswp.WikiPageId)
             .OnDelete(DeleteBehavior.Restrict);
         
+        var paragraphs1 = new List<Paragraph>()
+        {
+            new Paragraph
+            {
+                Id = -1, // Set a negative value for Id
+                WikiPageId = 1,
+                Title = $"Example Page 1 - Paragraph 1",
+                Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
+                ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
+                ParagraphImageText = "Example ParagraphImageText 1"
+            }
+        };
+        paragraphs1.AddRange(Enumerable.Range(2, 5).Select(index => new Paragraph
+        {
+            Id = -index, // Set negative values for Id
+            WikiPageId = 1,
+            Title = $"Example Page 1 - Paragraph {index}",
+            Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
+        }));
+
+        var paragraphs2 = new List<Paragraph>()
+        {
+            new Paragraph
+            {
+                Id = -7, // Set a negative value for Id
+                WikiPageId = 2,
+                Title = $"Example Page 2 - Paragraph 1",
+                Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
+                ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
+                ParagraphImageText = "Example ParagraphImageText 2"
+            }
+        };
+        paragraphs2.AddRange(Enumerable.Range(2, 5).Select(index => new Paragraph
+        {
+            Id = -index - 6, // Set negative values for Id
+            WikiPageId = 2,
+            Title = $"Example Page 2 - Paragraph {index}",
+            Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
+        }));
+
         modelBuilder.Entity<WikiPage>().HasData(
             new WikiPage
             {
@@ -50,7 +90,7 @@ public class WikiDbContext : IdentityDbContext
                 Title = "Example Page 1",
                 SiteSub = "Example SiteSub 1",
                 RoleNote = "Example RoleNote 1",
-                // IntroductionParagraph = "Introduction Paragraph 1"
+                // Paragraphs = paragraphs1
             },
             new WikiPage
             {
@@ -58,40 +98,12 @@ public class WikiDbContext : IdentityDbContext
                 Title = "Example Page 2",
                 SiteSub = "Example SiteSub 2",
                 RoleNote = "Example RoleNote 2",
-                // IntroductionParagraph = "Introduction Paragraph 2"
+                // Paragraphs = paragraphs2
             }
         );
 
         modelBuilder.Entity<Paragraph>().HasData(
-            new Paragraph
-            {
-                Id = 1,
-                WikiPageId = 1,
-                Title = "Example Paragraph 1",
-                Content = "Example content 1",
-                ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
-                ParagraphImageText = "Example ParagraphImageText 1"
-            },
-            new Paragraph
-            {
-                Id = 2,
-                WikiPageId = 2,
-                Title = "Example Paragraph 2",
-                Content = "Example content 2",
-                ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
-                ParagraphImageText = "<Link to=\"/page/Example%20Page%201\"> This links to Example page 1 </Link>"
-            }
-        );
-        
-        // Seed Paragraph data with Bogus
-        modelBuilder.Entity<Paragraph>().HasData(
-            Enumerable.Range(3, 15).Select(index => new Paragraph
-            {
-                Id = index,
-                WikiPageId = faker.Random.Number(1, 2), // Randomly assign to WikiPage 1 or 2
-                Title = $"Example Paragraph {index}",
-                Content = faker.Lorem.Paragraphs(5), // Generate bogus lorem ipsum-like content
-            }).ToArray()
+            paragraphs1.Concat(paragraphs2).ToList()
         );
         
         modelBuilder.Entity<StyleModel>().HasData(
