@@ -47,7 +47,7 @@ public class WikiDbContext : IdentityDbContext
         {
             new Paragraph
             {
-                Id = -1, // Set a negative value for Id
+                Id = 1, // Set a negative value for Id
                 WikiPageId = 1,
                 Title = $"Example Page 1 - Paragraph 1",
                 Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
@@ -57,7 +57,7 @@ public class WikiDbContext : IdentityDbContext
         };
         paragraphs1.AddRange(Enumerable.Range(2, 5).Select(index => new Paragraph
         {
-            Id = -index, // Set negative values for Id
+            Id = index, // Set negative values for Id
             WikiPageId = 1,
             Title = $"Example Page 1 - Paragraph {index}",
             Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
@@ -67,7 +67,7 @@ public class WikiDbContext : IdentityDbContext
         {
             new Paragraph
             {
-                Id = -7, // Set a negative value for Id
+                Id = 7, // Set a negative value for Id
                 WikiPageId = 2,
                 Title = $"Example Page 2 - Paragraph 1",
                 Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
@@ -77,7 +77,7 @@ public class WikiDbContext : IdentityDbContext
         };
         paragraphs2.AddRange(Enumerable.Range(2, 5).Select(index => new Paragraph
         {
-            Id = -index - 6, // Set negative values for Id
+            Id = index + 6, // Set negative values for Id
             WikiPageId = 2,
             Title = $"Example Page 2 - Paragraph {index}",
             Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
