@@ -49,6 +49,7 @@ if (Environment.GetEnvironmentVariable("Environment") != "Testing")
 {
     AddRoles();
     AddAdmin();
+    AddUser();
 }
 
 app.Run();
@@ -213,7 +214,7 @@ async Task CreateAdminIfNotExists()
     var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
     if (adminInDb == null)
     {
-        Console.WriteLine(Environment.GetEnvironmentVariable("ADMINUSER_PASSWORD"));
+        // Console.WriteLine(Environment.GetEnvironmentVariable("ADMINUSER_PASSWORD"));
         var adminName = Environment.GetEnvironmentVariable("ADMINUSER_USERNAME");
         var admin = new IdentityUser
         {
@@ -226,6 +227,37 @@ async Task CreateAdminIfNotExists()
         if (adminCreated.Succeeded)
         {
             await userManager.AddToRoleAsync(admin, "Admin");
+        }
+    }
+}
+
+void AddUser()
+{
+    var tUser = CreateUserIfNotExists();
+    tUser.Wait();
+}
+
+async Task CreateUserIfNotExists()
+{
+    using var scope = app.Services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+    var userInDb = await userManager.FindByEmailAsync("test@test.com");
+    if (userInDb == null)
+    {
+        // Console.WriteLine(Environment.GetEnvironmentVariable("TESTUSER_PASSWORD"));
+        var testUsername = Environment.GetEnvironmentVariable("TESTUSER_USERNAME");
+        var testUser = new IdentityUser
+        {
+            UserName = testUsername,
+            Email = Environment.GetEnvironmentVariable("TESTUSER_EMAIL"),
+        };
+        
+        var userCreated = await userManager.CreateAsync(testUser, Environment.GetEnvironmentVariable("TESTUSER_PASSWORD"));
+
+        if (userCreated.Succeeded)
+        {
+            await userManager.AddToRoleAsync(testUser, "User");
         }
     }
 }
