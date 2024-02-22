@@ -5,7 +5,7 @@ namespace wiki_backend.Models;
 
 public class UserSubmittedWikiPage : WikiPage
 {
-    public new int Id { get; set; }
+    // public new int Id { get; set; }
     [ForeignKey("WikiPage")]
     public int? WikiPageId { get; set; }
     [JsonIgnore]
@@ -16,9 +16,4 @@ public class UserSubmittedWikiPage : WikiPage
     public bool Approved { get; set; } = false;
     
     public bool IsNewPage { get; set; }
-    
-    // public UserSubmittedWikiPage()
-    // {
-    //     WikiPage ??= new WikiPage();
-    // }
 }
