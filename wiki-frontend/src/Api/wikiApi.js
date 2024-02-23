@@ -71,6 +71,7 @@ export const updateWikiPage = async (updatedPage, token, decodedToken) => {
       console.log("notadmin");
       updatedPage = { 
         ...updatedPage,
+        id: 0,
         // wikiPage: updatedPage,
         wikiPageId: updatedPage.id,
         isNewPage: false,
