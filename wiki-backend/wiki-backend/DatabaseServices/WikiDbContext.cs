@@ -35,10 +35,16 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
 
         var faker = new Faker();
         
-        modelBuilder.Entity<WikiPage>().HasMany(wp => wp.Paragraphs)
+        modelBuilder.Entity<WikiPage>()
+            .HasMany(wp => wp.Paragraphs)
             .WithOne(p => p.WikiPage)
             .HasForeignKey(p => p.WikiPageId)
-            .HasPrincipalKey(p => p.Id);
+            .HasPrincipalKey(wp => wp.Id);
+
+        modelBuilder.Entity<WikiPage>()
+            .HasMany(wp => wp.Comments)
+            .WithOne(c => c.WikiPage)
+            .HasForeignKey(c => c.WikiPageId);
         
         modelBuilder.Entity<UserSubmittedWikiPage>()
             .HasBaseType<WikiPage>()

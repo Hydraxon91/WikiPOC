@@ -10,4 +10,5 @@ public class WikiPage
     public string RoleNote { get; set; }
     // public string IntroductionParagraph { get; set; }
     public ICollection<Paragraph> Paragraphs { get; set; } = new List<Paragraph>();
+    public ICollection<UserComment> Comments { get; set; } = new List<UserComment>();
 }
