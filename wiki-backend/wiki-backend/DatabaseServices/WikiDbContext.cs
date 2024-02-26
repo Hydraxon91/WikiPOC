@@ -5,7 +5,7 @@ using Bogus;
 
 namespace wiki_backend.DatabaseServices;
 
-public class WikiDbContext : IdentityDbContext
+public class WikiDbContext : IdentityDbContext<ApplicationUser>
 {
     private readonly IConfiguration _configuration;
 
@@ -25,6 +25,9 @@ public class WikiDbContext : IdentityDbContext
     public DbSet<UserSubmittedWikiPage> UserSubmittedWikiPages { get; set; }
     public DbSet<Paragraph> Paragraphs { get; set; }
     public DbSet<StyleModel> Styles { get; set; }
+    public DbSet<UserProfile> UserProfiles { get; set; }
+    public DbSet<UserComment> UserComments { get; set; }
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
