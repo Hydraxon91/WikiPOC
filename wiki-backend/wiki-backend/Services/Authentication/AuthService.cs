@@ -2,16 +2,17 @@
 using Microsoft.AspNetCore.Identity;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Identity;
+using wiki_backend.Models;
 
 namespace wiki_backend.Services.Authentication;
 
 public class AuthService : IAuthService
 {
     private readonly ITokenServices _tokenService;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly WikiDbContext _dbContext;
     
-    public AuthService(UserManager<IdentityUser> userManager, ITokenServices tokenService, WikiDbContext dbContext)
+    public AuthService(UserManager<ApplicationUser> userManager, ITokenServices tokenService, WikiDbContext dbContext)
     {
         _userManager = userManager;
         _tokenService = tokenService;
@@ -20,13 +21,26 @@ public class AuthService : IAuthService
     
     public async Task<AuthResult> RegisterAsync(string email, string username, string password, string role)
     {
-        var user = new IdentityUser() { UserName = username, Email = email };
+        var user = new ApplicationUser() { UserName = username, Email = email };
+    
+        // Create UserProfile instance
+        var userProfile = new UserProfile() { UserId = user.Id, UserName = username, DisplayName = username, ProfilePicture = "https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png"};
+
+        // Set navigation properties
+        user.Profile = userProfile;
+        user.ProfileId = userProfile.Id;
+
         var result = await _userManager.CreateAsync(user, password);
+
         if (!result.Succeeded)
             return FailedRegistration(result, email, username);
-        
+
+        // Add user to the specified role
         await _userManager.AddToRoleAsync(user, role);
+
+        // Add a claim for the user
         await _userManager.AddClaimAsync(user, new Claim(IdentityData.UserClaimName, "true"));
+
         return new AuthResult(true, email, username, "");
     }
 
@@ -34,7 +48,7 @@ public class AuthService : IAuthService
     {
         var isEmail = IsEmail(usernameOrEmail);
         
-        IdentityUser managedUser = isEmail
+        ApplicationUser managedUser = isEmail
             ? await _userManager.FindByEmailAsync(usernameOrEmail)
             : await _userManager.FindByNameAsync(usernameOrEmail);
         if (managedUser == null)

@@ -4,13 +4,14 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using wiki_backend.Models;
 
 namespace wiki_backend.Services.Authentication;
 
 public class TokenServices : ITokenServices
 {
     
-    public string CreateToken(IdentityUser user, string role)
+    public string CreateToken(ApplicationUser user, string role)
     {
         var expirationMinutes = int.TryParse(Environment.GetEnvironmentVariable("JWT_TOKEN_TIME"), out int expirationFromEnv) ? expirationFromEnv : 30;
         var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
