@@ -33,7 +33,7 @@ public class TokenServices : ITokenServices
             signingCredentials: credentials
         );
 
-    private List<Claim> CreateClaims(IdentityUser user, string? role)
+    private List<Claim> CreateClaims(ApplicationUser user, string? role)
     {
         try
         {

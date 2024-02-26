@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using wiki_backend.Models;
 
 namespace wiki_backend.Controllers;
 
@@ -8,9 +9,9 @@ namespace wiki_backend.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public UsersController(UserManager<IdentityUser> userManager)
+    public UsersController(UserManager<ApplicationUser> userManager)
     {
         _userManager = userManager;
     }
@@ -34,7 +35,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("CreateUser")]
-    public async Task<IActionResult> CreateUser([FromBody] IdentityUser model)
+    public async Task<IActionResult> CreateUser([FromBody] ApplicationUser model)
     {
         if (model == null)
             return BadRequest("User data is null");
@@ -48,7 +49,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("UpdateUser")]
-    public async Task<IActionResult> UpdateUser(string id, [FromBody] IdentityUser model)
+    public async Task<IActionResult> UpdateUser(string id, [FromBody] ApplicationUser model)
     {
         var user = await _userManager.FindByIdAsync(id);
 

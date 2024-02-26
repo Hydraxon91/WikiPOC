@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Identity;
+using wiki_backend.Models;
 using wiki_backend.Services.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -127,7 +128,7 @@ void AddAuthentication()
 
 void AddIdentity()
 {
-    builder.Services.AddIdentityCore<IdentityUser>(options =>
+    builder.Services.AddIdentityCore<ApplicationUser>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
         options.User.RequireUniqueEmail = true;
@@ -209,17 +210,28 @@ void AddAdmin()
 async Task CreateAdminIfNotExists()
 {
     using var scope = app.Services.CreateScope();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
     var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
     if (adminInDb == null)
     {
         // Console.WriteLine(Environment.GetEnvironmentVariable("ADMINUSER_PASSWORD"));
         var adminName = Environment.GetEnvironmentVariable("ADMINUSER_USERNAME");
-        var admin = new IdentityUser
+        
+        var adminProfile = new UserProfile()
+        {
+            UserName = adminName,
+            DisplayName = adminName,
+        };
+        // Save UserProfile to the database
+        dbContext.UserProfiles.Add(adminProfile);
+        await dbContext.SaveChangesAsync();
+        
+        var admin = new ApplicationUser
         {
             UserName = adminName,
             Email = Environment.GetEnvironmentVariable("ADMINUSER_EMAIL"),
+            ProfileId = adminProfile.Id
         };
         
         var adminCreated = await userManager.CreateAsync(admin, Environment.GetEnvironmentVariable("ADMINUSER_PASSWORD"));
@@ -227,6 +239,13 @@ async Task CreateAdminIfNotExists()
         if (adminCreated.Succeeded)
         {
             await userManager.AddToRoleAsync(admin, "Admin");
+            
+            // Set the UserId of adminProfile
+            adminProfile.UserId = admin.Id;
+
+            // Update UserProfile in the database
+            dbContext.UserProfiles.Update(adminProfile);
+            await dbContext.SaveChangesAsync();
         }
     }
 }
@@ -240,17 +259,28 @@ void AddUser()
 async Task CreateUserIfNotExists()
 {
     using var scope = app.Services.CreateScope();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
     var userInDb = await userManager.FindByEmailAsync("test@test.com");
     if (userInDb == null)
     {
         // Console.WriteLine(Environment.GetEnvironmentVariable("TESTUSER_PASSWORD"));
         var testUsername = Environment.GetEnvironmentVariable("TESTUSER_USERNAME");
-        var testUser = new IdentityUser
+        
+        var testUserProfile = new UserProfile()
+        {
+            UserName = testUsername,
+            DisplayName = testUsername,
+        };
+        // Save UserProfile to the database
+        dbContext.UserProfiles.Add(testUserProfile);
+        
+        await dbContext.SaveChangesAsync();
+        var testUser = new ApplicationUser
         {
             UserName = testUsername,
             Email = Environment.GetEnvironmentVariable("TESTUSER_EMAIL"),
+            ProfileId = testUserProfile.Id
         };
         
         var userCreated = await userManager.CreateAsync(testUser, Environment.GetEnvironmentVariable("TESTUSER_PASSWORD"));
@@ -258,6 +288,12 @@ async Task CreateUserIfNotExists()
         if (userCreated.Succeeded)
         {
             await userManager.AddToRoleAsync(testUser, "User");
+            // Set the UserId of adminProfile
+            testUserProfile.UserId = testUser.Id;
+
+            // Update UserProfile in the database
+            dbContext.UserProfiles.Update(testUserProfile);
+            await dbContext.SaveChangesAsync();
         }
     }
 }
