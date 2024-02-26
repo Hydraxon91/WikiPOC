@@ -43,6 +43,16 @@ public class WikiDbContext : IdentityDbContext
             .WithMany()
             .HasForeignKey(uswp => uswp.WikiPageId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApplicationUser>()
+            .HasOne(au => au.Profile)
+            .WithOne(up => up.User)
+            .HasForeignKey<ApplicationUser>(au => au.ProfileId);
+        
+        modelBuilder.Entity<UserComment>()
+            .HasOne(uc => uc.UserProfile)
+            .WithMany()
+            .HasForeignKey(uc => uc.UserProfileId);
         
         var paragraphs1 = new List<Paragraph>()
         {
