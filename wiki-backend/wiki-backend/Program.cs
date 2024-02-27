@@ -222,6 +222,7 @@ async Task CreateAdminIfNotExists()
         {
             UserName = adminName,
             DisplayName = adminName,
+            ProfilePicture = "https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png"
         };
         // Save UserProfile to the database
         dbContext.UserProfiles.Add(adminProfile);
@@ -271,6 +272,7 @@ async Task CreateUserIfNotExists()
         {
             UserName = testUsername,
             DisplayName = testUsername,
+            ProfilePicture = "https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png"
         };
         // Save UserProfile to the database
         dbContext.UserProfiles.Add(testUserProfile);

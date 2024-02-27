@@ -1,0 +1,13 @@
+﻿using wiki_backend.Models;
+
+namespace wiki_backend.DatabaseServices.Repositories;
+
+public interface IUserProfileRepository
+{
+    Task<UserProfile?> GetByIdAsync(int id);
+    Task<UserProfile?> GetByUsernameAsync(string username);
+    //Not needed for now
+    // Task AddAsync(UserProfile wikiPage);
+    Task UpdateAsync(int existingId , UserProfile updatedProfile);
+    Task DeleteAsync(int id);
+}
