@@ -93,6 +93,7 @@ void AddServices()
 
     builder.Services.AddTransient<IWikiPageRepository, WikiPageRepository>();
     builder.Services.AddTransient<IParagraphRepository, ParagraphRepository>();
+    builder.Services.AddTransient<IUserProfileRepository, UserProfileRepository>();
     builder.Services.AddTransient<IStyleRepository, StyleRepository>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ITokenServices, TokenServices>();
