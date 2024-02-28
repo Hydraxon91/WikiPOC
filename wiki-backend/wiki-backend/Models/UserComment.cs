@@ -11,4 +11,5 @@ public class UserComment
     public DateTime PostDate { get; set; }
     public bool IsReply { get; set; }
     public UserComment? ReplyToComment { get; set; }
+    public bool IsEdited { get; set; } = false;
 }
