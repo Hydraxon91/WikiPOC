@@ -46,9 +46,21 @@ public class UserCommentController : ControllerBase
     [HttpPut("comment/{id:int}")]
     public async Task<IActionResult> EditComment(int id, [FromBody] string updatedContent)
     {
-        await _commentRepository.UpdateAsync(id, updatedContent);
+        var userId = GetUserIdFromRequest();
+        var existingComment = await _commentRepository.GetByIdAsync(id);
+        
+        if (existingComment == null)
+        {
+            return NotFound(new { Message = "Comment not found" });
+        }
+        
+        if (await IsAuthorizedToDeleteComment(userId, existingComment))
+        {
+            await _commentRepository.UpdateAsync(id, updatedContent);
+            return Ok(new { Message = "Comment edited successfully" });
+        }
 
-        return Ok(new { Message = "Comment updated successfully" });
+        return Unauthorized(new { Message = "Unauthorized to update this comment" });
     }
     
     [HttpDelete("comment/{id:int}")]
