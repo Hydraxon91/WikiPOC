@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
 
 namespace wiki_backend.Controllers;
@@ -10,10 +12,12 @@ namespace wiki_backend.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly WikiDbContext _context;
 
-    public UsersController(UserManager<ApplicationUser> userManager)
+    public UsersController(UserManager<ApplicationUser> userManager, WikiDbContext context)
     {
         _userManager = userManager;
+        _context = context;
     }
     
     [HttpGet("GetUsers")]
@@ -75,11 +79,18 @@ public class UsersController : ControllerBase
 
         if (user == null)
             return NotFound();
-
+        
+        //Getting the associated UserProfile & deleting if it's not null
+        var userProfile = await _context.UserProfiles.SingleOrDefaultAsync(up => up.UserId == id);
+        if (userProfile != null)
+            _context.UserProfiles.Remove(userProfile);
+        
         var result = await _userManager.DeleteAsync(user);
 
         if (!result.Succeeded)
             return BadRequest(result.Errors);
+        //Saving the deletion of UserProfile
+        await _context.SaveChangesAsync();
 
         return Ok("User deleted successfully");
     }
