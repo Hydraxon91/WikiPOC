@@ -7,7 +7,7 @@ public class UserProfileRepository : IUserProfileRepository
 {
     private readonly WikiDbContext _context;
 
-    private UserProfileRepository(WikiDbContext context)
+    public UserProfileRepository(WikiDbContext context)
     {
         _context = context;
     }
