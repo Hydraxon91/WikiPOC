@@ -6,6 +6,7 @@ public interface IUserProfileRepository
 {
     Task<UserProfile?> GetByIdAsync(int id);
     Task<UserProfile?> GetByUsernameAsync(string username);
+    Task<UserProfile?> GetByUserIdAsync(string id);
     //Not needed for now
     // Task AddAsync(UserProfile wikiPage);
     Task UpdateAsync(int existingId , UserProfile updatedProfile);

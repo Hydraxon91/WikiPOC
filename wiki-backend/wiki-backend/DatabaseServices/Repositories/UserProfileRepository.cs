@@ -26,6 +26,12 @@ public class UserProfileRepository : IUserProfileRepository
             .SingleOrDefaultAsync(up => up.UserName == username);
     }
 
+    public async Task<UserProfile?> GetByUserIdAsync(string id)
+    {
+        return await _context.UserProfiles
+            .Include(up => up.User)
+            .SingleOrDefaultAsync(up => up.UserId == id);
+    }
     //Not needed for now
     // public Task AddAsync(UserProfile wikiPage)
     // {
