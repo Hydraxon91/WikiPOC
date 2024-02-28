@@ -59,8 +59,13 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey<ApplicationUser>(au => au.ProfileId);
         
         modelBuilder.Entity<UserComment>()
+            .HasOne(uc => uc.WikiPage)
+            .WithMany(wp => wp.Comments)
+            .HasForeignKey(uc => uc.WikiPageId);
+        
+        modelBuilder.Entity<UserComment>()
             .HasOne(uc => uc.UserProfile)
-            .WithMany()
+            .WithMany() // No need to have a navigation property in UserProfile
             .HasForeignKey(uc => uc.UserProfileId);
         
         var paragraphs1 = new List<Paragraph>()
