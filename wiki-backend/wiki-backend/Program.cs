@@ -51,6 +51,7 @@ if (Environment.GetEnvironmentVariable("Environment") != "Testing")
     AddRoles();
     AddAdmin();
     AddUser();
+    SeedComments();
 }
 
 app.Run();
@@ -299,5 +300,56 @@ async Task CreateUserIfNotExists()
             dbContext.UserProfiles.Update(testUserProfile);
             await dbContext.SaveChangesAsync();
         }
+    }
+}
+
+void SeedComments()
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    // Ensure that user profiles exist for the users you created
+    var adminUser = userManager.FindByEmailAsync("admin@admin.com").Result;
+    var testUser = userManager.FindByEmailAsync("test@test.com").Result;
+
+    if (adminUser != null && testUser != null)
+    {
+        var comments = new List<UserComment>
+        {
+            new UserComment
+            {
+                UserProfileId = adminUser.ProfileId,
+                UserProfile = adminUser.Profile,
+                Content = "Test comment from Admin",
+                WikiPageId = 1,
+                PostDate = DateTime.Now,
+                IsReply = false,
+                IsEdited = false
+            },
+            new UserComment
+            {
+                UserProfileId = testUser.ProfileId,
+                UserProfile = testUser.Profile,
+                Content = "Test comment from Tester",
+                WikiPageId = 1,
+                PostDate = DateTime.Now,
+                IsReply = false,
+                IsEdited = false
+            },
+            new UserComment
+            {
+                UserProfileId = testUser.ProfileId,
+                UserProfile = testUser.Profile,
+                Content = "Test comment 2 from Tester",
+                WikiPageId = 1,
+                PostDate = DateTime.Now,
+                IsReply = false,
+                IsEdited = true
+            }
+        };
+
+        dbContext.UserComments.AddRange(comments);
+        dbContext.SaveChanges();
     }
 }

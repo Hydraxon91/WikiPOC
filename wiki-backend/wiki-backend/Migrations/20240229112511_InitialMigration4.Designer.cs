@@ -12,8 +12,8 @@ using wiki_backend.DatabaseServices;
 namespace wiki_backend.Migrations
 {
     [DbContext(typeof(WikiDbContext))]
-    [Migration("20240226163840_AddApplicationUse")]
-    partial class AddApplicationUse
+    [Migration("20240229112511_InitialMigration4")]
+    partial class InitialMigration4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -75,79 +75,6 @@ namespace wiki_backend.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -231,6 +158,77 @@ namespace wiki_backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("wiki_backend.Models.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("ProfileId")
+                        .IsUnique();
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("wiki_backend.Models.Paragraph", b =>
                 {
                     b.Property<int>("Id")
@@ -264,7 +262,7 @@ namespace wiki_backend.Migrations
                         new
                         {
                             Id = 1,
-                            Content = "Debitis ut et recusandae ducimus voluptatibus aut quo non. Repellat eius tempora quasi. Eos autem est. Eveniet est sunt voluptas optio doloremque sed aliquid modi.\n\nVoluptatem autem omnis harum. Ut voluptate a repellendus dolores saepe temporibus dolor sunt autem. Mollitia non voluptates provident numquam ut error.\n\nNam non quod sed. Soluta distinctio vel perferendis. Repudiandae voluptas molestiae consequuntur et voluptatem. Ex molestiae ut nam consequatur vel voluptatem. Suscipit voluptatem veniam voluptatem voluptates architecto perspiciatis id. Reprehenderit dicta dolor odit ea qui dolores fugiat temporibus rerum.\n\nEt voluptatibus enim. Rem laborum adipisci eos blanditiis. Ullam explicabo consectetur ut ducimus beatae laborum architecto. Sunt eveniet aliquam aut cum.\n\nEt dolorem consectetur aperiam eum id. Aliquid ut ut qui qui aut deserunt corporis. Inventore est neque neque eum qui.\n\nUt provident aperiam facere ut. Eius corrupti est dolorem mollitia quo ut nobis dolorem. Quasi voluptas dolorem necessitatibus corrupti et. Velit delectus voluptatem unde aperiam minus eius consectetur. Numquam dolor dolorem. Quibusdam repellat aspernatur aut quo et quod assumenda.\n\nQuia culpa error reiciendis beatae minima repellat. Voluptate optio in nihil aut voluptates soluta omnis ut quam. Nam et repellendus magni fuga dignissimos quae. Ducimus unde sapiente dolore officia consequatur rerum sed excepturi. Unde accusamus rerum veritatis vero quisquam incidunt aut. Est quae qui et consectetur.\n\nDolorem ducimus temporibus sed odit voluptatem. Optio adipisci quia. Corrupti velit culpa qui laborum laborum. Omnis quia maiores et qui quos quo. Cumque sit ullam nisi quia corporis omnis sed dolorem.",
+                            Content = "Accusantium ut aliquid quae nam deserunt. Hic iure minima aspernatur officiis recusandae. Voluptate quia cum.\n\nId molestiae modi. Expedita sit rerum tempora corrupti nisi et. Et et quam. Quis temporibus quas cum. Incidunt et ad vel dolorem error corporis eligendi. Incidunt iusto distinctio deserunt nulla consectetur omnis.\n\nIpsam corporis dolorem necessitatibus voluptas cum. Libero est iste dolorem quis aut eos modi. Quo ipsum aut iusto sit eveniet aliquam. Nam accusantium quo repudiandae commodi quisquam ut.\n\nEx porro ut fugiat. Vero vel recusandae recusandae minima sint. Aut est fuga. Illo quis sapiente voluptatibus quo sit quia. Quia neque tenetur debitis eligendi magni tenetur tempora.\n\nNon voluptas facere sunt earum est sed neque voluptas excepturi. Quis nihil quaerat et atque dolor et assumenda officiis. Veritatis adipisci ducimus nesciunt.\n\nItaque et sunt possimus inventore et consequatur delectus quidem. Aliquam illum sequi provident. Eius a esse quidem velit. Repellat debitis velit minima possimus nostrum illum distinctio. Autem repellendus officiis quidem.\n\nEligendi quia consequatur laboriosam possimus et impedit ut corrupti. Quo debitis omnis dolor. Ea et beatae sunt sequi eius eum minus voluptate. Delectus perferendis voluptas dolores est autem. Laboriosam consequuntur facilis consequuntur molestiae aut expedita voluptas qui. Maiores et mollitia est dolorem dolor vel dolorem.\n\nQuam placeat eius nisi. Et et nulla consequatur dolor dignissimos vel velit. Sit accusantium velit ratione repellat at quis tempora. Veritatis quibusdam provident ipsum.",
                             ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
                             ParagraphImageText = "Example ParagraphImageText 1",
                             Title = "Example Page 1 - Paragraph 1",
@@ -273,42 +271,42 @@ namespace wiki_backend.Migrations
                         new
                         {
                             Id = 2,
-                            Content = "Est nostrum omnis. Dolores in perspiciatis non et consequatur deserunt rerum voluptatem et. A unde eaque unde et sint possimus. Ut nemo aliquid omnis.\n\nQui molestias ea laudantium. Quia illo recusandae quia quam autem. Et rerum saepe sunt dolorem rem doloremque.\n\nVoluptatem rerum alias est voluptas adipisci culpa omnis. Optio harum architecto facere. Facilis omnis accusantium doloremque ullam. Doloribus deleniti quod ut et necessitatibus et. Minus id inventore veritatis magnam id.\n\nExercitationem laborum necessitatibus debitis suscipit voluptatem molestiae nulla quasi. Ut autem quibusdam mollitia. Sit quis maxime sunt rerum eos quisquam ipsa omnis.\n\nSint voluptas maxime alias. Voluptatibus et aut labore et et laborum. Necessitatibus ducimus eaque vel. Architecto velit ut officia impedit. Hic similique rerum sint et accusamus pariatur dicta dolores.\n\nDolorem in magnam. Adipisci cum voluptate eaque sunt est quis ut vitae distinctio. Dolorem sint ut non voluptatibus minus. Et mollitia libero. Nihil quidem aut molestiae et est fugit aliquid placeat nesciunt. Et a nostrum eum aperiam nihil et facere eum voluptas.\n\nSoluta asperiores animi commodi cum excepturi facere esse laudantium. Sunt omnis esse nostrum. Sit recusandae ut ducimus facere.\n\nRepellendus culpa hic. Dolorum rerum rem impedit blanditiis ratione et et. Dolores dolore quod facere est. Cupiditate quo ut est. Aut nulla dolorem sint aut possimus. Officia quas consequatur sit fugiat eaque aut voluptatem.\n\nEt officiis quod. Aut exercitationem cum explicabo harum. Magni pariatur dolorem ut. Enim consectetur animi unde quidem vel optio reiciendis quo. Ea quis est perspiciatis aut et.",
+                            Content = "Cum sit consequuntur fuga culpa blanditiis praesentium iusto. Et ut quia dolorem laborum. Autem vel quasi nesciunt nobis omnis harum in porro soluta.\n\nSed eius dicta tenetur natus porro vel rerum. Neque alias velit est sint eos excepturi quis sed. Neque a a. Pariatur cupiditate consequatur cumque harum ut ut.",
                             Title = "Example Page 1 - Paragraph 2",
                             WikiPageId = 1
                         },
                         new
                         {
                             Id = 3,
-                            Content = "Tenetur quidem quis. Ea earum eum vero. Dolorem aut voluptatum quasi. Eligendi dolore nihil iusto aperiam necessitatibus eos quis labore.\n\nOmnis id ex velit reprehenderit voluptate veniam sed eligendi. Voluptatem placeat qui qui aut. Nobis minus laudantium quae est dolorem dignissimos doloribus qui molestiae. Et laboriosam ea eius.",
+                            Content = "Et laudantium est optio quia. Magnam autem dicta. Nemo autem explicabo quia.\n\nAd quos facere maiores sint cupiditate aperiam ipsum. Temporibus aut laudantium vero. Sunt ipsum corporis ipsum quia. In quia voluptate quas. Aut aut iste dolorem nihil quis libero. Officiis et et deleniti et enim officiis velit porro.\n\nUt et eos. Dolorem maiores non consectetur quasi nulla molestiae. Veniam ut qui aliquam nulla quia atque.\n\nNostrum provident et ea quis nihil. Aut est in veritatis quia in sit fuga laborum tempora. Ut exercitationem vel dolore excepturi suscipit. Vel dignissimos ducimus illum dolore ipsa dignissimos asperiores sunt voluptatibus. Ut excepturi in possimus quasi quasi quibusdam. Voluptatem qui laudantium autem sunt.\n\nAlias pariatur repellendus at. Dolor natus sit dolores ad soluta voluptas nostrum. Dolorem ex minus. Soluta molestias ratione quasi sed vel nostrum excepturi non deleniti. Iste aperiam ratione minus ducimus quaerat.",
                             Title = "Example Page 1 - Paragraph 3",
                             WikiPageId = 1
                         },
                         new
                         {
                             Id = 4,
-                            Content = "Corrupti et est quam molestias occaecati saepe vero. Accusamus omnis enim voluptatem qui vel at voluptas voluptates voluptatibus. Unde veniam aut nostrum non est quia tempora. Mollitia totam recusandae et modi. Ut eum voluptatum blanditiis atque minus quo animi in quo.\n\nEligendi corporis id. Eius unde qui cum. Animi quas ut sunt delectus. Vel tenetur doloribus.\n\nQuo minus rem tempora iusto possimus. Facilis sint qui voluptatibus ipsum suscipit velit. Reprehenderit eos libero explicabo aut repellat eligendi ut assumenda vitae. Perspiciatis dolorem minima in tempora odit.\n\nEt voluptatem optio est id quo rerum et. Iusto voluptate eveniet animi ut. Libero enim hic. Ut dolorem non est qui qui molestias magni dolorum excepturi.\n\nEnim rerum maiores dolore eos. Nam omnis quasi rem omnis eveniet harum voluptatum quo in. Laboriosam unde molestiae deserunt atque quia nobis excepturi odio et.\n\nAut omnis distinctio omnis veniam. Voluptas debitis voluptatum perferendis iste maxime voluptatibus corrupti. Sint voluptates eum repellat numquam quis earum optio adipisci. Mollitia nesciunt cupiditate a soluta qui.\n\nSint possimus voluptas a expedita. Quas incidunt voluptas id omnis. Autem incidunt dolores sunt. Unde et et rerum omnis.\n\nRem explicabo quisquam occaecati quo vel itaque. Doloremque corrupti nisi harum ut et. Quo earum animi ratione similique ut neque commodi.\n\nExpedita aut vel ex ut recusandae provident odio. Rerum labore natus ratione voluptas nostrum esse harum laborum. Est tenetur quisquam quo sed. Ipsum rem consequuntur laboriosam nostrum temporibus quia dicta doloremque occaecati. Delectus pariatur porro ex a maxime.",
+                            Content = "Commodi tempora voluptas temporibus consequatur placeat voluptas voluptas dolores. Ea ut at accusantium velit sint facere. Culpa delectus sunt voluptatem distinctio.\n\nVeniam laboriosam recusandae molestiae rem. Provident veritatis veritatis consequatur nisi dolor. Voluptatum alias consequuntur. Excepturi quia consequuntur beatae numquam non suscipit quaerat molestiae.\n\nVoluptate beatae iste aut voluptas doloribus est quisquam recusandae id. Alias quo consequatur et impedit. Est tenetur corrupti minus ut sunt est.",
                             Title = "Example Page 1 - Paragraph 4",
                             WikiPageId = 1
                         },
                         new
                         {
                             Id = 5,
-                            Content = "Iure dolore deleniti necessitatibus. Dolores placeat ea est quod omnis amet aut voluptatem rerum. Optio similique et ad cum et. Qui itaque dignissimos ipsa autem aut et sunt tempora necessitatibus.\n\nMagnam voluptatibus esse qui. Nihil nam laudantium ratione. Et non dolores. Non reiciendis sunt nostrum ea. Nisi et eum aliquid labore optio suscipit. Sint vitae officia harum deleniti recusandae facilis numquam.\n\nEa dolore quis ut. Porro quae sit repellat. Nisi ab animi velit non.\n\nCulpa sit quia adipisci mollitia aut eos dolor. Ullam deleniti consequatur ut. Doloribus aliquam voluptatem sed numquam est impedit et excepturi dolorem. Fugit vitae modi rerum et culpa unde. Repudiandae voluptatem porro expedita.\n\nAut voluptate maiores. Totam nesciunt amet explicabo veritatis nisi illo eius sint. Accusamus sunt sequi fugit quia qui.\n\nPossimus nostrum porro vel quis sed ducimus. Dolor enim molestiae quis incidunt perferendis quia quia. Est magni eum. Aut est consequatur et facere.\n\nDolor qui ut velit. Vel sint nam eos rerum magni neque consequatur voluptatum saepe. Numquam et consectetur ut doloribus officiis occaecati est. Qui fuga dolorem sed modi.\n\nVel consequatur quasi et. Aliquid dolore iste excepturi soluta. Vel aliquid tenetur culpa et quas quasi. Totam quis culpa eaque atque ex magni beatae. Perferendis exercitationem quaerat maxime.\n\nHic saepe laboriosam repellat minus exercitationem rerum facere dolor placeat. Illum ad sed est amet non voluptatem. Architecto sunt sapiente rerum aut quae et quidem. Voluptates consectetur iure dolorem iusto.",
+                            Content = "Dolorem officiis eaque autem omnis doloremque autem excepturi unde voluptas. Nihil occaecati fuga tempora molestiae doloribus sit modi autem soluta. A omnis qui quas aut.\n\nEst voluptatem nesciunt omnis assumenda aliquam saepe libero accusantium. At libero velit tempore voluptatibus. Laboriosam dolorem nesciunt at velit dicta voluptas laudantium ut ipsum.\n\nTempore voluptas quos. Et enim doloremque cum placeat ab omnis. Voluptatibus fugit perferendis temporibus nihil rerum. Dolor voluptatem enim dolor ea dicta. Libero dicta accusantium commodi. Id est repellat aperiam quos odio excepturi soluta.\n\nQuibusdam quia dolorem dolorem quia sunt. Distinctio et ipsa. Quidem molestias illo mollitia culpa. Et qui ut incidunt aut atque sunt repellendus rerum accusamus.\n\nVoluptas beatae nobis eum consectetur. Dolor omnis explicabo ut et dolorum laborum enim labore. Sint provident vel tempore voluptas aperiam nemo aliquid est placeat. Eligendi a fugit dicta sit non dolores. Commodi eos officiis pariatur suscipit mollitia.\n\nCorporis veniam pariatur quae adipisci cupiditate qui qui. Magni voluptates aut aut impedit. Quia earum recusandae fugit tenetur sed ducimus omnis.",
                             Title = "Example Page 1 - Paragraph 5",
                             WikiPageId = 1
                         },
                         new
                         {
                             Id = 6,
-                            Content = "Nesciunt autem ut ea distinctio. Sit ipsam iste. In sit esse.",
+                            Content = "Suscipit natus rem aliquam necessitatibus modi saepe dolores id optio. Ex corporis magnam quis dolorum. Officiis tempora atque porro quis optio quia dolores nesciunt. Vel occaecati magnam vel consequuntur consequatur amet in. Facilis beatae quia ratione. Dolor sed aut dolor.\n\nMolestiae accusantium suscipit est aut molestias aut aut commodi enim. Temporibus aperiam labore illum sint. Fuga repellat est non et optio repudiandae aut quam ducimus. Nam numquam officia cumque. Corrupti tempore maxime aliquid id. Deserunt totam eius temporibus sit.\n\nQuas et voluptatem non ex dolor incidunt. Natus ut pariatur provident dolor quos sunt soluta consequatur consequatur. Nisi repellendus corporis possimus repellat repellendus.",
                             Title = "Example Page 1 - Paragraph 6",
                             WikiPageId = 1
                         },
                         new
                         {
                             Id = 7,
-                            Content = "Quia unde quia minus facilis. Omnis similique facilis minus quia molestiae veritatis. Quo consequuntur officiis repellat delectus deserunt.\n\nSint est dolorem. Quia doloremque et error occaecati non ad. Ut maxime tenetur.\n\nReiciendis omnis in dolores sunt voluptas ut quod exercitationem est. Aspernatur et aut ad doloremque accusantium qui quod dicta. Qui id est voluptas itaque quia. Ipsum maxime quam reprehenderit in aperiam qui quae quia accusantium. Odio rem est sint quibusdam soluta sunt. Quia odit libero non in ut explicabo.\n\nEt sunt consequatur ut eum delectus dolor. Sunt non repudiandae facere ut. Quidem consectetur aliquid. Suscipit eos et neque quidem dolores deserunt. Accusamus rerum ipsa consectetur.\n\nVoluptas distinctio ea fuga aut modi explicabo repellendus dolor. Laudantium non minima et voluptas et molestiae hic debitis doloribus. Impedit et cumque assumenda aliquam velit voluptas et fugit.\n\nEos quas dolores officiis accusamus tenetur eum. Voluptatum laboriosam ea dolore excepturi ab inventore voluptas sit. Ab ipsum voluptates quis voluptas occaecati consectetur eos eaque ipsum. Voluptate accusamus fuga.\n\nUt architecto qui quo nulla est. Quaerat laboriosam laudantium velit. Nulla quidem quidem. Quis minus quae ut dignissimos sed. Error ipsam sint labore et architecto non expedita facilis. Tempore autem ea quasi recusandae.",
+                            Content = "Accusantium est accusantium placeat natus blanditiis nostrum aliquam voluptatem. Id nisi totam in praesentium nihil sit ducimus minus voluptatem. Exercitationem vel asperiores blanditiis quia eveniet. Eos id aut.\n\nDolores tempore minima ratione consequatur quia. Eum non excepturi in molestiae. Iure qui amet autem officiis reprehenderit ratione non quae exercitationem.\n\nQuia dolorem ab porro quo consequatur consequatur. Consequuntur sequi cupiditate repellendus harum. Sequi maxime quia. Quidem provident sed expedita sequi quis quia.\n\nEsse est excepturi earum nesciunt ea. Aperiam porro nulla est. Quam hic est dolorem eos quia et sed quia.\n\nHic incidunt voluptatum in et sit culpa. Excepturi officia facilis. Soluta doloremque quia modi voluptatem facere a ab porro. Eius voluptas voluptas culpa qui rerum. Maiores quas harum sequi odit labore. Consequatur sit qui deleniti harum quia ut sed et.\n\nAccusantium quis sint laborum et. Quis tempora quae deleniti eaque minus fugiat quo dolore. Quis maxime quisquam nihil illum cupiditate optio nisi ea. Laudantium harum sapiente voluptatem ipsa distinctio. Vel molestias ut.\n\nNon esse dolor molestiae veniam magni illo. Deleniti magni temporibus exercitationem recusandae ex et recusandae. Rerum unde ea eligendi odio dolores libero hic et. Natus delectus facere ut. Nemo repellendus quibusdam quae eius ad exercitationem. Eum ut dolorem expedita dolorum quos nesciunt voluptatem.\n\nSint asperiores vero omnis voluptas. Culpa officia molestiae aut vel numquam a est consequatur rerum. Ad id et sunt reiciendis exercitationem dignissimos voluptatem ut.\n\nEligendi atque aut. Inventore aliquam natus nemo dolorem est ut ab voluptates ipsa. Placeat cumque aperiam fuga dolorum id quasi sit enim. Earum est exercitationem libero reiciendis perferendis inventore facilis. Eos consequatur commodi unde.",
                             ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
                             ParagraphImageText = "Example ParagraphImageText 2",
                             Title = "Example Page 2 - Paragraph 1",
@@ -317,35 +315,35 @@ namespace wiki_backend.Migrations
                         new
                         {
                             Id = 8,
-                            Content = "Vel deleniti aspernatur. Vitae dolorem modi. Quaerat ab harum corrupti sint at est at iste molestiae. Sit aut cupiditate sint dolore qui.\n\nSint recusandae sit qui sit fugit. Eaque voluptatibus et dignissimos aut quam quia cupiditate officia est. Nisi explicabo quo sed quo non. Sequi velit tenetur consequatur quo molestiae sit eos. Fugiat impedit nostrum. Ipsa illo et numquam est quod mollitia minima accusamus explicabo.\n\nEveniet cumque molestiae doloremque esse nulla explicabo ut consectetur itaque. Sit necessitatibus in earum dolores deleniti voluptatem vel eos. At necessitatibus temporibus vel est culpa aut est.\n\nVel explicabo et error dolorem reprehenderit reprehenderit. Voluptates quaerat omnis error. Sint consequatur aspernatur et nisi. Eum ratione velit odio.\n\nDoloribus iste dolorum quia ab omnis. Ea quisquam explicabo aliquid voluptate quo autem est quod. Veritatis quidem recusandae nulla earum accusantium animi iste voluptatem id. Qui repellat praesentium.\n\nMaxime est vitae id rem consequuntur qui cum. Voluptatem assumenda et deleniti expedita. Et sed totam sit possimus aliquam sequi laboriosam. Aut quia natus magnam unde eveniet consequatur. Consequuntur aperiam maxime accusantium qui. Facilis quo quod facilis autem voluptatum fugit suscipit.\n\nBlanditiis molestias deleniti et suscipit est ad. Quibusdam fugit quis quis sed autem. Repellendus at quibusdam. Ducimus est ex exercitationem eos aut dignissimos.\n\nVoluptas temporibus esse hic nihil fugiat error et corporis. Nobis maiores quae. Omnis dolorum reiciendis veritatis ea. Temporibus perspiciatis laudantium id mollitia nobis natus adipisci quam perferendis. Doloribus repellat illo nesciunt quae aut doloremque.",
+                            Content = "Amet temporibus ipsa consequatur. Reiciendis blanditiis soluta est sint impedit voluptas optio autem provident. Amet qui alias rerum voluptates quo eos non aut molestiae. Cum similique quisquam iusto dolores totam ullam quis error consequatur. Et aut eum quia dicta est voluptatem. Deserunt laborum itaque doloribus aut voluptatum commodi aut suscipit assumenda.\n\nCorporis eligendi ratione earum maiores. Ea architecto tempora harum maxime et sint voluptates. Eos non reiciendis eaque.\n\nQuia aliquam fugit. Natus id nam asperiores excepturi consequatur aliquam velit neque. Eveniet eveniet ut maxime tempore nihil qui aut. Qui fuga non ad cum animi rerum neque sunt dolor. Ducimus libero dolore placeat quas nostrum facilis molestiae voluptatum.\n\nEt rerum eius in autem. Expedita cupiditate placeat dignissimos rem perferendis voluptatibus ut itaque. Facilis accusamus accusamus. Odio esse maxime.\n\nVel est ad deleniti ut voluptatibus magnam itaque aliquam. Porro sed aut. Ab officia unde ut. Ullam dolores non id repudiandae cupiditate sint perspiciatis impedit unde.\n\nOdit beatae ut. Maiores a enim eligendi adipisci fuga odit voluptas ratione vitae. Consequatur at aut reiciendis eos. Minus et dolorem velit magnam quia architecto rerum atque.\n\nNobis quas quas itaque soluta alias. Facilis et et tempore nihil ducimus. Quos voluptas officiis necessitatibus minus. Omnis ut vel. Ipsa ut quisquam inventore in et omnis et quia. Tenetur animi suscipit rerum accusantium sed voluptates beatae nostrum quasi.\n\nDolores assumenda enim voluptatem explicabo. Nobis sapiente consequatur molestias atque. Occaecati enim possimus provident illum et aut quod ut. Eum nesciunt quae voluptatem eveniet magnam ut minus voluptatibus. Quis autem neque magnam ut dolorem ut adipisci provident.\n\nRerum quia et dignissimos sunt minima. In fuga ipsum ipsum quod adipisci ipsam doloribus eos in. Numquam perspiciatis vel voluptate dolor mollitia ex nihil omnis. Debitis ea expedita. Dolores suscipit magni dolores cupiditate ex modi officiis minus.",
                             Title = "Example Page 2 - Paragraph 2",
                             WikiPageId = 2
                         },
                         new
                         {
                             Id = 9,
-                            Content = "Possimus assumenda qui eum. Sed distinctio amet nulla aliquam numquam. Earum ipsam quis quisquam cumque vel qui aut.\n\nQui amet quia sint autem numquam. Reiciendis facere exercitationem. Nesciunt sit qui corporis enim velit. Iste odit aut. Excepturi soluta eaque nesciunt expedita facilis commodi veniam. Aspernatur ut et dolores ut soluta nobis exercitationem sunt.\n\nIpsum accusantium atque iste. Molestias harum accusantium animi nemo similique. Ullam quos blanditiis autem architecto facilis beatae id neque. Autem aut quia expedita esse occaecati et nihil.\n\nConsectetur soluta sit porro eaque nesciunt commodi atque. Est sit quasi dicta recusandae animi iusto quas voluptatum. Ducimus tempora sed magnam velit. Magni porro recusandae aut. Soluta libero nihil culpa velit aspernatur repellendus sit facilis.\n\nPariatur ullam accusantium. Adipisci vitae ut. Est voluptatibus ad ullam non eum voluptatem officia. Possimus quia dolorem.",
+                            Content = "Non ut dolorem quia omnis tenetur dolor veniam eos et. Eius qui assumenda. Doloribus molestiae eum qui maiores architecto. Cumque sed omnis totam qui repellat sed. Magnam veniam quis qui qui culpa quis. Aut incidunt sunt voluptatem omnis fugiat recusandae.\n\nEt vel sunt eum cum vel laboriosam. Et quia ipsa ea assumenda totam facilis. Et velit nihil consequatur ut.\n\nRepudiandae inventore sed rerum provident nihil optio dolorem. Rerum voluptatum reprehenderit dolorum omnis. Possimus molestias nisi porro ad sit. Quis dolore eaque pariatur sed ad quaerat. Est in quia. Et a beatae.\n\nConsequatur architecto voluptate sapiente similique quas omnis ut reprehenderit. Vel perspiciatis earum qui aliquid laborum rerum ullam accusamus. Et est recusandae ullam repellat. Animi laudantium iusto rerum.\n\nDoloremque voluptatem voluptatum natus dignissimos qui. Nostrum minus veritatis in asperiores aut aut quia earum ipsa. Quisquam non architecto repellendus debitis autem ipsa illum magnam sit.\n\nModi veritatis amet et et ad cumque ut vero et. Rerum optio molestiae porro maxime. Voluptatibus consequuntur quia velit omnis dolorem optio nesciunt. Alias quaerat eveniet perspiciatis dolor blanditiis a dolorem voluptatibus. Reprehenderit velit et est dolor. Ad ut quisquam qui fuga aut perferendis temporibus repellat eius.\n\nNon adipisci illo culpa laboriosam qui. Culpa commodi quae nemo vitae voluptas et. Quo quis eveniet cum consequatur eum non qui saepe delectus.\n\nExcepturi enim quis veritatis quis non. Ratione repudiandae et aliquam fuga qui. Nulla est repellendus consequatur voluptatibus voluptatem soluta beatae aliquid. Quis dolorum consequatur nobis.",
                             Title = "Example Page 2 - Paragraph 3",
                             WikiPageId = 2
                         },
                         new
                         {
                             Id = 10,
-                            Content = "Magni molestiae veniam. Sunt impedit voluptas hic omnis. Eos veniam praesentium unde praesentium error aut. Aliquam voluptatem praesentium tempore exercitationem odit tempora libero ipsam. Quo quaerat accusamus quaerat earum corporis earum cum. Dolorem qui velit est saepe quia.\n\nOdit ut et et suscipit est odio perferendis. Molestiae impedit laudantium accusamus minus eos repudiandae rem saepe. Quia aut earum. Porro placeat harum non tenetur sunt qui quia excepturi.\n\nMolestiae odit quo perspiciatis eius ut odio. Nisi assumenda at aspernatur corrupti reprehenderit. Cumque qui amet placeat dolorum voluptates et. Distinctio facilis rem molestiae asperiores hic cupiditate hic ipsum optio. Atque iste molestiae velit ipsam iure voluptatem velit consequuntur.\n\nVel iusto autem. Odit voluptatem ratione. Aut voluptatum qui est esse placeat voluptates commodi aut. Rerum aut illum quam atque fuga qui enim quo.\n\nEarum ipsam nihil ut sit nisi debitis. Quos quis sequi exercitationem explicabo voluptatum labore qui rerum repudiandae. Reprehenderit at quidem velit repellendus. Pariatur sed asperiores eos. Quidem excepturi ad.\n\nEligendi libero laboriosam dolor fugiat repellat sit aspernatur et hic. Nobis atque quia voluptas illo consequuntur veritatis. Reprehenderit delectus ipsum quibusdam voluptatem quia molestias illo et quia. Aspernatur fuga ut unde distinctio non est. Eum dolor mollitia sit.\n\nAlias magni omnis laborum ipsam. Quam velit ex et cupiditate atque fugit. Fugiat culpa a dolor earum neque voluptas et. Cum natus rerum consequuntur quis qui assumenda voluptas et. Illo optio sit nisi. Fugiat animi voluptatum corrupti in.\n\nEt quos consectetur hic quae accusamus maiores iste libero ex. Debitis et sint ea ex est eveniet nihil. Aliquid voluptatum et repudiandae. Ipsa repellendus fuga ut et. Voluptate error sint laudantium est. Explicabo aliquid id qui molestiae corporis consequatur aut beatae maiores.\n\nEst maxime ut. Ut eaque amet repellendus voluptas et. Beatae dolorem incidunt exercitationem quia voluptatem. Atque saepe consequatur facere facilis illo accusamus quis.",
+                            Content = "Voluptatem dolor consequatur quod est ab qui veniam voluptatum. Quia et aut non sit odio vel consequatur officia. Eligendi atque neque rerum animi excepturi est aut optio ducimus. Delectus rem qui quis optio eos totam corrupti cumque repellat.\n\nFuga corrupti voluptas sit dolore magnam magnam neque magnam. Sit sed fugiat distinctio sapiente impedit. Quidem ut ratione rerum qui magni nihil magni illum autem. Excepturi et enim non. Consequatur dicta possimus.\n\nQui qui dicta praesentium expedita corrupti cupiditate itaque. Dolorem nulla molestias vel voluptas voluptas blanditiis. Aut et excepturi voluptates eum quos. Reprehenderit eaque magni.\n\nAssumenda est iste quae tempora rem sequi dolores. Magni iure dignissimos. Adipisci est sit itaque aliquam doloremque similique.",
                             Title = "Example Page 2 - Paragraph 4",
                             WikiPageId = 2
                         },
                         new
                         {
                             Id = 11,
-                            Content = "Placeat tenetur eligendi accusantium voluptate laudantium tempore beatae ex. Est vero assumenda consequuntur nobis dolores. Voluptatem esse eos et dolor error provident earum totam.\n\nMolestiae in ratione distinctio. Sit dignissimos blanditiis iusto quaerat. Quidem cupiditate quo minus.",
+                            Content = "Nihil vero quod nobis et non accusamus delectus id. Architecto earum esse consequatur fugit velit omnis cumque adipisci. Velit sit odit provident blanditiis iure non saepe.\n\nSed nam quia. Commodi aspernatur dolorem cumque et aliquid sunt iusto ipsam. Labore atque veritatis sunt qui quia non iste nulla. Quidem aliquam rerum vitae veniam in porro quidem officiis. Sint ea qui dolores.\n\nArchitecto natus est quis sit reprehenderit exercitationem. Praesentium et placeat aut sint et dolores. Laudantium quis libero quod. Officia magnam voluptas.\n\nAut ea eveniet voluptas blanditiis sed. Delectus nam ex consequatur velit est vitae numquam consequatur. Est odio quam delectus mollitia et. Velit quo illum delectus minus id omnis. Impedit et similique et esse.\n\nQuibusdam est aliquid ea excepturi occaecati iusto vero qui. Voluptatem repellat recusandae voluptatem. Odit necessitatibus eligendi error similique officia pariatur qui recusandae. Vel unde et exercitationem dignissimos nemo. Ducimus tempore quis ab maxime.\n\nReprehenderit tenetur tenetur nihil neque consequatur. Eveniet soluta quia ex ut error placeat ut. Ut sit et ab.\n\nNemo et alias omnis delectus provident aut voluptatem. Ut et eius quia velit officia. Aut tempore ex autem qui qui. Ab et non et aut. Facere tempore esse tenetur deserunt dolores.\n\nEarum hic qui occaecati laborum quisquam veniam praesentium explicabo dolorem. Ea vel dolorem sunt eligendi. Ut ut nostrum suscipit voluptas. Ut illum voluptates.\n\nAutem rerum tempora molestiae molestias quae quo autem fugit. Non quia non quis. Dolore inventore blanditiis accusantium sit. Sequi aliquam qui qui ut debitis incidunt cupiditate animi.\n\nEligendi qui nesciunt repellat fugit. Doloremque sint aut qui optio. Alias enim voluptas doloribus nobis. Deserunt ut occaecati voluptas vel amet.",
                             Title = "Example Page 2 - Paragraph 5",
                             WikiPageId = 2
                         },
                         new
                         {
                             Id = 12,
-                            Content = "Ducimus dignissimos laboriosam consequatur ut quos consequatur et qui. Vero et et blanditiis consequatur. Et aperiam omnis autem esse non sed. Et odio illo nulla aperiam ea. Impedit laboriosam nulla temporibus qui sed eum nihil nesciunt.\n\nAsperiores quasi omnis aut. Cumque repellat quo. Iusto necessitatibus voluptatum in qui nesciunt officia non quia. Repellat et similique animi dolorem ab. Sit inventore aut voluptates minima.\n\nQuia illum et et repellendus consequatur libero porro. Aut et voluptas quo ut qui. Occaecati fugiat minus neque beatae et error et molestiae.\n\nDolorem dolor quam necessitatibus vero ex consequatur eius. Quia quia aut dolores velit corrupti sed sit incidunt. Quia aut architecto earum et officiis.\n\nIpsum doloremque vel dolorem debitis earum qui dolores. Dicta consequatur aperiam. Est dolores et.\n\nNeque iste nobis quisquam. Fugiat ut repellendus quaerat molestias cupiditate maiores sequi aut molestiae. Accusantium quod in nobis consectetur ea. Velit nihil sed repudiandae sed quia ullam repellendus perspiciatis. Neque dolores repellat voluptatem. Debitis voluptatum impedit et aut iste mollitia quas culpa.\n\nNesciunt ipsa voluptatem voluptas dolorem consequuntur explicabo soluta et excepturi. Molestiae dolorum ducimus dignissimos nihil laudantium. Recusandae et dicta occaecati qui tempora. Aspernatur dicta et eos omnis. Aut commodi tempore officiis asperiores possimus explicabo magnam a.\n\nAliquam ad molestiae et facilis placeat voluptatum. Tenetur optio inventore dolore assumenda eum aut quis rerum expedita. Iure voluptatibus et quibusdam sunt non.\n\nBlanditiis aliquid deleniti est inventore mollitia. Minus commodi quia sint voluptatem nemo et quia officiis deleniti. Mollitia delectus omnis tempore unde sed est vero. Dolores voluptatem explicabo fuga velit adipisci id vitae. Soluta asperiores amet.",
+                            Content = "Dolorum recusandae nisi. Sed animi placeat voluptas enim et modi. Et ut consequuntur nam qui amet.\n\nQui hic voluptatum at itaque voluptatem fuga. Aliquam aliquid facere veritatis aut sint quia reprehenderit neque. Ut sed voluptatum consequatur itaque dicta quia.\n\nVitae voluptatum totam id accusantium numquam velit. Asperiores omnis omnis vel. Eum reiciendis consectetur ipsum sunt quibusdam.\n\nQuod omnis nisi. Sint eaque autem. Tempore natus ut. Eos eveniet eos deserunt sit. Accusantium commodi voluptatem delectus nihil explicabo assumenda voluptas modi qui.\n\nDicta quia laborum et. Odio voluptatem quia illo sit qui. Beatae et dolorem qui et accusamus dolore fugiat. Distinctio ea facere necessitatibus dolorum autem sed.\n\nArchitecto necessitatibus debitis omnis delectus ducimus. Vel et quis consequuntur impedit voluptates sequi. Ullam blanditiis modi vel. Occaecati illo aut totam.\n\nPariatur unde reprehenderit aut. Suscipit ipsam laborum debitis provident cupiditate. Nemo quia id reiciendis ipsum nemo corporis. Hic quisquam sint. Quos doloribus maxime expedita voluptatem sint reprehenderit facere illum.",
                             Title = "Example Page 2 - Paragraph 6",
                             WikiPageId = 2
                         },
@@ -457,6 +455,9 @@ namespace wiki_backend.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsEdited")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsReply")
                         .HasColumnType("bit");
 
@@ -469,13 +470,16 @@ namespace wiki_backend.Migrations
                     b.Property<int>("UserProfileId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<int>("WikiPageId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("ReplyToCommentId");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("UserComment");
+                    b.HasIndex("WikiPageId");
+
+                    b.ToTable("UserComments");
                 });
 
             modelBuilder.Entity("wiki_backend.Models.UserProfile", b =>
@@ -500,7 +504,7 @@ namespace wiki_backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserProfile");
+                    b.ToTable("UserProfiles");
                 });
 
             modelBuilder.Entity("wiki_backend.Models.WikiPage", b =>
@@ -550,20 +554,6 @@ namespace wiki_backend.Migrations
                             SiteSub = "Example SiteSub 2",
                             Title = "Example Page 2"
                         });
-                });
-
-            modelBuilder.Entity("wiki_backend.Models.ApplicationUser", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<int>("ProfileId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("ProfileId")
-                        .IsUnique()
-                        .HasFilter("[ProfileId] IS NOT NULL");
-
-                    b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
             modelBuilder.Entity("wiki_backend.Models.UserSubmittedWikiPage", b =>
@@ -622,7 +612,7 @@ namespace wiki_backend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("wiki_backend.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -631,7 +621,7 @@ namespace wiki_backend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("wiki_backend.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -646,7 +636,7 @@ namespace wiki_backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("wiki_backend.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -655,11 +645,22 @@ namespace wiki_backend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("wiki_backend.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("wiki_backend.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("wiki_backend.Models.UserProfile", "Profile")
+                        .WithOne("User")
+                        .HasForeignKey("wiki_backend.Models.ApplicationUser", "ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("wiki_backend.Models.Paragraph", b =>
@@ -675,30 +676,21 @@ namespace wiki_backend.Migrations
 
             modelBuilder.Entity("wiki_backend.Models.UserComment", b =>
                 {
-                    b.HasOne("wiki_backend.Models.UserComment", "ReplyToComment")
-                        .WithMany()
-                        .HasForeignKey("ReplyToCommentId");
-
                     b.HasOne("wiki_backend.Models.UserProfile", "UserProfile")
                         .WithMany()
                         .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ReplyToComment");
-
-                    b.Navigation("UserProfile");
-                });
-
-            modelBuilder.Entity("wiki_backend.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("wiki_backend.Models.UserProfile", "Profile")
-                        .WithOne("User")
-                        .HasForeignKey("wiki_backend.Models.ApplicationUser", "ProfileId")
+                    b.HasOne("wiki_backend.Models.WikiPage", "WikiPage")
+                        .WithMany("Comments")
+                        .HasForeignKey("WikiPageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Profile");
+                    b.Navigation("UserProfile");
+
+                    b.Navigation("WikiPage");
                 });
 
             modelBuilder.Entity("wiki_backend.Models.UserSubmittedWikiPage", b =>
@@ -718,6 +710,8 @@ namespace wiki_backend.Migrations
 
             modelBuilder.Entity("wiki_backend.Models.WikiPage", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Paragraphs");
                 });
 #pragma warning restore 612, 618

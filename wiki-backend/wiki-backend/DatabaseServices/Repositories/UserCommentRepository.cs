@@ -15,6 +15,7 @@ public class UserCommentRepository : IUserCommentRepository
     public async Task<UserComment?> GetByIdAsync(int id)
     {
         return await _context.UserComments
+            .Include(uc => uc.UserProfile)
             .SingleOrDefaultAsync(uc => uc.Id == id);
     }
 

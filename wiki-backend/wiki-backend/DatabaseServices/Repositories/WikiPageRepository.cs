@@ -20,13 +20,17 @@ public class WikiPageRepository : IWikiPageRepository
     }
     public async Task<IEnumerable<WikiPage>> GetAllAsync()
     {
-        return await _context.WikiPages.Include(wp => wp.Paragraphs).ToListAsync();
+        return await _context.WikiPages
+            .Include(wp => wp.Paragraphs)
+            .ToListAsync();
     }
 
     public async Task<WikiPage?> GetByIdAsync(int id)
     {
         return await _context.WikiPages
             .Include(wp => wp.Paragraphs)
+            .Include(wp => wp.Comments)
+                // .ThenInclude(uc => uc.UserProfile)
             .SingleOrDefaultAsync(wp => wp.Id == id);
     }
 
@@ -34,7 +38,9 @@ public class WikiPageRepository : IWikiPageRepository
     {
         return await _context.WikiPages
             .Where(page => !(page is UserSubmittedWikiPage))
-            .Include(p => p.Paragraphs) 
+            .Include(p => p.Paragraphs)
+            .Include(wp => wp.Comments)
+                // .ThenInclude(uc => uc.UserProfile)
             .FirstOrDefaultAsync(p => p.Title == title);
     }
 
@@ -179,7 +185,10 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task DeleteAsync(int id)
     {
-        var wikiPage = await _context.WikiPages.Include(wp => wp.Paragraphs).SingleOrDefaultAsync(wp => wp.Id == id);
+        var wikiPage = await _context.WikiPages
+            .Include(wp => wp.Paragraphs)
+            .Include(wp => wp.Comments)
+            .SingleOrDefaultAsync(wp => wp.Id == id);
 
         if (wikiPage != null)
         {
@@ -191,7 +200,10 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task DeleteUserSubmittedAsync(int id)
     {
-        var wikiPage = await _context.UserSubmittedWikiPages.Include(wp => wp.Paragraphs).SingleOrDefaultAsync(wp => wp.Id == id);
+        var wikiPage = await _context.UserSubmittedWikiPages
+            .Include(wp => wp.Paragraphs)
+            .Include(wp => wp.Comments)
+            .SingleOrDefaultAsync(wp => wp.Id == id);
 
         if (wikiPage != null)
         {
@@ -210,7 +222,8 @@ public class WikiPageRepository : IWikiPageRepository
     {
         return await _context.UserSubmittedWikiPages
             .Where(page => page.IsNewPage==true)
-            .Include(p => p.Paragraphs) 
+            .Include(p => p.Paragraphs)
+            .Include(wp => wp.Comments)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
     
@@ -223,7 +236,8 @@ public class WikiPageRepository : IWikiPageRepository
     {
         return await _context.UserSubmittedWikiPages
             .Where(page => page.IsNewPage==false)
-            .Include(p => p.Paragraphs) 
+            .Include(p => p.Paragraphs)
+            .Include(wp => wp.Comments)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 }
