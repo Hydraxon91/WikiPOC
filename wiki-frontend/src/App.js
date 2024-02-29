@@ -7,7 +7,7 @@ import MainPage from "./Pages/MainPage.js";
 import HomeComponent from "./Components/HomeComponent.js";
 import EditWikiComponent from "./Components/EditWikiComponent.js";
 import { StyleProvider  } from "./Components/contexts/StyleContext.js";
-import { getWikiPageTitles, createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle } from "./Api/wikiApi.js";
+import { createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle } from "./Api/wikiApi.js";
 import LoginPageComponent from "./Components/LoginPageComponent.js";
 import { CookiesProvider, useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
@@ -16,6 +16,7 @@ import RegisterPageComponent from "./Components/RegisterPageComponent.jsx";
 import UserRequestsPageComponent from "./Components/UserRequestsPageComponent.js";
 import CompareUpdatePage from "./Components/CompareUpdatePage.js";
 import CheckUserSubmittedPage from "./Components/CheckUserSubmittedPage.js";
+import WikiPage from "./Pages/WikiPage.js";
 
 function App() {
 
@@ -110,6 +111,7 @@ function App() {
                 <Route path="/" element={<MainPage pages={wikiPageTitles} decodedToken={decodedToken} handleLogout={handleLogout} cookies={cookies} setWikiPageTitles = {setWikiPageTitles}/>} > 
                   <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
                   <Route path="/page/:title" element={<WikiPageComponent page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
+                  <Route path="/pagetest/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
                   <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
                   <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
                   <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}/>
