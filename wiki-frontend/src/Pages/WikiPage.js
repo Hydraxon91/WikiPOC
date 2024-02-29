@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Link, useParams} from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import WikiPageComponent from '../Components/WikiPageComponent';
+import WikiPageCommentsComponent from '../Components/WikiPageCommentsComponent';
 import '../Styles/wikipage.css';
 
-const WikiPage = ({page, setDecodedTitle}) => {
+const WikiPage = ({page, setDecodedTitle, cookies }) => {
     const { title } = useParams();
     const decodedTitle = decodeURIComponent(title);
     const [activeTab, setActiveTab] = useState("wiki");
@@ -30,9 +31,11 @@ const WikiPage = ({page, setDecodedTitle}) => {
             </div>
             {activeTab === "wiki" ? (
                 <WikiPageComponent page={page} setDecodedTitle={setDecodedTitle}/>
-            ):(
-                <div className='wikipage-component'>Nothing here yet</div>
-                )
+            )
+            :
+            (
+                <WikiPageCommentsComponent page={page} cookies ={cookies}/>
+            )
             }
         </>
     )
