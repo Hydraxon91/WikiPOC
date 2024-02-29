@@ -196,6 +196,39 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Paragraph>().HasData(
             paragraphs1.Concat(paragraphs2).Concat(paragraphs3).ToList()
         );
+
+        modelBuilder.Entity<UserComment>().HasData(
+            new UserComment
+            {
+                Id = 1,
+                UserProfileId = 1,
+                Content = "Test comment from Admin",
+                WikiPageId = 1,
+                PostDate = DateTime.Now,
+                IsReply = false,
+                IsEdited = false
+            },
+            new UserComment
+            {
+                Id = 2,
+                UserProfileId = 2,
+                Content = "Test comment from Tester",
+                WikiPageId = 1,
+                PostDate = DateTime.Now,
+                IsReply = false,
+                IsEdited = false
+            },
+            new UserComment 
+            {
+                Id = 3,
+                UserProfileId = 2,
+                Content = "Test comment 2 from Tester",
+                WikiPageId = 1,
+                PostDate = DateTime.Now,
+                IsReply = false,
+                IsEdited = true
+            }
+        );
         
         modelBuilder.Entity<StyleModel>().HasData(
             new StyleModel
