@@ -110,8 +110,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<MainPage pages={wikiPageTitles} decodedToken={decodedToken} handleLogout={handleLogout} cookies={cookies} setWikiPageTitles = {setWikiPageTitles}/>} > 
                   <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
-                  <Route path="/page/:title" element={<WikiPageComponent page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
-                  <Route path="/pagetest/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle}/>} />
+                  <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} cookies={cookies["jwt_token"]}/>} />
                   <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
                   <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
                   <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}/>
