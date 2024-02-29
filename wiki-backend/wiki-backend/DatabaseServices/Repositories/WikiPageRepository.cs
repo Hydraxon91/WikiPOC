@@ -30,7 +30,7 @@ public class WikiPageRepository : IWikiPageRepository
         return await _context.WikiPages
             .Include(wp => wp.Paragraphs)
             .Include(wp => wp.Comments)
-                // .ThenInclude(uc => uc.UserProfile)
+                .ThenInclude(uc => uc.UserProfile)
             .SingleOrDefaultAsync(wp => wp.Id == id);
     }
 
@@ -40,7 +40,7 @@ public class WikiPageRepository : IWikiPageRepository
             .Where(page => !(page is UserSubmittedWikiPage))
             .Include(p => p.Paragraphs)
             .Include(wp => wp.Comments)
-                // .ThenInclude(uc => uc.UserProfile)
+                .ThenInclude(uc => uc.UserProfile)
             .FirstOrDefaultAsync(p => p.Title == title);
     }
 
