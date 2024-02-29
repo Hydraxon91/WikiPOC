@@ -138,7 +138,7 @@ const EditPage = ({ page, handleEdit, handleCreate, setCurrentWikiPage }) => {
 
   return (
     <div style={{display: 'flex'}}>
-      <div className="article" style={{minWidth: "45%", marginRight: '1vw'}}>
+      <div className="article wikipage-component">
         <h2>{newPage? 'Create Page' : 'Edit Page' }</h2>
         {newPage && <div className='editDiv'>
           <label className="editLabel">Page Title:</label>

@@ -460,7 +460,7 @@ div.articleRightInner {
 	line-height: 0;
 }
 .article {
-	padding: 1.25em 1.5em 1.5em 1.5em;
+	/* padding: 1.25em 1.5em 1.5em 1.5em; */
 	border-left: 1px solid #f3f3f3;
 	border-right: 1px solid #f3f3f3;
 	background: #526cad;

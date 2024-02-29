@@ -89,7 +89,7 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
   return (
     <>
       {page && (
-        <div style={{minWidth: "45%"}}>
+        <div className='wikipage-component'>
           <h1>
             {page.title}
             <Link to={`/page/${page.title}/edit`}>
