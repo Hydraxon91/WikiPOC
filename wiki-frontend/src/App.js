@@ -17,6 +17,8 @@ import UserRequestsPageComponent from "./Components/UserRequestsPageComponent.js
 import CompareUpdatePage from "./Components/CompareUpdatePage.js";
 import CheckUserSubmittedPage from "./Components/CheckUserSubmittedPage.js";
 import WikiPage from "./Pages/WikiPage.js";
+import ProfilePage from "./Pages/ProfilePage.js";
+import EditProfilePage from "./Components/EditProfilePage.js";
 
 function App() {
 
@@ -33,6 +35,12 @@ function App() {
       setDecodedToken(jwtDecode(cookies["jwt_token"]));
     }
   }, [cookies["jwt_token"]]); // Trigger the effect when the token changes
+
+  useEffect(() => {
+    if (cookies["jwt_token"]) {
+      setDecodedToken(jwtDecode(cookies["jwt_token"]));
+    }
+  }, []); // Trigger the effect when just loading
 
   const fetchPage = async () => {
     try {
@@ -120,6 +128,8 @@ function App() {
                   <Route path="/user-submissions/:id" element = {<CheckUserSubmittedPage/>}/>
                   <Route path="/user-updates" element = {<UserRequestsPageComponent/>}/>
                   <Route path="/user-updates/:id" element = {<CompareUpdatePage/>}/>
+                  <Route path="/profile/:username" element= {<ProfilePage loggedInUser={decodedToken?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]}/>}/>
+                  <Route path="/profile/edit/:username" element={<EditProfilePage cookies={cookies["jwt_token"]}/>}/>
                 </Route>
               </Routes>
             </StyleProvider>
