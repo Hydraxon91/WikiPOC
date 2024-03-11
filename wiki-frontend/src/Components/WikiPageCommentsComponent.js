@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useUserContext } from './contexts/UserContextProvider';
-import { getUserProfileById } from '../Api/wikiUserApi';
+import { getUserProfileByUsername } from '../Api/wikiUserApi';
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
 
-const WikiPageCommentsComponent = ({page, cookies }) =>{
+const WikiPageCommentsComponent = ({page, cookies}) =>{
     const {decodedTokenContext} = useUserContext();
     const [user, setUser] = useState();
     const [currPage, setCurrPage] = useState(page);
@@ -12,7 +12,7 @@ const WikiPageCommentsComponent = ({page, cookies }) =>{
         const decodedTokenName = decodedTokenContext?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
         if (decodedTokenName) {
             const decodedTokenName = decodedTokenContext["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-            getUserProfileById(decodedTokenName, setUser);
+            getUserProfileByUsername(decodedTokenName, setUser);
         }
     }, [decodedTokenContext]);
 
@@ -56,7 +56,7 @@ const WikiPageCommentsComponent = ({page, cookies }) =>{
                             </div>
                             <div className='wikipage-comment-content'>
                                 <div className='wikipage-comment-data'>
-                                    <a href='https://youtu.be/TnfQPspfD3w'>
+                                    <a href={`/profile/${comment.userProfile.userName}`}>
                                         <span>{comment.userProfile.displayName}</span>
                                         <span> ({comment.userProfile.userName})</span>
                                     </a>
