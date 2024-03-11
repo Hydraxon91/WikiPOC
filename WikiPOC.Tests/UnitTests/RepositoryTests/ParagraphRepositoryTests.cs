@@ -3,54 +3,133 @@ using wiki_backend.Models;
 using NUnit.Framework;
 using Moq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using wiki_backend.DatabaseServices;
 
 namespace UnitTests.RepositoryTests;
 [TestFixture]
+
 public class ParagraphRepositoryTests
 {
+    private ParagraphRepository _paragraphRepository;
+    private WikiDbContext _wikiDbContext;
+    
+    [SetUp]
+    public void Setup()
+    {
+        // Generate a unique database name based on the test name
+        var databaseName = $"TestDatabase_{TestContext.CurrentContext.Test.Name}";
+        // Use an in-memory database for testing
+        var options = new DbContextOptionsBuilder<WikiDbContext>()
+            .UseInMemoryDatabase(databaseName: databaseName)
+            .Options;
+
+        // Use AddDbContext to configure the WikiDbContext
+        _wikiDbContext = new WikiDbContext(options, configuration: null); 
+        _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
+        _wikiDbContext.Database.EnsureDeleted();
+        _paragraphRepository = new ParagraphRepository(_wikiDbContext);
+    }
+    
+    [TearDown]
+    public void TearDown()
+    {
+        // Dispose the context to release the in-memory database
+        _wikiDbContext.Database.EnsureDeleted();
+        _wikiDbContext.Dispose();
+    }
+    
     [Test]
     public async Task GetByIdAsync_ShouldReturnParagraph()
     {
         // Arrange
         var testData = new Paragraph { Id = 1, Title = "Test Paragraph" };
-        var mockRepository = new Mock<IParagraphRepository>();
-        mockRepository.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(testData);
+
+        // Add the test data to the in-memory database
+        _wikiDbContext.Paragraphs.Add(testData);
+        await _wikiDbContext.SaveChangesAsync();
+
+        var repository = new ParagraphRepository(_wikiDbContext);
 
         // Act
-        var result = await mockRepository.Object.GetByIdAsync(1);
+        var result = await repository.GetByIdAsync(1);
 
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(testData.Id, result.Id);
         Assert.AreEqual(testData.Title, result.Title);
-        // Additional assertions based on your test data and expectations
     }
+
     [Test]
     public async Task CreateAsync_ShouldReturnCreatedParagraph()
     {
         // Arrange
-        var testData = new Paragraph { Id = 2, Title = "New Paragraph" };
-        var mockRepository = new Mock<IParagraphRepository>();
-        mockRepository.Setup(repo => repo.CreateAsync(It.IsAny<Paragraph>())).ReturnsAsync(testData);
+        var testWikiPage = new WikiPage
+        {
+            Id = 1,
+            Title = "To be used for testing",
+            RoleNote = "RoleNote",
+            SiteSub = "SiteSub",
+        };
+        
+        _wikiDbContext.WikiPages.Add(testWikiPage);
+        await _wikiDbContext.SaveChangesAsync();
+        var testData = new Paragraph { Title = "New Paragraph", WikiPageId = 1};
+    
+        // Act
+        await _paragraphRepository.CreateAsync(testData);
+        await _wikiDbContext.SaveChangesAsync();
+    
+        // Assert
+        CollectionAssert.Contains(_wikiDbContext.Paragraphs.ToList(), testData);
+    }
+    
+    [Test]
+    public async Task CreateAsync_ShouldReturnNullWhenWikiPageNotFound()
+    {
+        // Arrange
+        var testData = new Paragraph { Title = "New Paragraph", WikiPageId = 1 };
 
         // Act
-        var result = await mockRepository.Object.CreateAsync(new Paragraph());
+        var result = await _paragraphRepository.CreateAsync(testData);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(testData.Id, result.Id);
-        Assert.AreEqual(testData.Title, result.Title);
-        // Additional assertions based on your test data and expectations
+        Assert.IsNull(result);
     }
 
     [Test]
     public async Task DeleteAsync_ShouldNotThrowException()
     {
         // Arrange
-        var mockRepository = new Mock<IParagraphRepository>();
-        mockRepository.Setup(repo => repo.DeleteAsync(It.IsAny<int>())).Returns(Task.CompletedTask);
+        var testWikiPage = new WikiPage
+        {
+            Id = 1,
+            Title = "To be deleted",
+            RoleNote = "RoleNote",
+            SiteSub = "SiteSub",
+        };
 
-        // Act and Assert
-        Assert.DoesNotThrowAsync(async () => await mockRepository.Object.DeleteAsync(1));
+        var testParagraph = new Paragraph
+        {
+            Id = 1,
+            Title = "Paragraph to be deleted",
+            WikiPageId = testWikiPage.Id,
+        };
+
+        _wikiDbContext.WikiPages.Add(testWikiPage);
+        _wikiDbContext.Paragraphs.Add(testParagraph);
+        await _wikiDbContext.SaveChangesAsync(); // Ensure testWikiPage and testParagraph are added to the database
+
+        // Act
+        await _paragraphRepository.DeleteAsync(testParagraph.Id);
+        await _wikiDbContext.SaveChangesAsync();
+
+        // Assert
+        var deletedParagraph = await _wikiDbContext.Paragraphs.FindAsync(testParagraph.Id);
+        Assert.IsNull(deletedParagraph);
+        var updatedWikiPage = await _wikiDbContext.WikiPages.Include(wp => wp.Paragraphs).FirstOrDefaultAsync(w => w.Id == testWikiPage.Id);
+        Assert.IsNotNull(updatedWikiPage);
+        CollectionAssert.DoesNotContain(updatedWikiPage.Paragraphs, testParagraph);
+       
     }
 }
