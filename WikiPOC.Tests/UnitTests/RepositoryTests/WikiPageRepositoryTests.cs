@@ -43,35 +43,40 @@ public class WikiPageRepositoryTests
     public async Task GetAllAsync_ShouldReturnAllWikiPages()
     {
         // Arrange
-        var testData = new List<WikiPage> { new WikiPage { Id = 1, Title = "Page 1" }, new WikiPage { Id = 2, Title = "Page 2" } };
-        var mockRepository = new Mock<IWikiPageRepository>();
-        mockRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(testData);
+        var testData = new List<WikiPage> { new WikiPage { Id = 1, Title = "Page 1" , RoleNote = "Test", SiteSub = "Test"}, new WikiPage { Id = 2, Title = "Page 2" , RoleNote = "Test", SiteSub = "Test"} };
+        
+        // Add the test data to the in-memory database
+        _wikiDbContext.WikiPages.AddRange(testData);
+        await _wikiDbContext.SaveChangesAsync();
 
         // Act
-        var result = await mockRepository.Object.GetAllAsync();
+        var result = await _wikiPageRepository.GetAllAsync();
 
         // Assert
         Assert.IsNotNull(result);
         CollectionAssert.AreEqual(testData, result);
-        // Additional assertions based on your test data and expectations
     }
 
     [Test]
     public async Task GetByIdAsync_ShouldReturnWikiPageById()
     {
         // Arrange
-        var testData = new WikiPage { Id = 1, Title = "Test Page" };
-        var mockRepository = new Mock<IWikiPageRepository>();
-        mockRepository.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(testData);
+        var testData = new WikiPage { Id = 1, Title = "Test Page" , RoleNote = "Test", SiteSub = "Test"};
+        // Add the test data to the in-memory database
+        _wikiDbContext.WikiPages.Add(testData);
+        await _wikiDbContext.SaveChangesAsync();
+
+        var repository = new WikiPageRepository(_wikiDbContext);
 
         // Act
-        var result = await mockRepository.Object.GetByIdAsync(1);
+        var result = await repository.GetByIdAsync(1);
 
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual(testData.Id, result.Id);
         Assert.AreEqual(testData.Title, result.Title);
-        // Additional assertions based on your test data and expectations
+        Assert.AreEqual(testData.RoleNote, result.RoleNote);
+        Assert.AreEqual(testData.SiteSub, result.SiteSub);
     }
     
     [Test]
@@ -80,23 +85,20 @@ public class WikiPageRepositoryTests
         // Arrange
         var testData = new List<WikiPage>
         {
-            new WikiPage { Id = 1, Title = "Page 1" },
-            new WikiPage { Id = 2, Title = "Page 2" },
-            new WikiPage { Id = 3, Title = "Page 3" }
+            new WikiPage { Id = 1, Title = "Page 1" , RoleNote = "Test", SiteSub = "Test"},
+            new WikiPage { Id = 2, Title = "Page 2" , RoleNote = "Test", SiteSub = "Test"},
+            new WikiPage { Id = 3, Title = "Page 3" , RoleNote = "Test", SiteSub = "Test"}
         };
-            
-        var expectedTitles = testData.Select(page => page.Title);
-            
-        var mockRepository = new Mock<IWikiPageRepository>();
-        mockRepository.Setup(repo => repo.GetAllTitlesAsync()).ReturnsAsync(expectedTitles);
+        
+        _wikiDbContext.WikiPages.AddRange(testData);
+        await _wikiDbContext.SaveChangesAsync();
 
         // Act
-        var result = await mockRepository.Object.GetAllTitlesAsync();
+        var result = await _wikiPageRepository.GetAllTitlesAsync();
 
         // Assert
         Assert.IsNotNull(result);
-        CollectionAssert.AreEqual(expectedTitles, result);
-        // Additional assertions based on your test data and expectations
+        CollectionAssert.AreEqual(testData.Select(page => page.Title), result);
     }
     
     [Test]
@@ -104,18 +106,21 @@ public class WikiPageRepositoryTests
     {
         // Arrange
         var expectedTitle = "Page 1";
-        var expectedWikiPage = new WikiPage { Id = 1, Title = expectedTitle };
+        var expectedWikiPage = new WikiPage { Id = 1, Title = expectedTitle, RoleNote = "Test", SiteSub = "Test" };
 
-        var mockRepository = new Mock<IWikiPageRepository>();
-        mockRepository.Setup(repo => repo.GetByTitleAsync(expectedTitle)).ReturnsAsync(expectedWikiPage);
+        // Add the test data to the in-memory database
+        _wikiDbContext.WikiPages.Add(expectedWikiPage);
+        await _wikiDbContext.SaveChangesAsync();
+
+        var repository = new WikiPageRepository(_wikiDbContext);
 
         // Act
-        var result = await mockRepository.Object.GetByTitleAsync(expectedTitle);
+        var result = await repository.GetByTitleAsync(expectedTitle);
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.AreEqual(expectedWikiPage, result);
-        // Additional assertions based on your test data and expectations
+        Assert.AreEqual(expectedWikiPage.Id, result.Id);
+        Assert.AreEqual(expectedWikiPage.Title, result.Title);
     }
 
     [Test]
@@ -543,4 +548,5 @@ public class WikiPageRepositoryTests
         Assert.AreEqual(userSubmittedUpdatePage.Title, result.Title);
         CollectionAssert.AreEqual(userSubmittedUpdatePage.Paragraphs, result.Paragraphs);
     }
+    
 }
