@@ -37,5 +37,108 @@ public class StyleRepositoryTests
         _wikiDbContext.Dispose();
     }
     
+    [Test]
+    public async Task GetStylesAsync_ShouldReturnStyles()
+    {
+        //Arrange
+        _wikiDbContext.Styles.Add(new StyleModel
+        {
+            Logo = "default_logo.png",
+            WikiName = "Test Wiki",
+            BodyColor = "#ffffff",
+            ArticleRightColor = "#eeeeee",
+            ArticleRightInnerColor = "#cccccc",
+            ArticleColor = "#dddddd",
+            FooterListLinkTextColor = "#bbbbbb",
+            FooterListTextColor = "#aaaaaa"
+        });
+        await _wikiDbContext.SaveChangesAsync();
+        // Act
+        var result = await _styleRepository.GetStylesAsync();
+        // Assert
+        Assert.IsNotNull(result);
+        // Add more assertions as needed based on the expected data model
+    }
     
+    [Test]
+    public async Task UpdateStylesAsync_ShouldUpdateExistingStyles()
+    {
+        // Arrange
+        // Arrange
+        _wikiDbContext.Styles.Add(new StyleModel
+        {
+            Logo = "default_logo.png",
+            WikiName = "Test Wiki",
+            BodyColor = "#ffffff",
+            ArticleRightColor = "#eeeeee",
+            ArticleRightInnerColor = "#cccccc",
+            ArticleColor = "#dddddd",
+            FooterListLinkTextColor = "#bbbbbb",
+            FooterListTextColor = "#aaaaaa"
+        });
+        await _wikiDbContext.SaveChangesAsync();
+        
+        var updatedStyles = new StyleModel
+        {
+            Id = 1,
+            Logo = "new_logo.png",
+            WikiName = "New Wiki",
+            BodyColor = "#000000",
+            ArticleRightColor = "#111111",
+            ArticleRightInnerColor = "#222222",
+            ArticleColor = "#333333",
+            FooterListLinkTextColor = "#444444",
+            FooterListTextColor = "#555555"
+        };
+
+        // Act
+        await _styleRepository.UpdateStylesAsync(updatedStyles);
+        await _wikiDbContext.SaveChangesAsync();
+
+        // Assert
+        var result = await _wikiDbContext.Styles.SingleOrDefaultAsync();
+        Assert.IsNotNull(result);
+        Assert.AreEqual(updatedStyles.Logo, result.Logo);
+        Assert.AreEqual(updatedStyles.WikiName, result.WikiName);
+        Assert.AreEqual(updatedStyles.BodyColor, result.BodyColor);
+        Assert.AreEqual(updatedStyles.ArticleRightColor, result.ArticleRightColor);
+        Assert.AreEqual(updatedStyles.ArticleRightInnerColor, result.ArticleRightInnerColor);
+        Assert.AreEqual(updatedStyles.ArticleColor, result.ArticleColor);
+        Assert.AreEqual(updatedStyles.FooterListLinkTextColor, result.FooterListLinkTextColor);
+        Assert.AreEqual(updatedStyles.FooterListTextColor, result.FooterListTextColor);
+    }
+    
+    [Test]
+    public async Task UpdateStylesAsync_NoExistingStyle()
+    {
+        
+        var updatedStyles = new StyleModel
+        {
+            Id = 1,
+            Logo = "new_logo.png",
+            WikiName = "New Wiki",
+            BodyColor = "#000000",
+            ArticleRightColor = "#111111",
+            ArticleRightInnerColor = "#222222",
+            ArticleColor = "#333333",
+            FooterListLinkTextColor = "#444444",
+            FooterListTextColor = "#555555"
+        };
+
+        // Act
+        await _styleRepository.UpdateStylesAsync(updatedStyles);
+        await _wikiDbContext.SaveChangesAsync();
+
+        // Assert
+        var result = await _wikiDbContext.Styles.SingleOrDefaultAsync();
+        Assert.IsNotNull(result);
+        Assert.AreEqual(updatedStyles.Logo, result.Logo);
+        Assert.AreEqual(updatedStyles.WikiName, result.WikiName);
+        Assert.AreEqual(updatedStyles.BodyColor, result.BodyColor);
+        Assert.AreEqual(updatedStyles.ArticleRightColor, result.ArticleRightColor);
+        Assert.AreEqual(updatedStyles.ArticleRightInnerColor, result.ArticleRightInnerColor);
+        Assert.AreEqual(updatedStyles.ArticleColor, result.ArticleColor);
+        Assert.AreEqual(updatedStyles.FooterListLinkTextColor, result.FooterListLinkTextColor);
+        Assert.AreEqual(updatedStyles.FooterListTextColor, result.FooterListTextColor);
+    }
 }
