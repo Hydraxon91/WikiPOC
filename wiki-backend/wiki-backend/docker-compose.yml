@@ -25,6 +25,7 @@ services:
       JWT_VALID_ISSUER: ${JWT_VALID_ISSUER}
       JWT_TOKEN_TIME: ${JWT_TOKEN_TIME}
       PROFILE_PICTURES_PATH: ${PROFILE_PICTURES_PATH}
+      PROFILE_PICTURES_PATH_CONTAINER: ${PROFILE_PICTURES_PATH_CONTAINER}
 
   sql-server:
     image: mcr.microsoft.com/mssql/server

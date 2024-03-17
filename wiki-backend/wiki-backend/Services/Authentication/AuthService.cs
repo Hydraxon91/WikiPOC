@@ -24,8 +24,9 @@ public class AuthService : IAuthService
         var user = new ApplicationUser() { UserName = username, Email = email };
     
         // Create UserProfile instance
-        var userProfile = new UserProfile() { UserId = user.Id, UserName = username, DisplayName = username, ProfilePicture = "https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png"};
-
+        // var userProfile = new UserProfile() { UserId = user.Id, UserName = username, DisplayName = username, ProfilePicture = "https://localhost:5000/profile_pictures/default_pfp.png"};
+        var userProfile = new UserProfile() { UserId = user.Id, UserName = username, DisplayName = username, ProfilePicture = "default_pfp.png"};
+        
         // Set navigation properties
         user.Profile = userProfile;
         user.ProfileId = userProfile.Id;
