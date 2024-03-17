@@ -10,8 +10,18 @@ using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Identity;
 using wiki_backend.Models;
 using wiki_backend.Services.Authentication;
+using wiki_backend.Services.Profile;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Get the path for storing profile images from environment variables
+var profileImagesPath = Environment.GetEnvironmentVariable("PROFILE_IMAGES_PATH");
+
+// Ensure the path is not null or empty
+if (string.IsNullOrEmpty(profileImagesPath))
+{
+    throw new Exception("PROFILE_IMAGES_PATH environment variable is not set.");
+}
 
 // Add services to the container.
 AddCors();
@@ -99,6 +109,7 @@ void AddServices()
     builder.Services.AddTransient<IUserCommentRepository, UserCommentRepository>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ITokenServices, TokenServices>();
+    builder.Services.AddSingleton(new ProfileImageSettings(profileImagesPath));
 }
 
 void AddAuthentication()
