@@ -46,3 +46,19 @@ export const postProfileEdit = async (profile, token) => {
   const data = await response.json();
   return data;
 };
+
+export const getProfilePicture = async(pictureString) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/Image/${pictureString}`);
+    if (!response.ok) {
+        throw new Error(`Failed to get Profile Picture ${pictureString}. Status: ${response.status}`);
+    }
+
+    // Assuming the response is the URL of the image
+    const imageUrl = await response.blob();
+
+    return imageUrl;
+  } catch (error) {
+      throw new Error(`Failed to fetch profile picture: ${error.message}`);
+  }
+};
