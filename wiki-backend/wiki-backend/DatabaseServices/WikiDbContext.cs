@@ -21,6 +21,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
     {
         // Parameterless constructor
     }
+    
     public DbSet<WikiPage> WikiPages { get; set; }
     public DbSet<UserSubmittedWikiPage> UserSubmittedWikiPages { get; set; }
     public DbSet<Paragraph> Paragraphs { get; set; }
