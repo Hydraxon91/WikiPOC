@@ -299,3 +299,13 @@ yarn-error.log*
 wiki-backend/wiki-backend/appsettings.Development.json
 wiki-backend/wiki-backend/appsettings.json
 wiki-backend/wiki-backend/.env
+profile_pictures/
+wiki-backend/wiki-backend/obj/wiki-backend.csproj.nuget.g.props
+wiki-backend/wiki-backend/obj/wiki-backend.csproj.nuget.dgspec.json
+wiki-backend/wiki-backend/obj/project.nuget.cache
+wiki-backend/wiki-backend/obj/project.assets.json
+wiki-backend/wiki-backend/obj/Debug/net7.0/wiki-backend.GeneratedMSBuildEditorConfig.editorconfig
+wiki-backend/wiki-backend/obj/Debug/net7.0/wiki-backend.csproj.AssemblyReference.cache
+wiki-backend/wiki-backend/obj/Debug/net7.0/wiki-backend.assets.cache
+wiki-backend/wiki-backend/obj/Debug/net7.0/wiki-backend.AssemblyInfoInputs.cache
+wiki-backend/wiki-backend/obj/Debug/net7.0/wiki-backend.AssemblyInfo.cs
