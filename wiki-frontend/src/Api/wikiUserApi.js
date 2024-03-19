@@ -28,19 +28,24 @@ export const getUserProfileByUsername = async (username, setUser) => {
       return data;
   };
 
-export const postProfileEdit = async (profile, token) => {
+export const postProfileEdit = async (profile, profilePictureFile, token) => {
+  const formData = new FormData();
+  formData.append('userUpdateForm.UserProfile.Id', profile.id);
+  formData.append('userUpdateForm.UserProfile.DisplayName', profile.displayName);
+  formData.append('userUpdateForm.UserProfile.UserName', profile.userName);
+  formData.append('userUpdateForm.ProfilePictureFile', profilePictureFile);
+
   const response = await fetch(`${BASE_URL}/api/UserProfile/UpdateProfile/${profile.id}`, {
     method: 'PUT',
     headers: {
-      'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify(profile),
+    body: formData,
   });
 
   if (!response.ok) {
     // Handle the error, you can throw an exception or return an error object
-    throw new Error(`Failed to delete WikiPage. Status: ${response.status}`);
+    throw new Error(`Failed to update UserProfile. Status: ${response.status}`);
   }
 
   const data = await response.json();
@@ -49,6 +54,9 @@ export const postProfileEdit = async (profile, token) => {
 
 export const getProfilePicture = async(pictureString) => {
   try {
+    if (pictureString.startsWith('blob:')) {
+      return pictureString; // Return the Blob URL directly
+    }
     const response = await fetch(`${BASE_URL}/api/Image/${pictureString}`);
     if (!response.ok) {
         throw new Error(`Failed to get Profile Picture ${pictureString}. Status: ${response.status}`);
