@@ -11,9 +11,15 @@ function DisplayProfileImageElement({profilePicture}) {
             // Fetch profile picture when the component mounts or profilePicture prop changes
             getProfilePicture(profilePicture)
                 .then(data => {
-                    const imageUrl = URL.createObjectURL(data);
-
-                    setImageSrc(imageUrl);
+                    if (data instanceof Blob) { // Check if data is a Blob object
+                        const imageUrl = URL.createObjectURL(data);
+                        setImageSrc(imageUrl);
+                    } else if (typeof data === 'string' && data.startsWith('blob:')) {
+                        setImageSrc(data);
+                    } else {
+                        console.error('Invalid profile picture data:', data);
+                        throw new Error('Invalid profile picture data');
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching profile picture:', error);
