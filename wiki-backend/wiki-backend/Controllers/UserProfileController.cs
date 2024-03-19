@@ -49,11 +49,22 @@ public class UserProfileController : ControllerBase
     }
     
     [HttpPut("UpdateProfile/{id:int}")]
-    public async Task<IActionResult> UpdateWikiPageForAdmin(int id, [FromBody] UserProfile updatedProfile)
+    public async Task<IActionResult> UpdateUserProfile(int id, [FromForm] UserUpdateForm userUpdateForm)
     {
-        await _profileRepository.UpdateAsync(id, updatedProfile);
-
-        return Ok(new { Message = "WikiPage updated successfully" });
+        if (userUpdateForm.UserProfile == null)
+        {
+            return BadRequest("Invalid request. UserProfile object is null.");
+        }
+        
+        try
+        {
+            await _profileRepository.UpdateAsync(id, userUpdateForm.UserProfile, userUpdateForm.ProfilePictureFile);
+            return Ok(new { Message = "UserProfile updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while updating the UserProfile: {ex.Message}");
+        }
     }
     
     [HttpDelete("DeleteUserProfile")]
