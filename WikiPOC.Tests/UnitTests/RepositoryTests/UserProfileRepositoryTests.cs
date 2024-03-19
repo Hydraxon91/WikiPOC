@@ -95,7 +95,7 @@ public class UserProfileRepositoryTests
             var updatedProfile = new UserProfile { Id = 1, DisplayName = "Updated Display Name" };
 
             // Act
-            await _userProfileRepository.UpdateAsync(1, updatedProfile);
+            await _userProfileRepository.UpdateAsync(1, updatedProfile, null);
             await _wikiDbContext.SaveChangesAsync();
 
             // Assert
@@ -115,7 +115,7 @@ public class UserProfileRepositoryTests
             var updatedProfile = new UserProfile { Id = 2, DisplayName = "Updated Display Name" };
 
             // Act & Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _userProfileRepository.UpdateAsync(2, updatedProfile));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _userProfileRepository.UpdateAsync(2, updatedProfile, null));
         }
         
         [Test]
