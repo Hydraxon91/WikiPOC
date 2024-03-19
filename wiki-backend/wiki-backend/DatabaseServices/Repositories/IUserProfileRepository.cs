@@ -9,6 +9,6 @@ public interface IUserProfileRepository
     Task<UserProfile?> GetByUserIdAsync(string id);
     //Not needed for now
     // Task AddAsync(UserProfile wikiPage);
-    Task UpdateAsync(int existingId , UserProfile updatedProfile);
+    Task UpdateAsync(int existingId , UserProfile updatedProfile, IFormFile? profilePictureFile);
     Task DeleteAsync(int id);
 }

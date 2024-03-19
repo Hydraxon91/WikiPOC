@@ -38,7 +38,7 @@ public class UserProfileRepository : IUserProfileRepository
     //     throw new NotImplementedException();
     // }
 
-    public async Task UpdateAsync(int existingId, UserProfile updatedProfile)
+    public async Task UpdateAsync(int existingId, UserProfile updatedProfile, IFormFile? profilePictureFile)
     {
         var existingProfile = await _context.UserProfiles.SingleOrDefaultAsync(up => up.Id == existingId);
         
@@ -48,7 +48,18 @@ public class UserProfileRepository : IUserProfileRepository
         }
         
         existingProfile.DisplayName = updatedProfile.DisplayName;
-        existingProfile.ProfilePicture = updatedProfile.ProfilePicture;
+        
+        if (profilePictureFile != null)
+        {
+            string fileName = $"{existingProfile.UserName}_pfp{Path.GetExtension(profilePictureFile.FileName)}";
+            string filePath = Path.Combine(Environment.GetEnvironmentVariable("PROFILE_PICTURES_PATH_CONTAINER"), fileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await profilePictureFile.CopyToAsync(fileStream);
+            }
+            existingProfile.ProfilePicture = fileName;
+        }
+        
         await _context.SaveChangesAsync();
     }
 
