@@ -7,6 +7,10 @@ RUN dotnet publish -c Release -o /publish
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 as runtime
 WORKDIR /publish
 COPY --from=build-env /publish .
+
+COPY ./wait-for-it.sh /wait-for-it.sh 
+RUN chmod +x /wait-for-it.sh
+
 ENV ASPNETCORE_URLS=http://+:80
 EXPOSE 80
 ENTRYPOINT ["dotnet", "wiki-backend.dll"]

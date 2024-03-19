@@ -12,6 +12,7 @@ services:
       - "5000:80"  # Adjust the port mapping as needed
     depends_on:
       - sql-server
+    entrypoint: ["/wait-for-it.sh", "sql-server:1433", "-t", "120", "--", "dotnet", "wiki-backend.dll"]
     environment:
       ASPNETCORE_CONNECTIONSTRING: ${ASPNETCORE_CONNECTIONSTRING}
       ADMINUSER_EMAIL: ${ADMINUSER_EMAIL}
