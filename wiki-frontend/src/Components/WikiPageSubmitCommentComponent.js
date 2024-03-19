@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import DisplayProfileImageElement from './DisplayProfileImageElement';
 import { postComment } from '../Api/wikiUserApi';
 
 const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit }) => {
@@ -35,7 +36,7 @@ const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubm
         <form autoComplete="off" method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
             <div className="comment-write-container">
                 <div className="wikipage-comment-profilepic">
-                    <img src={user.profilePicture} alt="" />
+                    <DisplayProfileImageElement profilePicture={user.profilePicture}/>
                 </div>
                 <div className="comment-write-textarea">
                     <textarea

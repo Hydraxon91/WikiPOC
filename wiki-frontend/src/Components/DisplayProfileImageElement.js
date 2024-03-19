@@ -31,8 +31,8 @@ function DisplayProfileImageElement({profilePicture}) {
 
 
     return (
-        <div className='profile-picture-container'>
-            <img src={imageSrc} alt="Uploaded" className='profile-picture'/>
+        <div className='wikipage-comment-profilepic'>
+            <img src={imageSrc} alt="Uploaded"/>
         </div>
     );
 }

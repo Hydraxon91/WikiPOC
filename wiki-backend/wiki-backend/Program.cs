@@ -239,7 +239,7 @@ async Task CreateAdminIfNotExists()
         {
             UserName = adminName,
             DisplayName = "Hydraxon",
-            ProfilePicture = "https://www.bzpower.com/uploads/monthly_2022_09/163487718_DancingMatoran.thumb.gif.21d7c51aa758b3d5bbab3370036d8760.gif"
+            ProfilePicture = "admin_base.gif"
         };
         // Save UserProfile to the database
         dbContext.UserProfiles.Add(adminProfile);
@@ -288,8 +288,8 @@ async Task CreateUserIfNotExists()
         var testUserProfile = new UserProfile()
         {
             UserName = testUsername,
-            DisplayName = "FreshNuts",
-            ProfilePicture = "https://media.tenor.com/q2WpCKPml4kAAAAM/bionicle.gif"
+            DisplayName = "Peter Griffin",
+            ProfilePicture = "tester_base.gif"
         };
         // Save UserProfile to the database
         dbContext.UserProfiles.Add(testUserProfile);

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useUserContext } from './contexts/UserContextProvider';
 import { getUserProfileByUsername } from '../Api/wikiUserApi';
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
+import DisplayProfileImageElement from './DisplayProfileImageElement';
 
 const WikiPageCommentsComponent = ({page, cookies}) =>{
     const {decodedTokenContext} = useUserContext();
@@ -52,7 +53,7 @@ const WikiPageCommentsComponent = ({page, cookies}) =>{
                     {currPage.comments.map((comment, index) => (
                         <div key={index} className='wikipage-comment'>
                             <div className='wikipage-comment-profilepic'>
-                                <img src={comment.userProfile.profilePicture} alt=''></img>
+                                <DisplayProfileImageElement profilePicture={comment.userProfile.profilePicture}/>
                             </div>
                             <div className='wikipage-comment-content'>
                                 <div className='wikipage-comment-data'>

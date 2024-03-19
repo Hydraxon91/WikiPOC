@@ -5,7 +5,7 @@ const ProfileElement = ({user, canEdit}) => {
 
     return (
         <div className="profile-container">
-            <div className="profilepic-container-container">
+            <div className="profilepage-profilepic">
                 <DisplayProfileImageElement profilePicture={user.profilePicture} />
             </div>
              
