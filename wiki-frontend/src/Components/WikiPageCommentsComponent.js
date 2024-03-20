@@ -20,8 +20,8 @@ const WikiPageCommentsComponent = ({page, cookies, activeTab}) =>{
     }, [decodedTokenContext]);
 
     useEffect(()=>{
-
-    },[page.comments])
+        setCurrPage(page);
+    },[page])
 
     const handleEditClick = (index, initialContent) => {
         setEditingCommentIndex(index);
