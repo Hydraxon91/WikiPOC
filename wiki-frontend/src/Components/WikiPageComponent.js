@@ -3,7 +3,7 @@ import { Link, useParams} from 'react-router-dom';
 import '../Styles/style.css';
 import { useStyleContext } from './contexts/StyleContext';
 
-const WikiPageComponent = ({page, setDecodedTitle}) => {
+const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
   const { styles }  = useStyleContext();
   const { title } = useParams();
   const decodedTitle = decodeURIComponent(title);
@@ -89,7 +89,7 @@ const WikiPageComponent = ({page, setDecodedTitle}) => {
   return (
     <>
       {page && (
-        <div className='wikipage-component'>
+        <div className={activeTab === 'wiki' ? 'wikipage-component' : 'wikipage-component wikipage-hidden'}>
           <h1>
             {page.title}
             <Link to={`/page/${page.title}/edit`}>

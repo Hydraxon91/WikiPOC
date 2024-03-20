@@ -4,7 +4,7 @@ import { getUserProfileByUsername, postEditedComment } from '../Api/wikiUserApi'
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
 import DisplayProfileImageElement from './DisplayProfileImageElement';
 
-const WikiPageCommentsComponent = ({page, cookies}) =>{
+const WikiPageCommentsComponent = ({page, cookies, activeTab}) =>{
     const {decodedTokenContext} = useUserContext();
     const [user, setUser] = useState();
     const [currPage, setCurrPage] = useState(page);
@@ -72,7 +72,7 @@ const WikiPageCommentsComponent = ({page, cookies}) =>{
       }
 
     return (
-        <div className='wikipage-component'>
+        <div className={activeTab === 'comments' ? 'wikipage-component' : 'wikipage-component wikipage-hidden'}>
             {currPage && (
                 <div>
                     <h3>Comments</h3>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import WikiPageComponent from '../Components/WikiPageComponent';
 import WikiPageCommentsComponent from '../Components/WikiPageCommentsComponent';
@@ -8,6 +8,10 @@ const WikiPage = ({page, setDecodedTitle, cookies }) => {
     const { title } = useParams();
     const decodedTitle = decodeURIComponent(title);
     const [activeTab, setActiveTab] = useState("wiki");
+
+    useEffect(()=>{
+        setActiveTab('wiki');
+    },[page])
 
     const handleTabClick = (tab) =>{
         setActiveTab(tab);
@@ -29,14 +33,19 @@ const WikiPage = ({page, setDecodedTitle, cookies }) => {
                         Comments
                 </button>
             </div>
-            {activeTab === "wiki" ? (
-                <WikiPageComponent page={page} setDecodedTitle={setDecodedTitle}/>
-            )
-            :
-            (
-                <WikiPageCommentsComponent page={page} cookies ={cookies}/>
-            )
-            }
+            <div className="wiki-page-container">
+                <WikiPageComponent
+                    page={page}
+                    setDecodedTitle={setDecodedTitle}
+                    activeTab={activeTab}
+                    className={activeTab === 'wiki' ? 'wikipage-visible' : 'wikipage-hidden'}
+                />
+                <WikiPageCommentsComponent
+                    page={page}
+                    cookies={cookies}
+                    activeTab={activeTab}
+                />
+            </div>
         </>
     )
 };
