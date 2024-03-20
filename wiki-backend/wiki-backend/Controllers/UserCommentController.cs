@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +48,7 @@ public class UserCommentController : ControllerBase
     public async Task<IActionResult> EditComment(int id, [FromBody] string updatedContent)
     {
         var userId = GetUserIdFromRequest();
+
         var existingComment = await _commentRepository.GetByIdAsync(id);
         
         if (existingComment == null)
@@ -86,11 +88,16 @@ public class UserCommentController : ControllerBase
     private string GetUserIdFromRequest()
     {
         // Retrieve the user ID from the claims in the current user's identity
-        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+        // Extract token from request headers
+        var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
 
-        if (userIdClaim != null)
+        var nameClaim = jsonToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
+        
+        if (nameClaim != null)
         {
-            return userIdClaim.Value;
+            return nameClaim.Value;
         }
 
         // If the user ID is not found in claims, handle it accordingly (throw an exception, return null, etc.)
@@ -100,7 +107,7 @@ public class UserCommentController : ControllerBase
     private async Task<bool> IsAuthorizedToDeleteComment(string userId, UserComment comment)
     {
         // Check if the user is the author of the comment or is an admin
-        return userId == comment.UserProfileId.ToString() || await IsUserAdmin(userId);
+        return userId == comment.UserProfile.UserName || await IsUserAdmin(userId);
     }
     
     private async Task<bool> IsUserAdmin(string userId)
