@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useUserContext } from './contexts/UserContextProvider';
-import { getUserProfileByUsername } from '../Api/wikiUserApi';
+import { getUserProfileByUsername, postEditedComment } from '../Api/wikiUserApi';
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
 import DisplayProfileImageElement from './DisplayProfileImageElement';
 
@@ -8,6 +8,8 @@ const WikiPageCommentsComponent = ({page, cookies}) =>{
     const {decodedTokenContext} = useUserContext();
     const [user, setUser] = useState();
     const [currPage, setCurrPage] = useState(page);
+    const [editingCommentIndex, setEditingCommentIndex] = useState(null);
+    const [editedComment, setEditedComment] = useState("");
 
     useEffect(() => {
         const decodedTokenName = decodedTokenContext?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
@@ -20,6 +22,31 @@ const WikiPageCommentsComponent = ({page, cookies}) =>{
     useEffect(()=>{
 
     },[page.comments])
+
+    const handleEditClick = (index, initialContent) => {
+        setEditingCommentIndex(index);
+        setEditedComment(initialContent);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingCommentIndex(null);
+        setEditedComment("");
+    };
+
+    const handleCommentEditSubmit = (index) => {
+        const updatedComments = [...currPage.comments];
+        updatedComments[index].content = editedComment;
+        
+        postEditedComment(updatedComments[index].id, editedComment, cookies);
+
+        setCurrPage((currPage) => ({
+            ...currPage,
+            comments: updatedComments,
+        }));
+
+        setEditingCommentIndex(null);
+        setEditedComment("");
+    };
 
     const handleCommentSubmit = (newComment) => {
         setCurrPage((currPage) => ({
@@ -63,9 +90,23 @@ const WikiPageCommentsComponent = ({page, cookies}) =>{
                                     </a>
                                     {" | "}
                                     <span>{formatDate(comment.postDate)}</span>
+                                    {comment.userProfile.userName === user?.userName && (
+                                        editingCommentIndex !== index ? (
+                                            <a href="#" onClick={() => handleEditClick(index, comment.content)}> edit</a>
+                                        ) : (
+                                            <>
+                                                <button onClick={() => handleCommentEditSubmit(index)}>Submit</button>
+                                                <button onClick={handleCancelEdit}>Cancel</button>
+                                            </>
+                                        )
+                                    )}
                                 </div>
                                 <div className='wikipage-comment-text'>
-                                    <p>{comment.content} {comment.isEdited && "\n(edited)"}</p>
+                                    {editingCommentIndex === index ? (
+                                        <textarea value={editedComment} onChange={(e) => setEditedComment(e.target.value)} />
+                                    ) : (
+                                        <p>{comment.content} {comment.isEdited && "(edited)"}</p>
+                                    )}
                                 </div>
                             </div>
                             
