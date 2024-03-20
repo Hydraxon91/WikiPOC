@@ -34,6 +34,11 @@
     background-color: #575757;
 }
 
+.wikipage-content-container{
+    white-space: normal;
+    word-wrap: break-word;
+}
+
 .wikipage-comment{
     display: flex;
     margin-bottom: 10px;

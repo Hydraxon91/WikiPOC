@@ -34,13 +34,16 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     }
   };
 
+
   const renderParagraphs = (content, hasParagraphImage) => {
     const additionalLines = hasParagraphImage ? Math.max(9 - content.split('<p>').length, 0) : 0;
-  
+    const maxLengthToAddLines = 100;
+
     return (
       <>
-        <div dangerouslySetInnerHTML={{ __html: content }} />
-        {Array.from({ length: additionalLines }).map((_, i) => (
+        <div className={"wikipage-content-container"} dangerouslySetInnerHTML={{ __html: content }} />
+        {content.length <= maxLengthToAddLines && // Add lines only if content length meets the requirement
+        Array.from({ length: additionalLines }).map((_, i) => (
           <br key={`empty-line-${i}`} />
         ))}
       </>
