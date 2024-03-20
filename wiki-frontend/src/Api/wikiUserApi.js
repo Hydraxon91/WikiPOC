@@ -28,6 +28,25 @@ export const getUserProfileByUsername = async (username, setUser) => {
       return data;
   };
 
+  export const postEditedComment = async (commentId, editedComment, token) => {
+    const response = await fetch(`${BASE_URL}/api/UserComment/comment/${commentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(editedComment),
+      });
+
+      if (!response.ok) {
+        // Handle the error, you can throw an exception or return an error object
+        throw new Error(`Failed to update comment. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+  };
+
 export const postProfileEdit = async (profile, profilePictureFile, token) => {
   const formData = new FormData();
   formData.append('userUpdateForm.UserProfile.Id', profile.id);
