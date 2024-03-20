@@ -202,11 +202,15 @@ const EditPage = ({ page, handleEdit, handleCreate, setCurrentWikiPage }) => {
               </div>
               <div className='editDiv'>
                 <label className="editLabel">Paragraph Image Text [Not required]</label>
-                <input
+                {/* <input
                   type="text"
                   value={paragraph.paragraphImageText}
                   onChange={(e) => handleParagraphChange(index, 'paragraphImageText', e.target.value)}
                   className='inputField'
+                /> */}
+                <ReactQuillComponent
+                  handleChange={(value) => handleParagraphChange(index, 'paragraphImageText', value)}
+                  content={paragraph.paragraphImageText}
                 />
               </div>
 
@@ -220,7 +224,7 @@ const EditPage = ({ page, handleEdit, handleCreate, setCurrentWikiPage }) => {
 
         <button onClick={handleSave}>Save</button>
       </div>
-      <WikiPageComponent page={temporaryPage}/>
+      <WikiPageComponent page={temporaryPage} activeTab={"wiki"}/>
     </div>
   );
 };

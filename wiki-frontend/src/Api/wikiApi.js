@@ -78,8 +78,6 @@ export const updateWikiPage = async (updatedPage, token, decodedToken) => {
         submittedBy: `${userName}`
       };
     }
-    console.log('Request Data:', JSON.stringify(updatedPage));
-    console.log('Request Data:', updatedPage.id);
 
     const response = await fetch(url, {
       method: "PUT",

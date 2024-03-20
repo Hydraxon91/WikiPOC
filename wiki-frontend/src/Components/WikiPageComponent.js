@@ -34,44 +34,6 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     }
   };
 
-  
-  const parseLinks = (text) => {
-    if (text === null) {
-      return text;
-    }
-    const linkRegex = /<Link to="(.*?)">(.*?)<\/Link>/g;
-    let match;
-    const elements = [];
-
-    let lastIndex = 0;
-    while ((match = linkRegex.exec(text)) !== null) {
-      const plainText = text.substring(lastIndex, match.index);
-      if (plainText) {
-        // elements.push(<span key={`text-${lastIndex}`}>{plainText}</span>);
-        elements.push(plainText);
-      }
-
-      const linkPath = match[1];
-      const linkLabel = match[2];
-      elements.push(
-        <Link key={`link-${match.index}`} to={linkPath}>
-          {linkLabel}
-        </Link>
-      );
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    const remainingText = text.substring(lastIndex);
-    if (remainingText) {
-      elements.push(<span key={`text-${lastIndex}`}>{remainingText}</span>);
-    }
-
-    return elements;
-  };
-
-
-
   const renderParagraphs = (content, hasParagraphImage) => {
     const additionalLines = hasParagraphImage ? Math.max(9 - content.split('<p>').length, 0) : 0;
   
@@ -108,7 +70,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
                   <div className="articleRightInner" style={{ backgroundColor: styles.articleRightInnerColor }}>
                     <img className='paragraphImage' src={paragraph.paragraphImage} alt="logo" />
                   </div>
-                  {parseLinks(paragraph.paragraphImageText)}
+                  {renderParagraphs(paragraph.paragraphImageText)}
                   
                 </div>
               )}

@@ -356,6 +356,7 @@ div.articleRight {
 	margin: 0 0 5px 15px;
 	text-align: left;
 	margin-bottom:2vh;
+	max-width: 200px;
 }
 
 div.articleRightInner {
