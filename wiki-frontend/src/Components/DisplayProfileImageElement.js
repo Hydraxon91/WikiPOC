@@ -24,7 +24,7 @@ function DisplayProfileImageElement({profilePicture}) {
                 .catch(error => {
                     console.error('Error fetching profile picture:', error);
                     // Use default image URL in case of error
-                    setImageSrc('https://upload.wikimedia.org/wikipedia/commons/1/1e/Default-avatar.jpg');
+                    setImageSrc(defaultImageUrl);
                 });
         }
     },[profilePicture])

@@ -1,11 +1,12 @@
 import ProfileElement from "../Components/ProfileElement";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { useUserContext } from '../Components/contexts/UserContextProvider';
 import { getUserProfileByUsername } from "../Api/wikiUserApi";
 import "../Styles/profilepage.css";
 
 const ProfilePage = () => {
+    const navigate = useNavigate();
     const {decodedTokenContext} = useUserContext();
     const { username } = useParams();
     const [userProfile, setUserProfile] = useState(null);
@@ -13,9 +14,13 @@ const ProfilePage = () => {
 
     useEffect(() => { 
         if (username!==null) {
-            getUserProfileByUsername(username, setUserProfile);
+            getUserProfileByUsername(username, setUserProfile)
+            .catch(error => {
+                alert(`Profile for ${username} doesn't exist.`);
+                navigate("/");
+            });
         }
-    }, [username]);
+    }, [username, navigate]);
 
     useEffect(() => {
         const decodedTokenName = decodedTokenContext?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
