@@ -7,7 +7,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
   const { styles }  = useStyleContext();
   const { title } = useParams();
   const decodedTitle = decodeURIComponent(title);
-  const targetRef = useRef(null);
+  const targetRefs = useRef([]);
   const [pTitles, setPTitles] = useState([]);
   const [isContentsVisible, setIsContentsVisible] = useState(true);
 
@@ -28,9 +28,9 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     setIsContentsVisible(!isContentsVisible);
   };
 
-  const scrollToParagraph = () => {
-    if (targetRef.current) {
-      targetRef.current.scrollIntoView({ behavior: 'smooth' });
+  const scrollToParagraph = (index) => {
+    if (targetRefs.current[index]) {
+      targetRefs.current[index].scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -66,7 +66,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
           <p className="roleNote">{`${page.roleNote}`}</p>
 
           {page.paragraphs.map((paragraph, index) => (
-            <div key={`paragraph-${index}`} className={page.approved === false ? 'update-paragraph' : ''}>
+            <div key={`paragraph-${index}`} ref={(el) => (targetRefs.current[index] = el)} className={page.approved === false ? 'update-paragraph' : ''}>
               {index!==0 && <h2>{paragraph.title}</h2>}
               {paragraph.paragraphImage && paragraph.paragraphImage !== "" && (
                 <div className="articleRight" style={{ backgroundColor: styles.articleRightColor }}>
