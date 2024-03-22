@@ -47,13 +47,13 @@ const ProfileEditorElement = ({user, cookies}) => {
 
     return (
         <form className="profile-container">
-            <div className="profilepic-container-container">
+            <div className="profilepage-profilepic">
                 <DisplayProfileImageElement profilePicture={profilePicture} />
              </div>
              <div className="user-info">
                 <p>Profile Picture: </p>
                 <input
-                  className="edit-displayname"
+                  className="edit-profilepic"
                   type="file"
                   accept="image/*"
                   onChange={handleProfilePictureFileChange}
