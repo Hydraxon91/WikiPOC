@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("wiki-backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc79b295c109e1049d8f4a951ac14f0428428f1f")]
 [assembly: System.Reflection.AssemblyProductAttribute("wiki-backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("wiki-backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
