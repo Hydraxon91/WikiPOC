@@ -1,4 +1,4 @@
-import EditWikiComponent from "../Components/EditWikiComponent";
+import ManualEditStylesComponent from "../Components/ManualEditStylesComponent";
 import "../Styles/stylepage.css";
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +25,7 @@ const EditStylePage = () =>{
 
     return (
         <div className="stylepage">
-            <EditWikiComponent handleChange={handleChange} newStyles={newStyles}/>
+            <ManualEditStylesComponent handleChange={handleChange} newStyles={newStyles}/>
             <button onClick={handleUpdate}>Update</button>
         </div>    
     )

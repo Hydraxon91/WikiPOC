@@ -1,6 +1,6 @@
 import React from 'react';
 
-const EditWikiComponent = ({handleChange, newStyles}) => {
+const ManualEditStylesComponent = ({handleChange, newStyles}) => {
   return (
     <div>
       <h2 className="mb-4">Admin Page</h2>
@@ -83,4 +83,4 @@ const EditWikiComponent = ({handleChange, newStyles}) => {
   );
 };
 
-export default EditWikiComponent;
+export default ManualEditStylesComponent;
