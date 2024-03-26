@@ -1,8 +1,9 @@
 import EditWikiComponent from "../Components/EditWikiComponent";
+import "../Styles/stylepage.css";
 
 const EditStylePage = () =>{
     return (
-        <div className="profilepage">
+        <div className="stylepage">
             <EditWikiComponent/>
         </div>    
     )
