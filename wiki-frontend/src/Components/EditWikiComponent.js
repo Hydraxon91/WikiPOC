@@ -1,28 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useStyleContext } from './contexts/StyleContext';
+import React from 'react';
 
-
-const EditWikiComponent = () => {
-  const navigate = useNavigate();
-  const { styles, updateStyles, setStyles } = useStyleContext();
-
-  const [newStyles, setNewStyles] = useState(styles);
-
-  const handleChange = (field, value) => {
-    // console.log(`${field} ${value}`);
-    setNewStyles((prevStyles) => ({ ...prevStyles, [field]: value }));
-    // console.log(newStyles[field]);
-  };
-
-  const handleUpdate = () => {
-    console.log("Handle Update clicked");
-    updateStyles(newStyles);
-    setStyles(newStyles);
-    navigate('/');
-  };
-  
-
+const EditWikiComponent = ({handleChange, newStyles}) => {
   return (
     <div>
       <h2 className="mb-4">Admin Page</h2>
@@ -101,8 +79,6 @@ const EditWikiComponent = () => {
           title="Choose your color"
           onChange={(e) => handleChange('footerListLinkTextColor', e.target.value)} />
       </div>
-
-      <button onClick={handleUpdate}>Update</button>
     </div>
   );
 };
