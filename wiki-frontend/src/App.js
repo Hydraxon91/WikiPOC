@@ -2,10 +2,9 @@ import React, {useState, useEffect} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Routes, useParams } from 'react-router-dom';
 import EditPage from "./Components/EditPage";
-import WikiPageComponent from "./Components/WikiPageComponent.js";
+import EditStylePage from "./Pages/EditStylePage.js";
 import MainPage from "./Pages/MainPage.js";
 import HomeComponent from "./Components/HomeComponent.js";
-import EditWikiComponent from "./Components/EditWikiComponent.js";
 import { StyleProvider  } from "./Components/contexts/StyleContext.js";
 import { createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle } from "./Api/wikiApi.js";
 import LoginPageComponent from "./Components/LoginPageComponent.js";
@@ -121,7 +120,7 @@ function App() {
                   <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} cookies={cookies["jwt_token"]}/>} />
                   <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
                   <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
-                  <Route path="/edit-wiki" element={<EditWikiComponent></EditWikiComponent>}/>
+                  <Route path="/edit-wiki" element={<EditStylePage></EditStylePage>}/>
                   <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
                   <Route path="/register" element = {<RegisterPageComponent/>}/>
                   <Route path="/user-submissions" element = {<UserRequestsPageComponent/>}/>
