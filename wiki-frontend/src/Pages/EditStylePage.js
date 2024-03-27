@@ -13,7 +13,7 @@ const EditStylePage = () =>{
     const [backUpStyles, setBackupStyles] = useState(styles);
     const [manualEdit, setManualEdit] = useState(false);
     const [leave, setLeave] = useState(false);
-
+    
     useEffect(()=>{
         setStyles(newStyles)
         return () => {
