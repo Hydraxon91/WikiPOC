@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import WikiPageComponent from '../Components/WikiPageComponent';
 import WikiPageCommentsComponent from '../Components/WikiPageCommentsComponent';
+import { useStyleContext } from '../Components/contexts/StyleContext';
 import '../Styles/wikipage.css';
 
 const WikiPage = ({page, setDecodedTitle, cookies }) => {
+    const { styles } = useStyleContext();
     const { title } = useParams();
     const decodedTitle = decodeURIComponent(title);
     const [activeTab, setActiveTab] = useState("wiki");
@@ -19,15 +21,17 @@ const WikiPage = ({page, setDecodedTitle, cookies }) => {
 
     return(
         <>
-            <div className="wiki-navbar">
-                <button 
+            <div className="wiki-navbar" style={{backgroundColor: styles.articleRightInnerColor}}>
+                <button
                     className={`wiki-navbar-button ${activeTab === 'wiki' ? 'wiki-navbar-button-active' : ''}`}
+                    style={{backgroundColor: styles.articleRightInnerColor}} 
                     onClick={() => handleTabClick('wiki')}
                     >
                         {decodedTitle}
                 </button>
                 <button 
                     className={`wiki-navbar-button ${activeTab === 'comments' ? 'wiki-navbar-button-active' : ''}`}
+                    style={{backgroundColor: styles.articleRightInnerColor}} 
                     onClick={() => handleTabClick('comments')}
                     >
                         Comments
