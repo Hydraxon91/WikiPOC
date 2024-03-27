@@ -33,6 +33,7 @@ const EditStylePage = () =>{
         setNewStyles((prevStyles) => ({ ...prevStyles, [field]: value }));
     };
 
+
     const handleUpdate = () => {
         console.log("Handle Update clicked");
         updateStyles(newStyles);
@@ -46,7 +47,7 @@ const EditStylePage = () =>{
             {manualEdit ? 
                 <ManualEditStylesComponent handleChange={handleChange} newStyles={newStyles}/>
                 :
-                <PresetsComponent></PresetsComponent>    
+                <PresetsComponent handleChange={handleChange} logo={styles.logo}></PresetsComponent>    
             }
             <button onClick={handleUpdate}>Update</button>
             <button onClick={()=>setManualEdit(!manualEdit)}>{manualEdit ? "Presets" : "Manual Edit"}</button>

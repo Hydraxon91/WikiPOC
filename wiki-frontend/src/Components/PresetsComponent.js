@@ -1,6 +1,6 @@
 import PresetCardComponent from "./PresetCardComponent";
 
-const PresetsComponent = () =>{
+const PresetsComponent = ({handleChange, logo}) =>{
     const stylesArray = [
         {
             bodyColor: "rgb(80, 124, 237)",
@@ -33,7 +33,7 @@ const PresetsComponent = () =>{
             bodyColor: "rgb(134, 96, 67)", // Dirt Brown
             articleColor: "rgb(160, 120, 94)", // Lighter Dirt Brown
             articleRightColor: "rgb(165, 126, 82)", // Even Lighter Dirt Brown
-            articleRightInnerColor: "rgb(122, 85, 55)", // Darker Dirt Brown
+            articleRightInnerColor: "rgb(98, 167, 79)", // Green Grass
             footerListTextColor: "rgb(94, 60, 42)", // Darker Dirt Brown
             footerListLinkTextColor: "rgb(74, 44, 28)", // Darkest Dirt Brown
             footerListLinkTextColor: "rgb(98, 167, 79)", // Green Grass
@@ -52,9 +52,9 @@ const PresetsComponent = () =>{
       ];
 
     return(
-         <div>
+         <div className="wikipage-preset-component">
             {stylesArray.map((stylePreset, index) => (
-                <PresetCardComponent key={index} stylePreset={stylePreset} />
+                <PresetCardComponent key={index} stylePreset={stylePreset} logo={logo} handleChange={handleChange}/>
             ))}
         </div>
     )
