@@ -9,18 +9,30 @@ const EditStylePage = () =>{
     const { styles, updateStyles, setStyles } = useStyleContext();
 
     const [newStyles, setNewStyles] = useState(styles);
+    const [backUpStyles, setBackupStyles] = useState(styles);
+    const [leave, setLeave] = useState(false);
+
+    useEffect(()=>{
+        setStyles(newStyles)
+        return () => {
+            setStyles(backUpStyles);
+        };
+    },[newStyles, backUpStyles, setStyles]);
+
+    useEffect(()=>{
+        leave && navigate("/");
+    },[leave])
 
     const handleChange = (field, value) => {
-        // console.log(`${field} ${value}`);
         setNewStyles((prevStyles) => ({ ...prevStyles, [field]: value }));
-        // console.log(newStyles[field]);
     };
 
     const handleUpdate = () => {
         console.log("Handle Update clicked");
         updateStyles(newStyles);
         setStyles(newStyles);
-        navigate('/');
+        setBackupStyles(prevStyles => ({ ...prevStyles, ...newStyles }));
+        setLeave(true);
     };
 
     return (
