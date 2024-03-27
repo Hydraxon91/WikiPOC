@@ -1,6 +1,19 @@
 import React from 'react';
 
 const ManualEditStylesComponent = ({handleChange, newStyles}) => {
+  const fontOptions = [
+    'Arial',
+    'Helvetica',
+    'Times New Roman',
+    'Courier New',
+    'Georgia',
+    'Verdana',
+    'Comic Sans MS',
+    'Arial Black',
+    'Impact',
+    'Lucida Console',
+  ];
+
   return (
     <div>
       <h2 className="mb-4">Admin Page</h2>
@@ -79,6 +92,19 @@ const ManualEditStylesComponent = ({handleChange, newStyles}) => {
           title="Choose your color"
           onChange={(e) => handleChange('footerListLinkTextColor', e.target.value)} />
       </div>
+
+      <div className="form-group font-change">
+        <label className="mb-4">Font Family:</label>
+        <select
+          value={newStyles.fontFamily}
+          onChange={(e) => handleChange('fontFamily', e.target.value)}
+        >
+          {fontOptions.map((font, index) => (
+            <option key={index} value={font}>{font}</option>
+          ))}
+        </select>
+      </div>
+
     </div>
   );
 };

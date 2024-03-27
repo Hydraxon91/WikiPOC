@@ -2,3 +2,9 @@
     margin-left: 2vh;
     margin-bottom: 1vh;
 }
+
+.font-change select{
+    width: 20%;
+    margin-left: 1vw;
+    height: 2.5vh;
+}

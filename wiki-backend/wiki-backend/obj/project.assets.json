@@ -3563,19 +3563,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\kukan\\.nuget\\packages\\": {}
+    "C:\\Users\\hydraxon\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kukan\\Documents\\Codecool\\JobHunt\\WikiPOC\\wiki-backend\\wiki-backend\\wiki-backend.csproj",
+      "projectUniqueName": "C:\\Users\\hydraxon\\Documents\\GitHub\\WikiPOC\\wiki-backend\\wiki-backend\\wiki-backend.csproj",
       "projectName": "wiki-backend",
-      "projectPath": "C:\\Users\\kukan\\Documents\\Codecool\\JobHunt\\WikiPOC\\wiki-backend\\wiki-backend\\wiki-backend.csproj",
-      "packagesPath": "C:\\Users\\kukan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kukan\\Documents\\Codecool\\JobHunt\\WikiPOC\\wiki-backend\\wiki-backend\\obj\\",
+      "projectPath": "C:\\Users\\hydraxon\\Documents\\GitHub\\WikiPOC\\wiki-backend\\wiki-backend\\wiki-backend.csproj",
+      "packagesPath": "C:\\Users\\hydraxon\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\hydraxon\\Documents\\GitHub\\WikiPOC\\wiki-backend\\wiki-backend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\kukan\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\hydraxon\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -3593,6 +3593,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -3653,7 +3658,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201\\RuntimeIdentifierGraph.json"
       }
     }
   }
