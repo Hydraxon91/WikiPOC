@@ -82,7 +82,10 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
 
               {index === 0 && pTitles.length > 0 && 
                 (
-                  <div className={`contentsPanel ${isContentsVisible ? '' : 'minimizedPanel'}`}>
+                  <div 
+                    className={`contentsPanel ${isContentsVisible ? '' : 'minimizedPanel'}`}
+                    style={{backgroundColor: styles.articleRightColor}} 
+                  >
                     <div className="hidePanel"  onClick={toggleContentsVisibility}>[hide]</div>
                     <div className="showPanel"  onClick={toggleContentsVisibility}>[show]</div>
                     <div className="contentsHeader">Contents</div>
