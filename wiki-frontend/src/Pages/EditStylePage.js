@@ -1,4 +1,5 @@
 import ManualEditStylesComponent from "../Components/ManualEditStylesComponent";
+import PresetsComponent from "../Components/PresetsComponent";
 import "../Styles/stylepage.css";
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +11,7 @@ const EditStylePage = () =>{
 
     const [newStyles, setNewStyles] = useState(styles);
     const [backUpStyles, setBackupStyles] = useState(styles);
+    const [manualEdit, setManualEdit] = useState(false);
     const [leave, setLeave] = useState(false);
 
     useEffect(()=>{
@@ -18,6 +20,10 @@ const EditStylePage = () =>{
             setStyles(backUpStyles);
         };
     },[newStyles, backUpStyles, setStyles]);
+
+    useEffect(()=>{
+        console.log(manualEdit);
+    },[manualEdit])
 
     useEffect(()=>{
         leave && navigate("/");
@@ -37,8 +43,13 @@ const EditStylePage = () =>{
 
     return (
         <div className="stylepage">
-            <ManualEditStylesComponent handleChange={handleChange} newStyles={newStyles}/>
+            {manualEdit ? 
+                <ManualEditStylesComponent handleChange={handleChange} newStyles={newStyles}/>
+                :
+                <PresetsComponent></PresetsComponent>    
+            }
             <button onClick={handleUpdate}>Update</button>
+            <button onClick={()=>setManualEdit(!manualEdit)}>{manualEdit ? "Presets" : "Manual Edit"}</button>
         </div>    
     )
 }
