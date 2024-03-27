@@ -10,12 +10,23 @@
 }
 
 .wikipage-preset-component{
-    display: inline-block;
+    height:100%;
+}
+
+.wikipage-preset-card-component{
+	display: inline-block;
     padding: 1.25em 1.5em 1.5em 1.5em;
     min-width: 45%;
     height: 20em;
     border: 1px solid #c8ccd1;
     margin: 1vh;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.wikipage-preset-card-component:hover{
+	transform: scale(1.05);
+	box-shadow: 0 0 10px rgb(0, 0, 0);
+	cursor: pointer;
 }
 
 .article-right-preset {

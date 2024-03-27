@@ -15,7 +15,7 @@
 }
 
 .wiki-navbar-button{
-    background-color: grey;
+    filter: brightness(90%);
     white-space: normal;
     vertical-align: middle;
     overflow: hidden;
@@ -27,11 +27,11 @@
 }
 
 .wiki-navbar-button:hover{
-    background-color: #727272;
+    filter: brightness(80%);
 }
 
 .wiki-navbar-button-active{
-    background-color: #575757;
+    filter: brightness(60%);
 }
 
 .wikipage-content-container{
