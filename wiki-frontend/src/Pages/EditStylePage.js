@@ -5,10 +5,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStyleContext } from "../Components/contexts/StyleContext";
 
-const EditStylePage = () =>{
+const EditStylePage = ({cookies}) =>{
     const navigate = useNavigate();
     const { styles, updateStyles, setStyles } = useStyleContext();
 
+    const[logoPicture, setLogoPicture] = useState(null);
     const [newStyles, setNewStyles] = useState(styles);
     const [backUpStyles, setBackupStyles] = useState(styles);
     const [manualEdit, setManualEdit] = useState(false);
@@ -33,10 +34,14 @@ const EditStylePage = () =>{
         setNewStyles((prevStyles) => ({ ...prevStyles, [field]: value }));
     };
 
+    const handleLogoPictureChange = (event) => {
+        const file = event.target.files[0];
+        setLogoPicture(file);
+      };
 
     const handleUpdate = () => {
         console.log("Handle Update clicked");
-        updateStyles(newStyles);
+        updateStyles(newStyles, logoPicture, cookies);
         setStyles(newStyles);
         setBackupStyles(prevStyles => ({ ...prevStyles, ...newStyles }));
         setLeave(true);
@@ -45,7 +50,7 @@ const EditStylePage = () =>{
     return (
         <div className="stylepage">
             {manualEdit ? 
-                <ManualEditStylesComponent handleChange={handleChange} newStyles={newStyles}/>
+                <ManualEditStylesComponent handleChange={handleChange} newStyles={newStyles} handleLogoPictureChange={handleLogoPictureChange}/>
                 :
                 <PresetsComponent handleChange={handleChange} logo={styles.logo}></PresetsComponent>    
             }

@@ -51,8 +51,8 @@ public class UserProfileRepository : IUserProfileRepository
         
         if (profilePictureFile != null)
         {
-            string fileName = $"{existingProfile.UserName}_pfp{Path.GetExtension(profilePictureFile.FileName)}";
-            string filePath = Path.Combine(Environment.GetEnvironmentVariable("PROFILE_PICTURES_PATH_CONTAINER"), fileName);
+            var fileName = $"{existingProfile.UserName}_pfp{Path.GetExtension(profilePictureFile.FileName)}";
+            var filePath = Path.Combine(Environment.GetEnvironmentVariable("PROFILE_PICTURES_PATH_CONTAINER"), fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await profilePictureFile.CopyToAsync(fileStream);

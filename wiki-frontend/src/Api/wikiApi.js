@@ -125,14 +125,25 @@ export const fetchCurrentStyles = async (setStyles) => {
   }
 };
 
-export const updateStyles = async (newStyles) => {
+export const updateStyles = async (newStyles, logoPictureFile, token) => {
+  const formData = new FormData();
+  formData.append('styleUpdateForm.StyleModel.WikiName', newStyles.wikiName);
+  formData.append('styleUpdateForm.StyleModel.BodyColor', newStyles.bodyColor);
+  formData.append('styleUpdateForm.StyleModel.ArticleRightColor', newStyles.articleRightColor);
+  formData.append('styleUpdateForm.StyleModel.ArticleRightInnerColor', newStyles.articleRightInnerColor);
+  formData.append('styleUpdateForm.StyleModel.ArticleColor', newStyles.articleColor);
+  formData.append('styleUpdateForm.StyleModel.FooterListLinkTextColor', newStyles.footerListLinkTextColor);
+  formData.append('styleUpdateForm.StyleModel.FooterListTextColor', newStyles.footerListTextColor);
+  formData.append('styleUpdateForm.StyleModel.FontFamily', newStyles.fontFamily);
+  formData.append('styleUpdateForm.LogoPictureFile', logoPictureFile);
+
   try {
     const response = await fetch(`${BASE_URL}/api/Style`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify(newStyles),
+      body: formData,
     });
 
     if (!response.ok) {

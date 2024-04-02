@@ -5,5 +5,5 @@ namespace wiki_backend.DatabaseServices.Repositories;
 public interface IStyleRepository
 {
     Task<StyleModel> GetStylesAsync();
-    Task UpdateStylesAsync(StyleModel updatedStyles);
+    Task UpdateStylesAsync(StyleModel updatedStyles, IFormFile? logoPictureFile);
 }

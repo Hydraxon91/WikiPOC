@@ -92,7 +92,7 @@ public class StyleRepositoryTests
         };
 
         // Act
-        await _styleRepository.UpdateStylesAsync(updatedStyles);
+        await _styleRepository.UpdateStylesAsync(updatedStyles, null);
         await _wikiDbContext.SaveChangesAsync();
 
         // Assert
@@ -126,7 +126,7 @@ public class StyleRepositoryTests
         };
 
         // Act
-        await _styleRepository.UpdateStylesAsync(updatedStyles);
+        await _styleRepository.UpdateStylesAsync(updatedStyles, null);
         await _wikiDbContext.SaveChangesAsync();
 
         // Assert
