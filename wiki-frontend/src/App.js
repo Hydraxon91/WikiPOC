@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
-import { BrowserRouter as Router, Route, Routes, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import EditPage from "./Components/EditPage";
 import EditStylePage from "./Pages/EditStylePage.js";
 import MainPage from "./Pages/MainPage.js";
