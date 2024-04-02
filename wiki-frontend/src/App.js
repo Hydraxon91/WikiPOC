@@ -120,7 +120,7 @@ function App() {
                   <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} cookies={cookies["jwt_token"]}/>} />
                   <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
                   <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
-                  <Route path="/edit-wiki" element={<EditStylePage></EditStylePage>}/>
+                  <Route path="/edit-wiki" element={<EditStylePage cookies={cookies["jwt_token"]}></EditStylePage>}/>
                   <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
                   <Route path="/register" element = {<RegisterPageComponent/>}/>
                   <Route path="/user-submissions" element = {<UserRequestsPageComponent/>}/>

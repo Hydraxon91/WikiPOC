@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ManualEditStylesComponent = ({handleChange, newStyles}) => {
+const ManualEditStylesComponent = ({handleChange, newStyles, handleLogoPictureChange}) => {
   const fontOptions = [
     'Arial',
     'Helvetica',
@@ -31,12 +31,14 @@ const ManualEditStylesComponent = ({handleChange, newStyles}) => {
   return (
     <div>
       <h2 className="mb-4">Admin Page</h2>
-      <div className="form-group">
-        <label className="mb-4">Logo URL:</label>
-        <input type="text" 
-          value={newStyles.logo} 
-          style={{marginLeft: "0.5rem"}} 
-          onChange={(e) => handleChange('logo', e.target.value)} />
+      
+      <div className="form-group edit_logo">
+        <p>Logo Picture: </p>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleLogoPictureChange}
+          />
       </div>
 
       <div className="form-group">

@@ -17,7 +17,7 @@ const PresetCardComponent = ({stylePreset, logo, handleChange}) =>{
         <div className="wikipage-preset-card-component" style={{ backgroundColor: stylePreset.bodyColor, fontFamily: stylePreset.fontFamily}} onClick={handlePresetClick}>
             <div className="article-right-preset" style={{ backgroundColor: stylePreset.articleRightColor }}>
                   <div className="article-right-inner-preset" style={{ backgroundColor: stylePreset.articleRightInnerColor }}>
-                    <img className='paragraphImage' src={logo} alt="logo" />
+                    <img className='paragraphImage' src={"/img/logo.png"} alt="logo" />
                   </div>
                   {"This is a text"}      
             </div>
