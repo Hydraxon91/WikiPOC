@@ -14,6 +14,20 @@ const ManualEditStylesComponent = ({handleChange, newStyles}) => {
     'Lucida Console',
   ];
 
+  const rgbToHex = (color) => {
+    if (!color) return '#000000'; 
+    // Check if color starts with #
+    if (!color.startsWith('#')) {
+      // Convert hexadecimal to rgb
+      const [r, g, b] = color.match(/\d+/g);
+      const hex = (parseInt(r) << 16) | (parseInt(g) << 8) | parseInt(b);
+      return '#' + (0x1000000 + hex).toString(16).slice(1);
+    } else {
+      // Return rgb color as is
+      return color;
+    }
+  };
+
   return (
     <div>
       <h2 className="mb-4">Admin Page</h2>
@@ -38,7 +52,7 @@ const ManualEditStylesComponent = ({handleChange, newStyles}) => {
         <input type="color" 
           className="form-control-color align-middle"
           style={{marginLeft: "0.5rem"}}  
-          value={newStyles.bodyColor} 
+          value={rgbToHex(newStyles.bodyColor)} 
           title="Choose your color"
           onChange={(e) => handleChange('bodyColor', e.target.value)} />
       </div>
@@ -48,7 +62,7 @@ const ManualEditStylesComponent = ({handleChange, newStyles}) => {
         <input type="color" 
           className="form-control-color align-middle"
           style={{marginLeft: "0.5rem"}}  
-          value={newStyles.articleColor} 
+          value={rgbToHex(newStyles.articleColor)} 
           title="Choose your color"
           onChange={(e) => handleChange('articleColor', e.target.value)} />
       </div>
@@ -58,7 +72,7 @@ const ManualEditStylesComponent = ({handleChange, newStyles}) => {
         <input type="color" 
           className=" form-control-color align-middle"
           style={{marginLeft: "0.5rem"}} 
-          value={newStyles.articleRightColor}
+          value={rgbToHex(newStyles.articleRightColor)}
           title="Choose your color"
           onChange={(e) => handleChange('articleRightColor', e.target.value)} />
       </div>
@@ -68,7 +82,7 @@ const ManualEditStylesComponent = ({handleChange, newStyles}) => {
         <input type="color" 
           className="form-control-color align-middle"
           style={{marginLeft: "0.5rem"}}  
-          value={newStyles.articleRightInnerColor}
+          value={rgbToHex(newStyles.articleRightInnerColor)}
           title="Choose your color"
           onChange={(e) => handleChange('articleRightInnerColor', e.target.value)} />
       </div>
@@ -78,7 +92,7 @@ const ManualEditStylesComponent = ({handleChange, newStyles}) => {
         <input type="color" 
           className="form-control-color align-middle"
           style={{marginLeft: "0.5rem"}} 
-          value={newStyles.footerListTextColor}
+          value={rgbToHex(newStyles.footerListTextColor)}
           title="Choose your color"
           onChange={(e) => handleChange('footerListTextColor', e.target.value)} />
       </div>
@@ -88,7 +102,7 @@ const ManualEditStylesComponent = ({handleChange, newStyles}) => {
         <input type="color" 
           className="form-control-color align-middle"
           style={{marginLeft: "0.5rem"}} 
-          value={newStyles.footerListLinkTextColor} 
+          value={rgbToHex(newStyles.footerListLinkTextColor)} 
           title="Choose your color"
           onChange={(e) => handleChange('footerListLinkTextColor', e.target.value)} />
       </div>
