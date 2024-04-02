@@ -1,27 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useStyleContext } from './contexts/StyleContext';
+import React from 'react';
 
-
-const EditWikiComponent = () => {
-  const navigate = useNavigate();
-  const { styles, updateStyles, setStyles } = useStyleContext();
-
-  const [newStyles, setNewStyles] = useState(styles);
-
-  const handleChange = (field, value) => {
-    // console.log(`${field} ${value}`);
-    setNewStyles((prevStyles) => ({ ...prevStyles, [field]: value }));
-    // console.log(newStyles[field]);
-  };
-
-  const handleUpdate = () => {
-    console.log("Handle Update clicked");
-    updateStyles(newStyles);
-    setStyles(newStyles);
-    navigate('/');
-  };
-  
+const ManualEditStylesComponent = ({handleChange, newStyles}) => {
+  const fontOptions = [
+    'Arial',
+    'Helvetica',
+    'Times New Roman',
+    'Courier New',
+    'Georgia',
+    'Verdana',
+    'Comic Sans MS',
+    'Arial Black',
+    'Impact',
+    'Lucida Console',
+  ];
 
   return (
     <div>
@@ -102,9 +93,20 @@ const EditWikiComponent = () => {
           onChange={(e) => handleChange('footerListLinkTextColor', e.target.value)} />
       </div>
 
-      <button onClick={handleUpdate}>Update</button>
+      <div className="form-group font-change">
+        <label className="mb-4">Font Family:</label>
+        <select
+          value={newStyles.fontFamily}
+          onChange={(e) => handleChange('fontFamily', e.target.value)}
+        >
+          {fontOptions.map((font, index) => (
+            <option key={index} value={font}>{font}</option>
+          ))}
+        </select>
+      </div>
+
     </div>
   );
 };
 
-export default EditWikiComponent;
+export default ManualEditStylesComponent;

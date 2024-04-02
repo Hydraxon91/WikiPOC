@@ -40,7 +40,7 @@ const MainPage = ({ pages, decodedToken, handleLogout, cookies, setWikiPageTitle
   };
 
   return (
-    <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh"}}>
+    <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily}} >
       <div>
         <WikiList pages={pages} handleLogout={handleLogout} cookies={cookies}/>
         <div className="mainsection">

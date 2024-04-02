@@ -11,4 +11,5 @@ public class StyleModel
     public string ArticleColor { get; set; }
     public string FooterListLinkTextColor { get; set; }
     public string FooterListTextColor { get; set; }
+    public string FontFamily { get; set; }
 }

@@ -12,6 +12,7 @@ export const StyleProvider = ({ children }) => {
     articleColor: '#526cad',
     footerListLinkTextColor: '#1d305e',
     footerListTextColor: '#233a71',
+    fontFamily: 'Arial, sans-serif'
   });
 
 

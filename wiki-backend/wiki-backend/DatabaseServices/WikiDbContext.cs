@@ -127,10 +127,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
                 // Paragraphs = paragraphs2
             }
         );
-
-        // modelBuilder.Entity<Paragraph>().HasData(
-        //     paragraphs1.Concat(paragraphs2).ToList()
-        // );
+        
 
         modelBuilder.Entity<UserSubmittedWikiPage>().HasData(
             new UserSubmittedWikiPage
@@ -198,41 +195,6 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
             paragraphs1.Concat(paragraphs2).Concat(paragraphs3).ToList()
         );
         
-        // var comments1 = new List<UserComment>()
-        // {
-        //     new UserComment
-        //     {
-        //         Id = 1,
-        //         UserProfileId = 1,
-        //         Content = "Test comment from Admin",
-        //         WikiPageId = 1,
-        //         PostDate = DateTime.Now,
-        //         IsReply = false,
-        //         IsEdited = false
-        //     },
-        //     new UserComment
-        //     {
-        //         Id = 2,
-        //         UserProfileId = 2,
-        //         Content = "Test comment from Tester",
-        //         WikiPageId = 1,
-        //         PostDate = DateTime.Now,
-        //         IsReply = false,
-        //         IsEdited = false
-        //     },
-        //     new UserComment
-        //     {
-        //         Id = 3,
-        //         UserProfileId = 2,
-        //         Content = "Test comment 2 from Tester",
-        //         WikiPageId = 1,
-        //         PostDate = DateTime.Now,
-        //         IsReply = false,
-        //         IsEdited = true
-        //     }
-        // };
-        //
-        // modelBuilder.Entity<UserComment>().HasData(comments1.ToList());
         
         modelBuilder.Entity<StyleModel>().HasData(
             new StyleModel
@@ -245,20 +207,11 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
                 ArticleRightInnerColor = "#2b4ea6",
                 ArticleColor = "#526cad",
                 FooterListLinkTextColor = "#1d305e",
-                FooterListTextColor = "#233a71"
+                FooterListTextColor = "#233a71",
+                FontFamily = "Arial, sans-serif",
             }
         );
-        // Add any additional model configuration here
-        // For example, configuring relationships, setting primary keys, etc.
-    }
 
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING");
-    //     // Console.WriteLine(connectionString);
-    //     optionsBuilder.UseSqlServer(connectionString);
-    //     optionsBuilder.EnableSensitiveDataLogging();
-    //     optionsBuilder.EnableDetailedErrors();
-    // }
+    }
     
 }

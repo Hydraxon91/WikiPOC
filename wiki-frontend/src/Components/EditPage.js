@@ -6,7 +6,7 @@ import WikiPageComponent from './WikiPageComponent';
 import ReactQuillComponent from './ReactQuillComponent';
 import { useUserContext } from './contexts/UserContextProvider';
 
-const EditPage = ({ page, handleEdit, handleCreate, setCurrentWikiPage }) => {
+const EditPage = ({ page, handleEdit, handleCreate }) => {
   const navigate = useNavigate();
 
   const [temporaryPage, setTemporaryPage] = useState(null);
@@ -16,8 +16,6 @@ const EditPage = ({ page, handleEdit, handleCreate, setCurrentWikiPage }) => {
   const [newPage, setNewPage] = useState(true);
   const [paragraphs, setParagraphs] = useState([]);
   const [emptyFields, setEmptyFields] = useState([]);
-
-  const {decodedTokenContext} = useUserContext();
 
   useEffect(() => {
     if (page) {
