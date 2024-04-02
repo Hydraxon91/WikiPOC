@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = process.env.REACT_APP_API_URL;
 
 export const getUserProfileByUsername = async (username, setUser) => {
     const response = await fetch(`${BASE_URL}/api/UserProfile/GetByUserName/${username}`);
