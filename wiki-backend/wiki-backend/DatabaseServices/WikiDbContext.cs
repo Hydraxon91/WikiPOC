@@ -200,7 +200,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
             new StyleModel
             {
                 Id = 1,
-                Logo = "/img/logo.png",
+                Logo = "logo_pfp.png",
                 WikiName = "Your Wiki",
                 BodyColor = "#507ced",
                 ArticleRightColor = "#3c5fb8",
