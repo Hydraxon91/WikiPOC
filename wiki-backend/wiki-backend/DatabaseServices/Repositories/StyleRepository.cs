@@ -22,8 +22,8 @@ public class StyleRepository : IStyleRepository
         var existingStyles = await _dbContext.Styles.SingleOrDefaultAsync();
         if (logoPictureFile != null)
         {
-            var fileName = $"logo{Path.GetExtension(logoPictureFile.FileName)}";
-            var filePath = Path.Combine(Environment.GetEnvironmentVariable("PROFILE_PICTURES_PATH_CONTAINER"), fileName);
+            var fileName = $"logo/logo{Path.GetExtension(logoPictureFile.FileName)}";
+            var filePath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await logoPictureFile.CopyToAsync(fileStream);

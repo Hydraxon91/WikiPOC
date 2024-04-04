@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ${PROFILE_PICTURES_PATH}:/profile_pictures
+      - ${PICTURES_PATH}:/pictures
     ports:
       - "5000:80"  # Adjust the port mapping as needed
     depends_on:
@@ -25,8 +25,8 @@ services:
       JWT_VALID_AUDIENCE: ${JWT_VALID_AUDIENCE}
       JWT_VALID_ISSUER: ${JWT_VALID_ISSUER}
       JWT_TOKEN_TIME: ${JWT_TOKEN_TIME}
-      PROFILE_PICTURES_PATH: ${PROFILE_PICTURES_PATH}
-      PROFILE_PICTURES_PATH_CONTAINER: ${PROFILE_PICTURES_PATH_CONTAINER}
+      PICTURES_PATH: ${PROFILE_PICTURES_PATH}
+      PICTURES_PATH_CONTAINER: ${PICTURES_PATH_CONTAINER}
 
   sql-server:
     image: mcr.microsoft.com/mssql/server
