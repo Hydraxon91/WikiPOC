@@ -157,6 +157,25 @@ export const updateStyles = async (newStyles, logoPictureFile, token) => {
   }
 };
 
+export const getLogo = async(pictureString) => {
+  try {
+    if (pictureString.startsWith('blob:')) {
+      return pictureString; // Return the Blob URL directly
+    }
+    const response = await fetch(`${BASE_URL}/api/Image/logo/${pictureString}`);
+    if (!response.ok) {
+        throw new Error(`Failed to get Logo Picture ${pictureString}. Status: ${response.status}`);
+    }
+
+    // Assuming the response is the URL of the image
+    const imageUrl = await response.blob();
+
+    return imageUrl;
+  } catch (error) {
+      throw new Error(`Failed to fetch Logo picture: ${error.message}`);
+  }
+};
+
 export const getNewPageTitles = async (token) => {
   const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedPageTitles`, {
     method: 'GET',
