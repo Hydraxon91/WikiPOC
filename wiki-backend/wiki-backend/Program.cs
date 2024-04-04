@@ -16,13 +16,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Get the path for storing profile images from environment variables
 // var profilePicturesPath = Environment.GetEnvironmentVariable("PROFILE_PICTURES_PATH");
-var profilePicturesPath = Environment.GetEnvironmentVariable("PROFILE_PICTURES_PATH_CONTAINER");
+var picturesPath = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER");
 
 // Ensure the path is not null or empty //Comment these lines when running migrations
-// if (string.IsNullOrEmpty(profilePicturesPath))
-// {
-//     throw new Exception($"PROFILE_PICTURES_PATH environment variable is not set. {profilePicturesPath}");
-// }
+if (string.IsNullOrEmpty(picturesPath))
+{
+    throw new Exception($"PROFILE_PICTURES_PATH environment variable is not set. {picturesPath}");
+}
+
 
 // Add services to the container.
 AddCors();
@@ -112,7 +113,7 @@ void AddServices()
     builder.Services.AddTransient<IUserCommentRepository, UserCommentRepository>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ITokenServices, TokenServices>();
-    builder.Services.AddSingleton(new ProfileImageSettings(profilePicturesPath));
+    builder.Services.AddSingleton(new ProfileImageSettings(picturesPath));
 }
 
 void AddAuthentication()

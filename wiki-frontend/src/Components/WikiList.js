@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useStyleContext } from './contexts/StyleContext';
 import { useUserContext } from '../Components/contexts/UserContextProvider';
 import { getNewPageTitles, getUpdatePageTitles } from "../Api/wikiApi";
-import { getProfilePicture } from '../Api/wikiUserApi';
+import { getLogo } from '../Api/wikiUserApi';
 
 const WikiList = ({ pages, handleLogout, cookies}) => {
   const { styles }  = useStyleContext();
@@ -16,7 +16,7 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
   useEffect(()=>{
     if (styles.logo) {
         // Fetch profile picture when the component mounts or profilePicture prop changes
-        getProfilePicture(styles.logo)
+        getLogo(styles.logo)
             .then(data => {
                 if (data instanceof Blob) { // Check if data is a Blob object
                     const imageUrl = URL.createObjectURL(data);
