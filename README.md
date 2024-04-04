@@ -49,8 +49,8 @@ To install WikiPOC, follow these steps:
    - `JWT_VALID_AUDIENCE`: Valid audience for JWT tokens
    - `JWT_VALID_ISSUER`: Valid issuer for JWT tokens
    - `JWT_TOKEN_TIME`: Expiry time for JWT tokens
-   - `PROFILE_PICTURES_PATH`: Path for profile pictures
-   - `PROFILE_PICTURES_PATH_CONTAINER`: Container path for profile pictures
+   - `PICTURES_PATH`: Path for pictures
+   - `PICTURES_PATH_CONTAINER`: Container path for pictures
    - `DB_PASSWORD`: Password for the database
 4. Start the backend services using Docker Compose: `docker-compose up`
 5. Once the backend services are running, navigate to the frontend directory: `cd ../../wiki-frontend`
