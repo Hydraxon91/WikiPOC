@@ -2,6 +2,9 @@ import React, {useState, useEffect} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import EditPage from "./Pages/CreateEditArticle/EditPage.js";
+
+import NewEditPage from "./Pages/CreateEditArticle/NewEditPage.js";
+
 import EditStylePage from "./Pages/EditStylePage/EditStylePage.js";
 import MainPage from "./Pages/MainPage/MainPage.js";
 import HomeComponent from "./Pages/MainPage/Components/HomeComponent.js";
@@ -120,6 +123,7 @@ function App() {
                   <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} cookies={cookies["jwt_token"]}/>} />
                   <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
                   <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
+                  <Route path="/newcreate" element={<NewEditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
                   <Route path="/edit-wiki" element={<EditStylePage cookies={cookies["jwt_token"]}></EditStylePage>}/>
                   <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
                   <Route path="/register" element = {<RegisterPageComponent/>}/>
