@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 import DisplayProfileImageElement from "./DisplayProfileImageElement"
-import "../Styles/profilepage.css";
-import { postProfileEdit } from "../Api/wikiUserApi";
+import "../../../Styles/profilepage.css";
+import { postProfileEdit } from "../../../Api/wikiUserApi";
 
 const ProfileEditorElement = ({user, cookies}) => {
     const[profilePicture, setProfilePicture] = useState(null);

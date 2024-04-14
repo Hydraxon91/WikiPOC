@@ -16,8 +16,8 @@ import UserRequestsPageComponent from "./Pages/UserSubmittedArticle-Update/UserR
 import CompareUpdatePage from "./Pages/UserSubmittedArticle-Update/CompareUpdatePage.js";
 import CheckUserSubmittedPage from "./Pages/UserSubmittedArticle-Update/CheckUserSubmittedPage.js";
 import WikiPage from "./Pages/WikiPage-Article/WikiPage.js";
-import ProfilePage from "./Pages/ProfilePage.js";
-import EditProfilePage from "./Components/EditProfilePage.js";
+import ProfilePage from "./Pages/ProfilePage/ProfilePage.js";
+import EditProfilePage from "./Pages/ProfilePage/EditProfilePage.js";
 
 function App() {
 

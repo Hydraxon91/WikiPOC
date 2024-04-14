@@ -1,9 +1,9 @@
-import ProfileElement from "../Components/ProfileElement";
+import ProfileElement from "./Components/ProfileElement";
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { useUserContext } from '../Components/contexts/UserContextProvider';
-import { getUserProfileByUsername } from "../Api/wikiUserApi";
-import "../Styles/profilepage.css";
+import { useUserContext } from '../../Components/contexts/UserContextProvider';
+import { getUserProfileByUsername } from "../../Api/wikiUserApi";
+import "../../Styles/profilepage.css";
 
 const ProfilePage = () => {
     const navigate = useNavigate();

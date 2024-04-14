@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import { getProfilePicture } from '../Api/wikiUserApi';
-import "../Styles/profilepage.css";
+import { getProfilePicture } from '../../../Api/wikiUserApi';
+import "../../../Styles/profilepage.css";
 
 function DisplayProfileImageElement({profilePicture}) {
     const defaultImageUrl = 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Default-avatar.jpg'; 

@@ -1,8 +1,8 @@
-import ProfileEditorElement from '../Components/ProfileEditorElement';
+import ProfileEditorElement from './Components/ProfileEditorElement';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { useUserContext } from '../Components/contexts/UserContextProvider';
-import { getUserProfileByUsername } from '../Api/wikiUserApi';
+import { useUserContext } from '../../Components/contexts/UserContextProvider';
+import { getUserProfileByUsername } from '../../Api/wikiUserApi';
 
 const EditProfilePage = ({cookies}) => {
     const {decodedTokenContext} = useUserContext();
