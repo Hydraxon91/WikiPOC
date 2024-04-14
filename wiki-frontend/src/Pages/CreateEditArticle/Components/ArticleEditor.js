@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
+import CustomHTMLPopup from './CustomHTMLPopup';
 import 'react-quill/dist/quill.snow.css';
 
 // Define a custom blot for the custom HTML structure
@@ -34,6 +35,7 @@ Quill.register(CustomQuillHTML);
 
 const ArticleEditor = ({ title, siteSub, roleNote, content, setContent, handleFieldChange, handleContentChange, handleSave }) => {
   const quillRef = useRef(null); // Define quillRef
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   useEffect(() => {
     if (quillRef.current) {
@@ -46,6 +48,10 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, setContent, handleFi
     }
   }, []);
 
+  const togglePopupVisibility = () => {
+    setIsPopupVisible(!isPopupVisible);
+  };
+
   const customModules = {
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'],
@@ -57,17 +63,19 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, setContent, handleFi
 
   // Handler for inserting the custom HTML structure
 
-  const insertCustomHTML = () => {
+  const insertCustomHTML = (htmlContent) => {
     const editor = quillRef.current?.getEditor();
     if (editor) {
       const range = editor.getSelection();
-      if (range) {
-        const htmlContent = '<div class="articleRight"><div class="articleRightInner"><img class="paragraphImage" src="https://image.api.playstation.com/vulcan/ap/rnd/202309/0718/2c253de3117182b4a09d02ad16ebc51a25d4ea9208a5d057.jpg" alt="logo"></div><div class="wikipage-content-container">Helldivers never die!</div></div>';
+      const editorLength = editor.getLength();
+      if (editorLength) {
+        // const htmlContent = '<div class="articleRight"><div class="articleRightInner"><img class="paragraphImage" src="https://image.api.playstation.com/vulcan/ap/rnd/202309/0718/2c253de3117182b4a09d02ad16ebc51a25d4ea9208a5d057.jpg" alt="logo"></div><div class="wikipage-content-container">Helldivers never die!</div></div>';
         const format = {
           'custom-html': { content: htmlContent },
         };
         const bounds = 'user';
-        editor.insertText(range.index, '\n', format, bounds);
+        editor.insertText(editorLength, '\n', format, bounds);
+        editor.setSelection(editorLength + htmlContent.length);
       } else {
         console.error('Could not get current selection.');
       }
@@ -168,7 +176,10 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, setContent, handleFi
             modules={customModules}
             ref={quillRef}
         />
-        <button onClick={insertCustomHTML}>Insert Custom HTML</button>
+        {/* <button onClick={insertCustomHTML}>Insert Custom HTML</button> */}
+        {!isPopupVisible && <button onClick={togglePopupVisibility}>Insert Custom HTML</button>}
+        {/* Render the popup component if isPopupVisible is true */}
+        {isPopupVisible && <CustomHTMLPopup insertCustomHTML={insertCustomHTML} togglePopupVisibility={togglePopupVisibility}/>}
       </div>
       
       <button onClick={() => handleSave(content)}>Save</button>
