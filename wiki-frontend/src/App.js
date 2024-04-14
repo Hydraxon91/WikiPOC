@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import EditPage from "./Components/EditPage";
-import EditStylePage from "./Pages/EditStylePage.js";
+import EditStylePage from "./Pages/EditStylePage/EditStylePage.js";
 import MainPage from "./Pages/MainPage.js";
 import HomeComponent from "./Components/HomeComponent.js";
 import { StyleProvider  } from "./Components/contexts/StyleContext.js";
