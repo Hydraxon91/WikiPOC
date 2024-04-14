@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
-import "../Styles/login.css";
+import "../../Styles/login.css";
 import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
 import SuccessfullElement from "./SuccessfullElement";
-import { handleLoginSubmit } from "../Api/wikiAuthApi";
+import { handleLoginSubmit } from "../../Api/wikiAuthApi";
 
 export default function LoginPageComponent({handleLogin}){
     //console.log(user);
@@ -50,11 +50,6 @@ export default function LoginPageComponent({handleLogin}){
             console.log(response)
             if (response?.token) {
                 login(response.token);
-                setShowSuccessMessage(true);
-                // setTimeout(() => {
-                //     setShowSuccessMessage(false);
-                //     navigate("/");
-                // }, 3000);
                 alert('Succesfully logged in!');
                 navigate('/');
             }

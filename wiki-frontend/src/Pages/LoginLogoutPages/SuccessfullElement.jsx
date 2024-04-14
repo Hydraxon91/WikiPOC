@@ -1,4 +1,4 @@
-import "../Styles/successelement.css";
+import "../../Styles/successelement.css";
 
 export default function SuccessfullElement({message}){
     return(

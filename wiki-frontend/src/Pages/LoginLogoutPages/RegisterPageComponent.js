@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
-import "../Styles/register.css";
+import "../../Styles/register.css";
 import { Link, useNavigate } from 'react-router-dom';
 import SuccessfullElement from "./SuccessfullElement";
-import { handleRegisterSubmit } from "../Api/wikiAuthApi";
+import { handleRegisterSubmit } from "../../Api/wikiAuthApi";
 
 export default function RegisterPageComponent(){
     const [email, setEmail] = useState(null);
@@ -58,13 +58,10 @@ export default function RegisterPageComponent(){
             setRoleDropdownClass("role-dropdown wrong-credential");
         }
         if (response?.userName) {
-            setShowSuccessMessage(true);
-            setTimeout(() => {
-                setShowSuccessMessage(false);
-                navigate("/");
-            }, 3000);
+            alert('Succesfully registered!');
+            navigate('/');
+
         }
-        //{Role: Array(1), Email: Array(1), Password: Array(1), Username: Array(1)}
         
     },[response])
 
