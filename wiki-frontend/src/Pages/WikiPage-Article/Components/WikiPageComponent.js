@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useParams} from 'react-router-dom';
-import '../Styles/style.css';
-import { useStyleContext } from './contexts/StyleContext';
+import '../../../Styles/style.css';
+import { useStyleContext } from '../../../Components/contexts/StyleContext';
 
 const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
   const { styles }  = useStyleContext();

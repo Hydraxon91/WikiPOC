@@ -15,7 +15,7 @@ import RegisterPageComponent from "./Components/RegisterPageComponent.jsx";
 import UserRequestsPageComponent from "./Components/UserRequestsPageComponent.js";
 import CompareUpdatePage from "./Components/CompareUpdatePage.js";
 import CheckUserSubmittedPage from "./Components/CheckUserSubmittedPage.js";
-import WikiPage from "./Pages/WikiPage.js";
+import WikiPage from "./Pages/WikiPage-Article/WikiPage.js";
 import ProfilePage from "./Pages/ProfilePage.js";
 import EditProfilePage from "./Components/EditProfilePage.js";
 

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import WikiPageComponent from '../Components/WikiPageComponent';
-import WikiPageCommentsComponent from '../Components/WikiPageCommentsComponent';
-import { useStyleContext } from '../Components/contexts/StyleContext';
-import '../Styles/wikipage.css';
+import WikiPageComponent from './Components/WikiPageComponent';
+import WikiPageCommentsComponent from './Components/WikiPageCommentsComponent';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
+import '../../Styles/wikipage.css';
 
 const WikiPage = ({page, setDecodedTitle, cookies }) => {
     const { styles } = useStyleContext();

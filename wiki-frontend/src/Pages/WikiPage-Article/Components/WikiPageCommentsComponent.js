@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useUserContext } from './contexts/UserContextProvider';
-import { getUserProfileByUsername, postEditedComment } from '../Api/wikiUserApi';
+import { useUserContext } from '../../../Components/contexts/UserContextProvider';
+import { getUserProfileByUsername, postEditedComment } from '../../../Api/wikiUserApi';
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
-import DisplayProfileImageElement from './DisplayProfileImageElement';
+import DisplayProfileImageElement from '../../../Components/DisplayProfileImageElement';
 
 const WikiPageCommentsComponent = ({page, cookies, activeTab}) =>{
     const {decodedTokenContext} = useUserContext();

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStyleContext } from './contexts/StyleContext';
 import { toast } from 'react-toastify';
-import WikiPageComponent from './WikiPageComponent';
+import WikiPageComponent from '../Pages/WikiPage-Article/Components/WikiPageComponent';
 import ReactQuillComponent from './ReactQuillComponent';
 import { useUserContext } from './contexts/UserContextProvider';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import DisplayProfileImageElement from './DisplayProfileImageElement';
-import { postComment } from '../Api/wikiUserApi';
+import DisplayProfileImageElement from '../../../Components/DisplayProfileImageElement';
+import { postComment } from '../../../Api/wikiUserApi';
 
 const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit }) => {
     const [commentText, setCommentText] = useState('');
