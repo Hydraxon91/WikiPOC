@@ -24,6 +24,7 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
       setTitle(page.title);
       setRoleNote(page.roleNote);
       setSiteSub(page.siteSub);
+      setContent(page.content);
       setParagraphs([...page.paragraphs]);
       setNewPage(false);
     }
@@ -32,6 +33,7 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
       setTitle("");
       setRoleNote("");
       setSiteSub("");
+      setContent("")
       setParagraphs([]);
       setNewPage(true);
     }
@@ -47,22 +49,19 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
     switch (field) {
       case 'title':
         setTitle(value);
-        updateTemporaryPage(value, siteSub, roleNote, content);
         break;
       case 'siteSub':
         setSiteSub(value);
-        updateTemporaryPage(title, value, roleNote, content);
         break;
       case 'roleNote':
         setRoleNote(value);
-        updateTemporaryPage(title, siteSub, value, content);
         break;
       default:
         break;
     }
   
     // Update temporary page with the latest values
-    updateTemporaryPage(title, siteSub, roleNote, paragraphs);
+    updateTemporaryPage(title, siteSub, roleNote, content);
   };
 
   const updateTemporaryPage = (title, siteSub, roleNote, content) => {
@@ -114,7 +113,7 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
 
   return (
     <div style={{display: 'flex'}}>
-        <ArticleEditor newPage={newPage} title={title} siteSub={siteSub} roleNote={roleNote} content={content} emptyFields={emptyFields} handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}/>
+        <ArticleEditor newPage={newPage} title={title} siteSub={siteSub} roleNote={roleNote} content={content} setContent={setContent} emptyFields={emptyFields} handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}/>
       {/* <EditPageComponent newPage={newPage} title={title} handleFieldChange={handleFieldChange} siteSub={siteSub} roleNote={roleNote} paragraphs={paragraphs} emptyFields={emptyFields} handleParagraphChange={handleParagraphChange} handleRemoveParagraph={handleRemoveParagraph} handleAddParagraph={handleAddParagraph} handleSave={handleSave} /> */}
         <TestWikiPageComponent page={temporaryPage} activeTab={"wiki"}/>
     </div>

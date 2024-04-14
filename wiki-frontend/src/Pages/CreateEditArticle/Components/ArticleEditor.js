@@ -32,7 +32,7 @@ CustomQuillHTML.tagName = 'div';
 Quill.register(CustomQuillHTML);
 
 
-const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave }) => {
+const ArticleEditor = ({ title, siteSub, roleNote, content, setContent, handleFieldChange, handleContentChange, handleSave }) => {
   const quillRef = useRef(null); // Define quillRef
 
   useEffect(() => {
@@ -56,16 +56,32 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
   };
 
   // Handler for inserting the custom HTML structure
+
+  const insertCustomHTML = () => {
+    const editor = quillRef.current?.getEditor();
+    if (editor) {
+      const range = editor.getSelection();
+      if (range) {
+        const htmlContent = '<div class="articleRight"><div class="articleRightInner"><img class="paragraphImage" src="https://image.api.playstation.com/vulcan/ap/rnd/202309/0718/2c253de3117182b4a09d02ad16ebc51a25d4ea9208a5d057.jpg" alt="logo"></div><div class="wikipage-content-container">Helldivers never die!</div></div>';
+        const format = {
+          'custom-html': { content: htmlContent },
+        };
+        const bounds = 'user';
+        editor.insertText(range.index, '\n', format, bounds);
+      } else {
+        console.error('Could not get current selection.');
+      }
+    }
+  };
+
 //   const insertCustomHTML = () => {
 //     const editor = quillRef.current?.getEditor();
 //     if (editor) {
 //         // Get the current selection
 //         const range = editor.getSelection();
 //         if (range) {
-//             // Disable the editor's autocompletion of newline after insertion
-//             const htmlContent = '<div class="articleRight"><div class="articleRightInner"><img class="paragraphImage" src="https://image.api.playstation.com/vulcan/ap/rnd/202309/0718/2c253de3117182b4a09d02ad16ebc51a25d4ea9208a5d057.jpg" alt="logo"></div><div class="wikipage-content-container">Helldivers never die!</div></div>';
+//             const htmlContent = '\n<div class="articleRight"><div class="articleRightInner"><img class="paragraphImage" src="https://image.api.playstation.com/vulcan/ap/rnd/202309/0718/2c253de3117182b4a09d02ad16ebc51a25d4ea9208a5d057.jpg" alt="logo"></div><div class="wikipage-content-container">Helldivers never die!</div></div>';
 //             editor.insertText(range.index, htmlContent, 'user');
-
 //             // Manually set the selection after the inserted content
 //             editor.setSelection(range.index + htmlContent.length);
 //         } else {
@@ -74,22 +90,22 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
 //     }
 // };
 
-const insertCustomHTML = () => {
-    const editor = quillRef.current?.getEditor();
-    if (editor) {
-      const range = editor.getSelection();
-      if (range) {
-        const htmlContent = '<div class="articleRight"><div class="articleRightInner"><img class="paragraphImage" src="https://image.api.playstation.com/vulcan/ap/rnd/202309/0718/2c253de3117182b4a09d02ad16ebc51a25d4ea9208a5d057.jpg" alt="logo"></div><div class="wikipage-content-container">Helldivers never die!</div></div>';
-        editor.insertEmbed(
-          range.index, 
-          'custom-html', // Custom format name
-          { content: htmlContent }
-        );
-      } else {
-        console.error('Could not get current selection.');
-      }
-    }
-  };
+// const insertCustomHTML = () => {
+//     const editor = quillRef.current?.getEditor();
+//     if (editor) {
+//       const range = editor.getSelection();
+//       if (range) {
+//         const htmlContent = '<div className="class"><div class="articleRightInner"><img class="paragraphImage" src="https://image.api.playstation.com/vulcan/ap/rnd/202309/0718/2c253de3117182b4a09d02ad16ebc51a25d4ea9208a5d057.jpg" alt="logo"></div><div class="wikipage-content-container">Helldivers never die!</div></div>';
+//         editor.insertEmbed(
+//           range.index, 
+//           'custom-html', // Custom format name
+//           { content: htmlContent }
+//         );
+//       } else {
+//         console.error('Could not get current selection.');
+//       }
+//     }
+//   };
 
   
 

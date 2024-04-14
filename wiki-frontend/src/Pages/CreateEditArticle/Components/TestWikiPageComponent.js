@@ -33,6 +33,15 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
       targetRefs.current[index].scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  const processHTMLContent = (htmlContent) => {
+    // Use regex to remove <p> tags around <div class="articleRight">...</div>
+    const processedContent = htmlContent.replace(
+        /<p>"(<div className="articleRight">.*?<\/div>)<\/p>"/g,
+        '$1'
+      );
+    return processedContent;
+  };
   
 
   return (
@@ -48,6 +57,8 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
 
           <p className="siteSub">{`${page.siteSub}`}</p>
           <p className="roleNote">{`${page.roleNote}`}</p>
+          {/* <div dangerouslySetInnerHTML={{ __html: processHTMLContent(page.content) }} /> */}
+
           <div dangerouslySetInnerHTML={{ __html: page.content }} />
 
           {/* {page.paragraphs.map((paragraph, index) => (
