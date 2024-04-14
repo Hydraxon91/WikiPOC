@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation} from 'react-router-dom';
-import '../Styles/style.css';
-import { useStyleContext } from './contexts/StyleContext';
+import '../../Styles/style.css';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
 
 const CompareUpdatePageComponent = ({page, originalPage}) => {
   const { styles }  = useStyleContext();

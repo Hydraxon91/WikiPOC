@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { toast } from 'react-toastify';
-import { getUpdatePageById, getWikiPageByTitle, acceptUserSubmittedUpdate, declineUserSubmittedWikiPage } from '../Api/wikiApi';
+import { getUpdatePageById, getWikiPageByTitle, acceptUserSubmittedUpdate, declineUserSubmittedWikiPage } from '../../Api/wikiApi';
 import CompareUpdatePageComponent from './CompareUpdatePageComponent';
-import '../Styles/compareupdates.css';
+import '../../Styles/compareupdates.css';
 
 const CompareUpdatePage = () => {
     const location = useLocation();
