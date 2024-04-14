@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import EditPage from "./Components/EditPage";
 import EditStylePage from "./Pages/EditStylePage/EditStylePage.js";
-import MainPage from "./Pages/MainPage.js";
+import MainPage from "./Pages/MainPage/MainPage.js";
 import HomeComponent from "./Components/HomeComponent.js";
 import { StyleProvider  } from "./Components/contexts/StyleContext.js";
 import { createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle } from "./Api/wikiApi.js";

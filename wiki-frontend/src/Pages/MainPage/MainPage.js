@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import WikiList from '../Components/WikiList';
-import { useStyleContext } from '../Components/contexts/StyleContext';
-import { useUserContext } from '../Components/contexts/UserContextProvider';
-import { getWikiPageTitles } from '../Api/wikiApi';
+import WikiList from './Components/WikiList';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
+import { useUserContext } from '../../Components/contexts/UserContextProvider';
+import { getWikiPageTitles } from '../../Api/wikiApi';
 
 const MainPage = ({ pages, decodedToken, handleLogout, cookies, setWikiPageTitles }) => {
   const location = useLocation();

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
-import { useStyleContext } from './contexts/StyleContext';
-import { useUserContext } from '../Components/contexts/UserContextProvider';
-import { getNewPageTitles, getUpdatePageTitles } from "../Api/wikiApi";
-import { getLogo } from "../Api/wikiApi";
+import { useStyleContext } from '../../../Components/contexts/StyleContext';
+import { useUserContext } from '../../../Components/contexts/UserContextProvider';
+import { getNewPageTitles, getUpdatePageTitles } from "../../../Api/wikiApi";
+import { getLogo } from "../../../Api/wikiApi";
 
 const WikiList = ({ pages, handleLogout, cookies}) => {
   const { styles }  = useStyleContext();
