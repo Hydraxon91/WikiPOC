@@ -33,7 +33,7 @@ CustomQuillHTML.tagName = 'div';
 Quill.register(CustomQuillHTML);
 
 
-const ArticleEditor = ({ title, siteSub, roleNote, content, setContent, handleFieldChange, handleContentChange, handleSave }) => {
+const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave }) => {
   const quillRef = useRef(null); // Define quillRef
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
@@ -63,87 +63,49 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, setContent, handleFi
 
   // Handler for inserting the custom HTML structure
 
+  // const insertCustomHTML = (htmlContent) => {
+  //   const editor = quillRef.current?.getEditor();
+  //   if (editor) {
+  //     const range = editor.getSelection();
+  //     const editorLength = editor.getLength();
+  //     if (editorLength) {
+  //       const format = {
+  //         'custom-html': { content: htmlContent },
+  //       };
+  //       const bounds = 'user';
+  //       editor.insertText(editorLength, '\n', format, bounds);
+  //       editor.setSelection(editorLength + htmlContent.length);
+
+  //       const delta = editor.clipboard.convert({ html: htmlContent });
+  //       editor.updateContents(delta);
+  //     } else {
+  //       console.error('Could not get current selection.');
+  //     }
+  //   }
+  // };
+
   const insertCustomHTML = (htmlContent) => {
     const editor = quillRef.current?.getEditor();
     if (editor) {
-      const range = editor.getSelection();
-      const editorLength = editor.getLength();
-      if (editorLength) {
-        // const htmlContent = '<div class="articleRight"><div class="articleRightInner"><img class="paragraphImage" src="https://image.api.playstation.com/vulcan/ap/rnd/202309/0718/2c253de3117182b4a09d02ad16ebc51a25d4ea9208a5d057.jpg" alt="logo"></div><div class="wikipage-content-container">Helldivers never die!</div></div>';
+        // Get the current length of the editor's content
+        const editorLength = editor.getLength();
+
+        // Insert the HTML content as a custom format
         const format = {
-          'custom-html': { content: htmlContent },
+            'custom-html': { content: htmlContent },
         };
-        const bounds = 'user';
-        editor.insertText(editorLength, '\n', format, bounds);
-        editor.setSelection(editorLength + htmlContent.length);
-      } else {
+        editor.insertText(editorLength, htmlContent, 'user');
+
+        // Manually set the selection at the end of the inserted content
+        editor.setSelection(editorLength + 1);
+    } else {
         console.error('Could not get current selection.');
-      }
     }
-  };
+};
 
-//   const insertCustomHTML = () => {
-//     const editor = quillRef.current?.getEditor();
-//     if (editor) {
-//         // Get the current selection
-//         const range = editor.getSelection();
-//         if (range) {
-//             const htmlContent = '\n<div class="articleRight"><div class="articleRightInner"><img class="paragraphImage" src="https://image.api.playstation.com/vulcan/ap/rnd/202309/0718/2c253de3117182b4a09d02ad16ebc51a25d4ea9208a5d057.jpg" alt="logo"></div><div class="wikipage-content-container">Helldivers never die!</div></div>';
-//             editor.insertText(range.index, htmlContent, 'user');
-//             // Manually set the selection after the inserted content
-//             editor.setSelection(range.index + htmlContent.length);
-//         } else {
-//             console.error('Could not get current selection.');
-//         }
-//     }
-// };
-
-// const insertCustomHTML = () => {
-//     const editor = quillRef.current?.getEditor();
-//     if (editor) {
-//       const range = editor.getSelection();
-//       if (range) {
-//         const htmlContent = '<div className="class"><div class="articleRightInner"><img class="paragraphImage" src="https://image.api.playstation.com/vulcan/ap/rnd/202309/0718/2c253de3117182b4a09d02ad16ebc51a25d4ea9208a5d057.jpg" alt="logo"></div><div class="wikipage-content-container">Helldivers never die!</div></div>';
-//         editor.insertEmbed(
-//           range.index, 
-//           'custom-html', // Custom format name
-//           { content: htmlContent }
-//         );
-//       } else {
-//         console.error('Could not get current selection.');
-//       }
-//     }
-//   };
-
-  
-
-  const handleImageUpload = async (file) => {
-    // Upload image file to server
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-      const response = await fetch('/upload-image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const imageUrl = await response.json();
-        // Insert image into editor
-        const range = quillRef.current.getEditor().getSelection();
-        const imagePath = imageUrl; // URL of the uploaded image
-        quillRef.current.getEditor().insertEmbed(range.index, 'image', imagePath);
-      } else {
-        console.error('Image upload failed');
-      }
-    } catch (error) {
-      console.error('Error uploading image:', error);
-    }
-  };
 
   return (
-    <div className="article wikipage-component">
+    <div className="article article-editor">
       <div className='editDiv'>
         <label className="editLabel">Article Title:</label>
         <input 

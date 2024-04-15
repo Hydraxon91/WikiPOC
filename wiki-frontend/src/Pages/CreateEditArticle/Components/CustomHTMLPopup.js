@@ -9,6 +9,7 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility }) => {
     // Concatenate the HTML content with the image URL and text
     const htmlContent = `<div class="articleRight"><div class="articleRightInner"><img class="paragraphImage" src="${imageUrl}" alt="logo"></div><div class="wikipage-content-container">${text}</div></div>`;
     insertCustomHTML(htmlContent);
+    // togglePopupVisibility();
   };
 
   return (

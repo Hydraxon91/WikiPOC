@@ -35,13 +35,31 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
   };
 
   const processHTMLContent = (htmlContent) => {
-    // Use regex to remove <p> tags around <div class="articleRight">...</div>
-    const processedContent = htmlContent.replace(
-        /<p>"(<div className="articleRight">.*?<\/div>)<\/p>"/g,
-        '$1'
-      );
-    return processedContent;
+    // Decode HTML entities
+    const decodedContent = htmlContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  
+    // Split the content by '<p>' and '</p>'
+    const paragraphs = decodedContent.split(/(<\/?p>)/g);
+    console.log(paragraphs);
+  
+    // Filter out <div> elements
+    const filteredParagraphs = paragraphs.map(p => {
+      if (!p.includes('<div')) {
+        return `<p>${p}</p>`;
+      } else {
+        // Exclude paragraphs containing <div> tags
+        return p;
+      }
+    }).filter(Boolean); // Remove null entries
+  
+    // Reconstruct the filtered content
+    const reconstructedContent = filteredParagraphs.join('');
+  
+    // Render the reconstructed content as JSX
+    return <div dangerouslySetInnerHTML={{ __html: reconstructedContent }} />;
   };
+  
+  
   
 
   return (
@@ -59,8 +77,8 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
           <p className="roleNote">{`${page.roleNote}`}</p>
           {/* <div dangerouslySetInnerHTML={{ __html: processHTMLContent(page.content) }} /> */}
 
-          <div dangerouslySetInnerHTML={{ __html: page.content }} />
-
+          {/* <div dangerouslySetInnerHTML={{ __html: processHTMLContent(page.content) }} /> */}
+          { processHTMLContent(page.content) }
           {/* {page.paragraphs.map((paragraph, index) => (
             <div key={`paragraph-${index}`} ref={(el) => (targetRefs.current[index] = el)} className={page.approved === false ? 'update-paragraph' : ''}>
               {index!==0 && <h2>{paragraph.title}</h2>}

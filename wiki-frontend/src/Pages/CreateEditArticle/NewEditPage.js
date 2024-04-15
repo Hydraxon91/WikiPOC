@@ -113,7 +113,7 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
 
   return (
     <div style={{display: 'flex'}}>
-        <ArticleEditor newPage={newPage} title={title} siteSub={siteSub} roleNote={roleNote} content={content} setContent={setContent} emptyFields={emptyFields} handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}/>
+        <ArticleEditor newPage={newPage} title={title} siteSub={siteSub} roleNote={roleNote} content={content} emptyFields={emptyFields} handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}/>
       {/* <EditPageComponent newPage={newPage} title={title} handleFieldChange={handleFieldChange} siteSub={siteSub} roleNote={roleNote} paragraphs={paragraphs} emptyFields={emptyFields} handleParagraphChange={handleParagraphChange} handleRemoveParagraph={handleRemoveParagraph} handleAddParagraph={handleAddParagraph} handleSave={handleSave} /> */}
         <TestWikiPageComponent page={temporaryPage} activeTab={"wiki"}/>
     </div>
