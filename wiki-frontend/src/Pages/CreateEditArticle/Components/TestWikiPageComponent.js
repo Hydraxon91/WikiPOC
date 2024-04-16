@@ -34,6 +34,15 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
       targetRefs.current[index].scrollIntoView({ behavior: 'smooth' });
     }
   };
+  const scrollToSubParagraph = (mainIndex, subIndex) => {
+    const mainRef = targetRefs.current[mainIndex];
+    if (mainRef) {
+      const subParagraphs = mainRef.querySelectorAll('h3'); // Assuming h3 tags are used for sub-paragraphs
+      if (subParagraphs[subIndex]) {
+        subParagraphs[subIndex].scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   const extractParagraphTitles = (htmlContent) => {
     const mainRegex = /<h2>(.*?)<\/h2>/g; // Regular expression to match main paragraphs
@@ -133,6 +142,39 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
 
           <p className="siteSub">{`${page.siteSub}`}</p>
           <p className="roleNote">{`${page.roleNote}`}</p>
+          {pTitles.length > 0 && (
+            <div 
+              className={`contentsPanel ${isContentsVisible ? '' : 'minimizedPanel'}`}
+              style={{backgroundColor: styles.articleRightColor}} 
+            >
+              <div className="hidePanel" onClick={toggleContentsVisibility}>[hide]</div>
+              <div className="showPanel" onClick={toggleContentsVisibility}>[show]</div>
+              <div className="contentsHeader">Contents</div>
+              <ul style={{ display: isContentsVisible ? 'block' : 'none' }}>
+                {pTitles.map((paragraph, mainIndex) => (
+                  <li key={`main-${mainIndex}`}>
+                    <span>{`${mainIndex + 1}`}</span>
+                    <Link to="#" onClick={() => scrollToParagraph(mainIndex)}>
+                      {paragraph.mainParagraph}
+                    </Link>
+                    {paragraph.subparagraphs.length > 0 && (
+                      <ul>
+                        {paragraph.subparagraphs.map((subParagraph, subIndex) => (
+                          <li key={`sub-${subIndex}`}>
+                            <span>{`${mainIndex + 1}.${subIndex + 1}`}</span>
+                            <Link to="#" onClick={() => scrollToSubParagraph(mainIndex, subIndex)}>
+                              {subParagraph}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
 
           { processHTMLContent(page.content) }
           {/* {page.paragraphs.map((paragraph, index) => (
@@ -149,29 +191,6 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
               )}
 
               {renderParagraphs(paragraph.content, Boolean(paragraph.paragraphImage))}
-
-              {index === 0 && pTitles.length > 0 && 
-                (
-                  <div 
-                    className={`contentsPanel ${isContentsVisible ? '' : 'minimizedPanel'}`}
-                    style={{backgroundColor: styles.articleRightColor}} 
-                  >
-                    <div className="hidePanel"  onClick={toggleContentsVisibility}>[hide]</div>
-                    <div className="showPanel"  onClick={toggleContentsVisibility}>[show]</div>
-                    <div className="contentsHeader">Contents</div>
-                    <ul style={{ display: isContentsVisible ? 'block' : 'none' }}>
-                    {pTitles.map((paragraphTitle, titleIndex) => (
-                      <li key={`title-${titleIndex}`}>
-                        <span>{`${titleIndex + 1}`}</span>
-                        <Link to="#" onClick={() => scrollToParagraph(titleIndex)}>
-                          {paragraphTitle}
-                        </Link>
-                      </li>
-                    ))}
-                    </ul>
-                  </div>
-                )
-              }
 
             </div>
           ))} */}

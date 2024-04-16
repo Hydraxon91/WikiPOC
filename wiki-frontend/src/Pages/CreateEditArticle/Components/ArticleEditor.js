@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import CustomHTMLPopup from './CustomHTMLPopup';
+import CustomQuillToolbar from './CustomQuillToolbar';
 import 'react-quill/dist/quill.snow.css';
 
 // Define a custom blot for the custom HTML structure
@@ -18,15 +19,15 @@ class CustomQuillHTML extends CustomHTMLBlot{
         return { content: node.innerHTML };
       }
     
-      static formats(node) {
-        // Return formats for the node, if necessary
-        return {};
-      }
+      // static formats(node) {
+      //   // Return formats for the node, if necessary
+      //   return {};
+      // }
     
-      static sanitize(value) {
-        // Sanitize the value, if necessary
-        return value;
-      }
+      // static sanitize(value) {
+      //   // Sanitize the value, if necessary
+      //   return value;
+      // }
 }
 CustomQuillHTML.blotName = 'custom-html';
 CustomQuillHTML.tagName = 'p';
@@ -57,7 +58,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
         ['bold', 'italic', 'underline', 'strike'],
         [{ 'header': [2, 3, false] }],
         ['link'],
-        [{ 'image': {} }, { 'custom-html': {} }],
+        [{ 'image': {} }],
     ],
     
   };
@@ -98,9 +99,9 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
         />
       </div>
       <div>
-        <ReactQuill 
-            theme="snow" 
-            value={content} 
+        {/* <CustomQuillToolbar togglePopupVisibility={togglePopupVisibility} /> */}
+        <ReactQuill
+            value={content? content : ''} 
             onChange={handleContentChange}
             modules={customModules}
             ref={quillRef}
