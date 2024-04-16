@@ -13,8 +13,9 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
 
   useEffect(() => {
     if (page) {
-    //   const paragraphTitles = page.paragraphs.map((paragraph) => paragraph.title).slice(1);
-    //   setPTitles(paragraphTitles);
+      const extractedTitles = extractParagraphTitles(page.content);
+      setPTitles(extractedTitles);
+      console.log(extractedTitles);
     }
   }, [page]);
 
@@ -34,8 +35,44 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     }
   };
 
+  const extractParagraphTitles = (htmlContent) => {
+    const mainRegex = /<h2>(.*?)<\/h2>/g; // Regular expression to match main paragraphs
+    const subRegex = /<h3>(.*?)<\/h3>/g; // Regular expression to match subparagraphs
 
-  
+    let mainMatches = [];
+    let subparagraphs = [];
+
+    // Extract main paragraphs
+    let mainMatch;
+    while ((mainMatch = mainRegex.exec(htmlContent)) !== null) {
+        mainMatches.push(mainMatch[1]); // Store the text content of the main paragraph
+    }
+
+    // Extract subparagraphs and associate them with main paragraphs
+    let currentMainIndex = 0; // Keep track of the index of the current main paragraph
+    let subMatch;
+    while ((subMatch = subRegex.exec(htmlContent)) !== null) {
+        // Find the nearest main paragraph before the current subparagraph
+        while (currentMainIndex < mainMatches.length - 1 && subMatch.index > htmlContent.indexOf(mainMatches[currentMainIndex + 1])) {
+            currentMainIndex++;
+        }
+        // Associate the subparagraph with the current main paragraph
+        subparagraphs.push({
+            mainParagraph: mainMatches[currentMainIndex], // Associate the subparagraph with the current main paragraph
+            text: subMatch[1] // Store the text content of the subparagraph
+        });
+    }
+
+    // Return an array of objects containing main paragraphs and their associated subparagraphs
+    return mainMatches.map((mainParagraph, index) => {
+        const relatedSubparagraphs = subparagraphs.filter(sub => sub.mainParagraph === mainParagraph).map(sub => sub.text);
+        return {
+            mainParagraph: mainParagraph,
+            subparagraphs: relatedSubparagraphs
+        };
+    });
+};
+
   const processHTMLContent = (htmlContent) => {
     // Decode HTML entities
     const decodedContent = htmlContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
@@ -50,15 +87,11 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
         const imageRegex = /<a\s+href="([^"]+)"[^>]*>ImageRef<\/a>##/;
         const textRegex = /<p>(.*?)<\/p>/g;
 
-        console.log("Part:", part); // Log the part content
-
+        // console.log("Part:", part); // Log the part content
         // Match each part of the paragraph
         const classMatch = part.match(classRegex);
-        console.log(classMatch);
         const imageMatch = part.match(imageRegex);
-        console.log(imageMatch);
         const textMatch = Array.from(part.matchAll(textRegex)).map(match => match[1]);
-        console.log(textMatch);
 
         // Check if all matches are found
         if (classMatch && imageMatch && textMatch) {
