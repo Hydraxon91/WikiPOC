@@ -34,33 +34,58 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     }
   };
 
+
+  
   const processHTMLContent = (htmlContent) => {
     // Decode HTML entities
     const decodedContent = htmlContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-  
-    // Split the content by '<p>' and '</p>'
-    const paragraphs = decodedContent.split(/(<\/?p>)/g);
-    console.log(paragraphs);
-  
-    // Filter out <div> elements
-    const filteredParagraphs = paragraphs.map(p => {
-      if (!p.includes('<div')) {
-        return `<p>${p}</p>`;
-      } else {
-        // Exclude paragraphs containing <div> tags
-        return p;
-      }
-    }).filter(Boolean); // Remove null entries
-  
-    // Reconstruct the filtered content
-    const reconstructedContent = filteredParagraphs.join('');
-  
+
+    // Split the content by the delimiter '||'
+    const parts = decodedContent.split(/\|\|/);
+
+    // Process each part
+    const processedParts = parts.map(part => {
+        // Define regular expressions
+        const classRegex = /([^\/]+)\/\//;
+        const imageRegex = /<a\s+href="([^"]+)"[^>]*>ImageRef<\/a>##/;
+        const textRegex = /<p>(.*?)<\/p>/g;
+
+        console.log("Part:", part); // Log the part content
+
+        // Match each part of the paragraph
+        const classMatch = part.match(classRegex);
+        console.log(classMatch);
+        const imageMatch = part.match(imageRegex);
+        console.log(imageMatch);
+        const textMatch = Array.from(part.matchAll(textRegex)).map(match => match[1]);
+        console.log(textMatch);
+
+        // Check if all matches are found
+        if (classMatch && imageMatch && textMatch) {
+            // Extract the class name, image reference, and text content
+            const className = classMatch[1].trim();
+            const imageRef = imageMatch[1].trim();
+            const text = textMatch.map(match => `<p>${match.trim()}</p>`).join('\n');
+            // Construct the new HTML structure
+            return `<div class="${className}" style="background-color: rgb(60, 95, 184);">
+                <div class="articleRightInner" style="background-color: rgb(43, 78, 166);">
+                    <img class="paragraphImage" src="${imageRef}" alt="logo"/>
+                </div>
+                <div class="wikipage-content-container">${text}</div>
+            </div>`;
+        } else {
+            // Leave other parts unchanged
+            return part;
+        }
+      });
+
+    // Reconstruct the content with processed parts
+    const reconstructedContent = processedParts.join('');
+
     // Render the reconstructed content as JSX
     return <div dangerouslySetInnerHTML={{ __html: reconstructedContent }} />;
-  };
-  
-  
-  
+};
+
 
   return (
     <>
@@ -75,9 +100,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
 
           <p className="siteSub">{`${page.siteSub}`}</p>
           <p className="roleNote">{`${page.roleNote}`}</p>
-          {/* <div dangerouslySetInnerHTML={{ __html: processHTMLContent(page.content) }} /> */}
 
-          {/* <div dangerouslySetInnerHTML={{ __html: processHTMLContent(page.content) }} /> */}
           { processHTMLContent(page.content) }
           {/* {page.paragraphs.map((paragraph, index) => (
             <div key={`paragraph-${index}`} ref={(el) => (targetRefs.current[index] = el)} className={page.approved === false ? 'update-paragraph' : ''}>

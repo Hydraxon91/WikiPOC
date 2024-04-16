@@ -4,7 +4,7 @@ import CustomHTMLPopup from './CustomHTMLPopup';
 import 'react-quill/dist/quill.snow.css';
 
 // Define a custom blot for the custom HTML structure
-const CustomHTMLBlot = Quill.import('blots/block/embed')
+const CustomHTMLBlot = Quill.import('blots/block')
 class CustomQuillHTML extends CustomHTMLBlot{
     static create(value) {
         const node = super.create(value);
@@ -29,7 +29,7 @@ class CustomQuillHTML extends CustomHTMLBlot{
       }
 }
 CustomQuillHTML.blotName = 'custom-html';
-CustomQuillHTML.tagName = 'div';
+CustomQuillHTML.tagName = 'p';
 Quill.register(CustomQuillHTML);
 
 
@@ -43,7 +43,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
       const editor = quillRef.current.getEditor();
       if (editor) {
         editor.enable(true);
-        editor.getModule('toolbar').addHandler('custom-html', insertCustomHTML);
+        // editor.getModule('toolbar').addHandler('custom-html', insertCustomHTML);
       }
     }
   }, []);
@@ -54,55 +54,22 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
 
   const customModules = {
     toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'header': [2, 3, false] }],
-      ['link'],
-      [{ 'image': {} }, { 'custom-html': {} }]
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'header': [2, 3, false] }],
+        ['link'],
+        [{ 'image': {} }, { 'custom-html': {} }],
     ],
+    
   };
-
-  // Handler for inserting the custom HTML structure
-
-  // const insertCustomHTML = (htmlContent) => {
-  //   const editor = quillRef.current?.getEditor();
-  //   if (editor) {
-  //     const range = editor.getSelection();
-  //     const editorLength = editor.getLength();
-  //     if (editorLength) {
-  //       const format = {
-  //         'custom-html': { content: htmlContent },
-  //       };
-  //       const bounds = 'user';
-  //       editor.insertText(editorLength, '\n', format, bounds);
-  //       editor.setSelection(editorLength + htmlContent.length);
-
-  //       const delta = editor.clipboard.convert({ html: htmlContent });
-  //       editor.updateContents(delta);
-  //     } else {
-  //       console.error('Could not get current selection.');
-  //     }
-  //   }
-  // };
 
   const insertCustomHTML = (htmlContent) => {
     const editor = quillRef.current?.getEditor();
     if (editor) {
-        // Get the current length of the editor's content
-        const editorLength = editor.getLength();
-
-        // Insert the HTML content as a custom format
-        const format = {
-            'custom-html': { content: htmlContent },
-        };
-        editor.insertText(editorLength, htmlContent, 'user');
-
-        // Manually set the selection at the end of the inserted content
-        editor.setSelection(editorLength + 1);
+        editor.insertEmbed(editor.getLength(), 'custom-html', { content: htmlContent });
     } else {
         console.error('Could not get current selection.');
     }
-};
-
+  };
 
   return (
     <div className="article article-editor">
