@@ -61,7 +61,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
           timeoutId = setTimeout(() => {
             const selection = editor.getSelection();
             if (selection !== null) {
-              console.log(selection);
+              // console.log(selection);
               setLastSelection(selection);
             }
           }, 100); // Adjust the delay as needed

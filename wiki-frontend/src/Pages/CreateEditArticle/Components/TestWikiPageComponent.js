@@ -7,7 +7,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
   const { styles }  = useStyleContext();
   const { title } = useParams();
   const decodedTitle = decodeURIComponent(title);
-  const targetRefs = useRef([]);
+  const paragraphRefs = useRef([]);
   const [pTitles, setPTitles] = useState([]);
   const [isContentsVisible, setIsContentsVisible] = useState(true);
 
@@ -15,7 +15,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     if (page) {
       const extractedTitles = extractParagraphTitles(page.content);
       setPTitles(extractedTitles);
-      // console.log(extractedTitles);
+      console.log(extractedTitles);
     }
   }, [page]);
 
@@ -29,22 +29,9 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     setIsContentsVisible(!isContentsVisible);
   };
 
-  const scrollToParagraph = (index) => {
-    console.log(index);
-    console.log(targetRefs.current);
-    if (targetRefs.current[index]) { 
-      console.log("test");
-      targetRefs.current[index].scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const scrollToSubParagraph = (index, subIndex) => {
-    console.log(index);
-    console.log(subIndex);
-    console.log(targetRefs.current[index]);
-    if (targetRefs.current[index]) { 
-      console.log("test");
-      targetRefs.current[index].scrollIntoView({ behavior: 'smooth' });
+  const scrollToParagraph = (ref) => {
+    if (ref && ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -52,49 +39,56 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     const mainRegex = /<h2>(.*?)<\/h2>/g; // Regular expression to match main paragraphs
     const subRegex = /<h3>(.*?)<\/h3>/g; // Regular expression to match subparagraphs
 
-    let mainMatches = [];
+    let mainParagraphs = [];
     let subparagraphs = [];
 
     // Extract main paragraphs
     let mainMatch;
     while ((mainMatch = mainRegex.exec(htmlContent)) !== null) {
-        mainMatches.push(mainMatch[1]); // Store the text content of the main paragraph
+        const mainId = `main-${mainParagraphs.length + 1}`; // Generate unique ID for main paragraph
+        mainParagraphs.push({ id: mainId, text: mainMatch[1] }); // Store the ID and text content of the main paragraph
     }
 
     // Extract subparagraphs and associate them with main paragraphs
-    let currentMainIndex = 0; // Keep track of the index of the current main paragraph
     let subMatch;
     while ((subMatch = subRegex.exec(htmlContent)) !== null) {
+        const subId = `sub-${subparagraphs.length + 1}`; // Generate unique ID for subparagraph
+        let nearestMainIndex = -1;
+        let nearestMainDistance = Number.MAX_SAFE_INTEGER;
+
         // Find the nearest main paragraph before the current subparagraph
-        while (currentMainIndex < mainMatches.length - 1 && subMatch.index > htmlContent.indexOf(mainMatches[currentMainIndex + 1])) {
-            currentMainIndex++;
+        for (let i = 0; i < mainParagraphs.length; i++) {
+            const mainIndex = htmlContent.indexOf(mainParagraphs[i].text);
+            const subIndex = subMatch.index;
+            const distance = subIndex - mainIndex;
+            if (distance >= 0 && distance < nearestMainDistance) {
+                nearestMainIndex = i;
+                nearestMainDistance = distance;
+            }
         }
-        // Associate the subparagraph with the current main paragraph
-        subparagraphs.push({
-            mainParagraph: mainMatches[currentMainIndex], // Associate the subparagraph with the current main paragraph
-            text: subMatch[1] // Store the text content of the subparagraph
-        });
+
+        if (nearestMainIndex !== -1) {
+            // Associate the subparagraph with the found main paragraph
+            subparagraphs.push({
+                id: subId, // Store the ID and text content of the subparagraph
+                mainId: mainParagraphs[nearestMainIndex].id,
+                text: subMatch[1]
+            });
+        }
     }
 
-    // Return an array of objects containing main paragraphs and their associated subparagraphs
-    return mainMatches.map((mainParagraph, index) => {
-        const relatedSubparagraphs = subparagraphs.filter(sub => sub.mainParagraph === mainParagraph).map(sub => sub.text);
-        return {
-            mainParagraph: mainParagraph,
-            subparagraphs: relatedSubparagraphs
-        };
-    });
+    return { mainParagraphs, subparagraphs };
 };
 
-  const processHTMLContent = (htmlContent, targetRefs) => {
+  const processHTMLContent = (htmlContent) => {
     // Decode HTML entities
     const decodedContent = htmlContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
     // Split the content by the delimiter '||'
     const parts = decodedContent.split(/\|\|/);
 
-    let parCounter = -1;
-    let subParCounter = -1;
+    let parCounter = 0;
+    let subParCounter = 0;
 
     // Process each part
     const processedParts = parts.map(part => {
@@ -123,13 +117,8 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
                 <div class="wikipage-content-container">${text}</div>
             </div>`;
         } else {
-            // Replace <h2> and <h3> tags with IDs containing the counter and increment counter
-            return part.replace(/<h2>/g, () => `<h2 ref={(el) => (targetRefs.current[++parCounter] = el)} id="par${parCounter}">`)
-                       .replace(/<h3>/g, () => `<h3 ref={(el) => (targetRefs.current[++subParCounter] = el)} id="subpar${subParCounter}">`);
-
-;
-
-            return part.replace(/<h2>/g, () => `<h2 id="par${++parCounter}">`).replace(/<h3>/g, () => `<h3 id="subpar${++subParCounter}">`);
+            // Replace <h2> and <h3> tags with IDs containing the counter and increment counter      
+            return part.replace(/<h2>/g, () => `<h2 id="main-${++parCounter}">`).replace(/<h3>/g, () => `<h3 id="sub-${++subParCounter}">`);
 
         }
       });
@@ -139,7 +128,8 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
 
     // Render the reconstructed content as JSX
     return <div dangerouslySetInnerHTML={{ __html: reconstructedContent }} />
-};
+  };
+
 
 
   return (
@@ -155,7 +145,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
 
           <p className="siteSub">{`${page.siteSub}`}</p>
           <p className="roleNote">{`${page.roleNote}`}</p>
-          {pTitles.length > 0 && (
+          {pTitles.mainParagraphs && pTitles.mainParagraphs.length > 0 && (
             <div 
               className={`contentsPanel ${isContentsVisible ? '' : 'minimizedPanel'}`}
               style={{backgroundColor: styles.articleRightColor}} 
@@ -164,32 +154,33 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
               <div className="showPanel" onClick={toggleContentsVisibility}>[show]</div>
               <div className="contentsHeader">Contents</div>
               <ul style={{ display: isContentsVisible ? 'block' : 'none' }}>
-                {pTitles.map((paragraph, mainIndex) => (
-                  <li key={`main-${mainIndex}`}>
+              {pTitles.mainParagraphs.map((paragraph, mainIndex) => (
+                <li key={`main-${mainIndex}`}>
                     <span>{`${mainIndex + 1}`}</span>
-                    <Link to="#" onClick={() => scrollToParagraph(mainIndex)}>
-                      {paragraph.mainParagraph}
-                    </Link>
-                    {paragraph.subparagraphs.length > 0 && (
-                      <ul>
-                        {paragraph.subparagraphs.map((subParagraph, subIndex) => (
-                          <li key={`sub-${subIndex}`}>
-                            <span>{`${mainIndex + 1}.${subIndex + 1}`}</span>
-                            <Link to="#" onClick={() => scrollToParagraph(mainIndex, subIndex)}>
-                              {subParagraph}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
+                    <a href={`#main-${mainIndex + 1}`}>
+                        {paragraph.text}
+                    </a>
+                    {pTitles.subparagraphs && pTitles.subparagraphs.length > 0 && (
+                        <ul>
+                            {pTitles.subparagraphs.filter(subParagraph => subParagraph.mainId === paragraph.id).map((subParagraph, subIndex) => (
+                                <li key={`sub-${subIndex}`}>
+                                    <span>{`${mainIndex + 1}.${subIndex + 1}`}</span>
+                                    <a href={`#sub-${subIndex + 1}`}>
+                                        {subParagraph.text}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
                     )}
-                  </li>
-                ))}
+                </li>
+              ))
+              }
               </ul>
             </div>
           )}
 
 
-          { processHTMLContent(page.content, targetRefs) }
+          { processHTMLContent(page.content) }
           {/* {page.paragraphs.map((paragraph, index) => (
             <div key={`paragraph-${index}`} ref={(el) => (targetRefs.current[index] = el)} className={page.approved === false ? 'update-paragraph' : ''}>
               {index!==0 && <h2>{paragraph.title}</h2>}
