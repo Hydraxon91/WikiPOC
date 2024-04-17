@@ -4,38 +4,39 @@ import CustomHTMLPopup from './CustomHTMLPopup';
 import CustomQuillToolbar from './CustomQuillToolbar';
 import 'react-quill/dist/quill.snow.css';
 
-// Define a custom blot for the custom HTML structure
-const CustomHTMLBlot = Quill.import('blots/block')
-class CustomQuillHTML extends CustomHTMLBlot{
-    static create(value) {
-        const node = super.create(value);
-        // Set the innerHTML of the node based on the value
-        node.innerHTML = value.content;
-        // Set other attributes or styles if needed
-        return node;
-    }
+// // Define a custom blot for the custom HTML structure
+// const CustomHTMLBlot = Quill.import('blots/block')
+// class CustomQuillHTML extends CustomHTMLBlot{
+//     static create(value) {
+//         const node = super.create(value);
+//         // Set the innerHTML of the node based on the value
+//         node.innerHTML = value.content;
+//         // Set other attributes or styles if needed
+//         return node;
+//     }
     
-    static value(node) {
-        return { content: node.innerHTML };
-      }
+//     static value(node) {
+//         return { content: node.innerHTML };
+//       }
     
-      // static formats(node) {
-      //   // Return formats for the node, if necessary
-      //   return {};
-      // }
+//       // static formats(node) {
+//       //   // Return formats for the node, if necessary
+//       //   return {};
+//       // }
     
-      // static sanitize(value) {
-      //   // Sanitize the value, if necessary
-      //   return value;
-      // }
-}
-CustomQuillHTML.blotName = 'custom-html';
-CustomQuillHTML.tagName = 'p';
-Quill.register(CustomQuillHTML);
+//       // static sanitize(value) {
+//       //   // Sanitize the value, if necessary
+//       //   return value;
+//       // }
+// }
+// CustomQuillHTML.blotName = 'custom-html';
+// CustomQuillHTML.tagName = 'p';
+// Quill.register(CustomQuillHTML);
 
 
 const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave }) => {
   const quillRef = useRef(null); // Define quillRef
+  const [lastSelection, setLastSelection] = useState(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   useEffect(() => {
@@ -48,6 +49,27 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
       }
     }
   }, []);
+
+  useEffect(() => {
+    const editor = quillRef.current?.getEditor();
+    if (editor) {
+      const handleChange = (delta, oldDelta, source) => {
+        if (source === 'user') {
+          const selection = editor.getSelection();
+          // console.log(selection);
+          setLastSelection(selection);
+        }
+      };
+
+      editor.on('selection-change', handleChange);
+      editor.on('text-change', handleChange);
+
+      return () => {
+        editor.off('selection-change', handleChange);
+        editor.off('text-change', handleChange);
+      };
+    }
+  }, [quillRef]);
 
   const togglePopupVisibility = () => {
     setIsPopupVisible(!isPopupVisible);
@@ -66,9 +88,12 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
   const insertCustomHTML = (htmlContent) => {
     const editor = quillRef.current?.getEditor();
     if (editor) {
-        editor.insertEmbed(editor.getLength(), 'custom-html', { content: htmlContent });
+      const cursorPosition = lastSelection ? lastSelection.index + lastSelection.length : editor.getSelection();
+      // editor.insertEmbed(cursorPosition, 'html', { content: htmlContent }, 'user');
+      console.log(lastSelection);
+      editor.clipboard.dangerouslyPasteHTML(cursorPosition, htmlContent, 'user');
     } else {
-        console.error('Could not get current selection.');
+      console.error('Could not get current selection.');
     }
   };
 

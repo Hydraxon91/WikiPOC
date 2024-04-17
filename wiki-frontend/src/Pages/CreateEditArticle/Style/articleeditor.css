@@ -11,6 +11,8 @@
   }
   
   .custom-popup {
+    width: 40%;
+    min-height: 24.5%;
     background-color: white;
     padding: 20px;
     border-radius: 5px;
@@ -29,9 +31,20 @@
     margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    resize: vertical; /* Allow vertical resizing */
+    overflow-y: auto; /* Enable vertical scrollbar if needed */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    max-height: 200px; /* Limit the height to avoid excessive expansion */
+  }
+
+  .custom-popup .ql-editor {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    
   }
   
-  .custom-popup button {
+  .custom-popup .confirm-button {
+    margin-top: 10px;
     padding: 8px 15px;
     margin-right: 10px;
     border: none;
@@ -41,7 +54,7 @@
     cursor: pointer;
   }
   
-  .custom-popup button:hover {
-    background-color: #0056b3;
+  .custom-popup .confirm-button:hover {
+    filter: brightness(85%);
   }
   

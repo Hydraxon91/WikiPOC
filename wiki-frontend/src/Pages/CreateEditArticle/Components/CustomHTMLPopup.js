@@ -13,10 +13,11 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility }) => {
 
   const handleConfirm = () => {
     // Create the HTML content string with placeholders
-    const htmlContent = `||articleRight//<a href="${imageUrl}" rel="noopener noreferrer" target="_blank">ImageRef</a>##<a href="${text}" rel="noopener noreferrer" target="_blank">TextRef</a>||`;
-    // const htmlContent = `<a href="${imageUrl}" rel="noopener noreferrer" target="_blank">Test</a>`;
+    const htmlContent = `||articleRight//<a href="${imageUrl}" rel="noopener noreferrer" target="_blank">ImageRef</a>##<a href='${text}' rel="noopener noreferrer" target="_blank">TextRef</a>||`;
+    // console.log(text);
     // Insert the processed HTML content
     insertCustomHTML(htmlContent);
+    togglePopupVisibility();
   };
 
   return (
@@ -35,8 +36,8 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility }) => {
             // ref={quillRef}
         />
 
-        <button onClick={handleConfirm}>Insert HTML</button>
-        <button onClick={togglePopupVisibility}>Cancel</button>
+        <button className='confirm-button' onClick={handleConfirm}>Insert HTML</button>
+        <button className='confirm-button' onClick={togglePopupVisibility}>Cancel</button>
       </div>
     </div>
   );
