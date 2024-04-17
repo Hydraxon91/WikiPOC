@@ -53,11 +53,18 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
   useEffect(() => {
     const editor = quillRef.current?.getEditor();
     if (editor) {
+      let timeoutId;
+
       const handleChange = (delta, oldDelta, source) => {
         if (source === 'user') {
-          const selection = editor.getSelection();
-          // console.log(selection);
-          setLastSelection(selection);
+          clearTimeout(timeoutId); // Clear previous timeout
+          timeoutId = setTimeout(() => {
+            const selection = editor.getSelection();
+            if (selection !== null) {
+              console.log(selection);
+              setLastSelection(selection);
+            }
+          }, 100); // Adjust the delay as needed
         }
       };
 
@@ -90,7 +97,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
     if (editor) {
       const cursorPosition = lastSelection ? lastSelection.index + lastSelection.length : editor.getSelection();
       // editor.insertEmbed(cursorPosition, 'html', { content: htmlContent }, 'user');
-      console.log(lastSelection);
+      console.log(cursorPosition);
       editor.clipboard.dangerouslyPasteHTML(cursorPosition, htmlContent, 'user');
     } else {
       console.error('Could not get current selection.');
