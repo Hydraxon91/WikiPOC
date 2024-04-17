@@ -15,7 +15,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     if (page) {
       const extractedTitles = extractParagraphTitles(page.content);
       setPTitles(extractedTitles);
-      console.log(extractedTitles);
+      // console.log(extractedTitles);
     }
   }, [page]);
 
@@ -30,17 +30,21 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
   };
 
   const scrollToParagraph = (index) => {
-    if (targetRefs.current[index]) {
+    console.log(index);
+    console.log(targetRefs.current);
+    if (targetRefs.current[index]) { 
+      console.log("test");
       targetRefs.current[index].scrollIntoView({ behavior: 'smooth' });
     }
   };
-  const scrollToSubParagraph = (mainIndex, subIndex) => {
-    const mainRef = targetRefs.current[mainIndex];
-    if (mainRef) {
-      const subParagraphs = mainRef.querySelectorAll('h3'); // Assuming h3 tags are used for sub-paragraphs
-      if (subParagraphs[subIndex]) {
-        subParagraphs[subIndex].scrollIntoView({ behavior: 'smooth' });
-      }
+
+  const scrollToSubParagraph = (index, subIndex) => {
+    console.log(index);
+    console.log(subIndex);
+    console.log(targetRefs.current[index]);
+    if (targetRefs.current[index]) { 
+      console.log("test");
+      targetRefs.current[index].scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -82,12 +86,15 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     });
 };
 
-  const processHTMLContent = (htmlContent) => {
+  const processHTMLContent = (htmlContent, targetRefs) => {
     // Decode HTML entities
     const decodedContent = htmlContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
     // Split the content by the delimiter '||'
     const parts = decodedContent.split(/\|\|/);
+
+    let parCounter = -1;
+    let subParCounter = -1;
 
     // Process each part
     const processedParts = parts.map(part => {
@@ -116,8 +123,14 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
                 <div class="wikipage-content-container">${text}</div>
             </div>`;
         } else {
-            // Leave other parts unchanged
-            return part;
+            // Replace <h2> and <h3> tags with IDs containing the counter and increment counter
+            return part.replace(/<h2>/g, () => `<h2 ref={(el) => (targetRefs.current[++parCounter] = el)} id="par${parCounter}">`)
+                       .replace(/<h3>/g, () => `<h3 ref={(el) => (targetRefs.current[++subParCounter] = el)} id="subpar${subParCounter}">`);
+
+;
+
+            return part.replace(/<h2>/g, () => `<h2 id="par${++parCounter}">`).replace(/<h3>/g, () => `<h3 id="subpar${++subParCounter}">`);
+
         }
       });
 
@@ -125,7 +138,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     const reconstructedContent = processedParts.join('');
 
     // Render the reconstructed content as JSX
-    return <div dangerouslySetInnerHTML={{ __html: reconstructedContent }} />;
+    return <div dangerouslySetInnerHTML={{ __html: reconstructedContent }} />
 };
 
 
@@ -162,7 +175,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
                         {paragraph.subparagraphs.map((subParagraph, subIndex) => (
                           <li key={`sub-${subIndex}`}>
                             <span>{`${mainIndex + 1}.${subIndex + 1}`}</span>
-                            <Link to="#" onClick={() => scrollToSubParagraph(mainIndex, subIndex)}>
+                            <Link to="#" onClick={() => scrollToParagraph(mainIndex, subIndex)}>
                               {subParagraph}
                             </Link>
                           </li>
@@ -176,7 +189,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
           )}
 
 
-          { processHTMLContent(page.content) }
+          { processHTMLContent(page.content, targetRefs) }
           {/* {page.paragraphs.map((paragraph, index) => (
             <div key={`paragraph-${index}`} ref={(el) => (targetRefs.current[index] = el)} className={page.approved === false ? 'update-paragraph' : ''}>
               {index!==0 && <h2>{paragraph.title}</h2>}
