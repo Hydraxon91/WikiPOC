@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import '../Style/articleeditor.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css'
@@ -11,6 +11,28 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility }) => {
   const handleContentChange = (value) => {
     setText(value);
   };
+
+  // const handleImageChange = (value) => {
+  //   const editedBlob = trimImageUrl(value);
+  //   console.log(editedBlob);
+  //   editedBlob ? setImageUrl(editedBlob) : setImageUrl(value)
+  // }
+
+  // useEffect(()=>{console.log(imageUrl);},[imageUrl])
+
+  const trimImageUrl = (value) => {
+    const pregex = /^<p>(.*)<\/p>$/;
+    const imgregex = /^<img src="(.*)">$/;
+    const pregexMatch = value.match(pregex);
+    // console.log(pregexMatch);
+    if (pregexMatch && pregexMatch[1]) {
+      // console.log(pregexMatch[1]);
+      const imgregexMatch = pregexMatch[1].match(imgregex)
+      // console.log(imgregexMatch);
+      return imgregexMatch ? imgregexMatch[1] : pregexMatch[1];
+    }
+    return value;
+  }
 
   const trimText = (text) => {
     const textRegex = /<p>(.*?)<\/p>/g;
@@ -25,6 +47,44 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility }) => {
   const handleOrientationChange = (event) => {
     setOrientation(event.target.value);
   };
+  
+  const customModules = {
+    toolbar: [
+        ['link'],
+        ['image'],
+    ],
+  };
+
+  const handleImageChange = (input) => {
+    if(!input) {
+      setImageUrl('');
+      return;
+    }
+
+    if (typeof input === 'string') {
+      // If input is a string, assume it's a URL and directly set it as imageUrl
+      setImageUrl(input);
+    } else if (input instanceof File) {
+      // If input is a File object, convert it to data URI
+      fileToDataUri(input)
+        .then(dataUri => {
+          setImageUrl(dataUri);
+        });
+    }
+    
+  }
+
+  const fileToDataUri = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      resolve(event.target.result);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+    // Assume blobUrl is the blob URL to be converted
+
   
 
   const handleConfirm = () => {
@@ -54,7 +114,16 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility }) => {
           </>
         }
         <label>Image URL:</label>
-        <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+        <input className='image-url-text-input' type="text" value={imageUrl} onChange={(e) => handleImageChange(e.target.value)} />
+        {/* <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg" onChange={(e) => handleImageChange(e.target.files[0])}/> */}
+        {/* <ReactQuill
+          className='image-url-text-input'
+          // theme="snow"
+          value={imageUrl}
+          onChange={handleImageChange}
+          modules={customModules}
+          formats={['image']} // Allow only image format
+        /> */}
 
         <label>Text:</label>
         {/* <textarea value={text} onChange={(e) => setText(e.target.value)} /> */}
@@ -62,8 +131,6 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility }) => {
             theme="snow" 
             value={text} 
             onChange={handleContentChange}
-            // modules={customModules}
-            // ref={quillRef}
         />
 
         <label>Orientation:</label>

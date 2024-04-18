@@ -89,10 +89,10 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
         ['link'],
         [{ 'image': {} }],
     ],
-    
   };
 
   const insertCustomHTML = (htmlContent) => {
+    console.log(htmlContent);
     const editor = quillRef.current?.getEditor();
     if (editor) {
       const cursorPosition = lastSelection ? lastSelection.index + lastSelection.length : editor.getSelection();

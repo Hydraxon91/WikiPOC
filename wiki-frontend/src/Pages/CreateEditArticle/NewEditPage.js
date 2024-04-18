@@ -19,6 +19,7 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
   const [content, setContent] = useState('');
 
   useEffect(() => {
+    console.log(content);
     if (page) {
       setTemporaryPage(page);
       setTitle(page.title);
@@ -40,6 +41,7 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
   }, [page]);
 
   const handleContentChange = (value) => {
+    console.log(value);
     const updatedContent = value;
     setContent(updatedContent);
     updateTemporaryPage(title, siteSub, roleNote, updatedContent);

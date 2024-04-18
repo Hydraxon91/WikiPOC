@@ -17,6 +17,7 @@
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    overflow-y: scroll;
   }
   
   .custom-popup label {
@@ -40,7 +41,7 @@
   .custom-popup .ql-editor {
     max-width: 100%;
     overflow-wrap: break-word;
-    
+  
   }
   
   .custom-popup .confirm-button-container{
@@ -73,3 +74,9 @@
     filter: brightness(85%);
   }
   
+  .quill.image-url-text-input .ql-editor{
+    /* display: none; */
+    overflow-y: scroll;
+    height: 50px;
+    width: 100%;
+  }
