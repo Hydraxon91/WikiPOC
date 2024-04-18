@@ -11,7 +11,7 @@
   }
   
   .custom-popup {
-    width: 40%;
+    max-width: 40%;
     min-height: 24.5%;
     background-color: white;
     padding: 20px;
@@ -43,16 +43,31 @@
     
   }
   
+  .custom-popup .confirm-button-container{
+    display: flex;
+    /* justify-content: center; 
+    align-items: center; */
+  }
+
   .custom-popup .confirm-button {
+    margin: auto;
     margin-top: 10px;
     padding: 8px 15px;
-    margin-right: 10px;
+    /* margin-right: 10px; */
     border: none;
     border-radius: 4px;
     background-color: #007bff;
     color: white;
     cursor: pointer;
   }
+
+  .confirm-button.left{
+    margin-right: 5px;
+  }
+   .confirm-button.right{
+    margin-left: 5px;
+  }
+
   
   .custom-popup .confirm-button:hover {
     filter: brightness(85%);

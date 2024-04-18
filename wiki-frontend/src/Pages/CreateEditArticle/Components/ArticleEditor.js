@@ -97,7 +97,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
     if (editor) {
       const cursorPosition = lastSelection ? lastSelection.index + lastSelection.length : editor.getSelection();
       // editor.insertEmbed(cursorPosition, 'html', { content: htmlContent }, 'user');
-      console.log(cursorPosition);
+      // console.log(cursorPosition);
       editor.clipboard.dangerouslyPasteHTML(cursorPosition, htmlContent, 'user');
     } else {
       console.error('Could not get current selection.');
