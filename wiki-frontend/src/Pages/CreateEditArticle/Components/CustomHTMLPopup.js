@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
+import UserImagesContainer from './UserImagesContainer';
 import '../Style/articleeditor.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css'
 
-const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility }) => {
+const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) => {
   const [imageUrl, setImageUrl] = useState('');
+  const [imageData, setImageData] = useState('');
   const [text, setText] = useState('');
   const [orientation, setOrientation] = useState('left');
 
@@ -18,7 +20,20 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility }) => {
   //   editedBlob ? setImageUrl(editedBlob) : setImageUrl(value)
   // }
 
-  // useEffect(()=>{console.log(imageUrl);},[imageUrl])
+  useEffect(()=>{
+    if (imageUrl) {
+      console.log(imageUrl);
+      const image = images.find(image => image.name === imageUrl);
+      console.log(image);
+      if (image) {
+        setImageData(image.dataURL);
+      }
+    }
+  },[imageUrl])
+
+  const insertImage = (imageData) =>{
+    setImageUrl(imageData);
+  }
 
   const trimImageUrl = (value) => {
     const pregex = /^<p>(.*)<\/p>$/;
@@ -100,30 +115,22 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility }) => {
     <div className='custom-popup-overlay'>
       <div className="custom-popup">
       
-        {imageUrl && text &&
+        {imageData && text &&
           <>
             <label className='article-preview'>Preview:</label>
             <div className='article-container'>
               <div className='article-mid'>
                 <div className='article-right-inner'>
-                  <img className="paragraph-image" src={imageUrl} alt="logo"/>
+                  <img className="paragraph-image" src={imageData} alt="logo"/>
                 </div>
                 <div className="wikipage-content-container">{trimText(text)}</div>
               </div>
             </div>
           </>
         }
-        <label>Image URL:</label>
-        <input className='image-url-text-input' type="text" value={imageUrl} onChange={(e) => handleImageChange(e.target.value)} />
-        {/* <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg" onChange={(e) => handleImageChange(e.target.files[0])}/> */}
-        {/* <ReactQuill
-          className='image-url-text-input'
-          // theme="snow"
-          value={imageUrl}
-          onChange={handleImageChange}
-          modules={customModules}
-          formats={['image']} // Allow only image format
-        /> */}
+        <label>Image</label>
+        {/* <input className='image-url-text-input' type="text" value={imageUrl} onChange={(e) => handleImageChange(e.target.value)} /> */}
+        <UserImagesContainer images={images} insertImage={insertImage}/>
 
         <label>Text:</label>
         {/* <textarea value={text} onChange={(e) => setText(e.target.value)} /> */}

@@ -4,11 +4,10 @@ import '../../../Styles/style.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css'
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 
-const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
+const TestWikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
   const { styles }  = useStyleContext();
   const { title } = useParams();
   const decodedTitle = decodeURIComponent(title);
-  const paragraphRefs = useRef([]);
   const [pTitles, setPTitles] = useState([]);
   const [isContentsVisible, setIsContentsVisible] = useState(true);
 
@@ -28,12 +27,6 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
 
   const toggleContentsVisibility = () => {
     setIsContentsVisible(!isContentsVisible);
-  };
-
-  const scrollToParagraph = (ref) => {
-    if (ref && ref.current) {
-      ref.current.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
   const extractParagraphTitles = (htmlContent) => {
@@ -82,6 +75,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
 };
 
   const processHTMLContent = (htmlContent) => {
+    htmlContent = imageRefRegex(htmlContent);
     // Decode HTML entities
     const decodedContent = htmlContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
@@ -126,117 +120,32 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     return <div dangerouslySetInnerHTML={{ __html: reconstructedContent }} />
   };
 
-//   const processHTMLContent = (htmlContent) => {
-//     // Decode HTML entities
-//     const decodedContent = htmlContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  const imageRefRegex = (htmlContent) =>{
+    const imageRefRegex = /src="([^"]+)"/g;
 
-//     // Split the content by the delimiter '||'
-//     const parts = decodedContent.split(/\|\|/);
+    // Replace image references with actual image data URLs
+    const processedContent = htmlContent.replace(imageRefRegex, (match, imageRef) => {
+        // Find the image in the images array
+        const image = images.find(img => img.name === imageRef);
+        // If image exists, replace the reference with the data URL, otherwise keep the original reference
+        return image ? `src="${image.dataURL}"` : match;
+    });
 
-//     let parCounter = 0;
-//     let subParCounter = 0;
-
-//     let isInContainer = false;
-    
-//     // Define regular expressions
-//     const classRegex = /([^\/]+)\/\//;
-//     const imageRegex = /<a\s+href="([^"]+)"[^>]*>ImageRef<\/a>##/;
-//     const textRegex = /<p>(.*?)<\/p>/g;
-
-//     // Process each part
-//     const processedParts = [];
-//     for (let i = 0; i < parts.length; i++) {
-//         const part = parts[i];
-//         // Skip parts that are just <p> or <p></p>
-//         if (part.trim() === "<p>" || part.trim() === "<p></p>") {
-//           console.log("p detected");
-//             continue;
-//         }
-        
-//         // Match each part of the paragraph
-//         const classMatch = part.match(classRegex);
-//         const imageMatch = part.match(imageRegex);
-//         const textMatch = Array.from(part.matchAll(textRegex)).map(match => match[1]);
-
-//         // Check if class match is "article-freeflow"
-//         if (classMatch && classMatch[1].trim() === "article-freeflow") {
-//           console.log("article freeflow detected");
-//           const classMatch = parts[i].match(classRegex)[1].trim();
-//           console.log("classmatch: ", classMatch);
-//             // If it's the first part of a sequence of "article-freeflow" parts
-//             if (i === 0 || (i > 0 && parts[i] && parts[i].match(classRegex) && classMatch === "article-freeflow")) { 
-//                 const containerParts = [];
-//                 if (!isInContainer) {
-//                   // Start a new container
-//                   processedParts.push('<div class="freeflow-container">');
-//                   isInContainer = true; // Update flag to indicate within a container
-//                 }
-//                 processedParts.push(part);
-//                 console.log("part is: ", part);
-//                 // Add current part to container parts
-//                 containerParts.push(part); 
-//                 console.log("containerparts: "+containerParts);
-//                 // Check subsequent parts until one doesn't match "article-freeflow"
-//                 for (let j = i + 1; j < parts.length; j++) {
-//                     const nextPart = parts[j];
-//                     const nextClassMatch = nextPart.match(classRegex); 
-//                     // Check if next part is a paragraph
-//                     if (nextPart.trim() === "<p>" || nextPart.trim() === "</p>" || nextPart.trim() === "<p></p>" || nextPart.trim() === "</p><p>") {
-//                       console.log("skipping");  
-//                       continue;
-//                   }
-//                     // If next part matches "article-freeflow", add it to container parts
-//                     if (nextClassMatch && nextClassMatch[1].trim() === "article-freeflow") {
-//                         // containerParts.push(nextPart);
-//                         // Skip to the next iteration
-//                         continue;
-//                     } else {
-//                       console.log("breaking bad"); 
-//                       console.log("nextPart: ", nextPart);
-//                         // If next part doesn't match "article-freeflow", break the loop
-//                         // break;
-//                         if (isInContainer) {
-//                           // Close the current container if we were in one
-//                           processedParts.push('</div>');
-//                           isInContainer = false; // Update flag to indicate not within a container
-//                       }
-//                     }
-//                 }
-//                 // Wrap container parts in a <div> with class "freeflow-container"
-//                 // processedParts.push(`<div class="freeflow-container">${containerParts.join('')}</div>`);
-//             }
-//         } else {
-//             // If class match is not "article-freeflow", construct the existing HTML structure
-//             if (classMatch && imageMatch && textMatch) {
-//                 // Extract the class name, image reference, and text content
-//                 const className = classMatch[1].trim();
-//                 const imageRef = imageMatch[1].trim();
-//                 const text = textMatch.map(match => `<p>${match.trim()}</p>`).join('\n');
-//                 const constructedPart = createHTMLElement(className, imageRef, text)
-//                 // Push the constructed part to the processed parts array
-//                 processedParts.push(constructedPart);
-//             } else {
-//                 // If class match is not found, add part to processed parts as is
-//                 processedParts.push(part.replace(/<h2>/g, () => `<h2 id="main-${++parCounter}">`).replace(/<h3>/g, () => `<h3 id="sub-${++subParCounter}">`));
-//             }
-//         }
-//     }
-
-//     // Reconstruct the content with processed parts
-//     const reconstructedContent = processedParts.join('');
-
-//     // Render the reconstructed content as JSX
-//     return <div dangerouslySetInnerHTML={{ __html: reconstructedContent }} />;
-// };
+    return processedContent;
+  }
 
   const createHTMLElement = (className, imageRef, text) =>{
-    const constructedParts = `<div class="${className}" style="background-color: rgb(60, 95, 184);">
+    const image = images.find(image => image.name === imageRef);
+    console.log(image);
+    if (image) {
+      const constructedParts = `<div class="${className}" style="background-color: rgb(60, 95, 184);">
                     <div class="articleRightInner" style="background-color: rgb(43, 78, 166);">
-                        <img class="paragraphImage" src="${imageRef}" alt="logo"/>
+                        <img class="paragraphImage" src="${image.dataURL}" alt="logo"/>
                     </div>
                     <div class="wikipage-content-container">${text}</div>
                 </div>`;
     return constructedParts;
+    }
   };
 
 

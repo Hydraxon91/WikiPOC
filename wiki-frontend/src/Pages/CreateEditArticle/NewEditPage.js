@@ -17,6 +17,8 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
   const [paragraphs, setParagraphs] = useState([]);
   const [emptyFields, setEmptyFields] = useState([]);
   const [content, setContent] = useState('');
+  const [images, setImages] = useState([]);
+  const [usedImages, setUsedImages] = useState([]);
 
   useEffect(() => {
     console.log(content);
@@ -115,9 +117,14 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
 
   return (
     <div style={{display: 'flex'}}>
-        <ArticleEditor newPage={newPage} title={title} siteSub={siteSub} roleNote={roleNote} content={content} emptyFields={emptyFields} handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}/>
+        <ArticleEditor 
+        newPage={newPage} title={title} siteSub={siteSub} 
+        roleNote={roleNote} content={content} emptyFields={emptyFields} 
+        handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
+        images={images} setImages={setImages}
+        />
       {/* <EditPageComponent newPage={newPage} title={title} handleFieldChange={handleFieldChange} siteSub={siteSub} roleNote={roleNote} paragraphs={paragraphs} emptyFields={emptyFields} handleParagraphChange={handleParagraphChange} handleRemoveParagraph={handleRemoveParagraph} handleAddParagraph={handleAddParagraph} handleSave={handleSave} /> */}
-        <TestWikiPageComponent page={temporaryPage} activeTab={"wiki"}/>
+        <TestWikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images}/>
     </div>
   );
 };
