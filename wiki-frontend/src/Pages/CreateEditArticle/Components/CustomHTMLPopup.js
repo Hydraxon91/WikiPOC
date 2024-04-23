@@ -7,18 +7,12 @@ import '../../WikiPage-Article/Style/wikipagecomponent.css'
 const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [imageData, setImageData] = useState('');
-  const [text, setText] = useState('');
+  const [text, setText] = useState('Enter Text Here');
   const [orientation, setOrientation] = useState('left');
 
   const handleContentChange = (value) => {
     setText(value);
   };
-
-  // const handleImageChange = (value) => {
-  //   const editedBlob = trimImageUrl(value);
-  //   console.log(editedBlob);
-  //   editedBlob ? setImageUrl(editedBlob) : setImageUrl(value)
-  // }
 
   useEffect(()=>{
     if (imageUrl) {
@@ -33,20 +27,6 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
 
   const insertImage = (imageData) =>{
     setImageUrl(imageData);
-  }
-
-  const trimImageUrl = (value) => {
-    const pregex = /^<p>(.*)<\/p>$/;
-    const imgregex = /^<img src="(.*)">$/;
-    const pregexMatch = value.match(pregex);
-    // console.log(pregexMatch);
-    if (pregexMatch && pregexMatch[1]) {
-      // console.log(pregexMatch[1]);
-      const imgregexMatch = pregexMatch[1].match(imgregex)
-      // console.log(imgregexMatch);
-      return imgregexMatch ? imgregexMatch[1] : pregexMatch[1];
-    }
-    return value;
   }
 
   const trimText = (text) => {
@@ -98,14 +78,10 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
     reader.readAsDataURL(file);
   });
 
-    // Assume blobUrl is the blob URL to be converted
-
-  
 
   const handleConfirm = () => {
     // Create the HTML content string with placeholders
     const htmlContent = `||article-${orientation}//<a href="${imageUrl}" rel="noopener noreferrer" target="_blank">ImageRef</a>##<a href='${text}' rel="noopener noreferrer" target="_blank">TextRef</a>||`;
-    // console.log(text);
     // Insert the processed HTML content
     insertCustomHTML(htmlContent);
     togglePopupVisibility();
@@ -129,11 +105,9 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
           </>
         }
         <label>Image</label>
-        {/* <input className='image-url-text-input' type="text" value={imageUrl} onChange={(e) => handleImageChange(e.target.value)} /> */}
         <UserImagesContainer images={images} insertImage={insertImage}/>
 
         <label>Text:</label>
-        {/* <textarea value={text} onChange={(e) => setText(e.target.value)} /> */}
         <ReactQuill 
             theme="snow" 
             value={text} 

@@ -1,38 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
-import ReactQuill, { Quill } from 'react-quill';
+import ReactQuill from 'react-quill';
 import CustomHTMLPopup from './CustomHTMLPopup';
 import UserImagesContainer from './UserImagesContainer';
-import CustomQuillToolbar from './CustomQuillToolbar';
 import 'react-quill/dist/quill.snow.css';
-
-// // Define a custom blot for the custom HTML structure
-// const CustomHTMLBlot = Quill.import('blots/block')
-// class CustomQuillHTML extends CustomHTMLBlot{
-//     static create(value) {
-//         const node = super.create(value);
-//         // Set the innerHTML of the node based on the value
-//         node.innerHTML = value.content;
-//         // Set other attributes or styles if needed
-//         return node;
-//     }
-    
-//     static value(node) {
-//         return { content: node.innerHTML };
-//       }
-    
-//       // static formats(node) {
-//       //   // Return formats for the node, if necessary
-//       //   return {};
-//       // }
-    
-//       // static sanitize(value) {
-//       //   // Sanitize the value, if necessary
-//       //   return value;
-//       // }
-// }
-// CustomQuillHTML.blotName = 'custom-html';
-// CustomQuillHTML.tagName = 'p';
-// Quill.register(CustomQuillHTML);
 
 
 const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave, images, setImages }) => {
@@ -96,8 +66,6 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
     const editor = quillRef.current?.getEditor();
     if (editor) {
       const cursorPosition = lastSelection ? lastSelection.index + lastSelection.length : editor.getSelection();
-      // editor.insertEmbed(cursorPosition, 'html', { content: htmlContent }, 'user');
-      // console.log(cursorPosition);
       editor.clipboard.dangerouslyPasteHTML(cursorPosition, htmlContent, 'user');
     } else {
       console.error('Could not get current selection.');
@@ -127,9 +95,6 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        // let fileName = file.name.length > maxNameLength ? // Check if the file name is longer than 20 characters
-        //     file.name.substring(0, maxNameLength / 2) + '...' + file.name.substring(file.name.length - maxNameLength / 2) : // Shorten the name and add ellipsis
-        //     file.name; // Keep the original name if it's not too long
         let fileName = file.name;
 
         // Check if the file name already exists in the images array
