@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import EditPageComponent from './Components/EditPageComponent';
 import ArticleEditor from './Components/ArticleEditor';
 import TestWikiPageComponent from './Components/TestWikiPageComponent';
 import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
 
 const NewEditPage = ({ page, handleEdit, handleCreate }) => {
   const navigate = useNavigate();
-
   const [temporaryPage, setTemporaryPage] = useState(null);
   const [title, setTitle] = useState('');
   const [siteSub, setSiteSub] = useState('');
@@ -21,7 +19,6 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
   const [usedImages, setUsedImages] = useState([]);
 
   useEffect(() => {
-    console.log(content);
     if (page) {
       setTemporaryPage(page);
       setTitle(page.title);
@@ -43,7 +40,6 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
   }, [page]);
 
   const handleContentChange = (value) => {
-    console.log(value);
     const updatedContent = value;
     setContent(updatedContent);
     updateTemporaryPage(title, siteSub, roleNote, updatedContent);
@@ -123,7 +119,6 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
         handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
         images={images} setImages={setImages}
         />
-      {/* <EditPageComponent newPage={newPage} title={title} handleFieldChange={handleFieldChange} siteSub={siteSub} roleNote={roleNote} paragraphs={paragraphs} emptyFields={emptyFields} handleParagraphChange={handleParagraphChange} handleRemoveParagraph={handleRemoveParagraph} handleAddParagraph={handleAddParagraph} handleSave={handleSave} /> */}
         <TestWikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images}/>
     </div>
   );

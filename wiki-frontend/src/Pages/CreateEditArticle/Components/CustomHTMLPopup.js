@@ -16,9 +16,7 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
 
   useEffect(()=>{
     if (imageUrl) {
-      console.log(imageUrl);
       const image = images.find(image => image.name === imageUrl);
-      console.log(image);
       if (image) {
         setImageData(image.dataURL);
       }
@@ -81,7 +79,7 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
 
   const handleConfirm = () => {
     // Create the HTML content string with placeholders
-    const htmlContent = `||article-${orientation}//<a href="${imageUrl}" rel="noopener noreferrer" target="_blank">ImageRef</a>##<a href='${text}' rel="noopener noreferrer" target="_blank">TextRef</a>||`;
+    const htmlContent = `||${orientation}//<a href="${imageUrl}" rel="noopener noreferrer" target="_blank">ImageRef</a>##<a href='${text}' rel="noopener noreferrer" target="_blank">TextRef</a>||`;
     // Insert the processed HTML content
     insertCustomHTML(htmlContent);
     togglePopupVisibility();
@@ -95,8 +93,8 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
           <>
             <label className='article-preview'>Preview:</label>
             <div className='article-container'>
-              <div className='article-mid'>
-                <div className='article-right-inner'>
+              <div className='thumbnail mid'>
+                <div className='thumbnail-inner'>
                   <img className="paragraph-image" src={imageData} alt="logo"/>
                 </div>
                 <div className="wikipage-content-container">{trimText(text)}</div>

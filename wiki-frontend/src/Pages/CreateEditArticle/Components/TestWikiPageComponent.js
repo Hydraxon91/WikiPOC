@@ -136,10 +136,9 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
 
   const createHTMLElement = (className, imageRef, text) =>{
     const image = images.find(image => image.name === imageRef);
-    console.log(image);
     if (image) {
-      const constructedParts = `<div class="${className}" style="background-color: rgb(60, 95, 184);">
-                    <div class="articleRightInner" style="background-color: rgb(43, 78, 166);">
+      const constructedParts = `<div class="thumbnail ${className}" style="background-color: rgb(60, 95, 184);">
+                    <div class="thumbnail-inner" style="background-color: rgb(43, 78, 166);">
                         <img class="paragraphImage" src="${image.dataURL}" alt="logo"/>
                     </div>
                     <div class="wikipage-content-container">${text}</div>

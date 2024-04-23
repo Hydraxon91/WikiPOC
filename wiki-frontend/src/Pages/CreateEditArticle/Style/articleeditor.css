@@ -41,7 +41,6 @@
   .custom-popup .ql-editor {
     max-width: 100%;
     overflow-wrap: break-word;
-  
   }
   
   .custom-popup .confirm-button-container{
@@ -69,11 +68,6 @@
     margin-left: 5px;
   }
 
-  /* .custom-popup label:first-of-type{
-    text-align:center;
-    vertical-align:middle; 
-  } */
-  
   .custom-popup .confirm-button:hover {
     filter: brightness(85%);
   }
@@ -93,13 +87,6 @@
     max-height: 15rem;
     overflow-y: scroll;
   }
-/* 
-  .editor-image-container img {
-    width: auto; 
-    height: 10rem;
-    margin: 5px; 
-  } */
-
 
 .editor-image-container::-webkit-scrollbar {
   width: 8px; 
