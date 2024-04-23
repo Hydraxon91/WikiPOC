@@ -8,6 +8,8 @@
 .wikipage-component{
     padding: 1.25em 1.5em 1.5em 1.5em;
     min-width: 45%;
+    max-width: 50%;
+    overflow-wrap: break-word;
 }
 
 .article-editor{

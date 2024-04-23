@@ -212,8 +212,9 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
             modules={customModules}
             ref={quillRef}
         />
-        <button onClick={togglePopupVisibility}>Insert Custom HTML</button>
-        <input type="file" accept="image/*" onChange={handleImageInsertFromDevice} multiple />
+        <button onClick={togglePopupVisibility}>Insert Thumb</button>
+        <input type="file" id='file' accept="image/*" className='custom-file-upload' onChange={handleImageInsertFromDevice} multiple />
+        <label htmlFor="file" className='label-for-custom-file-upload'>Choose files</label>
         {/* Render the popup component if isPopupVisible is true */}
         {isPopupVisible && <CustomHTMLPopup insertCustomHTML={insertCustomHTML} togglePopupVisibility={togglePopupVisibility} images={images}/>}
         <UserImagesContainer images={images} insertImage={insertImageToEditor}/>
