@@ -7,7 +7,7 @@ public class UserSubmittedWikiPage : WikiPage
 {
     // public new int Id { get; set; }
     [ForeignKey("WikiPage")]
-    public int? WikiPageId { get; set; }
+    public Guid? WikiPageId { get; set; }
     [JsonIgnore]
     public WikiPage? WikiPage { get; set; }
     
