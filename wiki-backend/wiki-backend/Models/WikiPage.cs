@@ -10,7 +10,7 @@ public class WikiPage
     public string RoleNote { get; set; }
     public string? Content { get; set; }
     public DateTime? PostDate { get; set; }
-    public List<DateTime> UpdateDates { get; set; } = new List<DateTime>();
+    public DateTime? LastUpdateDate { get; set; }
     public bool LegacyWikiPage { get; set; } = false;
     public ICollection<Paragraph> Paragraphs { get; set; } = new List<Paragraph>();
     public ICollection<UserComment> Comments { get; set; } = new List<UserComment>();
