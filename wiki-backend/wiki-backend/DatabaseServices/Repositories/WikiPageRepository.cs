@@ -25,7 +25,7 @@ public class WikiPageRepository : IWikiPageRepository
             .ToListAsync();
     }
 
-    public async Task<WikiPage?> GetByIdAsync(int id)
+    public async Task<WikiPage?> GetByIdAsync(Guid id)
     {
         return await _context.WikiPages
             .Include(wp => wp.Paragraphs)
@@ -48,7 +48,7 @@ public class WikiPageRepository : IWikiPageRepository
     {
         foreach (var paragraph in wikiPage.Paragraphs)
         {
-            paragraph.Id = 0;
+            paragraph.Id = new Guid();
             paragraph.WikiPage = wikiPage;
             paragraph.WikiPageId = wikiPage.Id;
         }
@@ -60,7 +60,7 @@ public class WikiPageRepository : IWikiPageRepository
     {
         foreach (var paragraph in wikiPage.Paragraphs)
         {
-            paragraph.Id = 0;
+            paragraph.Id = new Guid();
             paragraph.WikiPage = wikiPage;
             paragraph.WikiPageId = wikiPage.Id;
         }
@@ -175,7 +175,7 @@ public class WikiPageRepository : IWikiPageRepository
     {
         foreach (var paragraph in updatedWikiPage.Paragraphs)
         {
-            paragraph.Id = 0;
+            paragraph.Id = new Guid();
             paragraph.WikiPage = updatedWikiPage;
             paragraph.WikiPageId = updatedWikiPage.Id;
         }
@@ -183,7 +183,7 @@ public class WikiPageRepository : IWikiPageRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         var wikiPage = await _context.WikiPages
             .Include(wp => wp.Paragraphs)
@@ -198,7 +198,7 @@ public class WikiPageRepository : IWikiPageRepository
         }
     }
 
-    public async Task DeleteUserSubmittedAsync(int id)
+    public async Task DeleteUserSubmittedAsync(Guid id)
     {
         var wikiPage = await _context.UserSubmittedWikiPages
             .Include(wp => wp.Paragraphs)
@@ -213,12 +213,12 @@ public class WikiPageRepository : IWikiPageRepository
         }
     }
     
-    public async Task<IEnumerable<Tuple<string, int>>> GetSubmittedPageTitlesAndIdAsync()
+    public async Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedPageTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage).Select(page => new Tuple<string, int>(page.Title, page.Id)).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage).Select(page => new Tuple<string, Guid>(page.Title, page.Id)).ToListAsync();
     }
     
-    public async Task<UserSubmittedWikiPage?> GetSubmittedPageByIdAsync(int id)
+    public async Task<UserSubmittedWikiPage?> GetSubmittedPageByIdAsync(Guid id)
     {
         return await _context.UserSubmittedWikiPages
             .Where(page => page.IsNewPage==true)
@@ -227,12 +227,12 @@ public class WikiPageRepository : IWikiPageRepository
             .FirstOrDefaultAsync(p => p.Id == id);
     }
     
-    public async Task<IEnumerable<Tuple<string, int>>> GetSubmittedUpdateTitlesAndIdAsync()
+    public async Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedUpdateTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false).Select(page => new Tuple<string, int>(page.Title, page.Id)).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false).Select(page => new Tuple<string, Guid>(page.Title, page.Id)).ToListAsync();
     }
     
-    public async Task<UserSubmittedWikiPage?> GetSubmittedUpdateByIdAsync(int id)
+    public async Task<UserSubmittedWikiPage?> GetSubmittedUpdateByIdAsync(Guid id)
     {
         return await _context.UserSubmittedWikiPages
             .Where(page => page.IsNewPage==false)
