@@ -15,8 +15,8 @@ public class UserProfileController : ControllerBase
         _profileRepository = profileRepository;
     }
     
-    [HttpGet("GetById/{id:int}")]
-    public async Task<ActionResult<UserProfile>> GetProfileById(int id)
+    [HttpGet("GetById/{id:guid}")]
+    public async Task<ActionResult<UserProfile>> GetProfileById(Guid id)
     {
         var profile = await _profileRepository.GetByIdAsync(id);
 
@@ -48,8 +48,8 @@ public class UserProfileController : ControllerBase
         return Ok(profile);
     }
     
-    [HttpPut("UpdateProfile/{id:int}")]
-    public async Task<IActionResult> UpdateUserProfile(int id, [FromForm] UserUpdateForm userUpdateForm)
+    [HttpPut("UpdateProfile/{id:guid}")]
+    public async Task<IActionResult> UpdateUserProfile(Guid id, [FromForm] UserUpdateForm userUpdateForm)
     {
         if (userUpdateForm.UserProfile == null)
         {
@@ -67,8 +67,8 @@ public class UserProfileController : ControllerBase
         }
     }
     
-    [HttpDelete("DeleteUserProfile")]
-    public async Task<IActionResult> DeleteUserProfile(int id)
+    [HttpDelete("DeleteUserProfile/{id:guid}")]
+    public async Task<IActionResult> DeleteUserProfile(Guid id)
     {
         await _profileRepository.DeleteAsync(id);
         
