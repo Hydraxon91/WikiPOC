@@ -12,6 +12,10 @@
     overflow-wrap: break-word;
 }
 
+.wikipage-component img{
+    max-width: 20rem;
+}
+
 .article-editor{
     padding: 1.25em 1.5em 1.5em 1.5em;
     width: 50%;

@@ -76,7 +76,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
     const editor = quillRef.current?.getEditor();
     if (editor) {
       const cursorPosition = lastSelection ? lastSelection.index + lastSelection.length : editor.getSelection();
-      const insertData = `<img src="${imageData}" alt="alt"/>`
+      const insertData = `<img src="${imageData}" alt="${imageData}"/>`;
       editor.clipboard.dangerouslyPasteHTML(cursorPosition, insertData, 'user');
     } else {
       console.error('Could not get current selection.');
@@ -89,8 +89,6 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
     const acceptedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Accepted image types
     const maxAspectRatio = 2; // Maximum aspect ratio (width / height)
     const maxSizeInBytes = 10 * 1024 * 1024; // Maximum size in bytes (10MB)
-    const maxNameLength = 20;
-
     const newImages = [];
 
     for (let i = 0; i < files.length; i++) {
