@@ -22,8 +22,8 @@ public class UserCommentController : ControllerBase
         _userManager = userManager;
     }
 
-    [HttpGet("GetById/{id:int}")]
-    public async Task<ActionResult<UserComment>> GetComment(int id)
+    [HttpGet("GetById/{id:guid}")]
+    public async Task<ActionResult<UserComment>> GetComment(Guid id)
     {
         var comment = await _commentRepository.GetByIdAsync(id);
 
@@ -44,8 +44,8 @@ public class UserCommentController : ControllerBase
         return CreatedAtAction(nameof(PostComment), new { id = comment.Id }, comment);
     }
     
-    [HttpPut("comment/{id:int}")]
-    public async Task<IActionResult> EditComment(int id, [FromBody] string updatedContent)
+    [HttpPut("comment/{id:guid}")]
+    public async Task<IActionResult> EditComment(Guid id, [FromBody] string updatedContent)
     {
         var userId = GetUserIdFromRequest();
 
@@ -65,8 +65,8 @@ public class UserCommentController : ControllerBase
         return Unauthorized(new { Message = "Unauthorized to update this comment" });
     }
     
-    [HttpDelete("comment/{id:int}")]
-    public async Task<IActionResult> DeleteComment(int id)
+    [HttpDelete("comment/{id:guid}")]
+    public async Task<IActionResult> DeleteComment(Guid id)
     {
         var userId = GetUserIdFromRequest();
         var existingComment = await _commentRepository.GetByIdAsync(id);
