@@ -5,5 +5,5 @@ namespace wiki_backend.Models;
 public class ApplicationUser : IdentityUser
 {
     public UserProfile? Profile { get; set; }
-    public int ProfileId { get; set; }
+    public Guid ProfileId { get; set; }
 }
