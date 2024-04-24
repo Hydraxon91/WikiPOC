@@ -152,7 +152,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
             new UserSubmittedWikiPage
             {
                 Id = wikiPage4Id,
-                WikiPageId = 1,
+                WikiPageId = wikiPage1Id,
                 Title = "Example Page 1",
                 SiteSub = "Example SiteSub 1 Update",
                 RoleNote = "Example RoleNote 1 Update", 
