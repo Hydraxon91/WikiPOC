@@ -40,9 +40,10 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
   }, [page]);
 
   const handleContentChange = (value) => {
-    const updatedContent = value;
-    setContent(updatedContent);
-    updateTemporaryPage(title, siteSub, roleNote, updatedContent);
+    setContent(value);
+    const usedImagesArray = images.filter(image => value.includes(image.name));
+    setUsedImages(usedImagesArray);
+    updateTemporaryPage(title, siteSub, roleNote, value);
   };
 
   const handleFieldChange = (field, value) => {
@@ -73,43 +74,47 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
     });
   };
 
-  const handleSave = () => {
-    const requiredFields = ['title', 'content'];
+  // const handleSave = () => {
+  //   const requiredFields = ['title', 'content'];
+  //   const emptyFields = paragraphs.reduce((emptyFields, paragraph, index) => {
+  //     const missingFields = requiredFields.filter((field) => !paragraph[field]);
+  //     if (missingFields.length > 0) {
+  //       emptyFields.push(index);
+  //     }
+  //     return emptyFields;
+  //   }, []);
   
-    const emptyFields = paragraphs.reduce((emptyFields, paragraph, index) => {
-      const missingFields = requiredFields.filter((field) => !paragraph[field]);
-      if (missingFields.length > 0) {
-        emptyFields.push(index);
-      }
-      return emptyFields;
-    }, []);
+  //   if (emptyFields.length > 0 || !title) {
+  //     setEmptyFields(emptyFields);
+  //     alert('Please make sure to have a title for all paragraphs content.');
+  //     return;
+  //   }
   
-    if (emptyFields.length > 0 || !title) {
-      setEmptyFields(emptyFields);
-      alert('Please make sure to have a title for all paragraphs content.');
-      return;
-    }
+  //   setEmptyFields([]);
   
-    setEmptyFields([]);
-  
-    const savePromise = newPage
-      ? handleCreate(temporaryPage)
-      : handleEdit({ ...page, title, paragraphs, siteSub, roleNote });
+  //   const savePromise = newPage
+  //     ? handleCreate(temporaryPage)
+  //     : handleEdit({ ...page, title, paragraphs, siteSub, roleNote });
 
-    console.log(savePromise);
+  //   console.log(savePromise);
 
-    savePromise
-      .then((data) => {
-        // console.log(data);
-        // setCurrentWikiPage(temporaryPage);
-        navigate(`/page/${title}`);
-      })
-      .catch((error) => {
-        console.error("Error during save:", error);
-        // Use toast.error to display an error message
-        toast.error('An error occurred while saving. Please try again.');
-      });
-  };
+  //   savePromise
+  //     .then((data) => {
+  //       // console.log(data);
+  //       // setCurrentWikiPage(temporaryPage);
+  //       navigate(`/page/${title}`);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error during save:", error);
+  //       // Use toast.error to display an error message
+  //       toast.error('An error occurred while saving. Please try again.');
+  //     });
+  // };
+
+  const handleSave = () =>{
+    console.log(images);
+    console.log(usedImages);
+  }
 
   return (
     <div style={{display: 'flex'}}>
