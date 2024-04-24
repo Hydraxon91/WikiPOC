@@ -37,6 +37,11 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         var faker = new Faker();
         
         modelBuilder.Entity<WikiPage>()
+            .Property(wp => wp.Id)
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("NEWID()");
+        
+        modelBuilder.Entity<WikiPage>()
             .HasMany(wp => wp.Paragraphs)
             .WithOne(p => p.WikiPage)
             .HasForeignKey(p => p.WikiPageId)
@@ -69,12 +74,17 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
             .WithMany() // No need to have a navigation property in UserProfile
             .HasForeignKey(uc => uc.UserProfileId);
         
+        var wikiPage1Id = Guid.NewGuid();
+        var wikiPage2Id = Guid.NewGuid();
+        var wikiPage3Id = Guid.NewGuid();
+        var wikiPage4Id = Guid.NewGuid();
+        
         var paragraphs1 = new List<Paragraph>()
         {
             new Paragraph
             {
-                Id = 1, // Set a negative value for Id
-                WikiPageId = 1,
+                Id = Guid.NewGuid(), 
+                WikiPageId = wikiPage1Id,
                 Title = $"Example Page 1 - Paragraph 1",
                 Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
                 ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
@@ -83,8 +93,8 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         };
         paragraphs1.AddRange(Enumerable.Range(2, 5).Select(index => new Paragraph
         {
-            Id = index, // Set negative values for Id
-            WikiPageId = 1,
+            Id = Guid.NewGuid(), 
+            WikiPageId = wikiPage1Id,
             Title = $"Example Page 1 - Paragraph {index}",
             Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
         }));
@@ -93,8 +103,8 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         {
             new Paragraph
             {
-                Id = 7, // Set a negative value for Id
-                WikiPageId = 2,
+                Id = Guid.NewGuid(), 
+                WikiPageId = wikiPage2Id,
                 Title = $"Example Page 2 - Paragraph 1",
                 Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
                 ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
@@ -103,16 +113,16 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         };
         paragraphs2.AddRange(Enumerable.Range(2, 5).Select(index => new Paragraph
         {
-            Id = index + 6, // Set negative values for Id
-            WikiPageId = 2,
+            Id = Guid.NewGuid(), 
+            WikiPageId = wikiPage2Id,
             Title = $"Example Page 2 - Paragraph {index}",
-            Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
+            Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)),
         }));
 
         modelBuilder.Entity<WikiPage>().HasData(
             new WikiPage
             {
-                Id = 1,
+                Id = wikiPage1Id,
                 Title = "Example Page 1",
                 SiteSub = "Example SiteSub 1",
                 RoleNote = "Example RoleNote 1",
@@ -120,7 +130,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
             },
             new WikiPage
             {
-                Id = 2,
+                Id = wikiPage2Id,
                 Title = "Example Page 2",
                 SiteSub = "Example SiteSub 2",
                 RoleNote = "Example RoleNote 2",
@@ -132,7 +142,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<UserSubmittedWikiPage>().HasData(
             new UserSubmittedWikiPage
             {
-                Id = 3,
+                Id = wikiPage3Id,
                 Title = "User Submitted Page",
                 SiteSub = "User Submitted SiteSub",
                 RoleNote = "User Submitted RoleNote", 
@@ -141,7 +151,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
             },
             new UserSubmittedWikiPage
             {
-                Id = 4,
+                Id = wikiPage4Id,
                 WikiPageId = 1,
                 Title = "Example Page 1",
                 SiteSub = "Example SiteSub 1 Update",
@@ -155,8 +165,8 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         {
             new Paragraph
             {
-                Id = 13,
-                WikiPageId = 3,
+                Id = Guid.NewGuid(),
+                WikiPageId = wikiPage3Id,
                 Title = "User Submitted Paragraph 1",
                 Content = "User Submitted Content 1",
                 ParagraphImage = "https://i.kym-cdn.com/entries/icons/original/000/029/079/hellothere.jpg",
@@ -164,8 +174,8 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
             },
             new Paragraph
             {
-                Id = 14,
-                WikiPageId = 3,
+                Id = Guid.NewGuid(),
+                WikiPageId = wikiPage3Id,
                 Title = "User Submitted Paragraph 2",
                 Content = "User Submitted Content 2",
                 ParagraphImage = "https://i.ytimg.com/vi/jAB3mMdS0xE/maxresdefault.jpg",
@@ -173,8 +183,8 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
             },
             new Paragraph
             {
-                Id = 15,
-                WikiPageId = 4,
+                Id = Guid.NewGuid(),
+                WikiPageId = wikiPage4Id,
                 Title = "New Paragraph 1",
                 Content = "Helldivers never die!",
                 ParagraphImage = "https://i.ytimg.com/vi/nhhICroqfpU/hq720_live.jpg",
@@ -182,8 +192,8 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
             },
             new Paragraph
             {
-                Id = 16,
-                WikiPageId = 4,
+                Id = Guid.NewGuid(),
+                WikiPageId = wikiPage4Id,
                 Title = "Liber-Tea",
                 Content = "Liber-Tea is a funny line haha",
                 ParagraphImage = "https://i.kym-cdn.com/photos/images/original/002/760/001/66d",
