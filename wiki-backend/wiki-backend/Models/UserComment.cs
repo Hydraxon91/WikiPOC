@@ -19,6 +19,6 @@ public class UserComment
     public bool IsReply { get; set; }
     [ForeignKey(nameof(ReplayToCommentId))]
     public UserComment? ReplyToComment { get; set; }
-    public int? ReplayToCommentId { get; set; }
+    public Guid? ReplayToCommentId { get; set; }
     public bool IsEdited { get; set; } = false;
 }
