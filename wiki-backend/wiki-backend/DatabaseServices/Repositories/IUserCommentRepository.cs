@@ -4,8 +4,8 @@ namespace wiki_backend.DatabaseServices.Repositories;
 
 public interface IUserCommentRepository
 {
-    Task<UserComment?> GetByIdAsync(int id);
+    Task<UserComment?> GetByIdAsync(Guid id);
     Task AddAsync(UserComment comment);
-    Task UpdateAsync(int commentId, string updatedContent);
-    Task DeleteAsync(int id);
+    Task UpdateAsync(Guid commentId, string updatedContent);
+    Task DeleteAsync(Guid id);
 }

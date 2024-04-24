@@ -12,7 +12,7 @@ public class UserCommentRepository : IUserCommentRepository
         _context = context;
     }
     
-    public async Task<UserComment?> GetByIdAsync(int id)
+    public async Task<UserComment?> GetByIdAsync(Guid id)
     {
         return await _context.UserComments
             .Include(uc => uc.UserProfile)
@@ -25,7 +25,7 @@ public class UserCommentRepository : IUserCommentRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(int commentId, string updatedContent)
+    public async Task UpdateAsync(Guid commentId, string updatedContent)
     {
         var existingComment = await _context.UserComments.SingleOrDefaultAsync(uc => uc.Id == commentId);
         if (existingComment == null)
@@ -38,7 +38,7 @@ public class UserCommentRepository : IUserCommentRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         var existingComment = await _context.UserComments.SingleOrDefaultAsync(uc => uc.Id == id);
         if (existingComment != null)
