@@ -330,7 +330,8 @@ void SeedComments()
 
     if (adminUser != null && testUser != null)
     {
-        var wikiPage = dbContext.WikiPages.FirstOrDefault(wp => wp.Title == "Example Page 1");
+        var wikiPage = dbContext.WikiPages.FirstOrDefault(wp => wp.Title == "Example Page 1" && wp.SiteSub == "Example SiteSub 1");
+
         if (wikiPage != null)
         {
             var comments = new List<UserComment>
