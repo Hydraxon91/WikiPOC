@@ -87,7 +87,7 @@ public class WikiPagesController : ControllerBase
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
             return BadRequest(errors);
         }
-        
+        wikiPage.PostDate = DateTime.Now;
         await _wikiPageRepository.AddUserSubmittedPageAsync(wikiPage);
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
@@ -138,6 +138,7 @@ public class WikiPagesController : ControllerBase
             return BadRequest(errors);
         }
         updatedWikiPage.Id = Guid.NewGuid();
+        updatedWikiPage.PostDate = DateTime.Now;
         // Console.WriteLine(updatedWikiPage);
         // if (updatedWikiPage.WikiPage == null)
         // {
