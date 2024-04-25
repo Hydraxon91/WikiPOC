@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { getUpdatePageById, getWikiPageByTitle, acceptUserSubmittedUpdate, declineUserSubmittedWikiPage } from '../../Api/wikiApi';
 import CompareUpdatePageComponent from './CompareUpdatePageComponent';
+import WikiPage from '../WikiPage-Article/WikiPage';
 import '../../Styles/compareupdates.css';
 
 const CompareUpdatePage = () => {
@@ -23,14 +24,15 @@ const CompareUpdatePage = () => {
 
     useEffect(()=>{
         // console.log(updatePage);
-        if (updatePage && updatePage.title) {
-            fetchOriginalPage(updatePage.title);
+        if (updatePage && updatePage.wikiPage.title) {
+            fetchOriginalPage(updatePage.wikiPage.title);
         }
     },[updatePage])
 
     const fetchUpdatePage = async (id) => {
         try {
             const data = await getUpdatePageById(id, cookies['jwt_token'])
+            console.log(data);
             setUpdatePage(data)
         } catch (error) {
           console.error('Error fetching page:', error);
@@ -40,7 +42,7 @@ const CompareUpdatePage = () => {
       const fetchOriginalPage = async (title) => {
         try {
             const data = await getWikiPageByTitle(title)
-            // console.log(data);
+            console.log(data);
             setOriginalPage(data)
         } catch (error) {
           console.error('Error fetching page:', error);
@@ -79,14 +81,21 @@ const CompareUpdatePage = () => {
             </div>
             <div style={{display: 'flex'}}>
             {
-                originalPage &&
+                originalPage && originalPage.wikiPage && originalPage.wikiPage.legacyWikiPage ?
                 (
                     <>
-                        <CompareUpdatePageComponent page={originalPage}></CompareUpdatePageComponent>
+                        <CompareUpdatePageComponent page={originalPage.wikiPage}></CompareUpdatePageComponent>
                         <div style={{ borderRight: '1px solid #ccc', margin: '0 10px' }}></div>
-                        <CompareUpdatePageComponent page={updatePage} originalPage={originalPage}></CompareUpdatePageComponent>
+                        <CompareUpdatePageComponent page={updatePage.wikiPage} originalPage={originalPage.wikiPage}></CompareUpdatePageComponent>
                     </>
-                )
+                ) :
+                (
+                  <>
+                    <WikiPage page={originalPage} disableNavbar={true}></WikiPage>
+                    <div style={{ borderRight: '1px solid #ccc', margin: '0 10px' }}></div>
+                    <WikiPage page={updatePage} disableNavbar={true}></WikiPage>
+                  </>
+              )
             }
             </div>
         </>
