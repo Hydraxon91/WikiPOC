@@ -11,9 +11,9 @@ const CheckUserSubmittedPage = () => {
 
     useEffect(() => {
         // console.log(location.pathname);
-        const match = location.pathname.match(/\/(\d+)$/);
+        const match = location.pathname.match(/\/([a-f\d-]+)$/i);
+        // console.log(match);
         const numberAtEnd = match ? match[1] : null;
-        // console.log(numberAtEnd);
         fetchSubmittedPage(numberAtEnd);
     }, [location.pathname]);
 
