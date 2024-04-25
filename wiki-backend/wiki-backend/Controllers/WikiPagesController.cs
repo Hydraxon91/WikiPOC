@@ -43,7 +43,7 @@ public class WikiPagesController : ControllerBase
     }
     
     [HttpGet("GetByTitle/{title}")]
-    public async Task<ActionResult<WikiPage>> GetWikiPageByTitle(string title)
+    public async Task<ActionResult<WPWithImagesOutputModel>> GetWikiPageByTitle(string title)
     {
         var wikiPage = await _wikiPageRepository.GetByTitleAsync(title);
 
@@ -97,8 +97,6 @@ public class WikiPagesController : ControllerBase
         {
             return StatusCode(500, $"An error occurred while submitting the article: {ex.Message}");
         }
-        
-        return null;
     }
     
     [Authorize(Policy = IdentityData.UserPolicyName)]

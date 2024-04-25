@@ -35,34 +35,59 @@ public class WikiPageRepository : IWikiPageRepository
             .SingleOrDefaultAsync(wp => wp.Id == id);
     }
 
-    public async Task<WikiPage?> GetByTitleAsync(string title)
+    public async Task<WPWithImagesOutputModel?> GetByTitleAsync(string title)
     {
-        return await _context.WikiPages
+        var wikiPage = await _context.WikiPages
             .Where(page => !(page is UserSubmittedWikiPage))
             .Include(p => p.Paragraphs)
             .Include(wp => wp.Comments)
                 .ThenInclude(uc => uc.UserProfile)
             .FirstOrDefaultAsync(p => p.Title == title);
+        Console.WriteLine(wikiPage);
+        if (wikiPage!=null)
+        {
+            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", title);
+            Console.WriteLine(directoryPath);
+            if (Directory.Exists(directoryPath))
+            {
+                Console.WriteLine("Got into the directory");
+                var imageFiles = Directory.GetFiles(directoryPath);
+                var images = imageFiles.Select(file =>
+                {
+                    var fileName = Path.GetFileName(file);
+                    var imageData = File.ReadAllBytes(file);
+                    var dataURL =
+                        $"data:image/{Path.GetExtension(fileName).TrimStart('.')};base64,{Convert.ToBase64String(imageData)}";
+                    return new ImageFormModel
+                    {
+                        FileName = fileName,
+                        DataURL = dataURL
+                    };
+                }).ToList();
+
+                return new WPWithImagesOutputModel
+                {
+                    WikiPage = wikiPage,
+                    Images = images
+                };
+            }
+        }
+
+        return null;
     }
 
     public async Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images)
     {
         if (images.Count>0)
         {
-            Console.WriteLine(images.Count);
             foreach (var image in images)
             {
-                Console.WriteLine("Test");
-                Console.WriteLine($"Wikipage title: {wikiPage.Title} Image: {image.FileName}");
                 var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles" ,wikiPage.Title);
                 Directory.CreateDirectory(directoryPath);
                 var filePath = Path.Combine(directoryPath, image.FileName);
-                Console.WriteLine($"filepath: {filePath}");
                 var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
-                Console.WriteLine($"Still alive, imageData: {imageData}");
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    Console.WriteLine($"ˇMaking image: {filePath}");
                     await fileStream.WriteAsync(imageData, 0, imageData.Length);
                 }
             }
