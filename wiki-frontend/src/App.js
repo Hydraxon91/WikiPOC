@@ -59,9 +59,9 @@ function App() {
   }, [decodedTitle]);
 
 
-  const handleCreate = (newPage) => {
+  const handleCreate = (newPage, images) => {
     console.log('Inside handleCreate');
-    return createWikiPage(newPage, cookies["jwt_token"], decodedToken)
+    return createWikiPage(newPage, cookies["jwt_token"], decodedToken, images)
       .then((createdPage) => {
         console.log('createWikiPage resolved:', createdPage);
         setWikiPageTitles([...wikiPageTitles, createdPage.Title]);
@@ -72,7 +72,6 @@ function App() {
         throw error; // Rethrow the error to propagate it to the next .catch
       });
   };
-  
   const handleDelete = (id) => {
     deleteWikiPage(id, cookies["jwt_token"])
       .then(() => {
@@ -83,8 +82,9 @@ function App() {
       });
   };
   
-  const handleEdit = (updatedPage) => {
-    // console.log('Inside handleEdit');
+  const handleEdit = (updatedPage, images) => {
+    console.log(images);
+    console.log('Inside handleEdit');
     // console.log(updatedPage);
     return updateWikiPage(updatedPage, cookies["jwt_token"], decodedToken)
       .then((updatedWikiPage) => {

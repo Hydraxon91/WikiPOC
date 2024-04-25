@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.Models;
+using System;
 
 namespace wiki_backend.DatabaseServices.Repositories;
 
@@ -44,8 +45,29 @@ public class WikiPageRepository : IWikiPageRepository
             .FirstOrDefaultAsync(p => p.Title == title);
     }
 
-    public async Task AddAsync(WikiPage wikiPage)
+    public async Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images)
     {
+        if (images.Count>0)
+        {
+            Console.WriteLine(images.Count);
+            foreach (var image in images)
+            {
+                Console.WriteLine("Test");
+                Console.WriteLine($"Wikipage title: {wikiPage.Title} Image: {image.FileName}");
+                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles" ,wikiPage.Title);
+                Directory.CreateDirectory(directoryPath);
+                var filePath = Path.Combine(directoryPath, image.FileName);
+                Console.WriteLine($"filepath: {filePath}");
+                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
+                Console.WriteLine($"Still alive, imageData: {imageData}");
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    Console.WriteLine($"ˇMaking image: {filePath}");
+                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
+                }
+            }
+        }
+        
         foreach (var paragraph in wikiPage.Paragraphs)
         {
             paragraph.Id = new Guid();

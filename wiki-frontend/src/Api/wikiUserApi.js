@@ -53,6 +53,9 @@ export const postProfileEdit = async (profile, profilePictureFile, token) => {
   formData.append('userUpdateForm.UserProfile.DisplayName', profile.displayName);
   formData.append('userUpdateForm.UserProfile.UserName', profile.userName);
   formData.append('userUpdateForm.ProfilePictureFile', profilePictureFile);
+  for (const value of formData) {
+    console.log(value);
+  }
 
   const response = await fetch(`${BASE_URL}/api/UserProfile/UpdateProfile/${profile.id}`, {
     method: 'PUT',

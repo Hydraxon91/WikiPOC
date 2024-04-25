@@ -67,33 +67,7 @@ const LegacyEditPage = ({ page, handleEdit, handleCreate }) => {
     // updateTemporaryPage(title, siteSub, roleNote, updatedParagraphs);
   };
 
-  // const handleFieldChange = (field, value) => {
-  //   switch (field) {
-  //     case 'title':
-  //       setTitle(value);
-  //       break;
-  //     case 'siteSub':
-  //       setSiteSub(value);
-  //       break;
-  //     case 'roleNote':
-  //       setRoleNote(value);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  
-  //   // Update temporary page with the latest values
-  //   updateTemporaryPage(title, siteSub, roleNote, paragraphs);
-  // };
 
-  // const updateTemporaryPage = (title, siteSub, roleNote, paragraphs) => {
-  //   setTemporaryPage({
-  //     title,
-  //     siteSub,
-  //     roleNote,
-  //     paragraphs,
-  //   });
-  // };
   const handleFieldChange = (field, value) => {
     // Update state based on the field parameter
     switch (field) {

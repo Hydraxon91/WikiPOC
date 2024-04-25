@@ -36,24 +36,50 @@ export const getWikiPageById = async (id) => {
     return data;
   };
 
-export const createWikiPage = async (newPage, token, decodedToken) => {
-  console.log(decodedToken);
+export const createWikiPage = async (newPage, token, decodedToken, images) => {
   var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
   var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
   var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin` : `${BASE_URL}/api/WikiPages/user`;
+
+  const formData = new FormData();
   if (role !== "Admin") {
-    newPage = { ...newPage, isNewPage: true, submittedBy: `${userName}`};
+    formData.append('wikiPageWithImagesInputModel.IsNewPage', true)
+    formData.append('wikiPageWithImagesInputModel.Approved', false)
+    formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
   }
-  console.log('Request Data:', JSON.stringify(newPage));
+
+  formData.append(`wikiPageWithImagesInputModel.Title`, newPage.title);
+  formData.append(`wikiPageWithImagesInputModel.Category`, newPage.category);
+  formData.append(`wikiPageWithImagesInputModel.SiteSub`, newPage.siteSub);
+  formData.append(`wikiPageWithImagesInputModel.RoleNote`, newPage.roleNote);
+  formData.append(`wikiPageWithImagesInputModel.Content`, newPage.content);
+  formData.append(`model.Paragraphs`, newPage.paragraphs);
+  // formData.append(`model.Images`, images);
+
+  // Append images to the FormData object
+  images.forEach((image, index) => {
+    console.log(typeof image);
+    console.log(image);
+    formData.append(`wikiPageWithImagesInputModel.Images[${index}].FileName`, image.name);
+    formData.append(`wikiPageWithImagesInputModel.Images[${index}].DataURL`, image.dataURL);
+  });
+  // for (let index = 0; index < images.length; index++) {
+  //   formData.append(`wikiPageWithImagesInputModel.Images`, images[index])    
+  // }
+
+  console.log(newPage);
+  for (const value of formData) {
+    console.log(value);
+  }
 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify(newPage),
+    body: formData,
   });
+
   if (!response.ok) {
     throw new Error(`Failed to create WikiPage. Status: ${response.status}`);
   }

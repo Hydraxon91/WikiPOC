@@ -5,9 +5,9 @@ namespace wiki_backend.Models;
 public class WikiPage
 {
     public Guid Id { get; set; }
-    public string Title { get; set; }
-    public string SiteSub { get; set; }
-    public string RoleNote { get; set; }
+    public string? Title { get; set; }
+    public string? SiteSub { get; set; }
+    public string? RoleNote { get; set; }
     public string? Content { get; set; }
     public string? Category { get; set; }
     public DateTime? PostDate { get; set; }

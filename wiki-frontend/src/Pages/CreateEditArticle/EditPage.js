@@ -118,8 +118,26 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
   // };
 
   const handleSave = () =>{
-    console.log(images);
-    console.log(usedImages);
+    if ( !title) {
+      alert('Please make sure to have a title.');
+      return;
+    }
+
+    const savePromise = newPage
+      ? handleCreate(temporaryPage, usedImages)
+      : handleEdit({ ...page, title, paragraphs, siteSub, roleNote, content }, usedImages);
+    console.log(savePromise);
+
+    savePromise
+      .then((data) => {
+        // console.log(data);
+        // setCurrentWikiPage(temporaryPage);
+        alert('Successfully submitted page!')
+        navigate(`/`);
+      })
+      .catch((error) => {
+        console.error("Error during save:", error);
+      });
   }
 
   return (
