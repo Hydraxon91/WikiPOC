@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
+import WikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
 import { acceptUserSubmittedPage, declineUserSubmittedWikiPage, getNewPageById } from '../../Api/wikiApi';
 const CheckUserSubmittedPage = () => {
     const [cookies] = useCookies(['jwt_token']);

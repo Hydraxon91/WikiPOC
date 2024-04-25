@@ -3,7 +3,7 @@ import { Link, useParams} from 'react-router-dom';
 import '../../../Styles/style.css';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 
-const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
+const LegacyWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
   const { styles }  = useStyleContext();
   const { title } = useParams();
   const decodedTitle = decodeURIComponent(title);
@@ -111,4 +111,4 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
   );
 };
 
-export default WikiPageComponent;
+export default LegacyWikiPageComponent;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import EditPageComponent from './Components/EditPageComponent';
-import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
+import WikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
 
 
 const EditPage = ({ page, handleEdit, handleCreate }) => {

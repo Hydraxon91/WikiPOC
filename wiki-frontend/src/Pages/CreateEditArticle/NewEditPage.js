@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ArticleEditor from './Components/ArticleEditor';
 import TestWikiPageComponent from './Components/TestWikiPageComponent';
-import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
+import WikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
 
 const NewEditPage = ({ page, handleEdit, handleCreate }) => {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import WikiPageComponent from './Components/WikiPageComponent';
+import LegacyWikiPageComponent from './Components/LegacyWikiPageComponent';
 import WikiPageCommentsComponent from './Components/WikiPageCommentsComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import '../../Styles/wikipage.css';
@@ -13,6 +13,7 @@ const WikiPage = ({page, setDecodedTitle, cookies }) => {
 
     useEffect(()=>{
         setActiveTab('wiki');
+        console.log(page);
     },[page])
 
     const handleTabClick = (tab) =>{
@@ -38,7 +39,7 @@ const WikiPage = ({page, setDecodedTitle, cookies }) => {
                 </button>
             </div>
             <div className="wiki-page-container">
-                <WikiPageComponent
+                <LegacyWikiPageComponent
                     page={page}
                     setDecodedTitle={setDecodedTitle}
                     activeTab={activeTab}
