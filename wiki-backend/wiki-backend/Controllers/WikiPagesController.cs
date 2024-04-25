@@ -136,8 +136,8 @@ public class WikiPagesController : ControllerBase
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
             return BadRequest(errors);
         }
-
-        Console.WriteLine(updatedWikiPage);
+        updatedWikiPage.Id = Guid.NewGuid();
+        // Console.WriteLine(updatedWikiPage);
         // if (updatedWikiPage.WikiPage == null)
         // {
         //     return BadRequest("Wikipage is missing from the updatedWikipage");

@@ -63,6 +63,7 @@ export const createWikiPage = async (newPage, token, decodedToken) => {
 
 
 export const updateWikiPage = async (updatedPage, token, decodedToken) => {
+  console.log(updatedPage);
     var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
     var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
     var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin/${updatedPage.id}` : `${BASE_URL}/api/WikiPages/user/${updatedPage.id}`;
@@ -71,7 +72,6 @@ export const updateWikiPage = async (updatedPage, token, decodedToken) => {
       console.log("notadmin");
       updatedPage = { 
         ...updatedPage,
-        id: 0,
         // wikiPage: updatedPage,
         wikiPageId: updatedPage.id,
         isNewPage: false,
@@ -243,23 +243,17 @@ export const getUpdatePageById = async (id, token) => {
 
 export const acceptUserSubmittedUpdate = async (updatedPage, id, token) => {
   try {
-     // Set the id of all paragraphs to 0
-     const updatedPageWithZeroIds = {
-      ...updatedPage,
-      paragraphs: updatedPage.paragraphs.map(paragraph => ({ ...paragraph, id: 0, wikiPageId: id })),
-    };
 
-    console.log('Request Data:', JSON.stringify(updatedPageWithZeroIds));
+    console.log('Request Data:', JSON.stringify(updatedPage));
     console.log('Request Data:', id);
     
-
     const response = await fetch(`${BASE_URL}/api/WikiPages/AdminAccept/${id}`, {
       method: "PATCH",
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify(updatedPageWithZeroIds),
+      body: JSON.stringify(updatedPage),
     });
 
     if (!response.ok) {
