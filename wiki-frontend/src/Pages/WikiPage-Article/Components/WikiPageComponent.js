@@ -12,7 +12,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
   const [isContentsVisible, setIsContentsVisible] = useState(true);
 
   useEffect(() => {
-    if (page) {
+    if (page && page.paragraphs) {
       const paragraphTitles = page.paragraphs.map((paragraph) => paragraph.title).slice(1);
       setPTitles(paragraphTitles);
     }
@@ -62,10 +62,10 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
             </Link>
           </h1>
 
-          <p className="siteSub">{`${page.siteSub}`}</p>
-          <p className="roleNote">{`${page.roleNote}`}</p>
+          {page.siteSub && (<p className="siteSub">{`${page.siteSub}`}</p>)}
+          {page.roleNote && <p className="roleNote">{`${page.roleNote}`}</p>}
 
-          {page.paragraphs.map((paragraph, index) => (
+          {page.paragraphs && page.paragraphs.map((paragraph, index) => (
             <div key={`paragraph-${index}`} ref={(el) => (targetRefs.current[index] = el)} className={page.approved === false ? 'update-paragraph' : ''}>
               {index!==0 && <h2>{paragraph.title}</h2>}
               {paragraph.paragraphImage && paragraph.paragraphImage !== "" && (

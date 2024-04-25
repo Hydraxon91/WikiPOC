@@ -12,6 +12,7 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
   const [title, setTitle] = useState('');
   const [siteSub, setSiteSub] = useState('');
   const [roleNote, setRoleNote] = useState('');
+  const [category, setCategory] = useState('');
   const [newPage, setNewPage] = useState(true);
   const [paragraphs, setParagraphs] = useState([]);
   const [emptyFields, setEmptyFields] = useState([]);
@@ -48,25 +49,53 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
         paragraphImageText: ''
       }
     ];
-    setParagraphs(updatedParagraphs);
-    updateTemporaryPage(title, siteSub, roleNote, updatedParagraphs);
+    handleFieldChange('paragraphs', updatedParagraphs);
+    // updateTemporaryPage(title, siteSub, roleNote, updatedParagraphs);
   };
 
   const handleRemoveParagraph = (index) => {
     const updatedParagraphs = [...paragraphs];
     updatedParagraphs.splice(index, 1);
-    setParagraphs(updatedParagraphs);
-    updateTemporaryPage(title, siteSub, roleNote, updatedParagraphs);
+    handleFieldChange('paragraphs', updatedParagraphs);
+    // updateTemporaryPage(title, siteSub, roleNote, updatedParagraphs);
   };
 
   const handleParagraphChange = (index, field, value) => {
     const updatedParagraphs = [...paragraphs];
     updatedParagraphs[index][field] = value;
-    setParagraphs(updatedParagraphs);
-    updateTemporaryPage(title, siteSub, roleNote, updatedParagraphs);
+    handleFieldChange('paragraphs', updatedParagraphs);
+    // updateTemporaryPage(title, siteSub, roleNote, updatedParagraphs);
   };
 
+  // const handleFieldChange = (field, value) => {
+  //   switch (field) {
+  //     case 'title':
+  //       setTitle(value);
+  //       break;
+  //     case 'siteSub':
+  //       setSiteSub(value);
+  //       break;
+  //     case 'roleNote':
+  //       setRoleNote(value);
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  
+  //   // Update temporary page with the latest values
+  //   updateTemporaryPage(title, siteSub, roleNote, paragraphs);
+  // };
+
+  // const updateTemporaryPage = (title, siteSub, roleNote, paragraphs) => {
+  //   setTemporaryPage({
+  //     title,
+  //     siteSub,
+  //     roleNote,
+  //     paragraphs,
+  //   });
+  // };
   const handleFieldChange = (field, value) => {
+    // Update state based on the field parameter
     switch (field) {
       case 'title':
         setTitle(value);
@@ -77,21 +106,25 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
       case 'roleNote':
         setRoleNote(value);
         break;
+      case 'category':
+        setCategory(value);
+        break;
+      case 'paragraphs':
+        setParagraphs(value);
+        break;
       default:
         break;
     }
   
     // Update temporary page with the latest values
-    updateTemporaryPage(title, siteSub, roleNote, paragraphs);
+    updateTemporaryPage(field, value);
   };
-
-  const updateTemporaryPage = (title, siteSub, roleNote, paragraphs) => {
-    setTemporaryPage({
-      title,
-      siteSub,
-      roleNote,
-      paragraphs,
-    });
+  
+  const updateTemporaryPage = (field, value) => {
+    setTemporaryPage(prevState => ({
+      ...prevState,
+      [field]: value,
+    }));
   };
 
   const handleSave = () => {
@@ -112,6 +145,7 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
     }
   
     setEmptyFields([]);
+    temporaryPage.LegacyWikiPage = true;
   
     const savePromise = newPage
       ? handleCreate(temporaryPage)

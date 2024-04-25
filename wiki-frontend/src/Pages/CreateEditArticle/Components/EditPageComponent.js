@@ -14,6 +14,14 @@ const EditPageComponent = ({newPage, title, handleFieldChange, siteSub, roleNote
           />
         </div>}
         <div className='editDiv'>
+          <label className="editLabel">Category:</label>
+          <input 
+            type="text" 
+            placeholder='Enter Category' 
+            onChange={(e) => handleFieldChange('category', e.target.value)} 
+          />
+        </div>
+        <div className='editDiv'>
           <label className="editLabel">Page SiteSub [Not required]</label>
           <input 
             type="text" 

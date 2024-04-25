@@ -11,6 +11,7 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
   const [title, setTitle] = useState('');
   const [siteSub, setSiteSub] = useState('');
   const [roleNote, setRoleNote] = useState('');
+  const [category, setCategory] = useState('');
   const [newPage, setNewPage] = useState(true);
   const [paragraphs, setParagraphs] = useState([]);
   const [emptyFields, setEmptyFields] = useState([]);
@@ -25,6 +26,7 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
       setRoleNote(page.roleNote);
       setSiteSub(page.siteSub);
       setContent(page.content);
+      setCategory(page.category);
       setParagraphs([...page.paragraphs]);
       setNewPage(false);
     }
@@ -40,13 +42,15 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
   }, [page]);
 
   const handleContentChange = (value) => {
-    setContent(value);
+    // setContent(value);
+    handleFieldChange('content', value);
     const usedImagesArray = images.filter(image => value.includes(image.name));
     setUsedImages(usedImagesArray);
     updateTemporaryPage(title, siteSub, roleNote, value);
   };
 
   const handleFieldChange = (field, value) => {
+    // Update state based on the field parameter
     switch (field) {
       case 'title':
         setTitle(value);
@@ -57,21 +61,25 @@ const NewEditPage = ({ page, handleEdit, handleCreate }) => {
       case 'roleNote':
         setRoleNote(value);
         break;
+      case 'category':
+        setCategory(value);
+        break;
+      case 'content':
+        setContent(value);
+        break;
       default:
         break;
     }
   
     // Update temporary page with the latest values
-    updateTemporaryPage(title, siteSub, roleNote, content);
+    updateTemporaryPage(field, value);
   };
-
-  const updateTemporaryPage = (title, siteSub, roleNote, content) => {
-    setTemporaryPage({
-      title,
-      siteSub,
-      roleNote,
-      content,
-    });
+  
+  const updateTemporaryPage = (field, value) => {
+    setTemporaryPage(prevState => ({
+      ...prevState,
+      [field]: value,
+    }));
   };
 
   // const handleSave = () => {

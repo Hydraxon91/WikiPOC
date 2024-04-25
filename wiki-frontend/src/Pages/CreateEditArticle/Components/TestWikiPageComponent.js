@@ -13,6 +13,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
 
   useEffect(() => {
     if (page) {
+      // console.log(page);
       const extractedTitles = extractParagraphTitles(page.content);
       setPTitles(extractedTitles);
       // console.log(extractedTitles);
@@ -75,56 +76,60 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
 };
 
   const processHTMLContent = (htmlContent) => {
-    htmlContent = imageRefRegex(htmlContent);
-    // Decode HTML entities
-    const decodedContent = htmlContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    if (htmlContent) {
+      htmlContent = imageRefRegex(htmlContent);
+      // Decode HTML entities
+      const decodedContent = htmlContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
-    // Split the content by the delimiter '||'
-    const parts = decodedContent.split(/\|\|/);
+      // Split the content by the delimiter '||'
+      const parts = decodedContent.split(/\|\|/);
 
-    let parCounter = 0;
-    let subParCounter = 0;
+      let parCounter = 0;
+      let subParCounter = 0;
 
-    // Process each part
-    const processedParts = parts.map(part => {
-        // Define regular expressions
-        const classRegex = /([^\/]+)\/\//;
-        const imageRegex = /<a\s+href="([^"]+)"[^>]*>ImageRef<\/a>##/;
-        const textRegex = /<p>(.*?)<\/p>/g;
+      // Process each part
+      const processedParts = parts.map(part => {
+          // Define regular expressions
+          const classRegex = /([^\/]+)\/\//;
+          const imageRegex = /<a\s+href="([^"]+)"[^>]*>ImageRef<\/a>##/;
+          const textRegex = /<p>(.*?)<\/p>/g;
 
-        // console.log("Part:", part); // Log the part content
-        // Match each part of the paragraph
-        const classMatch = part.match(classRegex);
-        const imageMatch = part.match(imageRegex);
-        const textMatch = Array.from(part.matchAll(textRegex)).map(match => match[1]);
+          // console.log("Part:", part); // Log the part content
+          // Match each part of the paragraph
+          const classMatch = part.match(classRegex);
+          const imageMatch = part.match(imageRegex);
+          const textMatch = Array.from(part.matchAll(textRegex)).map(match => match[1]);
 
-        // Check if all matches are found
-        if (classMatch && imageMatch && textMatch) {
-            // Extract the class name, image reference, and text content
-            const className = classMatch[1].trim();
-            const imageRef = imageMatch[1].trim();
-            const text = textMatch.map(match => `<p>${match.trim()}</p>`).join('\n');
-            // Construct the new HTML structure
-            return createHTMLElement(className, imageRef, text)
-        } else {
-            // Replace <h2> and <h3> tags with IDs containing the counter and increment counter      
-            return part.replace(/<h2>/g, () => `<h2 id="main-${++parCounter}">`).replace(/<h3>/g, () => `<h3 id="sub-${++subParCounter}">`);
+          // Check if all matches are found
+          if (classMatch && imageMatch && textMatch) {
+              // Extract the class name, image reference, and text content
+              const className = classMatch[1].trim();
+              const imageRef = imageMatch[1].trim();
+              const text = textMatch.map(match => `<p>${match.trim()}</p>`).join('\n');
+              // Construct the new HTML structure
+              return createHTMLElement(className, imageRef, text)
+          } else {
+              // Replace <h2> and <h3> tags with IDs containing the counter and increment counter      
+              return part.replace(/<h2>/g, () => `<h2 id="main-${++parCounter}">`).replace(/<h3>/g, () => `<h3 id="sub-${++subParCounter}">`);
 
-        }
-      });
+          }
+        });
 
-    // Reconstruct the content with processed parts
-    const reconstructedContent = processedParts.join('');
+      // Reconstruct the content with processed parts
+      const reconstructedContent = processedParts.join('');
 
-    // Render the reconstructed content as JSX
-    return <div dangerouslySetInnerHTML={{ __html: reconstructedContent }} />
+      // Render the reconstructed content as JSX
+      return <div dangerouslySetInnerHTML={{ __html: reconstructedContent }} />
+    }
   };
 
   const imageRefRegex = (htmlContent) =>{
     const imageRefRegex = /src="([^"]+)"/g;
+    // console.log(htmlContent);
 
-    // Replace image references with actual image data URLs
-    const processedContent = htmlContent.replace(imageRefRegex, (match, imageRef) => {
+    if (htmlContent) {
+      // Replace image references with actual image data URLs
+      const processedContent = htmlContent.replace(imageRefRegex, (match, imageRef) => {
         // Find the image in the images array
         const image = images.find(img => img.name === imageRef);
         // If image exists, replace the reference with the data URL, otherwise keep the original reference
@@ -132,6 +137,7 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
     });
 
     return processedContent;
+    }
   }
 
   const createHTMLElement = (className, imageRef, text) =>{
@@ -158,9 +164,8 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
               <img className = "editButton" src="/img/edit.png" alt="Edit" />
             </Link>
           </h1>
-
-          <p className="siteSub">{`${page.siteSub}`}</p>
-          <p className="roleNote">{`${page.roleNote}`}</p>
+          {page.siteSub && (<p className="siteSub">{`${page.siteSub}`}</p>)}
+          {page.roleNote && <p className="roleNote">{`${page.roleNote}`}</p>}
           {pTitles.mainParagraphs && pTitles.mainParagraphs.length > 0 && (
             <div 
               className={`contentsPanel ${isContentsVisible ? '' : 'minimizedPanel'}`}

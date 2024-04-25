@@ -152,6 +152,14 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
         />
       </div>
       <div className='editDiv'>
+        <label className="editLabel">Category:</label>
+        <input 
+          type="text" 
+          placeholder='Enter Category' 
+          onChange={(e) => handleFieldChange('category', e.target.value)} 
+        />
+      </div>
+      <div className='editDiv'>
         <label className="editLabel">Site Sub [Optional]</label>
         <input 
           type="text" 
