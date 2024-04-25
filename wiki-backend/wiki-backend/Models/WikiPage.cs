@@ -9,6 +9,7 @@ public class WikiPage
     public string SiteSub { get; set; }
     public string RoleNote { get; set; }
     public string? Content { get; set; }
+    public string? Category { get; set; }
     public DateTime? PostDate { get; set; }
     public DateTime? LastUpdateDate { get; set; }
     public bool LegacyWikiPage { get; set; } = false;

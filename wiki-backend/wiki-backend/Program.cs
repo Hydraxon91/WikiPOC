@@ -19,10 +19,10 @@ var builder = WebApplication.CreateBuilder(args);
 var picturesPath = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER");
 
 // Ensure the path is not null or empty //Comment these lines when running migrations
-if (string.IsNullOrEmpty(picturesPath))
-{
-    throw new Exception($"PROFILE_PICTURES_PATH environment variable is not set. {picturesPath}");
-}
+// if (string.IsNullOrEmpty(picturesPath))
+// {
+//     throw new Exception($"PROFILE_PICTURES_PATH environment variable is not set. {picturesPath}");
+// }
 
 
 // Add services to the container.
