@@ -32,7 +32,7 @@ public class WikiPagesController : ControllerBase
     }
 
     [HttpGet("GetById/{id:guid}")]
-    public async Task<ActionResult<WikiPage>> GetWikiPage(Guid id)
+    public async Task<ActionResult<WPWithImagesOutputModel>> GetWikiPage(Guid id)
     {
         var wikiPage = await _wikiPageRepository.GetByIdAsync(id);
 
@@ -58,13 +58,13 @@ public class WikiPagesController : ControllerBase
     [HttpGet("{id:guid}/paragraphs")]
     public async Task<ActionResult<IEnumerable<Paragraph>>> GetWikiPageParagraphs(Guid id)
     {
-        var wikiPage = await _wikiPageRepository.GetByIdAsync(id);
+        var wikiPageOutputModel = await _wikiPageRepository.GetByIdAsync(id);
 
-        if (wikiPage == null)
+        if (wikiPageOutputModel == null)
             return NotFound();
 
         // Check if Paragraphs is null, and return an empty list if it is
-        var paragraphs = wikiPage.Paragraphs ?? new List<Paragraph>();
+        var paragraphs = wikiPageOutputModel.WikiPage.Paragraphs ?? new List<Paragraph>();
 
         return Ok(paragraphs);
     }
@@ -75,7 +75,7 @@ public class WikiPagesController : ControllerBase
     {
         if (wikiPageWithImagesInputModel.Title == null)
         {
-            return BadRequest("Invalid request. UserProfile object is null.");
+            return BadRequest("Invalid request. Title is null.");
         }
 
         var newWikiPage = new WikiPage
@@ -84,7 +84,8 @@ public class WikiPagesController : ControllerBase
             SiteSub = wikiPageWithImagesInputModel.SiteSub,
             RoleNote = wikiPageWithImagesInputModel.RoleNote,
             Content = wikiPageWithImagesInputModel.Content,
-            Paragraphs = wikiPageWithImagesInputModel.Paragraphs
+            Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
+            Category = wikiPageWithImagesInputModel.Category
         };
         var images = wikiPageWithImagesInputModel.Images;
         
@@ -101,17 +102,32 @@ public class WikiPagesController : ControllerBase
     
     [Authorize(Policy = IdentityData.UserPolicyName)]
     [HttpPost("user")]
-    public async Task<ActionResult<WikiPage>> CreateWikiPageForUser([FromBody] UserSubmittedWikiPage wikiPage)
+    public async Task<ActionResult<WikiPage>> CreateWikiPageForUser([FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
-        if (!ModelState.IsValid)
+        if (wikiPageWithImagesInputModel.Title == null)
         {
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-            return BadRequest(errors);
+            return BadRequest("Invalid request. Title is null.");
         }
-        wikiPage.PostDate = DateTime.Now;
-        await _wikiPageRepository.AddUserSubmittedPageAsync(wikiPage);
+        
+        var newWikiPage = new UserSubmittedWikiPage
+        {
+            Title = wikiPageWithImagesInputModel.Title,
+            SiteSub = wikiPageWithImagesInputModel.SiteSub,
+            RoleNote = wikiPageWithImagesInputModel.RoleNote,
+            Content = wikiPageWithImagesInputModel.Content,
+            Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
+            IsNewPage = true,
+            Approved = false,
+            Category = wikiPageWithImagesInputModel.Category,
+            SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy,
+            PostDate = DateTime.Now
+        };
+        
+        var images = wikiPageWithImagesInputModel.Images;
+        
+        await _wikiPageRepository.AddUserSubmittedPageAsync(newWikiPage, images);
 
-        return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
+        return CreatedAtAction(nameof(GetWikiPage), new { id = newWikiPage.Id }, newWikiPage);
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
@@ -125,6 +141,7 @@ public class WikiPagesController : ControllerBase
             SiteSub = userSubmittedWikiPage.SiteSub,
             RoleNote = userSubmittedWikiPage.RoleNote,
             Paragraphs = userSubmittedWikiPage.Paragraphs,
+            Category = userSubmittedWikiPage.Category,
             PostDate = DateTime.Now
         };
         await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
@@ -138,12 +155,12 @@ public class WikiPagesController : ControllerBase
     [HttpPut("admin/{id:guid}")]
     public async Task<IActionResult> UpdateWikiPageForAdmin(Guid id, [FromBody] WikiPage updatedWikiPage)
     {
-        var existingWikiPage = await _wikiPageRepository.GetByIdAsync(id);
+        var existingWikiPageOutputModel = await _wikiPageRepository.GetByIdAsync(id);
 
-        if (existingWikiPage == null)
+        if (existingWikiPageOutputModel == null)
             return NotFound();
-        existingWikiPage.LastUpdateDate = DateTime.Now;
-        await _wikiPageRepository.UpdateAsync(existingWikiPage, updatedWikiPage);
+        existingWikiPageOutputModel.WikiPage.LastUpdateDate = DateTime.Now;
+        await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage, updatedWikiPage);
 
         return Ok(new { Message = "WikiPage updated successfully" });
     }
@@ -179,8 +196,8 @@ public class WikiPagesController : ControllerBase
         
         if (existingWikiPage == null)
             return NotFound();
-        existingWikiPage.LastUpdateDate = DateTime.Now;
-        await _wikiPageRepository.AcceptUserSubmittedUpdateAsync(existingWikiPage, userSubmittedWikiPage);
+        existingWikiPage.WikiPage.LastUpdateDate = DateTime.Now;
+        await _wikiPageRepository.AcceptUserSubmittedUpdateAsync(existingWikiPage.WikiPage, userSubmittedWikiPage);
         await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
 
         return Ok(new { Message = "WikiPage updated successfully" });
@@ -216,6 +233,7 @@ public class WikiPagesController : ControllerBase
     [HttpGet("GetSubmittedPageById/{id:guid}")]
     public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedPageById(Guid id)
     {
+        Console.WriteLine(id);
         var wikiPage = await _wikiPageRepository.GetSubmittedPageByIdAsync(id);
         
         if (wikiPage == null)
@@ -224,7 +242,7 @@ public class WikiPagesController : ControllerBase
         }
 
         //For some reason the returned object has the Id of zero, need to look into it further
-        wikiPage.Id = id;
+
         return Ok(wikiPage);
     }
     
@@ -247,7 +265,7 @@ public class WikiPagesController : ControllerBase
             return NotFound(); // Return 404 if the page is not found
         }
         //No idea why, but without the line below the Id will be 0
-        wikiPage.Id = id;
+
         return Ok(wikiPage);
     }
 }
