@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactQuillComponent from '../../../Components/ReactQuillComponent';
 
-const EditPageComponent = ({newPage, title, handleFieldChange, siteSub, roleNote, paragraphs, emptyFields, handleParagraphChange, handleRemoveParagraph, handleAddParagraph, handleSave}) => {
+const LegacyEditPageComponent = ({newPage, title, handleFieldChange, siteSub, roleNote, paragraphs, emptyFields, handleParagraphChange, handleRemoveParagraph, handleAddParagraph, handleSave}) => {
     return (
         <div className="article wikipage-component">
         <h2>{newPage? 'Create Page' : 'Edit Page' }</h2>
@@ -100,4 +100,4 @@ const EditPageComponent = ({newPage, title, handleFieldChange, siteSub, roleNote
     )
 }
 
-export default EditPageComponent;
+export default LegacyEditPageComponent;

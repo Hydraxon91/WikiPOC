@@ -4,7 +4,7 @@ import '../../../Styles/style.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css'
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 
-const TestWikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
+const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
   const { styles }  = useStyleContext();
   const { title } = useParams();
   const decodedTitle = decodeURIComponent(title);
@@ -208,4 +208,4 @@ const TestWikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
   );
 };
 
-export default TestWikiPageComponent;
+export default WikiPageComponent;

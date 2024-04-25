@@ -126,6 +126,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
                 Title = "Example Page 1",
                 SiteSub = "Example SiteSub 1",
                 RoleNote = "Example RoleNote 1",
+                LegacyWikiPage = true,
                 // Paragraphs = paragraphs1
             },
             new WikiPage
@@ -134,6 +135,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
                 Title = "Example Page 2",
                 SiteSub = "Example SiteSub 2",
                 RoleNote = "Example RoleNote 2",
+                LegacyWikiPage = true,
                 // Paragraphs = paragraphs2
             }
         );
@@ -147,6 +149,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
                 SiteSub = "User Submitted SiteSub",
                 RoleNote = "User Submitted RoleNote", 
                 SubmittedBy = "tester",
+                LegacyWikiPage = true,
                 IsNewPage = true
             },
             new UserSubmittedWikiPage
@@ -157,6 +160,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
                 SiteSub = "Example SiteSub 1 Update",
                 RoleNote = "Example RoleNote 1 Update", 
                 SubmittedBy = "tester",
+                LegacyWikiPage = true,
                 IsNewPage = false,
             }
         );

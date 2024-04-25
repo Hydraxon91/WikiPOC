@@ -57,7 +57,7 @@ const LegacyWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
         <div className={activeTab === 'wiki' ? 'wikipage-component' : 'wikipage-component wikipage-hidden'}>
           <h1>
             {page.title}
-            <Link to={`/page/${page.title}/edit`}>
+            <Link to={`/page/${page.title}/legacyedit`}>
               <img className = "editButton" src="/img/edit.png" alt="Edit" />
             </Link>
           </h1>
