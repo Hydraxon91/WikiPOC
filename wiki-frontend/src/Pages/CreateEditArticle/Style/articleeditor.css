@@ -1,3 +1,21 @@
+.editor-container{
+  display: flex;
+  width: 100%;
+}
+
+.articleeditor-container{
+  flex: 1;
+  margin-right: 10px;
+  width: 50%;
+}
+
+.preview-container{
+  flex: 1;
+  margin-left: 10px;
+  width: 50%;
+}
+
+
 .custom-popup-overlay {
     position: fixed;
     top: 0;

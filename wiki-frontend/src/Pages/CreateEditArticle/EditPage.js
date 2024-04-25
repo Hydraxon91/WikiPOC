@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArticleEditor from './Components/ArticleEditor';
 import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
+import './Style/articleeditor.css';
 
 const EditPage = ({ page, handleEdit, handleCreate }) => {
   const navigate = useNavigate();
@@ -141,15 +142,19 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
   }
 
   return (
-    <div style={{display: 'flex'}}>
-        <ArticleEditor 
-        newPage={newPage} title={title} siteSub={siteSub} 
-        roleNote={roleNote} content={content} emptyFields={emptyFields} 
-        handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
-        images={images} setImages={setImages}
-        />
-        <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images}/>
-    </div>
+    <div className='editor-container'>
+      <div className='articleeditor-container'>
+          <ArticleEditor 
+              newPage={newPage} title={title} siteSub={siteSub} 
+              roleNote={roleNote} content={content} emptyFields={emptyFields} 
+              handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
+              images={images} setImages={setImages}
+          />
+      </div>
+      <div className='preview-container'>
+          <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images}/>
+      </div>
+  </div>
   );
 };
 

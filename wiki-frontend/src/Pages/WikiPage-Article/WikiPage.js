@@ -6,16 +6,22 @@ import WikiPageCommentsComponent from './Components/WikiPageCommentsComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import '../../Styles/wikipage.css';
 
-const WikiPage = ({page, setDecodedTitle, cookies }) => {
+const WikiPage = ({page: wikipage, setDecodedTitle, cookies }) => {
     const { styles } = useStyleContext();
     const { title } = useParams();
     const decodedTitle = decodeURIComponent(title);
     const [activeTab, setActiveTab] = useState("wiki");
+    const [page, setPage] = useState(null);
+    const [images, setImages] = useState(null);
 
     useEffect(()=>{
-        setActiveTab('wiki');
-        console.log(page);
-    },[page])
+        if (wikipage && wikipage.wikiPage)  {
+            setActiveTab('wiki');
+            console.log(wikipage);
+            setPage(wikipage.wikiPage);
+            setImages(wikipage.images)
+        }
+    },[wikipage])
 
     const handleTabClick = (tab) =>{
         setActiveTab(tab);
@@ -47,6 +53,7 @@ const WikiPage = ({page, setDecodedTitle, cookies }) => {
                         setDecodedTitle={setDecodedTitle}
                         activeTab={activeTab}
                         className={activeTab === 'wiki' ? 'wikipage-visible' : 'wikipage-hidden'}
+                        images={images}
                     />
                 ) : (
                     <LegacyWikiPageComponent
