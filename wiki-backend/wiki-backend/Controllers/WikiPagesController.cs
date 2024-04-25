@@ -68,14 +68,37 @@ public class WikiPagesController : ControllerBase
 
         return Ok(paragraphs);
     }
-    
+
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost("admin")]
-    public async Task<ActionResult<WikiPage>> CreateWikiPageForAdmin([FromBody] WikiPage wikiPage)
+    public async Task<ActionResult<WikiPage>> CreateWikiPageForAdmin([FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
-        await _wikiPageRepository.AddAsync(wikiPage);
+        if (wikiPageWithImagesInputModel.Title == null)
+        {
+            return BadRequest("Invalid request. UserProfile object is null.");
+        }
 
-        return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
+        var newWikiPage = new WikiPage
+        {
+            Title = wikiPageWithImagesInputModel.Title,
+            SiteSub = wikiPageWithImagesInputModel.SiteSub,
+            RoleNote = wikiPageWithImagesInputModel.RoleNote,
+            Content = wikiPageWithImagesInputModel.Content,
+            Paragraphs = wikiPageWithImagesInputModel.Paragraphs
+        };
+        var images = wikiPageWithImagesInputModel.Images;
+        
+        try
+        {
+            await _wikiPageRepository.AddAsync(newWikiPage, images);
+            return Ok(new { Message = "Article submitted successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while submitting the article: {ex.Message}");
+        }
+        
+        return null;
     }
     
     [Authorize(Policy = IdentityData.UserPolicyName)]
@@ -107,7 +130,7 @@ public class WikiPagesController : ControllerBase
             PostDate = DateTime.Now
         };
         await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
-        await _wikiPageRepository.AddAsync(wikiPage);
+        // await _wikiPageRepository.AddAsync(wikiPage);
         
         return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
     }
