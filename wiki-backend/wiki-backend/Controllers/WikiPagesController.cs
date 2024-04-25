@@ -103,7 +103,8 @@ public class WikiPagesController : ControllerBase
             Title = userSubmittedWikiPage.Title,
             SiteSub = userSubmittedWikiPage.SiteSub,
             RoleNote = userSubmittedWikiPage.RoleNote,
-            Paragraphs = userSubmittedWikiPage.Paragraphs
+            Paragraphs = userSubmittedWikiPage.Paragraphs,
+            PostDate = DateTime.Now
         };
         await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
         await _wikiPageRepository.AddAsync(wikiPage);
@@ -120,7 +121,7 @@ public class WikiPagesController : ControllerBase
 
         if (existingWikiPage == null)
             return NotFound();
-
+        existingWikiPage.LastUpdateDate = DateTime.Now;
         await _wikiPageRepository.UpdateAsync(existingWikiPage, updatedWikiPage);
 
         return Ok(new { Message = "WikiPage updated successfully" });
@@ -153,10 +154,10 @@ public class WikiPagesController : ControllerBase
     {
         // WikiPage updatedWikiPage = userSubmittedWikiPage;
         var existingWikiPage = await _wikiPageRepository.GetByIdAsync(id);
-
+        
         if (existingWikiPage == null)
             return NotFound();
-
+        existingWikiPage.LastUpdateDate = DateTime.Now;
         await _wikiPageRepository.AcceptUserSubmittedUpdateAsync(existingWikiPage, userSubmittedWikiPage);
         await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
 
