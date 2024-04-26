@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { getUpdatePageById, getWikiPageByTitle, acceptUserSubmittedUpdate, declineUserSubmittedWikiPage } from '../../Api/wikiApi';
+import { getUpdatePageById, getWikiPageById, acceptUserSubmittedUpdate, declineUserSubmittedWikiPage } from '../../Api/wikiApi';
 import CompareUpdatePageComponent from './CompareUpdatePageComponent';
 import WikiPage from '../WikiPage-Article/WikiPage';
 import '../../Styles/compareupdates.css';
@@ -24,15 +24,15 @@ const CompareUpdatePage = () => {
 
     useEffect(()=>{
         // console.log(updatePage);
-        if (updatePage && updatePage.wikiPage.title) {
-            fetchOriginalPage(updatePage.wikiPage.title);
+        if (updatePage && updatePage.userSubmittedWikiPage.wikiPageId) {
+            fetchOriginalPage(updatePage.userSubmittedWikiPage.wikiPageId);
         }
     },[updatePage])
 
     const fetchUpdatePage = async (id) => {
         try {
             const data = await getUpdatePageById(id, cookies['jwt_token'])
-            console.log(data);
+            // console.log(data);
             setUpdatePage(data)
         } catch (error) {
           console.error('Error fetching page:', error);
@@ -41,8 +41,8 @@ const CompareUpdatePage = () => {
 
       const fetchOriginalPage = async (title) => {
         try {
-            const data = await getWikiPageByTitle(title)
-            console.log(data);
+            const data = await getWikiPageById(title)
+            // console.log(data);
             setOriginalPage(data)
         } catch (error) {
           console.error('Error fetching page:', error);
@@ -50,7 +50,9 @@ const CompareUpdatePage = () => {
       };
 
       const handleAccept = () => {
-        acceptUserSubmittedUpdate(updatePage, originalPage.id, cookies["jwt_token"])
+        // console.log(updatePage);
+        // console.log(originalPage);
+        acceptUserSubmittedUpdate(updatePage.userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             alert("Succesfully updated page");

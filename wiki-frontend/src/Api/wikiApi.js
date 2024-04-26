@@ -274,10 +274,9 @@ export const getUpdatePageById = async (id, token) => {
   return data;
 };
 
-export const acceptUserSubmittedUpdate = async (updatedPage, id, token) => {
+export const acceptUserSubmittedUpdate = async (id, token) => {
   try {
 
-    console.log('Request Data:', JSON.stringify(updatedPage));
     console.log('Request Data:', id);
     
     const response = await fetch(`${BASE_URL}/api/WikiPages/AdminAccept/${id}`, {
@@ -286,7 +285,6 @@ export const acceptUserSubmittedUpdate = async (updatedPage, id, token) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify(updatedPage),
     });
 
     if (!response.ok) {

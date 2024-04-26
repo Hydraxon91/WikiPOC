@@ -192,8 +192,8 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task UpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage, ICollection<ImageFormModel> images)
     {
-        Console.WriteLine(updatedWikiPage);
-        Console.WriteLine(existingWikiPage);
+        // Console.WriteLine(updatedWikiPage);
+        // Console.WriteLine(existingWikiPage);
         existingWikiPage.Title = updatedWikiPage.Title;
         existingWikiPage.RoleNote = updatedWikiPage.RoleNote;
         existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
@@ -264,60 +264,17 @@ public class WikiPageRepository : IWikiPageRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task AcceptUserSubmittedUpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage)
+    public async Task AcceptUserSubmittedUpdateAsync(UserSubmittedWikiPage userSubmittedWikiPage)
     {
-        existingWikiPage.Title = updatedWikiPage.Title;
-        existingWikiPage.RoleNote = updatedWikiPage.RoleNote;
-        existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
-        
-        // Remove paragraphs that are not present in the updatedWikiPage
-        var paragraphsToRemove = existingWikiPage.Paragraphs
-            .Where(existingParagraph => updatedWikiPage.Paragraphs.All(updatedParagraph => updatedParagraph.Id != existingParagraph.Id))
-            .ToList();
-
-        foreach (var paragraphToRemove in paragraphsToRemove)
-        {
-            _context.Paragraphs.Remove(paragraphToRemove);
-            existingWikiPage.Paragraphs.Remove(paragraphToRemove);
-        }
-        
-        // Create a dictionary for efficient lookup
-        var existingParagraphsDict = existingWikiPage.Paragraphs.ToDictionary(p => p.Id);
-
-        foreach (var updatedParagraph in updatedWikiPage.Paragraphs)
-        {
-            // Check if the updated paragraph exists
-            if (existingParagraphsDict.TryGetValue(updatedParagraph.Id, out var existingParagraph))
-            {
-                // Update existing paragraph
-                existingParagraph.Title = updatedParagraph.Title;
-                existingParagraph.Content = updatedParagraph.Content;
-                existingParagraph.ParagraphImage = updatedParagraph.ParagraphImage;
-                existingParagraph.ParagraphImageText = updatedParagraph.ParagraphImageText;
-            }
-            else
-            {
-                // Create a new instance of Paragraph
-                var newParagraph = new Paragraph
-                {
-                    Title = updatedParagraph.Title,
-                    Content = updatedParagraph.Content,
-                    ParagraphImage = updatedParagraph.ParagraphImage,
-                    ParagraphImageText = updatedParagraph.ParagraphImageText,
-                    WikiPageId = existingWikiPage.Id
-                };
-
-                // Add the new instance to both collections
-                _context.Paragraphs.Add(newParagraph);
-                existingWikiPage.Paragraphs.Add(newParagraph);
-            }
-        }
+        // Set Approved to true
+        userSubmittedWikiPage.Approved = true;
 
         await _context.SaveChangesAsync();
     }
+
     public async Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage, ICollection<ImageFormModel> images)
     {
-        Console.WriteLine("inside UserSubmittedUpdateAsync");
+        // Console.WriteLine("inside UserSubmittedUpdateAsync");
         foreach (var paragraph in updatedWikiPage.Paragraphs)
         {
             paragraph.Id = new Guid();
@@ -353,6 +310,14 @@ public class WikiPageRepository : IWikiPageRepository
 
         if (wikiPage != null)
         {
+            // Remove the associated folder
+            var folderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", wikiPage.Id.ToString());
+            if (Directory.Exists(folderPath))
+            {
+                Directory.Delete(folderPath, true);
+            }
+
+            // Remove paragraphs and the wiki page itself
             _context.Paragraphs.RemoveRange(wikiPage.Paragraphs);
             _context.WikiPages.Remove(wikiPage);
             await _context.SaveChangesAsync();
@@ -368,36 +333,36 @@ public class WikiPageRepository : IWikiPageRepository
 
         if (wikiPage != null)
         {
-            Console.WriteLine("Removing old article paragraphs");
+            // Console.WriteLine("Removing old article paragraphs");
             _context.Paragraphs.RemoveRange(wikiPage.Paragraphs);
-            Console.WriteLine("Removing old article");
+            // Console.WriteLine("Removing old article");
             _context.WikiPages.Remove(wikiPage);
-            Console.WriteLine("Saving context");
+            // Console.WriteLine("Saving context");
             await _context.SaveChangesAsync();
-            Console.WriteLine("Saved Context");
+            // Console.WriteLine("Saved Context");
             
             if (newId != null)
             {
-                Console.WriteLine($"New id is: {newId}");
+                // Console.WriteLine($"New id is: {newId}");
                 // Rename the old folder to the new ID if new ID is not null
                 var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", id.ToString());
                 var newFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", newId.ToString());
-                Console.WriteLine($"newfolderpath: {newFolderPath}");
+                // Console.WriteLine($"newfolderpath: {newFolderPath}");
                 if (Directory.Exists(oldFolderPath))
                 {
-                    Console.WriteLine($"folder exists: {oldFolderPath}, moving it to {newFolderPath}");
+                    // Console.WriteLine($"folder exists: {oldFolderPath}, moving it to {newFolderPath}");
                     Directory.Move(oldFolderPath, newFolderPath);
                 }
             }
             else
             {
-                Console.WriteLine($"newid is null");
+                // Console.WriteLine($"newid is null");
                 // Delete the old folder if new ID is null
                 var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", id.ToString());
-                Console.WriteLine($"oldfolder is: {oldFolderPath}");
+                // Console.WriteLine($"oldfolder is: {oldFolderPath}");
                 if (Directory.Exists(oldFolderPath))
                 {
-                    Console.WriteLine($"Oldfolder exists, deleting it");
+                    // Console.WriteLine($"Oldfolder exists, deleting it");
                     Directory.Delete(oldFolderPath, true);
                 }
             }
@@ -411,7 +376,7 @@ public class WikiPageRepository : IWikiPageRepository
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedPageByIdAsync(Guid id)
     {
-        Console.WriteLine($"inside GetSubmittedPageByIdAsync, id: {id}");
+        // Console.WriteLine($"inside GetSubmittedPageByIdAsync, id: {id}");
         var wikiPage = await _context.UserSubmittedWikiPages
             .Where((page => page.IsNewPage==true))
             .Include(p => p.Paragraphs)
@@ -497,7 +462,7 @@ public class WikiPageRepository : IWikiPageRepository
 
                 return new WPWithImagesOutputModel
                 {
-                    WikiPage = wikiPage,
+                    UserSubmittedWikiPage = wikiPage,
                     Images = images
                 };
             }
@@ -505,7 +470,7 @@ public class WikiPageRepository : IWikiPageRepository
             {
                 return new WPWithImagesOutputModel
                 {
-                    WikiPage = wikiPage,
+                    UserSubmittedWikiPage = wikiPage,
                     Images = null
                 };
             }
