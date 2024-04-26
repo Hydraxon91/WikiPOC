@@ -19,14 +19,18 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
   const [usedImages, setUsedImages] = useState([]);
 
   useEffect(() => {
+    console.log(page);
     if (page) {
-      setTemporaryPage(page);
-      setTitle(page.title);
-      setRoleNote(page.roleNote);
-      setSiteSub(page.siteSub);
-      setContent(page.content);
-      setCategory(page.category);
-      setParagraphs([...page.paragraphs]);
+      setTemporaryPage(page.wikiPage || page.userSubmittedWikiPage);
+      setTitle(page.wikiPage.title || page.userSubmittedWikiPage.title);
+      setRoleNote(page.wikiPage.roleNote || page.userSubmittedWikiPage.roleNote);
+      setSiteSub(page.wikiPage.siteSub || page.userSubmittedWikiPage.siteSub);
+      setContent(page.wikiPage.content || page.userSubmittedWikiPage.content);
+      setCategory(page.wikiPage.category || page.userSubmittedWikiPage.category);
+      page.wikiPage.paragraphs && setParagraphs([...page.wikiPage.paragraphs]);
+      const renamedImages = page.images.map(image => ({ ...image, name: image.fileName }));
+      setImages(renamedImages);
+      setUsedImages(renamedImages);
       setNewPage(false);
     }
     else{
@@ -42,11 +46,28 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
 
   const handleContentChange = (value) => {
     // setContent(value);
+    console.log(images);
+    const hrefValues = extractHrefValues(value);
+    console.log(hrefValues);
     handleFieldChange('content', value);
-    const usedImagesArray = images.filter(image => value.includes(image.name));
-    setUsedImages(usedImagesArray);
+    const usedImagesArray = images.filter(image => hrefValues.some(href => href.includes(image.name)));
+    console.log(usedImagesArray);
+    setUsedImages(usedImagesArray); 
     updateTemporaryPage(title, siteSub, roleNote, value);
-  };
+};
+
+
+  const extractHrefValues = (inputString) => {
+    const regex = /href="([^"]*\.(?:jpg|png|gif))"/g;
+    const hrefValues = [];
+    let match;
+    
+    while ((match = regex.exec(inputString)) !== null) {
+        hrefValues.push(match[1]);
+    }
+    
+    return hrefValues;
+};
 
   const handleFieldChange = (field, value) => {
     // Update state based on the field parameter
@@ -126,7 +147,9 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
 
     const savePromise = newPage
       ? handleCreate(temporaryPage, usedImages)
-      : handleEdit({ ...page, title, paragraphs, siteSub, roleNote, content }, usedImages);
+      : 
+      handleEdit(temporaryPage, usedImages);
+      // : handleEdit(temporaryPage, usedImages);
     console.log(savePromise);
 
     savePromise
@@ -148,7 +171,7 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
               newPage={newPage} title={title} siteSub={siteSub} 
               roleNote={roleNote} content={content} emptyFields={emptyFields} 
               handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
-              images={images} setImages={setImages}
+              images={images} setImages={setImages} category={category}
           />
       </div>
       <div className='preview-container'>

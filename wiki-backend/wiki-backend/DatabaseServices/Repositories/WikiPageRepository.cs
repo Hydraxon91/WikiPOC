@@ -130,6 +130,7 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images)
     {
+        Console.WriteLine($"AddAsync wikipage id: {wikiPage.Id}");
         if (images.Count>0)
         {
             foreach (var image in images)
@@ -189,11 +190,18 @@ public class WikiPageRepository : IWikiPageRepository
     }
 
 
-    public async Task UpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage)
+    public async Task UpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage, ICollection<ImageFormModel> images)
     {
+        Console.WriteLine(updatedWikiPage);
+        Console.WriteLine(existingWikiPage);
         existingWikiPage.Title = updatedWikiPage.Title;
         existingWikiPage.RoleNote = updatedWikiPage.RoleNote;
         existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
+        existingWikiPage.Paragraphs = updatedWikiPage.Paragraphs;
+        existingWikiPage.Content = updatedWikiPage.Content;
+        existingWikiPage.Category = updatedWikiPage.Category;
+        existingWikiPage.LegacyWikiPage = updatedWikiPage.LegacyWikiPage;
+        existingWikiPage.LastUpdateDate = DateTime.Now;
         
         // Remove paragraphs that are not present in the updatedWikiPage
         var paragraphsToRemove = existingWikiPage.Paragraphs
@@ -235,6 +243,21 @@ public class WikiPageRepository : IWikiPageRepository
                 // Add the new instance to both collections
                 _context.Paragraphs.Add(newParagraph);
                 existingWikiPage.Paragraphs.Add(newParagraph);
+            }
+        }
+        
+        if (images.Count>0)
+        {
+            foreach (var image in images)
+            {
+                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles" ,existingWikiPage.Id.ToString());
+                Directory.CreateDirectory(directoryPath);
+                var filePath = Path.Combine(directoryPath, image.FileName);
+                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
+                }
             }
         }
 

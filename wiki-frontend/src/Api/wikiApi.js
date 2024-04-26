@@ -88,30 +88,39 @@ export const createWikiPage = async (newPage, token, decodedToken, images) => {
 };
 
 
-export const updateWikiPage = async (updatedPage, token, decodedToken) => {
+export const updateWikiPage = async (updatedPage, token, decodedToken, images) => {
   console.log(updatedPage);
     var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
     var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
     var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin/${updatedPage.id}` : `${BASE_URL}/api/WikiPages/user/${updatedPage.id}`;
 
+    const formData = new FormData();
     if (role !== "Admin") {
       console.log("notadmin");
-      updatedPage = { 
-        ...updatedPage,
-        // wikiPage: updatedPage,
-        wikiPageId: updatedPage.id,
-        isNewPage: false,
-        submittedBy: `${userName}`
-      };
+      formData.append('wikiPageWithImagesInputModel.IsNewPage', false)
+      formData.append('wikiPageWithImagesInputModel.WikiPageId', updatedPage.wikiPageId)
+      formData.append('wikiPageWithImagesInputModel.Approved', false)
+      formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
     }
+    formData.append(`wikiPageWithImagesInputModel.Title`, updatedPage.title);
+    formData.append(`wikiPageWithImagesInputModel.Category`, updatedPage.category);
+    formData.append(`wikiPageWithImagesInputModel.SiteSub`, updatedPage.siteSub);
+    formData.append(`wikiPageWithImagesInputModel.RoleNote`, updatedPage.roleNote);
+    formData.append(`wikiPageWithImagesInputModel.Content`, updatedPage.content);
+    formData.append(`model.Paragraphs`, updatedPage.paragraphs);
+    // Append images to the FormData object
+    images.forEach((image, index) => {
+      formData.append(`wikiPageWithImagesInputModel.Images[${index}].FileName`, image.name);
+      formData.append(`wikiPageWithImagesInputModel.Images[${index}].DataURL`, image.dataURL);
+    });
 
     const response = await fetch(url, {
       method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        // 'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify(updatedPage),
+      body: formData,
     });
     if (!response.ok) {
       throw new Error(`Failed to update WikiPage. Status: ${response.status}`);

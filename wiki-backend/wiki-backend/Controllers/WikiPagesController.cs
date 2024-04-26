@@ -160,6 +160,7 @@ public class WikiPagesController : ControllerBase
     [HttpPut("admin/{id:guid}")]
     public async Task<IActionResult> UpdateWikiPageForAdmin(Guid id, [FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
+        Console.WriteLine(wikiPageWithImagesInputModel);
         var existingWikiPageOutputModel = await _wikiPageRepository.GetByIdAsync(id);
 
         if (existingWikiPageOutputModel == null)
@@ -176,8 +177,6 @@ public class WikiPagesController : ControllerBase
             LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage
         };
         var images = wikiPageWithImagesInputModel.Images;
-        
-        existingWikiPageOutputModel.WikiPage.LastUpdateDate = DateTime.Now;
         await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage, updatedWikiPage, images);
 
         return Ok(new { Message = "WikiPage updated successfully" });

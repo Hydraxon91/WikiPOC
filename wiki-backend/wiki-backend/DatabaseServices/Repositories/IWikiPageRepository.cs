@@ -11,7 +11,7 @@ public interface IWikiPageRepository
     Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images);
     Task AddUserSubmittedPageAsync(UserSubmittedWikiPage wikiPage, ICollection<ImageFormModel> images);
     Task AcceptUserSubmittedWikiPage(UserSubmittedWikiPage userSubmittedWikiPage);
-    Task UpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage);
+    Task UpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage, ICollection<ImageFormModel> images);
     Task AcceptUserSubmittedUpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage);
     Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage);
     Task DeleteAsync(Guid id);

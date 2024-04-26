@@ -15,4 +15,9 @@ public class WikiPage
     public bool LegacyWikiPage { get; set; } = false;
     public ICollection<Paragraph> Paragraphs { get; set; } = new List<Paragraph>();
     public ICollection<UserComment> Comments { get; set; } = new List<UserComment>();
+    
+    public override string ToString()
+    {
+        return $"Id: {Id} Title: {Title}, SiteSub: {SiteSub}, RoleNote: {RoleNote}, Content: {Content}, Category: {Category}, PostDate: {PostDate}, LastUpdateDate: {LastUpdateDate}, LegacyWikiPage: {LegacyWikiPage},  ";
+    }
 }

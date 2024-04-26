@@ -5,7 +5,7 @@ import UserImagesContainer from './UserImagesContainer';
 import 'react-quill/dist/quill.snow.css';
 
 
-const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave, images, setImages }) => {
+const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave, images, setImages, category }) => {
   const quillRef = useRef(null); // Define quillRef
   const [lastSelection, setLastSelection] = useState(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -155,7 +155,8 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
         <label className="editLabel">Category:</label>
         <input 
           type="text" 
-          placeholder='Enter Category' 
+          placeholder='Enter Category'
+          value={category}
           onChange={(e) => handleFieldChange('category', e.target.value)} 
         />
       </div>
