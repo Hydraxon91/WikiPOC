@@ -92,14 +92,12 @@ export const updateWikiPage = async (updatedPage, token, decodedToken, images) =
   console.log(updatedPage);
     var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
     var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-    var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin/${updatedPage.id}` : `${BASE_URL}/api/WikiPages/user/${updatedPage.id}`;
-
+    var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin/${updatedPage.id}` : `${BASE_URL}/api/WikiPages/userUpdate/${updatedPage.id}`;
+    console.log(url);
     const formData = new FormData();
     if (role !== "Admin") {
       console.log("notadmin");
-      formData.append('wikiPageWithImagesInputModel.IsNewPage', false)
-      formData.append('wikiPageWithImagesInputModel.WikiPageId', updatedPage.wikiPageId)
-      formData.append('wikiPageWithImagesInputModel.Approved', false)
+      formData.append('wikiPageWithImagesInputModel.WikiPageId', updatedPage.id)
       formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
     }
     formData.append(`wikiPageWithImagesInputModel.Title`, updatedPage.title);
@@ -113,7 +111,7 @@ export const updateWikiPage = async (updatedPage, token, decodedToken, images) =
       formData.append(`wikiPageWithImagesInputModel.Images[${index}].FileName`, image.name);
       formData.append(`wikiPageWithImagesInputModel.Images[${index}].DataURL`, image.dataURL);
     });
-
+    // console.log(`calling ${url} ${token}`);
     const response = await fetch(url, {
       method: "PUT",
       headers: {

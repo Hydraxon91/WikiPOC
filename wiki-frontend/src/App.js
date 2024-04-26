@@ -85,7 +85,7 @@ function App() {
   const handleEdit = (updatedPage, images) => {
     console.log(updatedPage);
     console.log('Inside handleEdit');
-    // console.log(updatedPage);
+    console.log(images);
     return updateWikiPage(updatedPage, cookies["jwt_token"], decodedToken, images)
       .then((updatedWikiPage) => {
         console.log('updateWikiPage resolved:', updatedWikiPage);

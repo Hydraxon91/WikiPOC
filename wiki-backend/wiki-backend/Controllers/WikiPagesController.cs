@@ -184,22 +184,36 @@ public class WikiPagesController : ControllerBase
     
     //This method returns 400 for some reason, will need to check later
     [Authorize(Policy = IdentityData.UserPolicyName)]
-    [HttpPut("user/{id:guid}")]
-    public async Task<IActionResult> UpdateWikiPageForUser(Guid id, [FromBody] UserSubmittedWikiPage updatedWikiPage)
+    [HttpPut("userUpdate/{id:guid}")]
+    public async Task<IActionResult> UpdateWikiPageForUser(Guid id, [FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
+        Console.WriteLine("inside UpdateWikiPageForUser in controller");
+        var updatedWikiPage = new UserSubmittedWikiPage()
+        {
+            Title = wikiPageWithImagesInputModel.Title,
+            SiteSub = wikiPageWithImagesInputModel.SiteSub,
+            RoleNote = wikiPageWithImagesInputModel.RoleNote,
+            Content = wikiPageWithImagesInputModel.Content,
+            Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
+            Category = wikiPageWithImagesInputModel.Category,
+            LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage,
+            SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy,
+            Approved = false,
+            IsNewPage = false,
+            WikiPageId = wikiPageWithImagesInputModel.WikiPageId
+        };
+        
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
             return BadRequest(errors);
         }
+        
         updatedWikiPage.Id = Guid.NewGuid();
         updatedWikiPage.PostDate = DateTime.Now;
-        // Console.WriteLine(updatedWikiPage);
-        // if (updatedWikiPage.WikiPage == null)
-        // {
-        //     return BadRequest("Wikipage is missing from the updatedWikipage");
-        // }
-        await _wikiPageRepository.UserSubmittedUpdateAsync(updatedWikiPage);
+        var images = wikiPageWithImagesInputModel.Images;
+        Console.WriteLine("calling UserSubmittedUpdateAsync");
+        await _wikiPageRepository.UserSubmittedUpdateAsync(updatedWikiPage, images);
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = updatedWikiPage.Id }, updatedWikiPage);
     }

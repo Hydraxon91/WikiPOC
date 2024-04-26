@@ -315,14 +315,31 @@ public class WikiPageRepository : IWikiPageRepository
 
         await _context.SaveChangesAsync();
     }
-    public async Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage)
+    public async Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage, ICollection<ImageFormModel> images)
     {
+        Console.WriteLine("inside UserSubmittedUpdateAsync");
         foreach (var paragraph in updatedWikiPage.Paragraphs)
         {
             paragraph.Id = new Guid();
             paragraph.WikiPage = updatedWikiPage;
             paragraph.WikiPageId = updatedWikiPage.Id;
         }
+        
+        if (images.Count>0)
+        {
+            foreach (var image in images)
+            {
+                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", updatedWikiPage.Id.ToString());
+                Directory.CreateDirectory(directoryPath);
+                var filePath = Path.Combine(directoryPath, image.FileName);
+                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
+                }
+            }
+        }
+        
         _context.UserSubmittedWikiPages.Add(updatedWikiPage);
         await _context.SaveChangesAsync();
     }

@@ -13,7 +13,7 @@ public interface IWikiPageRepository
     Task AcceptUserSubmittedWikiPage(UserSubmittedWikiPage userSubmittedWikiPage);
     Task UpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage, ICollection<ImageFormModel> images);
     Task AcceptUserSubmittedUpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage);
-    Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage);
+    Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage, ICollection<ImageFormModel> images);
     Task DeleteAsync(Guid id);
     Task DeleteUserSubmittedAsync(Guid id, Guid? newId);
     Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedPageTitlesAndIdAsync();
