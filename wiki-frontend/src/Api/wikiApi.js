@@ -297,13 +297,15 @@ export const acceptUserSubmittedUpdate = async (updatedPage, id, token) => {
 };
 
 export const acceptUserSubmittedPage = async (updatedPage, token) => {
+  console.log("Acceptusersubmittedpage");
+  console.log(updatedPage.userSubmittedWikiPage.id);
   const response = await fetch(`${BASE_URL}/api/WikiPages/AdminAccept`, {
     method: "POST",
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify(updatedPage),
+    body: JSON.stringify(updatedPage.userSubmittedWikiPage.id),
   });
   if (!response.ok) {
     throw new Error(`Failed to Accept WikiPage. Status: ${response.status}`);

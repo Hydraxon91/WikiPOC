@@ -132,22 +132,25 @@ public class WikiPagesController : ControllerBase
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost("AdminAccept")]
-    public async Task<ActionResult<WikiPage>> AcceptCreatedPageForUser([FromBody] UserSubmittedWikiPage userSubmittedWikiPage)
+    public async Task<ActionResult<WikiPage>> AcceptCreatedPageForUser([FromBody] string id)
     {
-        var wikiPage = new WikiPage
+        var guid = Guid.Parse(id);
+        Console.WriteLine($"id is: {guid}");
+        var userSubmittedWikiPage = await _wikiPageRepository.GetSubmittedPageByIdAsync(guid);
+
+        if (userSubmittedWikiPage is { UserSubmittedWikiPage: null })
         {
-            Id = new Guid(),
-            Title = userSubmittedWikiPage.Title,
-            SiteSub = userSubmittedWikiPage.SiteSub,
-            RoleNote = userSubmittedWikiPage.RoleNote,
-            Paragraphs = userSubmittedWikiPage.Paragraphs,
-            Category = userSubmittedWikiPage.Category,
-            PostDate = DateTime.Now
-        };
-        await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
-        // await _wikiPageRepository.AddAsync(wikiPage);
-        
-        return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
+            return NotFound(); // Return 404 if the user-submitted page is not found
+        }
+
+        // Update the Approved property to true
+        Console.WriteLine(userSubmittedWikiPage.UserSubmittedWikiPage);
+        userSubmittedWikiPage.UserSubmittedWikiPage.Approved = true;
+
+        // Save the changes to the database
+        await _wikiPageRepository.AcceptUserSubmittedWikiPage(userSubmittedWikiPage.UserSubmittedWikiPage);
+
+        return Ok(new { Message = "UserSubmittedWikiPage approved successfully" });
     }
     
     
@@ -198,7 +201,7 @@ public class WikiPagesController : ControllerBase
             return NotFound();
         existingWikiPage.WikiPage.LastUpdateDate = DateTime.Now;
         await _wikiPageRepository.AcceptUserSubmittedUpdateAsync(existingWikiPage.WikiPage, userSubmittedWikiPage);
-        await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
+        await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id, existingWikiPage.WikiPage.Id);
 
         return Ok(new { Message = "WikiPage updated successfully" });
     }
@@ -216,7 +219,7 @@ public class WikiPagesController : ControllerBase
     [HttpDelete("AdminDecline/{id:guid}")]
     public async Task<IActionResult> DeleteUserSubmittedWikiPage(Guid id)
     {
-        await _wikiPageRepository.DeleteUserSubmittedAsync(id);
+        await _wikiPageRepository.DeleteUserSubmittedAsync(id, null);
 
         return Ok(new { Message = "UserSubmittedWikiPage deleted successfully" });
     }

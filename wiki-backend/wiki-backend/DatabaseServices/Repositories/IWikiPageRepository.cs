@@ -10,11 +10,12 @@ public interface IWikiPageRepository
     Task<WPWithImagesOutputModel?> GetByTitleAsync(string title);
     Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images);
     Task AddUserSubmittedPageAsync(UserSubmittedWikiPage wikiPage, ICollection<ImageFormModel> images);
+    Task AcceptUserSubmittedWikiPage(UserSubmittedWikiPage userSubmittedWikiPage);
     Task UpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage);
     Task AcceptUserSubmittedUpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage);
     Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage);
     Task DeleteAsync(Guid id);
-    Task DeleteUserSubmittedAsync(Guid id);
+    Task DeleteUserSubmittedAsync(Guid id, Guid? newId);
     Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedPageTitlesAndIdAsync();
     Task<WPWithImagesOutputModel?> GetSubmittedPageByIdAsync(Guid id);
     Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedUpdateTitlesAndIdAsync();

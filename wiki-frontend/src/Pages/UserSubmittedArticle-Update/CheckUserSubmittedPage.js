@@ -22,7 +22,7 @@ const CheckUserSubmittedPage = () => {
     const fetchSubmittedPage = async (id) => {
         try {
             const data = await getNewPageById(id, cookies['jwt_token'])
-            // console.log(data);
+            console.log(data);
             setPage(data);
         } catch (error) {
           console.error('Error fetching page:', error);

@@ -2,6 +2,7 @@
 
 public class WPWithImagesOutputModel
 {
-    public WikiPage WikiPage { get; set; }
+    public WikiPage? WikiPage { get; set; }
+    public UserSubmittedWikiPage? UserSubmittedWikiPage { get; set; }
     public List<ImageFormModel>? Images { get; set; }
 }

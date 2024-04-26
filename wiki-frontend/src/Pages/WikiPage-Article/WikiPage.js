@@ -16,9 +16,9 @@ const WikiPage = ({page: wikipage, setDecodedTitle, cookies, disableNavbar = fal
 
 
     useEffect(()=>{
-        if (wikipage && wikipage.wikiPage)  {
+        if (wikipage && (wikipage.wikiPage || wikipage.userSubmittedWikiPage))  {
             setActiveTab('wiki');
-            setPage(wikipage.wikiPage);
+            setPage(wikipage.wikiPage ?? wikipage.userSubmittedWikiPage);
             setImages(wikipage.images)
         }
     },[wikipage])

@@ -16,9 +16,14 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task<IEnumerable<string>> GetAllTitlesAsync()
     {
-        var titles = await _context.WikiPages.Where(page => !(page is UserSubmittedWikiPage)).Select(page => page.Title).ToListAsync();
+        var titles = await _context.WikiPages
+            .Where(page => !(page is UserSubmittedWikiPage) || (_context.UserSubmittedWikiPages.Any(userPage => userPage.Id == page.Id && userPage.Approved)))
+            .Select(page => page.Title)
+            .ToListAsync();
+
         return titles;
     }
+
     public async Task<IEnumerable<WikiPage>> GetAllAsync()
     {
         return await _context.WikiPages
@@ -77,7 +82,7 @@ public class WikiPageRepository : IWikiPageRepository
     public async Task<WPWithImagesOutputModel?> GetByTitleAsync(string title)
     {
         var wikiPage = await _context.WikiPages
-            .Where(page => !(page is UserSubmittedWikiPage))
+            .Where(page => !(page is UserSubmittedWikiPage) || (_context.UserSubmittedWikiPages.Any(userPage => userPage.Id == page.Id && userPage.Approved)))
             .Include(p => p.Paragraphs)
             .Include(wp => wp.Comments)
                 .ThenInclude(uc => uc.UserProfile)
@@ -176,6 +181,13 @@ public class WikiPageRepository : IWikiPageRepository
         _context.UserSubmittedWikiPages.Add(wikiPage);
         await _context.SaveChangesAsync();
     }
+    
+    public async Task AcceptUserSubmittedWikiPage(UserSubmittedWikiPage userSubmittedWikiPage)
+    {
+        _context.Entry(userSubmittedWikiPage).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+    }
+
 
     public async Task UpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage)
     {
@@ -307,7 +319,7 @@ public class WikiPageRepository : IWikiPageRepository
         }
     }
 
-    public async Task DeleteUserSubmittedAsync(Guid id)
+    public async Task DeleteUserSubmittedAsync(Guid id, Guid? newId)
     {
         var wikiPage = await _context.UserSubmittedWikiPages
             .Include(wp => wp.Paragraphs)
@@ -316,20 +328,50 @@ public class WikiPageRepository : IWikiPageRepository
 
         if (wikiPage != null)
         {
+            Console.WriteLine("Removing old article paragraphs");
             _context.Paragraphs.RemoveRange(wikiPage.Paragraphs);
+            Console.WriteLine("Removing old article");
             _context.WikiPages.Remove(wikiPage);
+            Console.WriteLine("Saving context");
             await _context.SaveChangesAsync();
+            Console.WriteLine("Saved Context");
+            
+            if (newId != null)
+            {
+                Console.WriteLine($"New id is: {newId}");
+                // Rename the old folder to the new ID if new ID is not null
+                var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", id.ToString());
+                var newFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", newId.ToString());
+                Console.WriteLine($"newfolderpath: {newFolderPath}");
+                if (Directory.Exists(oldFolderPath))
+                {
+                    Console.WriteLine($"folder exists: {oldFolderPath}, moving it to {newFolderPath}");
+                    Directory.Move(oldFolderPath, newFolderPath);
+                }
+            }
+            else
+            {
+                Console.WriteLine($"newid is null");
+                // Delete the old folder if new ID is null
+                var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", id.ToString());
+                Console.WriteLine($"oldfolder is: {oldFolderPath}");
+                if (Directory.Exists(oldFolderPath))
+                {
+                    Console.WriteLine($"Oldfolder exists, deleting it");
+                    Directory.Delete(oldFolderPath, true);
+                }
+            }
         }
     }
     
     public async Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedPageTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage).Select(page => new Tuple<string, Guid>(page.Title, page.Id)).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage && !page.Approved).Select(page => new Tuple<string, Guid>(page.Title, page.Id)).ToListAsync();
     }
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedPageByIdAsync(Guid id)
     {
-        Console.WriteLine("inside GetSubmittedPageByIdAsync");
+        Console.WriteLine($"inside GetSubmittedPageByIdAsync, id: {id}");
         var wikiPage = await _context.UserSubmittedWikiPages
             .Where((page => page.IsNewPage==true))
             .Include(p => p.Paragraphs)
@@ -361,7 +403,7 @@ public class WikiPageRepository : IWikiPageRepository
 
                 return new WPWithImagesOutputModel
                 {
-                    WikiPage = wikiPage,
+                    UserSubmittedWikiPage = wikiPage,
                     Images = images
                 };
             }
@@ -369,7 +411,7 @@ public class WikiPageRepository : IWikiPageRepository
             {
                 return new WPWithImagesOutputModel
                 {
-                    WikiPage = wikiPage,
+                    UserSubmittedWikiPage = wikiPage,
                     Images = null
                 };
             }
