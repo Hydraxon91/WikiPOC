@@ -36,7 +36,7 @@ public class WikiPageRepository : IWikiPageRepository
         
         if (wikiPage!=null)
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Title);
+            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Id.ToString());
             Console.WriteLine(directoryPath);
             if (Directory.Exists(directoryPath))
             {
@@ -85,7 +85,7 @@ public class WikiPageRepository : IWikiPageRepository
         
         if (wikiPage!=null)
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", title);
+            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Id.ToString());
             Console.WriteLine(directoryPath);
             if (Directory.Exists(directoryPath))
             {
@@ -129,7 +129,7 @@ public class WikiPageRepository : IWikiPageRepository
         {
             foreach (var image in images)
             {
-                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles" ,wikiPage.Title);
+                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles" ,wikiPage.Id.ToString());
                 Directory.CreateDirectory(directoryPath);
                 var filePath = Path.Combine(directoryPath, image.FileName);
                 var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
@@ -156,7 +156,7 @@ public class WikiPageRepository : IWikiPageRepository
         {
             foreach (var image in images)
             {
-                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles" ,wikiPage.Title);
+                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles" ,wikiPage.Id.ToString());
                 Directory.CreateDirectory(directoryPath);
                 var filePath = Path.Combine(directoryPath, image.FileName);
                 var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
@@ -340,7 +340,7 @@ public class WikiPageRepository : IWikiPageRepository
         
         if (wikiPage!=null)
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Title);
+            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Id.ToString());
             Console.WriteLine(directoryPath);
             if (Directory.Exists(directoryPath))
             {
@@ -394,7 +394,7 @@ public class WikiPageRepository : IWikiPageRepository
         
         if (wikiPage!=null)
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Title);
+            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Id.ToString());
             Console.WriteLine(directoryPath);
             if (Directory.Exists(directoryPath))
             {
