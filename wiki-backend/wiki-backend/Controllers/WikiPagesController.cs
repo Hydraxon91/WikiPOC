@@ -80,6 +80,7 @@ public class WikiPagesController : ControllerBase
 
         var newWikiPage = new WikiPage
         {
+            Id = Guid.NewGuid(),
             Title = wikiPageWithImagesInputModel.Title,
             SiteSub = wikiPageWithImagesInputModel.SiteSub,
             RoleNote = wikiPageWithImagesInputModel.RoleNote,
@@ -111,6 +112,7 @@ public class WikiPagesController : ControllerBase
         
         var newWikiPage = new UserSubmittedWikiPage
         {
+            Id = Guid.NewGuid(),
             Title = wikiPageWithImagesInputModel.Title,
             SiteSub = wikiPageWithImagesInputModel.SiteSub,
             RoleNote = wikiPageWithImagesInputModel.RoleNote,
@@ -156,14 +158,27 @@ public class WikiPagesController : ControllerBase
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut("admin/{id:guid}")]
-    public async Task<IActionResult> UpdateWikiPageForAdmin(Guid id, [FromBody] WikiPage updatedWikiPage)
+    public async Task<IActionResult> UpdateWikiPageForAdmin(Guid id, [FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
         var existingWikiPageOutputModel = await _wikiPageRepository.GetByIdAsync(id);
 
         if (existingWikiPageOutputModel == null)
             return NotFound();
+        
+        var updatedWikiPage = new WikiPage
+        {
+            Title = wikiPageWithImagesInputModel.Title,
+            SiteSub = wikiPageWithImagesInputModel.SiteSub,
+            RoleNote = wikiPageWithImagesInputModel.RoleNote,
+            Content = wikiPageWithImagesInputModel.Content,
+            Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
+            Category = wikiPageWithImagesInputModel.Category,
+            LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage
+        };
+        var images = wikiPageWithImagesInputModel.Images;
+        
         existingWikiPageOutputModel.WikiPage.LastUpdateDate = DateTime.Now;
-        await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage, updatedWikiPage);
+        await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage, updatedWikiPage, images);
 
         return Ok(new { Message = "WikiPage updated successfully" });
     }
