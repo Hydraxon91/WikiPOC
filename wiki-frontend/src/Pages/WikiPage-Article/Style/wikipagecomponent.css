@@ -10,12 +10,12 @@
     font-size: 94%;
     margin-bottom: 2vh;
     width: 200px;
+    /* text-align: left; */
 }
 
 .thumbnail.right {
     float: right;
     margin-left: 15px;
-    text-align: left;
 }
 
 .thumbnail.left {
