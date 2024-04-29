@@ -7,9 +7,9 @@ namespace wiki_backend.Models;
 
 public class Paragraph
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     [Required(ErrorMessage = "WikiPageId is required.")]
-    public int WikiPageId { get; set; }
+    public Guid WikiPageId { get; set; }
     [ForeignKey(nameof(WikiPageId))]
     [JsonIgnore]
     public WikiPage? WikiPage { get; set; }

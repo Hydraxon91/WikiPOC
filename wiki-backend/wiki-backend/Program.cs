@@ -19,10 +19,10 @@ var builder = WebApplication.CreateBuilder(args);
 var picturesPath = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER");
 
 // Ensure the path is not null or empty //Comment these lines when running migrations
-if (string.IsNullOrEmpty(picturesPath))
-{
-    throw new Exception($"PROFILE_PICTURES_PATH environment variable is not set. {picturesPath}");
-}
+// if (string.IsNullOrEmpty(picturesPath))
+// {
+//     throw new Exception($"PROFILE_PICTURES_PATH environment variable is not set. {picturesPath}");
+// }
 
 
 // Add services to the container.
@@ -330,41 +330,45 @@ void SeedComments()
 
     if (adminUser != null && testUser != null)
     {
-        var comments = new List<UserComment>
-        {
-            new UserComment
-            {
-                UserProfileId = adminUser.ProfileId,
-                UserProfile = adminUser.Profile,
-                Content = "Test comment from Admin",
-                WikiPageId = 1,
-                PostDate = DateTime.Now,
-                IsReply = false,
-                IsEdited = false
-            },
-            new UserComment
-            {
-                UserProfileId = testUser.ProfileId,
-                UserProfile = testUser.Profile,
-                Content = "Test comment from Tester",
-                WikiPageId = 1,
-                PostDate = DateTime.Now,
-                IsReply = false,
-                IsEdited = false
-            },
-            new UserComment
-            {
-                UserProfileId = testUser.ProfileId,
-                UserProfile = testUser.Profile,
-                Content = "Test comment 2 from Tester",
-                WikiPageId = 1,
-                PostDate = DateTime.Now,
-                IsReply = false,
-                IsEdited = true
-            }
-        };
+        var wikiPage = dbContext.WikiPages.FirstOrDefault(wp => wp.Title == "Example Page 1" && wp.SiteSub == "Example SiteSub 1");
 
-        dbContext.UserComments.AddRange(comments);
-        dbContext.SaveChanges();
+        if (wikiPage != null)
+        {
+            var comments = new List<UserComment>
+            {
+                new UserComment
+                {
+                    UserProfileId = adminUser.ProfileId,
+                    UserProfile = adminUser.Profile,
+                    Content = "Test comment from Admin",
+                    WikiPageId = wikiPage.Id,
+                    PostDate = DateTime.Now,
+                    IsReply = false,
+                    IsEdited = false
+                },
+                new UserComment
+                {
+                    UserProfileId = testUser.ProfileId,
+                    UserProfile = testUser.Profile,
+                    Content = "Test comment from Tester",
+                    WikiPageId = wikiPage.Id,
+                    PostDate = DateTime.Now,
+                    IsReply = false,
+                    IsEdited = false
+                },
+                new UserComment
+                {
+                    UserProfileId = testUser.ProfileId,
+                    UserProfile = testUser.Profile,
+                    Content = "Test comment 2 from Tester",
+                    WikiPageId = wikiPage.Id,
+                    PostDate = DateTime.Now,
+                    IsReply = false,
+                    IsEdited = true
+                }
+            };
+            dbContext.UserComments.AddRange(comments);
+            dbContext.SaveChanges();
+        }
     }
 }

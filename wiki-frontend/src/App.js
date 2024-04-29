@@ -1,23 +1,24 @@
 import React, {useState, useEffect} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import EditPage from "./Components/EditPage";
-import EditStylePage from "./Pages/EditStylePage.js";
-import MainPage from "./Pages/MainPage.js";
-import HomeComponent from "./Components/HomeComponent.js";
+import LegacyEditPage from "./Pages/CreateEditArticle/LegacyEditPage.js";
+import EditPage from "./Pages/CreateEditArticle/EditPage.js";
+import EditStylePage from "./Pages/EditStylePage/EditStylePage.js";
+import MainPage from "./Pages/MainPage/MainPage.js";
+import HomeComponent from "./Pages/MainPage/Components/HomeComponent.js";
 import { StyleProvider  } from "./Components/contexts/StyleContext.js";
 import { createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle } from "./Api/wikiApi.js";
-import LoginPageComponent from "./Components/LoginPageComponent.js";
+import LoginPageComponent from "./Pages/LoginLogoutPages/LoginPageComponent.js";
 import { CookiesProvider, useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
 import { UserContextProvider } from "./Components/contexts/UserContextProvider.js";
-import RegisterPageComponent from "./Components/RegisterPageComponent.jsx";
-import UserRequestsPageComponent from "./Components/UserRequestsPageComponent.js";
-import CompareUpdatePage from "./Components/CompareUpdatePage.js";
-import CheckUserSubmittedPage from "./Components/CheckUserSubmittedPage.js";
-import WikiPage from "./Pages/WikiPage.js";
-import ProfilePage from "./Pages/ProfilePage.js";
-import EditProfilePage from "./Components/EditProfilePage.js";
+import RegisterPageComponent from "./Pages/LoginLogoutPages/RegisterPageComponent.js";
+import UserRequestsPageComponent from "./Pages/UserSubmittedArticle-Update/UserRequestsPageComponent.js";
+import CompareUpdatePage from "./Pages/UserSubmittedArticle-Update/CompareUpdatePage.js";
+import CheckUserSubmittedPage from "./Pages/UserSubmittedArticle-Update/CheckUserSubmittedPage.js";
+import WikiPage from "./Pages/WikiPage-Article/WikiPage.js";
+import ProfilePage from "./Pages/ProfilePage/ProfilePage.js";
+import EditProfilePage from "./Pages/ProfilePage/EditProfilePage.js";
 
 function App() {
 
@@ -58,9 +59,9 @@ function App() {
   }, [decodedTitle]);
 
 
-  const handleCreate = (newPage) => {
+  const handleCreate = (newPage, images) => {
     console.log('Inside handleCreate');
-    return createWikiPage(newPage, cookies["jwt_token"], decodedToken)
+    return createWikiPage(newPage, cookies["jwt_token"], decodedToken, images)
       .then((createdPage) => {
         console.log('createWikiPage resolved:', createdPage);
         setWikiPageTitles([...wikiPageTitles, createdPage.Title]);
@@ -71,7 +72,6 @@ function App() {
         throw error; // Rethrow the error to propagate it to the next .catch
       });
   };
-  
   const handleDelete = (id) => {
     deleteWikiPage(id, cookies["jwt_token"])
       .then(() => {
@@ -82,10 +82,11 @@ function App() {
       });
   };
   
-  const handleEdit = (updatedPage) => {
-    // console.log('Inside handleEdit');
-    // console.log(updatedPage);
-    return updateWikiPage(updatedPage, cookies["jwt_token"], decodedToken)
+  const handleEdit = (updatedPage, images) => {
+    console.log(updatedPage);
+    console.log('Inside handleEdit');
+    console.log(images);
+    return updateWikiPage(updatedPage, cookies["jwt_token"], decodedToken, images)
       .then((updatedWikiPage) => {
         console.log('updateWikiPage resolved:', updatedWikiPage);
         setWikiPageTitles((prevPages) =>
@@ -119,6 +120,8 @@ function App() {
                   <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
                   <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} cookies={cookies["jwt_token"]}/>} />
                   <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
+                  <Route path="/page/:title/legacyedit" element={<LegacyEditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
+                  <Route path="/legacycreate" element={<LegacyEditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
                   <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
                   <Route path="/edit-wiki" element={<EditStylePage cookies={cookies["jwt_token"]}></EditStylePage>}/>
                   <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>

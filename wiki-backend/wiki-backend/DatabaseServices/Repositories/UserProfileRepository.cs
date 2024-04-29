@@ -12,7 +12,7 @@ public class UserProfileRepository : IUserProfileRepository
         _context = context;
     }
     
-    public async Task<UserProfile?> GetByIdAsync(int id)
+    public async Task<UserProfile?> GetByIdAsync(Guid id)
     {
         return await _context.UserProfiles
             .Include(up => up.User)
@@ -38,7 +38,7 @@ public class UserProfileRepository : IUserProfileRepository
     //     throw new NotImplementedException();
     // }
 
-    public async Task UpdateAsync(int existingId, UserProfile updatedProfile, IFormFile? profilePictureFile)
+    public async Task UpdateAsync(Guid existingId, UserProfile updatedProfile, IFormFile? profilePictureFile)
     {
         var existingProfile = await _context.UserProfiles.SingleOrDefaultAsync(up => up.Id == existingId);
         
@@ -63,7 +63,7 @@ public class UserProfileRepository : IUserProfileRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         var existingProfile = await _context.UserProfiles.SingleOrDefaultAsync(up => up.Id == id);
 

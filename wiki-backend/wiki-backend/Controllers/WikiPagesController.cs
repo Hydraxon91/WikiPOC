@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Identity;
 using wiki_backend.Models;
@@ -34,8 +31,8 @@ public class WikiPagesController : ControllerBase
         return Ok(wikiPageTitles);
     }
 
-    [HttpGet("GetById/{id:int}")]
-    public async Task<ActionResult<WikiPage>> GetWikiPage(int id)
+    [HttpGet("GetById/{id:guid}")]
+    public async Task<ActionResult<WPWithImagesOutputModel>> GetWikiPage(Guid id)
     {
         var wikiPage = await _wikiPageRepository.GetByIdAsync(id);
 
@@ -46,7 +43,7 @@ public class WikiPagesController : ControllerBase
     }
     
     [HttpGet("GetByTitle/{title}")]
-    public async Task<ActionResult<WikiPage>> GetWikiPageByTitle(string title)
+    public async Task<ActionResult<WPWithImagesOutputModel>> GetWikiPageByTitle(string title)
     {
         var wikiPage = await _wikiPageRepository.GetByTitleAsync(title);
 
@@ -58,116 +55,193 @@ public class WikiPagesController : ControllerBase
         return Ok(wikiPage);
     }
     
-    [HttpGet("{id:int}/paragraphs")]
-    public async Task<ActionResult<IEnumerable<Paragraph>>> GetWikiPageParagraphs(int id)
+    [HttpGet("{id:guid}/paragraphs")]
+    public async Task<ActionResult<IEnumerable<Paragraph>>> GetWikiPageParagraphs(Guid id)
     {
-        var wikiPage = await _wikiPageRepository.GetByIdAsync(id);
+        var wikiPageOutputModel = await _wikiPageRepository.GetByIdAsync(id);
 
-        if (wikiPage == null)
+        if (wikiPageOutputModel == null)
             return NotFound();
 
         // Check if Paragraphs is null, and return an empty list if it is
-        var paragraphs = wikiPage.Paragraphs ?? new List<Paragraph>();
+        var paragraphs = wikiPageOutputModel.WikiPage.Paragraphs ?? new List<Paragraph>();
 
         return Ok(paragraphs);
     }
-    
+
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost("admin")]
-    public async Task<ActionResult<WikiPage>> CreateWikiPageForAdmin([FromBody] WikiPage wikiPage)
+    public async Task<ActionResult<WikiPage>> CreateWikiPageForAdmin([FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
-        await _wikiPageRepository.AddAsync(wikiPage);
+        if (wikiPageWithImagesInputModel.Title == null)
+        {
+            return BadRequest("Invalid request. Title is null.");
+        }
 
-        return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
+        var newWikiPage = new WikiPage
+        {
+            Id = Guid.NewGuid(),
+            Title = wikiPageWithImagesInputModel.Title,
+            SiteSub = wikiPageWithImagesInputModel.SiteSub,
+            RoleNote = wikiPageWithImagesInputModel.RoleNote,
+            Content = wikiPageWithImagesInputModel.Content,
+            Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
+            Category = wikiPageWithImagesInputModel.Category
+        };
+        var images = wikiPageWithImagesInputModel.Images;
+        
+        try
+        {
+            await _wikiPageRepository.AddAsync(newWikiPage, images);
+            return Ok(new { Message = "Article submitted successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred while submitting the article: {ex.Message}");
+        }
     }
     
     [Authorize(Policy = IdentityData.UserPolicyName)]
     [HttpPost("user")]
-    public async Task<ActionResult<WikiPage>> CreateWikiPageForUser([FromBody] UserSubmittedWikiPage wikiPage)
+    public async Task<ActionResult<WikiPage>> CreateWikiPageForUser([FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
-        if (!ModelState.IsValid)
+        if (wikiPageWithImagesInputModel.Title == null)
         {
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-            return BadRequest(errors);
+            return BadRequest("Invalid request. Title is null.");
         }
         
-        await _wikiPageRepository.AddUserSubmittedPageAsync(wikiPage);
+        var newWikiPage = new UserSubmittedWikiPage
+        {
+            Id = Guid.NewGuid(),
+            Title = wikiPageWithImagesInputModel.Title,
+            SiteSub = wikiPageWithImagesInputModel.SiteSub,
+            RoleNote = wikiPageWithImagesInputModel.RoleNote,
+            Content = wikiPageWithImagesInputModel.Content,
+            Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
+            IsNewPage = true,
+            Approved = false,
+            Category = wikiPageWithImagesInputModel.Category,
+            SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy,
+            PostDate = DateTime.Now
+        };
+        
+        var images = wikiPageWithImagesInputModel.Images;
+        
+        await _wikiPageRepository.AddUserSubmittedPageAsync(newWikiPage, images);
 
-        return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
+        return CreatedAtAction(nameof(GetWikiPage), new { id = newWikiPage.Id }, newWikiPage);
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost("AdminAccept")]
-    public async Task<ActionResult<WikiPage>> AcceptCreatedPageForUser([FromBody] UserSubmittedWikiPage userSubmittedWikiPage)
+    public async Task<ActionResult<WikiPage>> AcceptCreatedPageForUser([FromBody] string id)
     {
-        var wikiPage = new WikiPage
+        var guid = Guid.Parse(id);
+        Console.WriteLine($"id is: {guid}");
+        var userSubmittedWikiPage = await _wikiPageRepository.GetSubmittedPageByIdAsync(guid);
+
+        if (userSubmittedWikiPage is { UserSubmittedWikiPage: null })
         {
-            Id = 0,
-            Title = userSubmittedWikiPage.Title,
-            SiteSub = userSubmittedWikiPage.SiteSub,
-            RoleNote = userSubmittedWikiPage.RoleNote,
-            Paragraphs = userSubmittedWikiPage.Paragraphs
-        };
-        await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
-        await _wikiPageRepository.AddAsync(wikiPage);
-        
-        return CreatedAtAction(nameof(GetWikiPage), new { id = wikiPage.Id }, wikiPage);
+            return NotFound(); // Return 404 if the user-submitted page is not found
+        }
+
+        // Update the Approved property to true
+        Console.WriteLine(userSubmittedWikiPage.UserSubmittedWikiPage);
+        userSubmittedWikiPage.UserSubmittedWikiPage.Approved = true;
+
+        // Save the changes to the database
+        await _wikiPageRepository.AcceptUserSubmittedWikiPage(userSubmittedWikiPage.UserSubmittedWikiPage);
+
+        return Ok(new { Message = "UserSubmittedWikiPage approved successfully" });
     }
     
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpPut("admin/{id:int}")]
-    public async Task<IActionResult> UpdateWikiPageForAdmin(int id, [FromBody] WikiPage updatedWikiPage)
+    [HttpPut("admin/{id:guid}")]
+    public async Task<IActionResult> UpdateWikiPageForAdmin(Guid id, [FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
-        var existingWikiPage = await _wikiPageRepository.GetByIdAsync(id);
+        Console.WriteLine(wikiPageWithImagesInputModel);
+        var existingWikiPageOutputModel = await _wikiPageRepository.GetByIdAsync(id);
 
-        if (existingWikiPage == null)
+        if (existingWikiPageOutputModel == null)
             return NotFound();
-
-        await _wikiPageRepository.UpdateAsync(existingWikiPage, updatedWikiPage);
+        
+        var updatedWikiPage = new WikiPage
+        {
+            Title = wikiPageWithImagesInputModel.Title,
+            SiteSub = wikiPageWithImagesInputModel.SiteSub,
+            RoleNote = wikiPageWithImagesInputModel.RoleNote,
+            Content = wikiPageWithImagesInputModel.Content,
+            Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
+            Category = wikiPageWithImagesInputModel.Category,
+            LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage
+        };
+        var images = wikiPageWithImagesInputModel.Images;
+        await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage, updatedWikiPage, images);
 
         return Ok(new { Message = "WikiPage updated successfully" });
     }
     
     //This method returns 400 for some reason, will need to check later
     [Authorize(Policy = IdentityData.UserPolicyName)]
-    [HttpPut("user/{id:int}")]
-    public async Task<IActionResult> UpdateWikiPageForUser(int id, [FromBody] UserSubmittedWikiPage updatedWikiPage)
+    [HttpPut("userUpdate/{id:guid}")]
+    public async Task<IActionResult> UpdateWikiPageForUser(Guid id, [FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
+        Console.WriteLine("inside UpdateWikiPageForUser in controller");
+        var updatedWikiPage = new UserSubmittedWikiPage()
+        {
+            Title = wikiPageWithImagesInputModel.Title,
+            SiteSub = wikiPageWithImagesInputModel.SiteSub,
+            RoleNote = wikiPageWithImagesInputModel.RoleNote,
+            Content = wikiPageWithImagesInputModel.Content,
+            Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
+            Category = wikiPageWithImagesInputModel.Category,
+            LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage,
+            SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy,
+            Approved = false,
+            IsNewPage = false,
+            WikiPageId = wikiPageWithImagesInputModel.WikiPageId
+        };
+        
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
             return BadRequest(errors);
         }
-
-        Console.WriteLine(updatedWikiPage);
-        // if (updatedWikiPage.WikiPage == null)
-        // {
-        //     return BadRequest("Wikipage is missing from the updatedWikipage");
-        // }
-        await _wikiPageRepository.UserSubmittedUpdateAsync(updatedWikiPage);
+        
+        updatedWikiPage.Id = Guid.NewGuid();
+        updatedWikiPage.PostDate = DateTime.Now;
+        var images = wikiPageWithImagesInputModel.Images;
+        Console.WriteLine("calling UserSubmittedUpdateAsync");
+        await _wikiPageRepository.UserSubmittedUpdateAsync(updatedWikiPage, images);
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = updatedWikiPage.Id }, updatedWikiPage);
     }
+    
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpPatch("AdminAccept/{id:int}")]
-    public async Task<IActionResult> AcceptUpdateWikiPageForUser(int id, [FromBody] UserSubmittedWikiPage userSubmittedWikiPage)
+    [HttpPatch("AdminAccept/{id:guid}")]
+    public async Task<IActionResult> AcceptUpdateWikiPageForUser(Guid id)
     {
         // WikiPage updatedWikiPage = userSubmittedWikiPage;
-        var existingWikiPage = await _wikiPageRepository.GetByIdAsync(id);
 
-        if (existingWikiPage == null)
+        var newWikipage = await _wikiPageRepository.GetSubmittedUpdateByIdAsync(id);
+        if ( newWikipage.UserSubmittedWikiPage.WikiPageId == null)
             return NotFound();
-
-        await _wikiPageRepository.AcceptUserSubmittedUpdateAsync(existingWikiPage, userSubmittedWikiPage);
-        await _wikiPageRepository.DeleteUserSubmittedAsync(userSubmittedWikiPage.Id);
-
+        
+        var oldId = newWikipage.UserSubmittedWikiPage.WikiPageId ?? Guid.Empty; // Provide a default value
+        var existingWikiPage = await _wikiPageRepository.GetByIdAsync(oldId);
+        if ( existingWikiPage == null)
+            return NotFound();
+        
+        await _wikiPageRepository.AcceptUserSubmittedUpdateAsync(newWikipage.UserSubmittedWikiPage);
+        // await _wikiPageRepository.DeleteUserSubmittedAsync(newWikipage.UserSubmittedWikiPage.Id, existingWikiPage.WikiPage.Id);
+        await _wikiPageRepository.DeleteAsync(existingWikiPage.WikiPage.Id);
         return Ok(new { Message = "WikiPage updated successfully" });
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpDelete("admin/{id:int}")]
-    public async Task<IActionResult> DeleteWikiPageForAdmin(int id)
+    [HttpDelete("admin/{id:guid}")]
+    public async Task<IActionResult> DeleteWikiPageForAdmin(Guid id)
     {
         await _wikiPageRepository.DeleteAsync(id);
 
@@ -175,10 +249,10 @@ public class WikiPagesController : ControllerBase
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpDelete("AdminDecline/{id:int}")]
-    public async Task<IActionResult> DeleteUserSubmittedWikiPage(int id)
+    [HttpDelete("AdminDecline/{id:guid}")]
+    public async Task<IActionResult> DeleteUserSubmittedWikiPage(Guid id)
     {
-        await _wikiPageRepository.DeleteUserSubmittedAsync(id);
+        await _wikiPageRepository.DeleteUserSubmittedAsync(id, null);
 
         return Ok(new { Message = "UserSubmittedWikiPage deleted successfully" });
     }
@@ -192,9 +266,10 @@ public class WikiPagesController : ControllerBase
         return Ok(titles);
     }
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpGet("GetSubmittedPageById/{id:int}")]
-    public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedPageById(int id)
+    [HttpGet("GetSubmittedPageById/{id:guid}")]
+    public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedPageById(Guid id)
     {
+        Console.WriteLine(id);
         var wikiPage = await _wikiPageRepository.GetSubmittedPageByIdAsync(id);
         
         if (wikiPage == null)
@@ -203,7 +278,7 @@ public class WikiPagesController : ControllerBase
         }
 
         //For some reason the returned object has the Id of zero, need to look into it further
-        wikiPage.Id = id;
+
         return Ok(wikiPage);
     }
     
@@ -216,8 +291,8 @@ public class WikiPagesController : ControllerBase
         return Ok(titles);
     }
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpGet("GetSubmittedUpdateById/{id:int}")]
-    public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedUpdateByTitle(int id)
+    [HttpGet("GetSubmittedUpdateById/{id:guid}")]
+    public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedUpdateByTitle(Guid id)
     {
         var wikiPage = await _wikiPageRepository.GetSubmittedUpdateByIdAsync(id);
         
@@ -226,7 +301,7 @@ public class WikiPagesController : ControllerBase
             return NotFound(); // Return 404 if the page is not found
         }
         //No idea why, but without the line below the Id will be 0
-        wikiPage.Id = id;
+
         return Ok(wikiPage);
     }
 }

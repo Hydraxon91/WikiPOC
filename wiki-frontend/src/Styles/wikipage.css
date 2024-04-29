@@ -5,9 +5,27 @@
     display: block;
 }
 
+.wiki-page-container{
+    display: flex;
+    height: 100%;
+}
+
+
 .wikipage-component{
     padding: 1.25em 1.5em 1.5em 1.5em;
+    width: 100%;
     min-width: 45%;
+    /* max-width: 50%; */
+    overflow-wrap: break-word;
+}
+
+.wikipage-component img{
+    max-width: 20rem;
+}
+
+.article-editor{
+    padding: 1.25em 1.5em 1.5em 1.5em;
+    width: 100%;
 }
 
 .home-component{
