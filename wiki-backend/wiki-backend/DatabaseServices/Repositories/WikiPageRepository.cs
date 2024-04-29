@@ -427,7 +427,7 @@ public class WikiPageRepository : IWikiPageRepository
     
     public async Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedUpdateTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false).Select(page => new Tuple<string, Guid>(page.Title, page.Id)).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false && !page.Approved).Select(page => new Tuple<string, Guid>(page.Title, page.Id)).ToListAsync();
     }
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedUpdateByIdAsync(Guid id)
