@@ -153,6 +153,18 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
     }
   };
 
+  const renderEditButton = () => {
+    const pathName = window.location.pathname;
+    if (pathName.includes('/page/')) {
+      return (
+        <Link to={`/page/${page.title}/edit`}>
+          <img className="editButton" src="/img/edit.png" alt="Edit" />
+        </Link>
+      );
+    }
+    return null;
+  };
+
 
   return (
     <>
@@ -160,9 +172,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
         <div className={activeTab === 'wiki' ? 'wikipage-component' : 'wikipage-component wikipage-hidden'}>
           <h1>
             {page.title}
-            <Link to={`/page/${page.title}/edit`}>
-              <img className = "editButton" src="/img/edit.png" alt="Edit" />
-            </Link>
+            {renderEditButton()}
           </h1>
           {page.siteSub && (<p className="siteSub">{`${page.siteSub}`}</p>)}
           {page.roleNote && <p className="roleNote">{`${page.roleNote}`}</p>}

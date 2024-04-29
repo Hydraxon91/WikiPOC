@@ -50,6 +50,17 @@ const LegacyWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
     );
   };
   
+  const renderEditButton = () => {
+    const pathName = window.location.pathname;
+    if (pathName.includes('/page/')) {
+      return (
+        <Link to={`/page/${page.title}/edit`}>
+          <img className="editButton" src="/img/edit.png" alt="Edit" />
+        </Link>
+      );
+    }
+    return null;
+  };
 
   return (
     <>
@@ -57,9 +68,7 @@ const LegacyWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
         <div className={activeTab === 'wiki' ? 'wikipage-component' : 'wikipage-component wikipage-hidden'}>
           <h1>
             {page.title}
-            <Link to={`/page/${page.title}/legacyedit`}>
-              <img className = "editButton" src="/img/edit.png" alt="Edit" />
-            </Link>
+            {renderEditButton()}
           </h1>
 
           {page.siteSub && (<p className="siteSub">{`${page.siteSub}`}</p>)}
