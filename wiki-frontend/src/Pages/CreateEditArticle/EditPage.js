@@ -19,7 +19,7 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
   const [usedImages, setUsedImages] = useState([]);
 
   useEffect(() => {
-    console.log(page);
+    // console.log(page);
     if (page) {
       setTemporaryPage(page.wikiPage || page.userSubmittedWikiPage);
       setTitle(page.wikiPage.title || page.userSubmittedWikiPage.title);
@@ -46,12 +46,12 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
 
   const handleContentChange = (value) => {
     // setContent(value);
-    console.log(images);
+    // console.log(images);
     const hrefValues = extractHrefValues(value);
-    console.log(hrefValues);
+    // console.log(hrefValues);
     handleFieldChange('content', value);
     const usedImagesArray = images.filter(image => hrefValues.some(href => href.includes(image.name)));
-    console.log(usedImagesArray);
+    // console.log(usedImagesArray);
     setUsedImages(usedImagesArray); 
     updateTemporaryPage(title, siteSub, roleNote, value);
 };

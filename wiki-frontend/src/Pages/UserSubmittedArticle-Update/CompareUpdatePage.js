@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { getUpdatePageById, getWikiPageById, acceptUserSubmittedUpdate, declineUserSubmittedWikiPage } from '../../Api/wikiApi';
 import CompareUpdatePageComponent from './CompareUpdatePageComponent';
-import WikiPage from '../WikiPage-Article/WikiPage';
-import '../../Styles/compareupdates.css';
+import NewCompareUpdatePage from './NewCompareUpdatePageComponent';
+import './Style/compareupdates.css';
 
 const CompareUpdatePage = () => {
     const location = useLocation();
@@ -32,7 +32,7 @@ const CompareUpdatePage = () => {
     const fetchUpdatePage = async (id) => {
         try {
             const data = await getUpdatePageById(id, cookies['jwt_token'])
-            // console.log(data);
+            console.log(data);
             setUpdatePage(data)
         } catch (error) {
           console.error('Error fetching page:', error);
@@ -81,23 +81,13 @@ const CompareUpdatePage = () => {
                 <button className='compareUpdatePageButtons' onClick={() => handleAccept()}>Accept Change</button>
                 <button className='compareUpdatePageButtons' onClick={() => handleDecline()}>Discard Change</button>
             </div>
-            <div style={{display: 'flex'}}>
+            <div className='compare-updates-container'>
             {
-                originalPage && originalPage.wikiPage && originalPage.wikiPage.legacyWikiPage ?
-                (
-                    <>
-                        <CompareUpdatePageComponent page={originalPage.wikiPage}></CompareUpdatePageComponent>
-                        <div style={{ borderRight: '1px solid #ccc', margin: '0 10px' }}></div>
-                        <CompareUpdatePageComponent page={updatePage.wikiPage} originalPage={originalPage.wikiPage}></CompareUpdatePageComponent>
-                    </>
-                ) :
-                (
                   <>
-                    <WikiPage page={originalPage} disableNavbar={true}></WikiPage>
+                    <NewCompareUpdatePage page={originalPage} disableNavbar={true}></NewCompareUpdatePage>
                     <div style={{ borderRight: '1px solid #ccc', margin: '0 10px' }}></div>
-                    <WikiPage page={updatePage} disableNavbar={true}></WikiPage>
-                  </>
-              )
+                    <NewCompareUpdatePage page={updatePage} disableNavbar={true}></NewCompareUpdatePage>
+                  </> 
             }
             </div>
         </>

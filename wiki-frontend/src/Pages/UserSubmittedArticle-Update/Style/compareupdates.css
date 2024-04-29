@@ -1,3 +1,11 @@
+.compare-updates-container{
+    display: flex;
+}
+
+.update-page-container{
+ width: 50%;
+}
+
 .updateParagraph {
 	background-color: #ffe6e6; /* light red background for update lines */
   }
