@@ -213,7 +213,73 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         modelBuilder.Entity<Paragraph>().HasData(
             paragraphs1.Concat(paragraphs2).Concat(paragraphs3).ToList()
         );
-        
+
+        modelBuilder.Entity<Category>().HasData(
+            new List<Category>()
+            {
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Characters"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Stories"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Locations"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Events"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Organizations"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Concepts"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Technologies"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Arts and Entertainment"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Sports and Recreation"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Science and Technology"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "History and Culture"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Food and Drink"
+                }
+            }
+        );
+
         
         modelBuilder.Entity<StyleModel>().HasData(
             new StyleModel
