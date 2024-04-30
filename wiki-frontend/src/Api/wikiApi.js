@@ -107,7 +107,7 @@ export const updateWikiPage = async (updatedPage, token, decodedToken, images) =
     formData.append(`wikiPageWithImagesInputModel.Content`, updatedPage.content);
     formData.append(`model.Paragraphs`, updatedPage.paragraphs);
     // Append images to the FormData object
-    images.forEach((image, index) => {
+    images && images.forEach((image, index) => {
       formData.append(`wikiPageWithImagesInputModel.Images[${index}].FileName`, image.name);
       formData.append(`wikiPageWithImagesInputModel.Images[${index}].DataURL`, image.dataURL);
     });

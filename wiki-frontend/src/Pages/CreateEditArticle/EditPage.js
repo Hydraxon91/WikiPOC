@@ -28,7 +28,7 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
       setContent(page.wikiPage.content || page.userSubmittedWikiPage.content);
       setCategory(page.wikiPage.category || page.userSubmittedWikiPage.category);
       page.wikiPage.paragraphs && setParagraphs([...page.wikiPage.paragraphs]);
-      const renamedImages = page.images.map(image => ({ ...image, name: image.fileName }));
+      const renamedImages = page.images ? page.images.map(image => ({ ...image, name: image.fileName })) : [];
       setImages(renamedImages);
       setUsedImages(renamedImages);
       setNewPage(false);
@@ -50,7 +50,7 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
     const hrefValues = extractHrefValues(value);
     // console.log(hrefValues);
     handleFieldChange('content', value);
-    const usedImagesArray = images.filter(image => hrefValues.some(href => href.includes(image.name)));
+    const usedImagesArray = images && images.filter(image => hrefValues.some(href => href.includes(image.name)));
     // console.log(usedImagesArray);
     setUsedImages(usedImagesArray); 
     updateTemporaryPage(title, siteSub, roleNote, value);
