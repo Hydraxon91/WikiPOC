@@ -12,6 +12,7 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
   const [role, setRole] = useState(null);
   const [pagesWaitingForApproval, setPagesWaitingForApproval] = useState();
   const [updatesWaitingForApproval, setUpdatesWaitingForApproval] = useState();
+  const [pagesByCategory, setPagesByCategory] = useState({});
 
   useEffect(()=>{
     if (styles.logo) {
@@ -46,6 +47,18 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
       }
     }
   }, [decodedTokenContext]);
+
+  useEffect(() => {
+    // Organize pages by category
+    const pagesByCategory = {};
+    pages.forEach(page => {
+      if (!pagesByCategory[page.category]) {
+        pagesByCategory[page.category] = [];
+      }
+      pagesByCategory[page.category].push(page);
+    });
+    setPagesByCategory(pagesByCategory);
+  }, [pages]);
 
   const fetchNewPageTitles = async (token) => {
     try {
@@ -143,16 +156,21 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
 					<Link to="/"><img src={imageSrc} alt="logo"/></Link>
 				</div>
         <div className="navigation">
-          <h3>Wiki Pages</h3>
-          <ul>
-            {pages.map((page, index) => (
-              <li key={index}>
-                <Link to={`/page/${encodeURIComponent(page)}`}>
-                  {page}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <h3>Wiki Articles</h3>
+          {Object.entries(pagesByCategory).map(([category, pages]) => (
+            <div key={category}>
+              <span>{category}</span>
+              <ul>
+                {pages.map((page, index) => (
+                  <li key={index}>
+                    <Link to={`/page/${encodeURIComponent(page.title)}`}>
+                      {page.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
           {decodedTokenContext ? UserTools() : LoginTools()}
         </div>
         

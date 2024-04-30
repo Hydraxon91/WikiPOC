@@ -10,11 +10,14 @@ export const getWikiPages = async () => {
 };
 
 export const getWikiPageTitles = async () => {
-    const response = await fetch(`${BASE_URL}/api/WikiPages/GetTitles`);
+    const response = await fetch(`${BASE_URL}/api/WikiPages/GetTitles`, {
+      method: 'GET',
+    });
     if (!response.ok) {
       throw new Error(`Failed to get WikiPage Titles. Status: ${response.status}`);
     }
     const data = await response.json();
+    // console.log(data);
     return data;
   };
 
@@ -49,7 +52,7 @@ export const createWikiPage = async (newPage, token, decodedToken, images) => {
   }
 
   formData.append(`wikiPageWithImagesInputModel.Title`, newPage.title);
-  formData.append(`wikiPageWithImagesInputModel.Category`, newPage.category);
+  formData.append(`wikiPageWithImagesInputModel.Category`, newPage.category ?? "Uncategorized");
   formData.append(`wikiPageWithImagesInputModel.SiteSub`, newPage.siteSub);
   formData.append(`wikiPageWithImagesInputModel.RoleNote`, newPage.roleNote);
   formData.append(`wikiPageWithImagesInputModel.Content`, newPage.content);
@@ -218,7 +221,7 @@ export const getNewPageTitles = async (token) => {
     },
   });
   if (!response.ok) {
-    throw new Error(`Failed to get WikiPage Titles. Status: ${response.status}`);
+    throw new Error(`Failed to get Submitted Article Titles. Status: ${response.status}`);
   }
   const data = await response.json();
   return data;

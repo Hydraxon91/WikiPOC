@@ -25,10 +25,14 @@ public class WikiPagesController : ControllerBase
     }
     
     [HttpGet("GetTitles")]
-    public async Task<ActionResult<IEnumerable<string>>> GetWikiPageTitles()
+    public async Task<ActionResult<List<TitleAndCategory>>> GetWikiPageTitles()
     {
-        var wikiPageTitles = await _wikiPageRepository.GetAllTitlesAsync();
-        return Ok(wikiPageTitles);
+        var wikiPageTitlesAndCategories = await _wikiPageRepository.GetAllTitlesAndCategoriesAsync();
+        foreach (var article in wikiPageTitlesAndCategories)
+        {
+            Console.WriteLine(article);
+        }
+        return Ok(wikiPageTitlesAndCategories);
     }
 
     [HttpGet("GetById/{id:guid}")]
