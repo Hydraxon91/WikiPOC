@@ -13,15 +13,15 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         : base(options)
     {
         _configuration = configuration;
-        if(Database.IsRelational()) Database.Migrate();
+        if (Database.IsRelational()) Database.Migrate();
     }
-    
+
     // Parameterless constructor for Moq (only for testing purposes)
     public WikiDbContext() : base()
     {
         // Parameterless constructor
     }
-    
+
     public DbSet<WikiPage> WikiPages { get; set; }
     public DbSet<UserSubmittedWikiPage> UserSubmittedWikiPages { get; set; }
     public DbSet<Paragraph> Paragraphs { get; set; }
@@ -29,8 +29,9 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<UserProfile> UserProfiles { get; set; }
     public DbSet<UserComment> UserComments { get; set; }
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+    public DbSet<Category> Categories { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
