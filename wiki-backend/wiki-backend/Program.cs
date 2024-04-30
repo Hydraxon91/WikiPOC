@@ -111,6 +111,7 @@ void AddServices()
     builder.Services.AddTransient<IStyleRepository, StyleRepository>();
     builder.Services.AddTransient<IUserProfileRepository, UserProfileRepository>();
     builder.Services.AddTransient<IUserCommentRepository, UserCommentRepository>();
+    builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ITokenServices, TokenServices>();
     builder.Services.AddSingleton(new ProfileImageSettings(picturesPath));
