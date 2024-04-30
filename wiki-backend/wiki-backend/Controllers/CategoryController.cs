@@ -6,6 +6,8 @@ using wiki_backend.Models;
 
 namespace wiki_backend.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class CategoryController : ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;

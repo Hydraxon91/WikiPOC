@@ -340,3 +340,16 @@ export const declineUserSubmittedWikiPage = async (id, token) =>{
     const data = await response.json();
     return data;
 };
+
+export const fetchCategories = async () => {
+  const response = await fetch(`${BASE_URL}/api/Category`, {
+    method: 'GET',
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to get Categories. Status: ${response.status}`);
+  }
+  const data = await response.json();
+  // console.log(data);
+  const categoryNames = data.map(category => category.categoryName);
+  return categoryNames;
+};
