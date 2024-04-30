@@ -101,7 +101,7 @@ export const updateWikiPage = async (updatedPage, token, decodedToken, images) =
       formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
     }
     formData.append(`wikiPageWithImagesInputModel.Title`, updatedPage.title);
-    formData.append(`wikiPageWithImagesInputModel.Category`, updatedPage.category);
+    formData.append(`wikiPageWithImagesInputModel.Category`, updatedPage.category || "Uncategorized");
     formData.append(`wikiPageWithImagesInputModel.SiteSub`, updatedPage.siteSub);
     formData.append(`wikiPageWithImagesInputModel.RoleNote`, updatedPage.roleNote);
     formData.append(`wikiPageWithImagesInputModel.Content`, updatedPage.content);
