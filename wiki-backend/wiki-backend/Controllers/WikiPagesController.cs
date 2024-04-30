@@ -88,7 +88,7 @@ public class WikiPagesController : ControllerBase
             Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
             Category = wikiPageWithImagesInputModel.Category
         };
-        var images = wikiPageWithImagesInputModel.Images;
+        var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         
         try
         {
@@ -125,7 +125,7 @@ public class WikiPagesController : ControllerBase
             PostDate = DateTime.Now
         };
         
-        var images = wikiPageWithImagesInputModel.Images;
+        var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         
         await _wikiPageRepository.AddUserSubmittedPageAsync(newWikiPage, images);
 
@@ -176,7 +176,7 @@ public class WikiPagesController : ControllerBase
             Category = wikiPageWithImagesInputModel.Category,
             LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage
         };
-        var images = wikiPageWithImagesInputModel.Images;
+        var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage, updatedWikiPage, images);
 
         return Ok(new { Message = "WikiPage updated successfully" });
@@ -211,7 +211,7 @@ public class WikiPagesController : ControllerBase
         
         updatedWikiPage.Id = Guid.NewGuid();
         updatedWikiPage.PostDate = DateTime.Now;
-        var images = wikiPageWithImagesInputModel.Images;
+        var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         Console.WriteLine("calling UserSubmittedUpdateAsync");
         await _wikiPageRepository.UserSubmittedUpdateAsync(updatedWikiPage, images);
 
