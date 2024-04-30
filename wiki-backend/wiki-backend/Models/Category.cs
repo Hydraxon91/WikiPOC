@@ -2,6 +2,6 @@
 
 public class Category
 {
-    private Guid Id { get; set; }
+    public Guid Id { get; set; }
     public string CategoryName { get; set; } = "";
 }
