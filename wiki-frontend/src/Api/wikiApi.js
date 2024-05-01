@@ -10,11 +10,14 @@ export const getWikiPages = async () => {
 };
 
 export const getWikiPageTitles = async () => {
-    const response = await fetch(`${BASE_URL}/api/WikiPages/GetTitles`);
+    const response = await fetch(`${BASE_URL}/api/WikiPages/GetTitles`, {
+      method: 'GET',
+    });
     if (!response.ok) {
       throw new Error(`Failed to get WikiPage Titles. Status: ${response.status}`);
     }
     const data = await response.json();
+    // console.log(data);
     return data;
   };
 
@@ -49,7 +52,7 @@ export const createWikiPage = async (newPage, token, decodedToken, images) => {
   }
 
   formData.append(`wikiPageWithImagesInputModel.Title`, newPage.title);
-  formData.append(`wikiPageWithImagesInputModel.Category`, newPage.category);
+  formData.append(`wikiPageWithImagesInputModel.Category`, newPage.category ?? "Uncategorized");
   formData.append(`wikiPageWithImagesInputModel.SiteSub`, newPage.siteSub);
   formData.append(`wikiPageWithImagesInputModel.RoleNote`, newPage.roleNote);
   formData.append(`wikiPageWithImagesInputModel.Content`, newPage.content);
@@ -101,13 +104,13 @@ export const updateWikiPage = async (updatedPage, token, decodedToken, images) =
       formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
     }
     formData.append(`wikiPageWithImagesInputModel.Title`, updatedPage.title);
-    formData.append(`wikiPageWithImagesInputModel.Category`, updatedPage.category);
+    formData.append(`wikiPageWithImagesInputModel.Category`, updatedPage.category || "Uncategorized");
     formData.append(`wikiPageWithImagesInputModel.SiteSub`, updatedPage.siteSub);
     formData.append(`wikiPageWithImagesInputModel.RoleNote`, updatedPage.roleNote);
     formData.append(`wikiPageWithImagesInputModel.Content`, updatedPage.content);
     formData.append(`model.Paragraphs`, updatedPage.paragraphs);
     // Append images to the FormData object
-    images.forEach((image, index) => {
+    images && images.forEach((image, index) => {
       formData.append(`wikiPageWithImagesInputModel.Images[${index}].FileName`, image.name);
       formData.append(`wikiPageWithImagesInputModel.Images[${index}].DataURL`, image.dataURL);
     });
@@ -218,7 +221,7 @@ export const getNewPageTitles = async (token) => {
     },
   });
   if (!response.ok) {
-    throw new Error(`Failed to get WikiPage Titles. Status: ${response.status}`);
+    throw new Error(`Failed to get Submitted Article Titles. Status: ${response.status}`);
   }
   const data = await response.json();
   return data;
@@ -336,4 +339,17 @@ export const declineUserSubmittedWikiPage = async (id, token) =>{
 
     const data = await response.json();
     return data;
+};
+
+export const fetchCategories = async () => {
+  const response = await fetch(`${BASE_URL}/api/Category`, {
+    method: 'GET',
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to get Categories. Status: ${response.status}`);
+  }
+  const data = await response.json();
+  // console.log(data);
+  const categoryNames = data.map(category => category.categoryName);
+  return categoryNames;
 };

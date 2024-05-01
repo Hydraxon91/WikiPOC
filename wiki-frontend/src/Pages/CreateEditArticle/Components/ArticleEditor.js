@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import CustomHTMLPopup from './CustomHTMLPopup';
 import UserImagesContainer from './UserImagesContainer';
+import { fetchCategories } from '../../../Api/wikiApi';
 import 'react-quill/dist/quill.snow.css';
 
 
@@ -9,6 +10,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
   const quillRef = useRef(null); // Define quillRef
   const [lastSelection, setLastSelection] = useState(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     if (quillRef.current) {
@@ -19,6 +21,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
         // editor.getModule('toolbar').addHandler('custom-html', insertCustomHTML);
       }
     }
+    getCategories();
   }, []);
 
   useEffect(() => {
@@ -140,6 +143,16 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
     }
 };
 
+const getCategories = async () => {
+  try {
+    const fetchedCategories = await fetchCategories();
+    setCategories(fetchedCategories);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    // Handle the error if necessary
+  }
+}
+
 
   return (
     <div className="article article-editor">
@@ -153,12 +166,15 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
       </div>
       <div className='editDiv'>
         <label className="editLabel">Category:</label>
-        <input 
-          type="text" 
-          placeholder='Enter Category'
+        <select 
           value={category}
-          onChange={(e) => handleFieldChange('category', e.target.value)} 
-        />
+          onChange={(e) => handleFieldChange('category', e.target.value)}
+        >
+          <option value="">Select Category</option>
+          {categories.length > 0 && categories.map((cat, index) => (
+            <option key={index} value={cat}>{cat}</option>
+          ))}
+        </select>
       </div>
       <div className='editDiv'>
         <label className="editLabel">Site Sub [Optional]</label>

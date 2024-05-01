@@ -13,15 +13,15 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         : base(options)
     {
         _configuration = configuration;
-        if(Database.IsRelational()) Database.Migrate();
+        if (Database.IsRelational()) Database.Migrate();
     }
-    
+
     // Parameterless constructor for Moq (only for testing purposes)
     public WikiDbContext() : base()
     {
         // Parameterless constructor
     }
-    
+
     public DbSet<WikiPage> WikiPages { get; set; }
     public DbSet<UserSubmittedWikiPage> UserSubmittedWikiPages { get; set; }
     public DbSet<Paragraph> Paragraphs { get; set; }
@@ -29,8 +29,9 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<UserProfile> UserProfiles { get; set; }
     public DbSet<UserComment> UserComments { get; set; }
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+    public DbSet<Category> Categories { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
@@ -212,7 +213,73 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Paragraph>().HasData(
             paragraphs1.Concat(paragraphs2).Concat(paragraphs3).ToList()
         );
-        
+
+        modelBuilder.Entity<Category>().HasData(
+            new List<Category>()
+            {
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Characters"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Stories"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Locations"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Events"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Organizations"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Concepts"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Technologies"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Arts and Entertainment"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Sports and Recreation"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Science and Technology"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "History and Culture"
+                },
+                new Category
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryName = "Food and Drink"
+                }
+            }
+        );
+
         
         modelBuilder.Entity<StyleModel>().HasData(
             new StyleModel

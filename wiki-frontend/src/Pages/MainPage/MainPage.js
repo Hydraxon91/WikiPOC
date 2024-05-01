@@ -33,6 +33,7 @@ const MainPage = ({ pages, decodedToken, handleLogout, cookies, setWikiPageTitle
   const fetchWikiPageTitles = async () => {
     try {
       const pages = await getWikiPageTitles();
+      // console.log(pages);
       setWikiPageTitles(pages);
     } catch (error) {
       console.error("Error fetching WikiPages:", error);

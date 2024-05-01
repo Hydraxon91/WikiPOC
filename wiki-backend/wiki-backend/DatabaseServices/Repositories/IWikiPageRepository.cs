@@ -5,7 +5,7 @@ namespace wiki_backend.DatabaseServices.Repositories;
 public interface IWikiPageRepository
 {
     Task<IEnumerable<WikiPage>> GetAllAsync();
-    Task<IEnumerable<string>> GetAllTitlesAsync();
+    Task<List<TitleAndCategory>> GetAllTitlesAndCategoriesAsync();
     Task<WPWithImagesOutputModel?> GetByIdAsync(Guid id);
     Task<WPWithImagesOutputModel?> GetByTitleAsync(string title);
     Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images);

@@ -25,10 +25,14 @@ public class WikiPagesController : ControllerBase
     }
     
     [HttpGet("GetTitles")]
-    public async Task<ActionResult<IEnumerable<string>>> GetWikiPageTitles()
+    public async Task<ActionResult<List<TitleAndCategory>>> GetWikiPageTitles()
     {
-        var wikiPageTitles = await _wikiPageRepository.GetAllTitlesAsync();
-        return Ok(wikiPageTitles);
+        var wikiPageTitlesAndCategories = await _wikiPageRepository.GetAllTitlesAndCategoriesAsync();
+        foreach (var article in wikiPageTitlesAndCategories)
+        {
+            Console.WriteLine(article);
+        }
+        return Ok(wikiPageTitlesAndCategories);
     }
 
     [HttpGet("GetById/{id:guid}")]
@@ -88,7 +92,7 @@ public class WikiPagesController : ControllerBase
             Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
             Category = wikiPageWithImagesInputModel.Category
         };
-        var images = wikiPageWithImagesInputModel.Images;
+        var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         
         try
         {
@@ -125,7 +129,7 @@ public class WikiPagesController : ControllerBase
             PostDate = DateTime.Now
         };
         
-        var images = wikiPageWithImagesInputModel.Images;
+        var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         
         await _wikiPageRepository.AddUserSubmittedPageAsync(newWikiPage, images);
 
@@ -176,7 +180,7 @@ public class WikiPagesController : ControllerBase
             Category = wikiPageWithImagesInputModel.Category,
             LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage
         };
-        var images = wikiPageWithImagesInputModel.Images;
+        var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage, updatedWikiPage, images);
 
         return Ok(new { Message = "WikiPage updated successfully" });
@@ -211,7 +215,7 @@ public class WikiPagesController : ControllerBase
         
         updatedWikiPage.Id = Guid.NewGuid();
         updatedWikiPage.PostDate = DateTime.Now;
-        var images = wikiPageWithImagesInputModel.Images;
+        var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         Console.WriteLine("calling UserSubmittedUpdateAsync");
         await _wikiPageRepository.UserSubmittedUpdateAsync(updatedWikiPage, images);
 

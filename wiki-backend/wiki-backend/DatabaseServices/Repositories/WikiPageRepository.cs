@@ -14,14 +14,19 @@ public class WikiPageRepository : IWikiPageRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<string>> GetAllTitlesAsync()
+    public async Task<List<TitleAndCategory>> GetAllTitlesAndCategoriesAsync()
     {
-        var titles = await _context.WikiPages
-            .Where(page => !(page is UserSubmittedWikiPage) || (_context.UserSubmittedWikiPages.Any(userPage => userPage.Id == page.Id && userPage.Approved)))
-            .Select(page => page.Title)
+        var titlesAndCategories = await _context.WikiPages
+            .Where(page => !(page is UserSubmittedWikiPage) || 
+                           _context.UserSubmittedWikiPages.Any(userPage => page.Id == userPage.Id && userPage.Approved))
+            .Select(page => new TitleAndCategory
+            {
+                Title = page.Title ?? "Untitled",
+                Category = page.Category ?? "Uncategorized"
+            })
             .ToListAsync();
 
-        return titles;
+        return titlesAndCategories;
     }
 
     public async Task<IEnumerable<WikiPage>> GetAllAsync()
