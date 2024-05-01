@@ -1,22 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { fetchCategories } from '../../Api/wikiApi';
 
 const CategoryPageComponent = ({ pages }) => {
   const { category } = useParams(); // Extract category from URL
   const [pagesByCategory, setPagesByCategory] = useState({});
   const [pagesInCurrentCategory, setPagesInCurrentCategory] = useState([])
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    // Fetch categories
+    fetchCategories()
+      .then(categories => {
+        setCategories(categories);
+      })
+      .catch(error => {
+        console.error('Error fetching categories:', error);
+      });
+  }, []);
 
   useEffect(() => {
     // Organize pages by category
     const pagesByCategory = {};
     pages.forEach(page => {
-      if (!pagesByCategory[page.category]) {
-        pagesByCategory[page.category] = [];
+      const category = categories.includes(page.category) ? page.category : 'Uncategorized'; // Check if page category exists in categories
+      if (!pagesByCategory[category]) {
+        pagesByCategory[category] = [];
       }
-      pagesByCategory[page.category].push(page);
+      pagesByCategory[category].push(page);
     });
     setPagesByCategory(pagesByCategory);
-  }, [pages]);
+  }, [pages, categories]);
+  
 
   useEffect(()=>{
     setPagesInCurrentCategory(pagesByCategory[category] || [])
