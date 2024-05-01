@@ -20,6 +20,7 @@ import WikiPage from "./Pages/WikiPage-Article/WikiPage.js";
 import ProfilePage from "./Pages/ProfilePage/ProfilePage.js";
 import EditProfilePage from "./Pages/ProfilePage/EditProfilePage.js";
 import CategoryPageComponent from "./Pages/Categories/CategoryPageComponent.js";
+import EditCategoriesPage from "./Pages/Categories/EditCategoriesPage.js";
 
 function App() {
 
@@ -44,7 +45,9 @@ function App() {
     // Fetch categories
     fetchCategories()
       .then(categories => {
-        setCategories(categories);
+        const categoryNames = categories.map(category => category.categoryName);
+        categoryNames.push("Uncategorized");
+        setCategories(categoryNames);
       })
       .catch(error => {
         console.error('Error fetching categories:', error);
@@ -141,6 +144,7 @@ function App() {
                   <Route path="/user-updates/:id" element = {<CompareUpdatePage/>}/>
                   <Route path="/profile/:username" element= {<ProfilePage loggedInUser={decodedToken?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]}/>}/>
                   <Route path="/profile/edit/:username" element={<EditProfilePage cookies={cookies["jwt_token"]}/>}/>
+                  <Route path="/categories/edit" element={<EditCategoriesPage setAppCategories={setCategories} cookies={cookies["jwt_token"]}/>}/>
                   <Route path="/categories/:category" element={<CategoryPageComponent pages={wikiPageTitles} categories={categories}/>}/>
                 </Route>
               </Routes>

@@ -22,18 +22,25 @@ public class CategoryRepository : ICategoryRepository
         return await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);
     }
 
-    public async Task<Category> AddCategoryAsync(Category category)
+    public async Task<Category> AddCategoryAsync(string categoryName)
     {
-        var existingCategory = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == category.CategoryName);
+        var existingCategory = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);
         if (existingCategory != null)
         {
             throw new ArgumentException("Category already exists");
         }
 
+        var category = new Category 
+        { 
+            Id = Guid.NewGuid(), // Generate a new GUID for the category
+            CategoryName = categoryName 
+        };
+
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();
         return category;
     }
+
 
     public async Task<bool> DeleteCategoryAsync(Guid categoryId)
     {
