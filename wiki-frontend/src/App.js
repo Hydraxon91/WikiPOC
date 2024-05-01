@@ -65,7 +65,7 @@ function App() {
     return createWikiPage(newPage, cookies["jwt_token"], decodedToken, images)
       .then((createdPage) => {
         console.log('createWikiPage resolved:', createdPage);
-        setWikiPageTitles([...wikiPageTitles, createdPage.Title]);
+        setWikiPageTitles([...wikiPageTitles, [createdPage.Title, createdPage.Category]]);
         return createdPage; // Ensure you're returning a value
       })
       .catch((error) => {
@@ -76,7 +76,7 @@ function App() {
   const handleDelete = (id) => {
     deleteWikiPage(id, cookies["jwt_token"])
       .then(() => {
-        setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
+        setWikiPageTitles(wikiPageTitles.filter((page) => page.Title !== currentWikiPage.Title));
       })
       .catch((error) => {
         console.error("Error deleting WikiPage:", error);
