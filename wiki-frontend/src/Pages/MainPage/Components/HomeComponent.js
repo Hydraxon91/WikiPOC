@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const HomeComponent = ({ pages }) => {
+const HomeComponent = ({ pages, categories }) => {
   const [pagesByCategory, setPagesByCategory] = useState({});
 
   useEffect(() => {

@@ -3,16 +3,15 @@ import { Link } from 'react-router-dom';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getNewPageTitles, getUpdatePageTitles } from "../../../Api/wikiApi";
-import { getLogo, fetchCategories } from "../../../Api/wikiApi";
+import { getLogo } from "../../../Api/wikiApi";
 
-const WikiList = ({ handleLogout, cookies}) => {
+const WikiList = ({ handleLogout, cookies, categories}) => {
   const { styles }  = useStyleContext();
   const [imageSrc, setImageSrc] = useState("/img/logo.png");
   const {decodedTokenContext, updateUser} = useUserContext();
   const [role, setRole] = useState(null);
   const [pagesWaitingForApproval, setPagesWaitingForApproval] = useState();
   const [updatesWaitingForApproval, setUpdatesWaitingForApproval] = useState();
-  const [fetchedCategories, setFetchedCategories] = useState([]);
 
   useEffect(()=>{
     if (styles && styles.logo) {
@@ -36,16 +35,6 @@ const WikiList = ({ handleLogout, cookies}) => {
             });
     }
 },[styles.logo])
-
-useEffect(() => {
-  fetchCategories()
-    .then(categories => {
-      setFetchedCategories(categories);
-    })
-    .catch(error => {
-      console.error('Error fetching categories:', error);
-    });
-}, []);
 
   useEffect(() => {
     if (decodedTokenContext) {
@@ -156,7 +145,7 @@ return (
     </div>
     <div className="navigation">
       <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Categories</h3>
-      {fetchedCategories.map((category, index) => (
+      {categories && categories.map((category, index) => (
         <div key={index}>
           <Link to={`/categories/${encodeURIComponent(category)}`}>
             <p style={{marginBottom:'4px', fontSize:'80%'}}>{category}</p>

@@ -1,23 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { fetchCategories } from '../../Api/wikiApi';
 
-const CategoryPageComponent = ({ pages }) => {
+const CategoryPageComponent = ({ pages, categories }) => {
   const { category } = useParams(); // Extract category from URL
   const [pagesByCategory, setPagesByCategory] = useState({});
   const [pagesInCurrentCategory, setPagesInCurrentCategory] = useState([])
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    // Fetch categories
-    fetchCategories()
-      .then(categories => {
-        setCategories(categories);
-      })
-      .catch(error => {
-        console.error('Error fetching categories:', error);
-      });
-  }, []);
 
   useEffect(() => {
     // Organize pages by category
