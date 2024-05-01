@@ -350,7 +350,42 @@ export const fetchCategories = async () => {
   }
   const data = await response.json();
   // console.log(data);
-  const categoryNames = data.map(category => category.categoryName);
-  categoryNames.push("Uncategorized");
-  return categoryNames;
+  // const categoryNames = data.map(category => category.categoryName);
+  // categoryNames.push("Uncategorized");
+  return data;
+};
+
+
+export const addCategory = async (categoryName, token) => {
+  const response = await fetch(`${BASE_URL}/api/Category`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(categoryName)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to add category. Status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  // console.log(data);
+  return data;
+};
+
+export const deleteCategory = async (categoryId, token) => {
+  const response = await fetch(`${BASE_URL}/api/Category/${categoryId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete category. Status: ${response.status}`);
+  }
+
+  return response.status; // Returns the HTTP status code (204 for success, 404 for not found)
 };
