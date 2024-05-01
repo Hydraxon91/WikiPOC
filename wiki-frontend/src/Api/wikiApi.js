@@ -351,5 +351,6 @@ export const fetchCategories = async () => {
   const data = await response.json();
   // console.log(data);
   const categoryNames = data.map(category => category.categoryName);
+  categoryNames.push("Uncategorized");
   return categoryNames;
 };

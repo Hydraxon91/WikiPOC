@@ -43,7 +43,7 @@ const MainPage = ({ pages, decodedToken, handleLogout, cookies, setWikiPageTitle
   return (
     <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily}} >
       <div>
-        <WikiList pages={pages} handleLogout={handleLogout} cookies={cookies}/>
+        <WikiList handleLogout={handleLogout} cookies={cookies}/>
         <div className="mainsection">
           <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div>
           <div className="article" style={{backgroundColor: styles.articleColor}}>

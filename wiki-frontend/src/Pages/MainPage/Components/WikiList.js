@@ -3,19 +3,19 @@ import { Link } from 'react-router-dom';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getNewPageTitles, getUpdatePageTitles } from "../../../Api/wikiApi";
-import { getLogo } from "../../../Api/wikiApi";
+import { getLogo, fetchCategories } from "../../../Api/wikiApi";
 
-const WikiList = ({ pages, handleLogout, cookies}) => {
+const WikiList = ({ handleLogout, cookies}) => {
   const { styles }  = useStyleContext();
   const [imageSrc, setImageSrc] = useState("/img/logo.png");
   const {decodedTokenContext, updateUser} = useUserContext();
   const [role, setRole] = useState(null);
   const [pagesWaitingForApproval, setPagesWaitingForApproval] = useState();
   const [updatesWaitingForApproval, setUpdatesWaitingForApproval] = useState();
-  const [pagesByCategory, setPagesByCategory] = useState({});
+  const [fetchedCategories, setFetchedCategories] = useState([]);
 
   useEffect(()=>{
-    if (styles.logo) {
+    if (styles && styles.logo) {
         // Fetch profile picture when the component mounts or profilePicture prop changes
         getLogo(styles.logo)
             .then(data => {
@@ -37,6 +37,16 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
     }
 },[styles.logo])
 
+useEffect(() => {
+  fetchCategories()
+    .then(categories => {
+      setFetchedCategories(categories);
+    })
+    .catch(error => {
+      console.error('Error fetching categories:', error);
+    });
+}, []);
+
   useEffect(() => {
     if (decodedTokenContext) {
       var role = decodedTokenContext["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
@@ -48,17 +58,6 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
     }
   }, [decodedTokenContext]);
 
-  useEffect(() => {
-    // Organize pages by category
-    const pagesByCategory = {};
-    pages.forEach(page => {
-      if (!pagesByCategory[page.category]) {
-        pagesByCategory[page.category] = [];
-      }
-      pagesByCategory[page.category].push(page);
-    });
-    setPagesByCategory(pagesByCategory);
-  }, [pages]);
 
   const fetchNewPageTitles = async (token) => {
     try {
@@ -81,7 +80,7 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
     return role==="Admin" ?
      (
       <>
-        <h3>Admin Tools</h3>
+        <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Admin Tools</h3>
           <ul>
               <li>
                 <Link key="approve-new-page-link" to="/user-submissions">
@@ -113,7 +112,7 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
     ) :
     (
       <>
-        <h3>User Tools</h3>
+        <h3 style={{marginBottom:"5px", fontSize:'110%'}}>User Tools</h3>
           <ul>
               <li>
                 <Link key="create-new-page-link" to="/create">
@@ -133,7 +132,7 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
   const LoginTools = () => {
     return(
       <>
-      <h3>Login Tools</h3>
+      <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Login Tools</h3>
           <ul>
               <li>
                 <Link key="login-page-link" to="/login">
@@ -156,11 +155,11 @@ return (
       <Link to="/"><img src={imageSrc} alt="logo"/></Link>
     </div>
     <div className="navigation">
-      <h3 style={{marginBottom:"5px"}}>Categories</h3>
-      {Object.entries(pagesByCategory).map(([category, pages]) => (
-        <div key={category}>
+      <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Categories</h3>
+      {fetchedCategories.map((category, index) => (
+        <div key={index}>
           <Link to={`/categories/${encodeURIComponent(category)}`}>
-            <p style={{margin:0, fontSize:'90%'}}>{category}</p>
+            <p style={{marginBottom:'4px', fontSize:'80%'}}>{category}</p>
           </Link>
         </div>
       ))}
