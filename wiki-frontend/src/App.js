@@ -133,7 +133,7 @@ function App() {
                   <Route path="/user-updates/:id" element = {<CompareUpdatePage/>}/>
                   <Route path="/profile/:username" element= {<ProfilePage loggedInUser={decodedToken?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]}/>}/>
                   <Route path="/profile/edit/:username" element={<EditProfilePage cookies={cookies["jwt_token"]}/>}/>
-                  <Route path="/category/:category" element={<CategoryPageComponent pages={wikiPageTitles}/>}/>
+                  <Route path="/categories/:category" element={<CategoryPageComponent pages={wikiPageTitles}/>}/>
                 </Route>
               </Routes>
             </StyleProvider>

@@ -150,32 +150,25 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
     )
   }
   
-  return (
-      <div className="sidebar">
-        <div className="logo">
-					<Link to="/"><img src={imageSrc} alt="logo"/></Link>
-				</div>
-        <div className="navigation">
-          <h3>Wiki Articles</h3>
-          {Object.entries(pagesByCategory).map(([category, pages]) => (
-            <div key={category}>
-              <span>{category}</span>
-              <ul>
-                {pages.map((page, index) => (
-                  <li key={index}>
-                    <Link to={`/page/${encodeURIComponent(page.title)}`}>
-                      {page.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          {decodedTokenContext ? UserTools() : LoginTools()}
+return (
+  <div className="sidebar">
+    <div className="logo">
+      <Link to="/"><img src={imageSrc} alt="logo"/></Link>
+    </div>
+    <div className="navigation">
+      <h3 style={{marginBottom:"5px"}}>Categories</h3>
+      {Object.entries(pagesByCategory).map(([category, pages]) => (
+        <div key={category}>
+          <Link to={`/categories/${encodeURIComponent(category)}`}>
+            <p style={{margin:0, fontSize:'90%'}}>{category}</p>
+          </Link>
         </div>
-        
-      </div>
-  );
+      ))}
+      {decodedTokenContext ? UserTools() : LoginTools()}
+    </div>
+    
+  </div>
+);
 };
 
 export default WikiList;
