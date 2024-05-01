@@ -8,13 +8,14 @@ const HomeComponent = ({ pages, categories }) => {
     // Organize pages by category
     const pagesByCategory = {};
     pages.forEach(page => {
-      if (!pagesByCategory[page.category]) {
-        pagesByCategory[page.category] = [];
+      const category = categories.includes(page.category) ? page.category : 'Uncategorized'; // Check if page category exists in categories
+      if (!pagesByCategory[category]) {
+        pagesByCategory[category] = [];
       }
-      pagesByCategory[page.category].push(page);
+      pagesByCategory[category].push(page);
     });
     setPagesByCategory(pagesByCategory);
-  }, [pages]);
+  }, [pages, categories]);
 
   return (
     <div className='home-component'>
