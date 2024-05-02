@@ -17,10 +17,10 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
     }
 
     // Parameterless constructor for Moq (only for testing purposes)
-    public WikiDbContext() : base()
-    {
-        // Parameterless constructor
-    }
+    // public WikiDbContext() : base()
+    // {
+    //     // Parameterless constructor
+    // }
 
     public DbSet<WikiPage> WikiPages { get; set; }
     public DbSet<UserSubmittedWikiPage> UserSubmittedWikiPages { get; set; }
@@ -53,6 +53,12 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .WithOne(c => c.WikiPage)
             .HasForeignKey(c => c.WikiPageId);
         
+        modelBuilder.Entity<WikiPage>()
+            .HasOne(wp => wp.Category) // Navigation property
+            .WithMany(c => c.WikiPages) // Collection navigation property in Category
+            .HasForeignKey(wp => wp.CategoryId) // Foreign key
+            .OnDelete(DeleteBehavior.Restrict); // Set delete behavior as you need
+        
         modelBuilder.Entity<UserSubmittedWikiPage>()
             .HasBaseType<WikiPage>()
             .HasOne(uswp => uswp.WikiPage)
@@ -75,10 +81,17 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .WithMany() // No need to have a navigation property in UserProfile
             .HasForeignKey(uc => uc.UserProfileId);
         
+        //Generating Article IDs
         var wikiPage1Id = Guid.NewGuid();
         var wikiPage2Id = Guid.NewGuid();
         var wikiPage3Id = Guid.NewGuid();
         var wikiPage4Id = Guid.NewGuid();
+        
+        //Generating Category Ids
+        var category1Id = Guid.NewGuid();
+        var category2Id = Guid.NewGuid();
+        var category3Id = Guid.NewGuid();
+        var category4Id = Guid.NewGuid();
         
         var paragraphs1 = new List<Paragraph>()
         {
@@ -120,54 +133,63 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)),
         }));
 
-        modelBuilder.Entity<WikiPage>().HasData(
-            new WikiPage
-            {
-                Id = wikiPage1Id,
-                Title = "Example Page 1",
-                SiteSub = "Example SiteSub 1",
-                RoleNote = "Example RoleNote 1",
-                LegacyWikiPage = true,
-                PostDate = DateTime.Now
-                // Paragraphs = paragraphs1
-            },
-            new WikiPage
-            {
-                Id = wikiPage2Id,
-                Title = "Example Page 2",
-                SiteSub = "Example SiteSub 2",
-                RoleNote = "Example RoleNote 2",
-                LegacyWikiPage = true,
-                PostDate = DateTime.Now
-                // Paragraphs = paragraphs2
-            }
-        );
-        
+        var wp1 = new WikiPage
+        {
+            Id = wikiPage1Id,
+            Title = "Example Page 1",
+            SiteSub = "Example SiteSub 1",
+            RoleNote = "Example RoleNote 1",
+            LegacyWikiPage = true,
+            PostDate = DateTime.Now,
+            CategoryId = category1Id,
+            // Paragraphs = paragraphs1
+        };
 
+        var wp2 = new WikiPage
+        {
+            Id = wikiPage2Id,
+            Title = "Example Page 2",
+            SiteSub = "Example SiteSub 2",
+            RoleNote = "Example RoleNote 2",
+            LegacyWikiPage = true,
+            PostDate = DateTime.Now,
+            CategoryId = category2Id,
+            // Paragraphs = paragraphs2
+        };
+        
+        modelBuilder.Entity<WikiPage>().HasData(
+            wp1,
+            wp2
+        );
+
+        var uswp1 = new UserSubmittedWikiPage
+        {
+            Id = wikiPage3Id,
+            Title = "User Submitted Page",
+            SiteSub = "User Submitted SiteSub",
+            RoleNote = "User Submitted RoleNote",
+            SubmittedBy = "tester",
+            LegacyWikiPage = true,
+            IsNewPage = true,
+            PostDate = DateTime.Now,
+            CategoryId = category3Id,
+        };
+        var uswp2 = new UserSubmittedWikiPage
+        {
+            Id = wikiPage4Id,
+            WikiPageId = wikiPage1Id,
+            Title = "Example Page 1",
+            SiteSub = "Example SiteSub 1 Update",
+            RoleNote = "Example RoleNote 1 Update",
+            SubmittedBy = "tester",
+            LegacyWikiPage = true,
+            IsNewPage = false,
+            PostDate = DateTime.Now,
+            CategoryId = category4Id,
+        };
         modelBuilder.Entity<UserSubmittedWikiPage>().HasData(
-            new UserSubmittedWikiPage
-            {
-                Id = wikiPage3Id,
-                Title = "User Submitted Page",
-                SiteSub = "User Submitted SiteSub",
-                RoleNote = "User Submitted RoleNote", 
-                SubmittedBy = "tester",
-                LegacyWikiPage = true,
-                IsNewPage = true,
-                PostDate = DateTime.Now
-            },
-            new UserSubmittedWikiPage
-            {
-                Id = wikiPage4Id,
-                WikiPageId = wikiPage1Id,
-                Title = "Example Page 1",
-                SiteSub = "Example SiteSub 1 Update",
-                RoleNote = "Example RoleNote 1 Update", 
-                SubmittedBy = "tester",
-                LegacyWikiPage = true,
-                IsNewPage = false,
-                PostDate = DateTime.Now
-            }
+            uswp1,
+            uswp2
         );
 
         var paragraphs3 = new List<Paragraph>()
@@ -219,23 +241,23 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 new Category
                 {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Characters"
+                    Id = category1Id,
+                    CategoryName = "Characters",
                 },
                 new Category
                 {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Stories"
+                    Id = category2Id,
+                    CategoryName = "Stories",
                 },
                 new Category
                 {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Locations"
+                    Id = category3Id,
+                    CategoryName = "Locations",
                 },
                 new Category
                 {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Events"
+                    Id = category4Id,
+                    CategoryName = "Events",
                 },
                 new Category
                 {
@@ -296,7 +318,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
                 FontFamily = "Arial, sans-serif",
             }
         );
-
+        
     }
     
 }

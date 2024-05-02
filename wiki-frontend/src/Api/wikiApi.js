@@ -52,7 +52,7 @@ export const createWikiPage = async (newPage, token, decodedToken, images) => {
   }
 
   formData.append(`wikiPageWithImagesInputModel.Title`, newPage.title);
-  formData.append(`wikiPageWithImagesInputModel.Category`, newPage.category ?? "Uncategorized");
+  formData.append(`wikiPageWithImagesInputModel.CategoryId`, newPage.category);
   formData.append(`wikiPageWithImagesInputModel.SiteSub`, newPage.siteSub);
   formData.append(`wikiPageWithImagesInputModel.RoleNote`, newPage.roleNote);
   formData.append(`wikiPageWithImagesInputModel.Content`, newPage.content);
@@ -104,7 +104,7 @@ export const updateWikiPage = async (updatedPage, token, decodedToken, images) =
       formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
     }
     formData.append(`wikiPageWithImagesInputModel.Title`, updatedPage.title);
-    formData.append(`wikiPageWithImagesInputModel.Category`, updatedPage.category || "Uncategorized");
+    formData.append(`wikiPageWithImagesInputModel.CategoryId`, updatedPage.category);
     formData.append(`wikiPageWithImagesInputModel.SiteSub`, updatedPage.siteSub);
     formData.append(`wikiPageWithImagesInputModel.RoleNote`, updatedPage.roleNote);
     formData.append(`wikiPageWithImagesInputModel.Content`, updatedPage.content);
@@ -349,8 +349,9 @@ export const fetchCategories = async () => {
     throw new Error(`Failed to get Categories. Status: ${response.status}`);
   }
   const data = await response.json();
-  // console.log(data);
-  // const categoryNames = data.map(category => category.categoryName);
+  console.log(data);
+  // const categoryNames = data.map(category => ({ id: category.id, categoryName: category.categoryName }));
+  // console.log(categoryNames);
   // categoryNames.push("Uncategorized");
   return data;
 };

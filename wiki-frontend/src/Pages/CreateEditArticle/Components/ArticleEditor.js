@@ -146,6 +146,8 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
 const getCategories = async () => {
   try {
     const fetchedCategories = await fetchCategories();
+    console.log(fetchedCategories);
+    // const categoryNames = fetchedCategories.map(category => (category.categoryName));
     setCategories(fetchedCategories);
   } catch (error) {
     console.error("Error fetching categories:", error);
@@ -172,7 +174,7 @@ const getCategories = async () => {
         >
           <option value="">Select Category</option>
           {categories.length > 0 && categories.map((cat, index) => (
-            <option key={index} value={cat}>{cat}</option>
+            <option key={index} value={cat.id}>{cat.categoryName}</option>
           ))}
         </select>
       </div>
