@@ -349,7 +349,7 @@ export const fetchCategories = async () => {
     throw new Error(`Failed to get Categories. Status: ${response.status}`);
   }
   const data = await response.json();
-  console.log(data);
+  // console.log(data);
   // const categoryNames = data.map(category => ({ id: category.id, categoryName: category.categoryName }));
   // console.log(categoryNames);
   // categoryNames.push("Uncategorized");

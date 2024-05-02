@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { addCategory, deleteCategory, fetchCategories } from '../../Api/wikiApi';
+import './Style/categorypagestyle.css';
 
 const EditCategoriesPage = ({ setAppCategories, cookies }) => {
     const [categories, setCategories] = useState([]);
@@ -61,12 +62,14 @@ const EditCategoriesPage = ({ setAppCategories, cookies }) => {
   
     return (
       <div>
-        <h2>Categories:</h2>
+        <p className='cat-text'>Categories:</p>
         <ul>
           {categories.map((category, index) => (
             <li key={index}>
-              {category.categoryName}
-              <button onClick={() => handleDeleteCategory(category)}>X</button>
+              <div className='category-row'>
+                <span>{category.categoryName}</span>
+                {category.wikiPages.length ==0 && <button onClick={() => handleDeleteCategory(category)}>Delete Category</button>}
+              </div>
             </li>
           ))}
         </ul>
