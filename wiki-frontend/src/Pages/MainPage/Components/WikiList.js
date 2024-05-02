@@ -92,6 +92,11 @@ const WikiList = ({ handleLogout, cookies, categories}) => {
                 </Link>
               </li>
               <li>
+                <Link key="edit-categories" to="/categories/edit">
+                  Edit Categories
+                </Link>
+              </li>
+              <li>
                 <button onClick={() => handleLogout(updateUser)} className="logout-button">
                   Logout
                 </button>
