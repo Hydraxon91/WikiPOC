@@ -211,7 +211,7 @@ public class WikiPageRepository : IWikiPageRepository
         existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
         existingWikiPage.Paragraphs = updatedWikiPage.Paragraphs;
         existingWikiPage.Content = updatedWikiPage.Content;
-        existingWikiPage.Category = updatedWikiPage.Category;
+        existingWikiPage.CategoryId = updatedWikiPage.CategoryId;
         existingWikiPage.LegacyWikiPage = updatedWikiPage.LegacyWikiPage;
         existingWikiPage.LastUpdateDate = DateTime.Now;
         

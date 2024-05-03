@@ -1,8 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import ReactQuillComponent from '../../../Components/ReactQuillComponent';
+import { fetchCategories } from '../../../Api/wikiApi';
 
-const LegacyEditPageComponent = ({newPage, title, handleFieldChange, siteSub, roleNote, paragraphs, emptyFields, handleParagraphChange, handleRemoveParagraph, handleAddParagraph, handleSave}) => {
-    return (
+const LegacyEditPageComponent = ({newPage, title, handleFieldChange, siteSub, roleNote, paragraphs, emptyFields, handleParagraphChange, handleRemoveParagraph, handleAddParagraph, handleSave, category}) => {
+    
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  const getCategories = async () => {
+    try {
+      const fetchedCategories = await fetchCategories();
+      console.log(fetchedCategories);
+      // const categoryNames = fetchedCategories.map(category => (category.categoryName));
+      setCategories(fetchedCategories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      // Handle the error if necessary
+    }
+  }
+  
+  return (
         <div className="article wikipage-component">
         <h2>{newPage? 'Create Page' : 'Edit Page' }</h2>
         {newPage && <div className='editDiv'>
@@ -15,11 +35,15 @@ const LegacyEditPageComponent = ({newPage, title, handleFieldChange, siteSub, ro
         </div>}
         <div className='editDiv'>
           <label className="editLabel">Category:</label>
-          <input 
-            type="text" 
-            placeholder='Enter Category' 
-            onChange={(e) => handleFieldChange('category', e.target.value)} 
-          />
+          <select 
+            value={category}
+            onChange={(e) => handleFieldChange('category', e.target.value)}
+          >
+            <option value="">Select Category</option>
+            {categories.length > 0 && categories.map((cat, index) => (
+              <option key={index} value={cat.id}>{cat.categoryName}</option>
+            ))}
+          </select>
         </div>
         <div className='editDiv'>
           <label className="editLabel">Page SiteSub [Not required]</label>

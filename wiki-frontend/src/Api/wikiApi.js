@@ -40,6 +40,7 @@ export const getWikiPageById = async (id) => {
   };
 
 export const createWikiPage = async (newPage, token, decodedToken, images) => {
+  console.log(newPage);
   var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
   var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
   var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin` : `${BASE_URL}/api/WikiPages/user`;
