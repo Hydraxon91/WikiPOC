@@ -19,16 +19,17 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
   const [usedImages, setUsedImages] = useState([]);
 
   useEffect(() => {
-    // console.log(page);
+    console.log(page);
     if (page) {
       setTemporaryPage(page.wikiPage || page.userSubmittedWikiPage);
       setTitle(page.wikiPage.title || page.userSubmittedWikiPage.title);
       setRoleNote(page.wikiPage.roleNote || page.userSubmittedWikiPage.roleNote);
       setSiteSub(page.wikiPage.siteSub || page.userSubmittedWikiPage.siteSub);
       setContent(page.wikiPage.content || page.userSubmittedWikiPage.content);
-      setCategory(page.wikiPage.category || page.userSubmittedWikiPage.category);
+      setCategory(page.wikiPage.categoryId || page.userSubmittedWikiPage.categoryId);
       page.wikiPage.paragraphs && setParagraphs([...page.wikiPage.paragraphs]);
       const renamedImages = page.images ? page.images.map(image => ({ ...image, name: image.fileName })) : [];
+      console.log("asdasd");
       setImages(renamedImages);
       setUsedImages(renamedImages);
       setNewPage(false);
@@ -41,8 +42,18 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
       setContent("")
       setParagraphs([]);
       setNewPage(true);
+      const renamedImages = page.images ? page.images.map(image => ({ ...image, name: image.fileName })) : [];
+      setImages(renamedImages);
+      setUsedImages(renamedImages);
     }
   }, [page]);
+
+  // useEffect(()=>{
+  //   console.log("images");
+  //   console.log(images);
+  //   console.log("used images");
+  //   console.log(usedImages);
+  // },[usedImages])
 
   const handleContentChange = (value) => {
     // setContent(value);
