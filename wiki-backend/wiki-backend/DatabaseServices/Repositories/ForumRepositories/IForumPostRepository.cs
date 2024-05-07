@@ -2,10 +2,10 @@
 
 namespace wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 
-public interface IForumRepository
+public interface IForumPostRepository
 {
+    Task<IEnumerable<string>> GetAllForumPostTitlesAsync();
     Task<ForumPost> GetForumPostByIdAsync(Guid id);
-    Task<IEnumerable<ForumPost>> GetAllForumPostsAsync();
     Task AddForumPostAsync(ForumPost post);
     Task UpdateForumPostAsync(ForumPost post);
     Task DeleteForumPostAsync(Guid id);
