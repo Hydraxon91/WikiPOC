@@ -5,17 +5,16 @@ import { useUserContext } from '../../../Components/contexts/UserContextProvider
 import { getNewPageTitles, getUpdatePageTitles } from "../../../Api/wikiApi";
 import { getLogo } from "../../../Api/wikiApi";
 
-const WikiList = ({ pages, handleLogout, cookies}) => {
+const WikiList = ({ handleLogout, cookies, categories}) => {
   const { styles }  = useStyleContext();
   const [imageSrc, setImageSrc] = useState("/img/logo.png");
   const {decodedTokenContext, updateUser} = useUserContext();
   const [role, setRole] = useState(null);
   const [pagesWaitingForApproval, setPagesWaitingForApproval] = useState();
   const [updatesWaitingForApproval, setUpdatesWaitingForApproval] = useState();
-  const [pagesByCategory, setPagesByCategory] = useState({});
 
   useEffect(()=>{
-    if (styles.logo) {
+    if (styles && styles.logo) {
         // Fetch profile picture when the component mounts or profilePicture prop changes
         getLogo(styles.logo)
             .then(data => {
@@ -48,17 +47,6 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
     }
   }, [decodedTokenContext]);
 
-  useEffect(() => {
-    // Organize pages by category
-    const pagesByCategory = {};
-    pages.forEach(page => {
-      if (!pagesByCategory[page.category]) {
-        pagesByCategory[page.category] = [];
-      }
-      pagesByCategory[page.category].push(page);
-    });
-    setPagesByCategory(pagesByCategory);
-  }, [pages]);
 
   const fetchNewPageTitles = async (token) => {
     try {
@@ -81,7 +69,7 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
     return role==="Admin" ?
      (
       <>
-        <h3>Admin Tools</h3>
+        <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Admin Tools</h3>
           <ul>
               <li>
                 <Link key="approve-new-page-link" to="/user-submissions">
@@ -104,6 +92,11 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
                 </Link>
               </li>
               <li>
+                <Link key="edit-categories" to="/categories/edit">
+                  Edit Categories
+                </Link>
+              </li>
+              <li>
                 <button onClick={() => handleLogout(updateUser)} className="logout-button">
                   Logout
                 </button>
@@ -113,7 +106,7 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
     ) :
     (
       <>
-        <h3>User Tools</h3>
+        <h3 style={{marginBottom:"5px", fontSize:'110%'}}>User Tools</h3>
           <ul>
               <li>
                 <Link key="create-new-page-link" to="/create">
@@ -133,7 +126,7 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
   const LoginTools = () => {
     return(
       <>
-      <h3>Login Tools</h3>
+      <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Login Tools</h3>
           <ul>
               <li>
                 <Link key="login-page-link" to="/login">
@@ -150,32 +143,25 @@ const WikiList = ({ pages, handleLogout, cookies}) => {
     )
   }
   
-  return (
-      <div className="sidebar">
-        <div className="logo">
-					<Link to="/"><img src={imageSrc} alt="logo"/></Link>
-				</div>
-        <div className="navigation">
-          <h3>Wiki Articles</h3>
-          {Object.entries(pagesByCategory).map(([category, pages]) => (
-            <div key={category}>
-              <span>{category}</span>
-              <ul>
-                {pages.map((page, index) => (
-                  <li key={index}>
-                    <Link to={`/page/${encodeURIComponent(page.title)}`}>
-                      {page.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          {decodedTokenContext ? UserTools() : LoginTools()}
+return (
+  <div className="sidebar">
+    <div className="logo">
+      <Link to="/"><img src={imageSrc} alt="logo"/></Link>
+    </div>
+    <div className="navigation">
+      <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Categories</h3>
+      {categories && categories.map((category, index) => (
+        <div key={index}>
+          <Link to={`/categories/${encodeURIComponent(category)}`}>
+            <p style={{marginBottom:'4px', fontSize:'80%'}}>{category}</p>
+          </Link>
         </div>
-        
-      </div>
-  );
+      ))}
+      {decodedTokenContext ? UserTools() : LoginTools()}
+    </div>
+    
+  </div>
+);
 };
 
 export default WikiList;

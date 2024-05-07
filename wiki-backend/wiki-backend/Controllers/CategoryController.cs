@@ -38,11 +38,11 @@ public class CategoryController : ControllerBase
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost]
-    public async Task<ActionResult<Category>> AddCategory(Category category)
+    public async Task<ActionResult<Category>> AddCategory([FromBody] string categoryName)
     {
         try
         {
-            var newCategory = await _categoryRepository.AddCategoryAsync(category);
+            var newCategory = await _categoryRepository.AddCategoryAsync(categoryName);
             return CreatedAtAction(nameof(GetCategoryByName), new { categoryName = newCategory.CategoryName }, newCategory);
         }
         catch (ArgumentException ex)

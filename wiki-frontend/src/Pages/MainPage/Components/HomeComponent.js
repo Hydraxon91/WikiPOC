@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const HomeComponent = ({ pages }) => {
+const HomeComponent = ({ pages, categories }) => {
   const [pagesByCategory, setPagesByCategory] = useState({});
 
   useEffect(() => {
     // Organize pages by category
     const pagesByCategory = {};
     pages.forEach(page => {
-      if (!pagesByCategory[page.category]) {
-        pagesByCategory[page.category] = [];
+      const category = categories.includes(page.category) ? page.category : 'Uncategorized'; // Check if page category exists in categories
+      if (!pagesByCategory[category]) {
+        pagesByCategory[category] = [];
       }
-      pagesByCategory[page.category].push(page);
+      pagesByCategory[category].push(page);
     });
     setPagesByCategory(pagesByCategory);
-  }, [pages]);
+  }, [pages, categories]);
 
   return (
     <div className='home-component'>

@@ -90,7 +90,7 @@ public class WikiPagesController : ControllerBase
             RoleNote = wikiPageWithImagesInputModel.RoleNote,
             Content = wikiPageWithImagesInputModel.Content,
             Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
-            Category = wikiPageWithImagesInputModel.Category
+            CategoryId = wikiPageWithImagesInputModel.CategoryId
         };
         var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         
@@ -124,7 +124,7 @@ public class WikiPagesController : ControllerBase
             Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
             IsNewPage = true,
             Approved = false,
-            Category = wikiPageWithImagesInputModel.Category,
+            CategoryId = wikiPageWithImagesInputModel.CategoryId,
             SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy,
             PostDate = DateTime.Now
         };
@@ -177,7 +177,7 @@ public class WikiPagesController : ControllerBase
             RoleNote = wikiPageWithImagesInputModel.RoleNote,
             Content = wikiPageWithImagesInputModel.Content,
             Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
-            Category = wikiPageWithImagesInputModel.Category,
+            CategoryId = wikiPageWithImagesInputModel.CategoryId,
             LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage
         };
         var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
@@ -199,7 +199,7 @@ public class WikiPagesController : ControllerBase
             RoleNote = wikiPageWithImagesInputModel.RoleNote,
             Content = wikiPageWithImagesInputModel.Content,
             Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
-            Category = wikiPageWithImagesInputModel.Category,
+            CategoryId = wikiPageWithImagesInputModel.CategoryId,
             LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage,
             SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy,
             Approved = false,

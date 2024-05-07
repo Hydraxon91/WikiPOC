@@ -5,7 +5,7 @@ import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { getWikiPageTitles } from '../../Api/wikiApi';
 
-const MainPage = ({ pages, decodedToken, handleLogout, cookies, setWikiPageTitles }) => {
+const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, categories }) => {
   const location = useLocation();
   const { styles }  = useStyleContext();
   const { updateUser } = useUserContext();
@@ -43,7 +43,7 @@ const MainPage = ({ pages, decodedToken, handleLogout, cookies, setWikiPageTitle
   return (
     <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily}} >
       <div>
-        <WikiList pages={pages} handleLogout={handleLogout} cookies={cookies}/>
+        <WikiList handleLogout={handleLogout} cookies={cookies} categories={categories}/>
         <div className="mainsection">
           <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div>
           <div className="article" style={{backgroundColor: styles.articleColor}}>

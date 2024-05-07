@@ -11,7 +11,7 @@ public class WikiPageWithImagesInputModel
     public string? SiteSub { get; set; }
     public string? RoleNote { get; set; }
     public string? Content { get; set; }
-    public string? Category { get; set; }
+    public Guid? CategoryId { get; set; }
     public DateTime? PostDate { get; set; }
     public DateTime? LastUpdateDate { get; set; }
     public ICollection<Paragraph> Paragraphs { get; set; } = new List<Paragraph>();
@@ -30,6 +30,6 @@ public class WikiPageWithImagesInputModel
     
     public override string ToString()
     {
-        return $"Title: {Title}, SiteSub: {SiteSub}, RoleNote: {RoleNote}, Content: {Content}, Category: {Category}, PostDate: {PostDate}, LastUpdateDate: {LastUpdateDate}, LegacyWikiPage: {LegacyWikiPage}, WikiPageId: {WikiPageId}, SubmittedBy: {SubmittedBy}, Approved: {Approved}, IsNewPage: {IsNewPage}, Images: {Images?.Count ?? 0} Images Type: {typeof(Images)}";
+        return $"Title: {Title}, SiteSub: {SiteSub}, RoleNote: {RoleNote}, Content: {Content}, Category: {CategoryId}, PostDate: {PostDate}, LastUpdateDate: {LastUpdateDate}, LegacyWikiPage: {LegacyWikiPage}, WikiPageId: {WikiPageId}, SubmittedBy: {SubmittedBy}, Approved: {Approved}, IsNewPage: {IsNewPage}, Images: {Images?.Count ?? 0} Images Type: {typeof(Images)}";
     }
 }

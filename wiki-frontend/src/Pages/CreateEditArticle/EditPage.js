@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArticleEditor from './Components/ArticleEditor';
 import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
+import LegacyEditPage from './LegacyEditPage';
+import LegacyWikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
+import LegacyEditPageComponent from './Components/LegacyEditPageComponent';
 import './Style/articleeditor.css';
 
 const EditPage = ({ page, handleEdit, handleCreate }) => {
@@ -17,20 +20,25 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const [usedImages, setUsedImages] = useState([]);
+  const [legacyPage, setLegacyPage] = useState(false);
 
   useEffect(() => {
-    // console.log(page);
+    console.log(page);
     if (page) {
       setTemporaryPage(page.wikiPage || page.userSubmittedWikiPage);
       setTitle(page.wikiPage.title || page.userSubmittedWikiPage.title);
       setRoleNote(page.wikiPage.roleNote || page.userSubmittedWikiPage.roleNote);
       setSiteSub(page.wikiPage.siteSub || page.userSubmittedWikiPage.siteSub);
-      setContent(page.wikiPage.content || page.userSubmittedWikiPage.content);
-      setCategory(page.wikiPage.category || page.userSubmittedWikiPage.category);
+      page.wikiPage && page.wikiPage.content && setContent(page.wikiPage.content);
+      page.userSubmittedWikiPage && page.userSubmittedWikiPage.content &&  setContent(page.userSubmittedWikiPage.content);
+      setCategory(page.wikiPage.categoryId || page.userSubmittedWikiPage.categoryId);
       page.wikiPage.paragraphs && setParagraphs([...page.wikiPage.paragraphs]);
       const renamedImages = page.images ? page.images.map(image => ({ ...image, name: image.fileName })) : [];
+      console.log("asdasd");
       setImages(renamedImages);
       setUsedImages(renamedImages);
+      page.wikiPage && setLegacyPage(page.wikiPage.legacyWikiPage);
+      page.userSubmittedWikiPage && setLegacyPage(page.wikiPage.legacyWikiPage);
       setNewPage(false);
     }
     else{
@@ -41,8 +49,18 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
       setContent("")
       setParagraphs([]);
       setNewPage(true);
+      const renamedImages =[];
+      setImages(renamedImages);
+      setUsedImages(renamedImages);
     }
   }, [page]);
+
+  // useEffect(()=>{
+  //   console.log("images");
+  //   console.log(images);
+  //   console.log("used images");
+  //   console.log(usedImages);
+  // },[usedImages])
 
   const handleContentChange = (value) => {
     // setContent(value);
@@ -102,42 +120,6 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
     }));
   };
 
-  // const handleSave = () => {
-  //   const requiredFields = ['title', 'content'];
-  //   const emptyFields = paragraphs.reduce((emptyFields, paragraph, index) => {
-  //     const missingFields = requiredFields.filter((field) => !paragraph[field]);
-  //     if (missingFields.length > 0) {
-  //       emptyFields.push(index);
-  //     }
-  //     return emptyFields;
-  //   }, []);
-  
-  //   if (emptyFields.length > 0 || !title) {
-  //     setEmptyFields(emptyFields);
-  //     alert('Please make sure to have a title for all paragraphs content.');
-  //     return;
-  //   }
-  
-  //   setEmptyFields([]);
-  
-  //   const savePromise = newPage
-  //     ? handleCreate(temporaryPage)
-  //     : handleEdit({ ...page, title, paragraphs, siteSub, roleNote });
-
-  //   console.log(savePromise);
-
-  //   savePromise
-  //     .then((data) => {
-  //       // console.log(data);
-  //       // setCurrentWikiPage(temporaryPage);
-  //       navigate(`/page/${title}`);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error during save:", error);
-  //       // Use toast.error to display an error message
-  //       toast.error('An error occurred while saving. Please try again.');
-  //     });
-  // };
 
   const handleSave = () =>{
     if ( !title) {
@@ -165,19 +147,30 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
   }
 
   return (
-    <div className='editor-container'>
-      <div className='articleeditor-container'>
+    <>
+    {!legacyPage && (
+      <div className='editor-container'>
+        <div className='articleeditor-container'>
           <ArticleEditor 
-              newPage={newPage} title={title} siteSub={siteSub} 
-              roleNote={roleNote} content={content} emptyFields={emptyFields} 
-              handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
-              images={images} setImages={setImages} category={category}
+            newPage={newPage} title={title} siteSub={siteSub} 
+            roleNote={roleNote} content={content} emptyFields={emptyFields} 
+            handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
+            images={images} setImages={setImages} category={category}
           />
-      </div>
-      <div className='preview-container'>
+        </div>
+        <div className='preview-container'>
           <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images}/>
+        </div>
       </div>
-  </div>
+    )}
+
+    {legacyPage && (
+      <LegacyEditPage page={temporaryPage} handleEdit={handleEdit} handleCreate={handleCreate}
+        handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
+        category={category} setCategory={setCategory}
+      ></LegacyEditPage>
+    )}
+  </>
   );
 };
 

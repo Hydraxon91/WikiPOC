@@ -64,7 +64,8 @@ const CompareUpdatePage = () => {
       };
 
       const handleDecline = () => {
-        declineUserSubmittedWikiPage(updatePage.id, cookies["jwt_token"])
+        // console.log(updatePage.userSubmittedWikiPage.id);
+        declineUserSubmittedWikiPage(updatePage.userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             alert("Declined Change");

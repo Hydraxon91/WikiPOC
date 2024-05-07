@@ -40,6 +40,7 @@ export const getWikiPageById = async (id) => {
   };
 
 export const createWikiPage = async (newPage, token, decodedToken, images) => {
+  console.log(newPage);
   var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
   var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
   var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin` : `${BASE_URL}/api/WikiPages/user`;
@@ -52,7 +53,7 @@ export const createWikiPage = async (newPage, token, decodedToken, images) => {
   }
 
   formData.append(`wikiPageWithImagesInputModel.Title`, newPage.title);
-  formData.append(`wikiPageWithImagesInputModel.Category`, newPage.category ?? "Uncategorized");
+  formData.append(`wikiPageWithImagesInputModel.CategoryId`, newPage.category);
   formData.append(`wikiPageWithImagesInputModel.SiteSub`, newPage.siteSub);
   formData.append(`wikiPageWithImagesInputModel.RoleNote`, newPage.roleNote);
   formData.append(`wikiPageWithImagesInputModel.Content`, newPage.content);
@@ -104,7 +105,7 @@ export const updateWikiPage = async (updatedPage, token, decodedToken, images) =
       formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
     }
     formData.append(`wikiPageWithImagesInputModel.Title`, updatedPage.title);
-    formData.append(`wikiPageWithImagesInputModel.Category`, updatedPage.category || "Uncategorized");
+    formData.append(`wikiPageWithImagesInputModel.CategoryId`, updatedPage.category);
     formData.append(`wikiPageWithImagesInputModel.SiteSub`, updatedPage.siteSub);
     formData.append(`wikiPageWithImagesInputModel.RoleNote`, updatedPage.roleNote);
     formData.append(`wikiPageWithImagesInputModel.Content`, updatedPage.content);
@@ -350,6 +351,43 @@ export const fetchCategories = async () => {
   }
   const data = await response.json();
   // console.log(data);
-  const categoryNames = data.map(category => category.categoryName);
-  return categoryNames;
+  // const categoryNames = data.map(category => ({ id: category.id, categoryName: category.categoryName }));
+  // console.log(categoryNames);
+  // categoryNames.push("Uncategorized");
+  return data;
+};
+
+
+export const addCategory = async (categoryName, token) => {
+  const response = await fetch(`${BASE_URL}/api/Category`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(categoryName)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to add category. Status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  // console.log(data);
+  return data;
+};
+
+export const deleteCategory = async (categoryId, token) => {
+  const response = await fetch(`${BASE_URL}/api/Category/${categoryId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete category. Status: ${response.status}`);
+  }
+
+  return response.status; // Returns the HTTP status code (204 for success, 404 for not found)
 };

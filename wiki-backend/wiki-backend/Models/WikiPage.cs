@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace wiki_backend.Models;
 
@@ -9,7 +10,12 @@ public class WikiPage
     public string? SiteSub { get; set; }
     public string? RoleNote { get; set; }
     public string? Content { get; set; }
-    public string? Category { get; set; }
+    // public string? Category { get; set; }
+    public Guid? CategoryId { get; set; }
+    [ForeignKey(nameof(CategoryId))]
+    [JsonIgnore]
+    public Category? Category { get; set; }
+
     public DateTime? PostDate { get; set; }
     public DateTime? LastUpdateDate { get; set; }
     public bool LegacyWikiPage { get; set; } = false;

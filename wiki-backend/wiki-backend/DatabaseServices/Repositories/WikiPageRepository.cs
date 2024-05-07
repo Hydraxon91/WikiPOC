@@ -8,10 +8,12 @@ namespace wiki_backend.DatabaseServices.Repositories;
 public class WikiPageRepository : IWikiPageRepository
 {
     private readonly WikiDbContext _context;
+    private readonly ICategoryRepository _categoryRepository;
 
     public WikiPageRepository(WikiDbContext context)
     {
         _context = context;
+        _categoryRepository = new CategoryRepository(_context);
     }
 
     public async Task<List<TitleAndCategory>> GetAllTitlesAndCategoriesAsync()
@@ -22,7 +24,7 @@ public class WikiPageRepository : IWikiPageRepository
             .Select(page => new TitleAndCategory
             {
                 Title = page.Title ?? "Untitled",
-                Category = page.Category ?? "Uncategorized"
+                Category = page.Category.CategoryName ?? "Uncategorized"
             })
             .ToListAsync();
 
@@ -157,7 +159,10 @@ public class WikiPageRepository : IWikiPageRepository
             paragraph.WikiPage = wikiPage;
             paragraph.WikiPageId = wikiPage.Id;
         }
-        _context.WikiPages.Add(wikiPage);
+        
+        // Add the article to the category
+        await _categoryRepository.AddArticleToCategoryAsync(wikiPage.CategoryId.Value, wikiPage);
+        
         await _context.SaveChangesAsync();
     }
 
@@ -191,6 +196,8 @@ public class WikiPageRepository : IWikiPageRepository
     public async Task AcceptUserSubmittedWikiPage(UserSubmittedWikiPage userSubmittedWikiPage)
     {
         _context.Entry(userSubmittedWikiPage).State = EntityState.Modified;
+        // Add the article to the category
+        await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId.Value, userSubmittedWikiPage);
         await _context.SaveChangesAsync();
     }
 
@@ -204,7 +211,7 @@ public class WikiPageRepository : IWikiPageRepository
         existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
         existingWikiPage.Paragraphs = updatedWikiPage.Paragraphs;
         existingWikiPage.Content = updatedWikiPage.Content;
-        existingWikiPage.Category = updatedWikiPage.Category;
+        existingWikiPage.CategoryId = updatedWikiPage.CategoryId;
         existingWikiPage.LegacyWikiPage = updatedWikiPage.LegacyWikiPage;
         existingWikiPage.LastUpdateDate = DateTime.Now;
         
@@ -273,6 +280,8 @@ public class WikiPageRepository : IWikiPageRepository
     {
         // Set Approved to true
         userSubmittedWikiPage.Approved = true;
+        // Add the new article to the category
+        await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId.Value, userSubmittedWikiPage);
 
         await _context.SaveChangesAsync();
     }
@@ -321,6 +330,10 @@ public class WikiPageRepository : IWikiPageRepository
             {
                 Directory.Delete(folderPath, true);
             }
+            
+                    
+            // Remove the old article from the category
+            await _categoryRepository.RemoveArticleFromCategoryAsync(wikiPage.CategoryId.Value, wikiPage.Id);
 
             // Remove paragraphs and the wiki page itself
             _context.Paragraphs.RemoveRange(wikiPage.Paragraphs);

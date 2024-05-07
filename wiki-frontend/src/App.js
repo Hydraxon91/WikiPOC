@@ -7,7 +7,7 @@ import EditStylePage from "./Pages/EditStylePage/EditStylePage.js";
 import MainPage from "./Pages/MainPage/MainPage.js";
 import HomeComponent from "./Pages/MainPage/Components/HomeComponent.js";
 import { StyleProvider  } from "./Components/contexts/StyleContext.js";
-import { createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle } from "./Api/wikiApi.js";
+import { createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle, fetchCategories } from "./Api/wikiApi.js";
 import LoginPageComponent from "./Pages/LoginLogoutPages/LoginPageComponent.js";
 import { CookiesProvider, useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
@@ -19,12 +19,14 @@ import CheckUserSubmittedPage from "./Pages/UserSubmittedArticle-Update/CheckUse
 import WikiPage from "./Pages/WikiPage-Article/WikiPage.js";
 import ProfilePage from "./Pages/ProfilePage/ProfilePage.js";
 import EditProfilePage from "./Pages/ProfilePage/EditProfilePage.js";
+import CategoryPageComponent from "./Pages/Categories/CategoryPageComponent.js";
+import EditCategoriesPage from "./Pages/Categories/EditCategoriesPage.js";
 
 function App() {
 
   const [wikiPageTitles, setWikiPageTitles] = useState([]);
   const [currentWikiPage, setCurrentWikiPage] = useState(null);
-
+  const [categories, setCategories] = useState([]);
   const [decodedTitle, setDecodedTitle] = useState(null);
 
   const [cookies, setCookie, removeCookie] = useCookies(["jwt_token"]);
@@ -40,6 +42,16 @@ function App() {
     if (cookies["jwt_token"]) {
       setDecodedToken(jwtDecode(cookies["jwt_token"]));
     }
+    // Fetch categories
+    fetchCategories()
+      .then(categories => {
+        const categoryNames = categories.map(category => category.categoryName);
+        categoryNames.push("Uncategorized");
+        setCategories(categoryNames);
+      })
+      .catch(error => {
+        console.error('Error fetching categories:', error);
+      });
   }, []); // Trigger the effect when just loading
 
   const fetchPage = async () => {
@@ -64,7 +76,7 @@ function App() {
     return createWikiPage(newPage, cookies["jwt_token"], decodedToken, images)
       .then((createdPage) => {
         console.log('createWikiPage resolved:', createdPage);
-        setWikiPageTitles([...wikiPageTitles, createdPage.Title]);
+        setWikiPageTitles([...wikiPageTitles, [createdPage.Title, createdPage.Category]]);
         return createdPage; // Ensure you're returning a value
       })
       .catch((error) => {
@@ -75,7 +87,7 @@ function App() {
   const handleDelete = (id) => {
     deleteWikiPage(id, cookies["jwt_token"])
       .then(() => {
-        setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
+        setWikiPageTitles(wikiPageTitles.filter((page) => page.Title !== currentWikiPage.Title));
       })
       .catch((error) => {
         console.error("Error deleting WikiPage:", error);
@@ -116,8 +128,8 @@ function App() {
         <Router>
             <StyleProvider>
               <Routes>
-                <Route path="/" element={<MainPage pages={wikiPageTitles} decodedToken={decodedToken} handleLogout={handleLogout} cookies={cookies} setWikiPageTitles = {setWikiPageTitles}/>} > 
-                  <Route path="/" element={<HomeComponent pages={wikiPageTitles} />} />
+                <Route path="/" element={<MainPage decodedToken={decodedToken} handleLogout={handleLogout} cookies={cookies} setWikiPageTitles = {setWikiPageTitles} categories={categories}/>} > 
+                  <Route path="/" element={<HomeComponent pages={wikiPageTitles} categories={categories}/>} />
                   <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} cookies={cookies["jwt_token"]}/>} />
                   <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
                   <Route path="/page/:title/legacyedit" element={<LegacyEditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
@@ -132,6 +144,8 @@ function App() {
                   <Route path="/user-updates/:id" element = {<CompareUpdatePage/>}/>
                   <Route path="/profile/:username" element= {<ProfilePage loggedInUser={decodedToken?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]}/>}/>
                   <Route path="/profile/edit/:username" element={<EditProfilePage cookies={cookies["jwt_token"]}/>}/>
+                  <Route path="/categories/edit" element={<EditCategoriesPage setAppCategories={setCategories} cookies={cookies["jwt_token"]}/>}/>
+                  <Route path="/categories/:category" element={<CategoryPageComponent pages={wikiPageTitles} categories={categories}/>}/>
                 </Route>
               </Routes>
             </StyleProvider>
