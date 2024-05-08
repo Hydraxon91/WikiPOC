@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
+using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Identity;
 using wiki_backend.Models;
 using wiki_backend.Services.Authentication;
@@ -112,6 +113,8 @@ void AddServices()
     builder.Services.AddTransient<IUserProfileRepository, UserProfileRepository>();
     builder.Services.AddTransient<IUserCommentRepository, UserCommentRepository>();
     builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
+    builder.Services.AddTransient<IForumPostRepository, ForumPostRepository>();
+    builder.Services.AddTransient<IForumTopicRepository, ForumTopicRepository>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ITokenServices, TokenServices>();
     builder.Services.AddSingleton(new ProfileImageSettings(picturesPath));

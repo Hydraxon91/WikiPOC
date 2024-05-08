@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.Models;
 using Bogus;
+using wiki_backend.Models.ForumModels;
 
 namespace wiki_backend.DatabaseServices;
 
@@ -30,6 +31,8 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<UserComment> UserComments { get; set; }
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<ForumPost> ForumPosts { get; set; }
+    public DbSet<ForumTopic> ForumTopics { get; set; }
 
 protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -80,6 +83,12 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .HasOne(uc => uc.UserProfile)
             .WithMany() // No need to have a navigation property in UserProfile
             .HasForeignKey(uc => uc.UserProfileId);
+        
+        modelBuilder.Entity<ForumPost>()
+            .HasOne(fp => fp.ForumTopic)
+            .WithMany()
+            .HasForeignKey(fp => fp.ForumTopicId)  
+            .IsRequired();
         
         //Generating Article IDs
         var wikiPage1Id = Guid.NewGuid();
