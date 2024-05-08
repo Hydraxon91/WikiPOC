@@ -28,4 +28,15 @@ public class ForumTopicController : ControllerBase
         await _forumTopicRepository.AddForumTopicAsync(forumTopic);
         return CreatedAtAction(nameof(GetForumTopics), new { id = forumTopic.Id }, forumTopic);
     }
+    
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateForumTopic(Guid id, ForumTopic forumTopic)
+    {
+        if (id != forumTopic.Id)
+        {
+            return BadRequest();
+        }
+        await _forumTopicRepository.UpdateForumTopicAsync(forumTopic);
+        return NoContent();
+    }
 }
