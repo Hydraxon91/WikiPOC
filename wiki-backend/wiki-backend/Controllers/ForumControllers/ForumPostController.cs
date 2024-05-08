@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Models.ForumModels;
 
@@ -31,5 +32,13 @@ public class ForumPostController : ControllerBase
             return NotFound();
         }
         return forumPost;
+    }
+    
+    [HttpPost]
+    [Authorize(Roles = "User,Admin")]
+    public async Task<ActionResult<ForumPost>> AddForumPost(ForumPost forumPost)
+    {
+        await _forumPostRepository.AddForumPostAsync(forumPost);
+        return CreatedAtAction(nameof(GetForumPostById), new { id = forumPost.Id }, forumPost);
     }
 }
