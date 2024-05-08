@@ -15,4 +15,8 @@ public class ForumPost
     // Reference to the topic/category
     public ForumTopic ForumTopic  { get; set; }
     public Guid ForumTopicId { get; set; }
+    
+    // Reference to user who posted it
+    public UserProfile User { get; set; }
+    public Guid UserId { get; set; }
 }
