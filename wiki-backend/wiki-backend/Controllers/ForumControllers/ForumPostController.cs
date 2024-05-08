@@ -58,4 +58,17 @@ public class ForumPostController : ControllerBase
         await _forumPostRepository.UpdateForumPostAsync(forumPost);
         return NoContent();
     }
+    
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteForumPost(Guid id)
+    {
+        if (!User.IsInRole("Admin"))
+        {
+            return Forbid();
+        }
+
+        await _forumPostRepository.DeleteForumPostAsync(id);
+        return NoContent();
+    }
 }
