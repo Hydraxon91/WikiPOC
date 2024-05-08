@@ -21,4 +21,11 @@ public class ForumTopicController : ControllerBase
         var forumTopics = await _forumTopicRepository.GetAllForumTopicsAsync();
         return Ok(forumTopics);
     }
+    
+    [HttpPost]
+    public async Task<ActionResult<ForumTopic>> AddForumTopic(ForumTopic forumTopic)
+    {
+        await _forumTopicRepository.AddForumTopicAsync(forumTopic);
+        return CreatedAtAction(nameof(GetForumTopics), new { id = forumTopic.Id }, forumTopic);
+    }
 }
