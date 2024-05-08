@@ -86,7 +86,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         
         modelBuilder.Entity<ForumPost>()
             .HasOne(fp => fp.ForumTopic)
-            .WithMany()
+            .WithMany(ft => ft.ForumPosts) // Assuming you have a ForumPosts navigation property in ForumTopic
             .HasForeignKey(fp => fp.ForumTopicId)  
             .IsRequired();
         
