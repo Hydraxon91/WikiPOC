@@ -4,7 +4,7 @@ namespace wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 
 public interface IForumTopicRepository
 {
-    Task<IEnumerable<string>> GetAllForumTopicTitlesAsync();
+    Task<IEnumerable<ForumTopic>> GetAllForumTopicsAsync();
     Task AddForumTopicAsync(ForumTopic topic);
     Task UpdateForumTopicAsync(ForumTopic topic);
     Task DeleteForumTopicAsync(Guid id);

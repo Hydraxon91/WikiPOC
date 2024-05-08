@@ -13,10 +13,10 @@ public class ForumTopicRepository : IForumTopicRepository
     }
 
 
-    public async Task<IEnumerable<string>> GetAllForumTopicTitlesAsync()
+    public async Task<IEnumerable<ForumTopic>> GetAllForumTopicsAsync()
     {
         return await _context.ForumTopics
-            .Select(topic => topic.Title)
+            .Include(topic => topic.ForumPosts)
             .ToListAsync();
     }
 

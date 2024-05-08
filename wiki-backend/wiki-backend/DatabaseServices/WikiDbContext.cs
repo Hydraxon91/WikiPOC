@@ -90,6 +90,12 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .HasForeignKey(fp => fp.ForumTopicId)  
             .IsRequired();
         
+        modelBuilder.Entity<ForumPost>()
+            .HasOne(fp => fp.User)
+            .WithMany()
+            .HasForeignKey(fp => fp.UserId)  
+            .IsRequired();
+        
         //Generating Article IDs
         var wikiPage1Id = Guid.NewGuid();
         var wikiPage2Id = Guid.NewGuid();
