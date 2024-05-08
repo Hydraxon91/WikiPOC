@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
+using wiki_backend.Models.ForumModels;
 
 namespace wiki_backend.Controllers.ForumControllers;
 
@@ -14,5 +15,10 @@ public class ForumPostController : ControllerBase
         _forumPostRepository = forumPostRepository;
     }
     
-    
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<string>>> GetForumPostsTitles()
+    {
+        var forumPosts = await _forumPostRepository.GetAllForumPostTitlesAsync();
+        return Ok(forumPosts);
+    }
 }
