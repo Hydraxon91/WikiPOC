@@ -41,4 +41,21 @@ public class ForumPostController : ControllerBase
         await _forumPostRepository.AddForumPostAsync(forumPost);
         return CreatedAtAction(nameof(GetForumPostById), new { id = forumPost.Id }, forumPost);
     }
+    
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateForumPost(Guid id, ForumPost forumPost)
+    {
+        if (!User.IsInRole("Admin"))
+        {
+            return Forbid();
+        }
+
+        if (id != forumPost.Id)
+        {
+            return BadRequest();
+        }
+        await _forumPostRepository.UpdateForumPostAsync(forumPost);
+        return NoContent();
+    }
 }
