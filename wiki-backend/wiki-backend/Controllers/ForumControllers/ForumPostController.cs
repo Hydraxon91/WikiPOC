@@ -16,9 +16,20 @@ public class ForumPostController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<string>>> GetForumPostsTitles()
+    public async Task<ActionResult<IEnumerable<string>>> GetForumPostTitles()
     {
         var forumPosts = await _forumPostRepository.GetAllForumPostTitlesAsync();
         return Ok(forumPosts);
+    }
+    
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ForumPost>> GetForumPostById(Guid id)
+    {
+        var forumPost = await _forumPostRepository.GetForumPostByIdAsync(id);
+        if (forumPost == null)
+        {
+            return NotFound();
+        }
+        return forumPost;
     }
 }
