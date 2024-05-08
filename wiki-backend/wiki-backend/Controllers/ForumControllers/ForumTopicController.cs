@@ -39,4 +39,11 @@ public class ForumTopicController : ControllerBase
         await _forumTopicRepository.UpdateForumTopicAsync(forumTopic);
         return NoContent();
     }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteForumTopic(Guid id)
+    {
+        await _forumTopicRepository.DeleteForumTopicAsync(id);
+        return NoContent();
+    }
 }
