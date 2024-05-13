@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
+using wiki_backend.Identity;
 using wiki_backend.Models.ForumModels;
 
 namespace wiki_backend.Controllers.ForumControllers;
@@ -22,6 +24,7 @@ public class ForumTopicController : ControllerBase
         return Ok(forumTopics);
     }
     
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost]
     public async Task<ActionResult<ForumTopic>> AddForumTopic(ForumTopic forumTopic)
     {
@@ -29,6 +32,7 @@ public class ForumTopicController : ControllerBase
         return CreatedAtAction(nameof(GetForumTopics), new { id = forumTopic.Id }, forumTopic);
     }
     
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateForumTopic(Guid id, ForumTopic forumTopic)
     {
@@ -40,6 +44,7 @@ public class ForumTopicController : ControllerBase
         return NoContent();
     }
     
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteForumTopic(Guid id)
     {
