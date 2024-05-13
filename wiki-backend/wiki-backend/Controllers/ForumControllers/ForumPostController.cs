@@ -41,7 +41,7 @@ public class ForumPostController : ControllerBase
     
     [HttpPost]
     [Authorize(Roles = "User,Admin")]
-    public async Task<ActionResult<ForumPost>> AddForumPost(ForumPost forumPost)
+    public async Task<ActionResult<ForumPost>> AddForumPost([FromBody] ForumPost forumPost)
     {
         await _forumPostRepository.AddForumPostAsync(forumPost);
         return CreatedAtAction(nameof(GetForumPostById), new { id = forumPost.Id }, forumPost);
