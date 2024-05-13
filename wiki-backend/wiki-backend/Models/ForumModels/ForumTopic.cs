@@ -7,6 +7,8 @@ public class ForumTopic
     public Guid Id { get; set; }
     [Required]
     public string Title { get; set; }
+    [Required]
+    public string Description { get; set; }
     
     public ICollection<ForumPost> ForumPosts { get; set; } = new List<ForumPost>();
 }
