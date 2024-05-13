@@ -10,7 +10,7 @@ const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, cate
   const location = useLocation();
   const { styles }  = useStyleContext();
   const { updateUser } = useUserContext();
-  const [userName, setUserName] = useState("Not logged in");
+  const [userName, setUserName] = useState(null);
   const [userRole, setUserRole] = useState(null);
 
   useEffect(()=>{
@@ -21,7 +21,7 @@ const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, cate
       setUserRole("Role: " +decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
     }
     else{
-      setUserName("Not logged in")
+      setUserName(null)
       setUserRole(null);
     }
   }, [decodedToken])
