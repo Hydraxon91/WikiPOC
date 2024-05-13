@@ -10,6 +10,7 @@ using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Identity;
 using wiki_backend.Models;
+using wiki_backend.Models.ForumModels;
 using wiki_backend.Services.Authentication;
 using wiki_backend.Services.Profile;
 
@@ -67,6 +68,7 @@ if (Environment.GetEnvironmentVariable("Environment") != "Testing")
     AddAdmin();
     AddUser();
     SeedComments();
+    SeedForumTopics();
 }
 
 app.Run();
@@ -375,4 +377,39 @@ void SeedComments()
             dbContext.SaveChanges();
         }
     }
+}
+
+void SeedForumTopics()
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+    var topics = new List<ForumTopic>
+    {
+        new ForumTopic
+        {
+            Id = Guid.NewGuid(),
+            Title = "Main Forum",
+            Description = "General discussion forum for all topics.",
+        },
+        new ForumTopic
+        {
+            Id = Guid.NewGuid(),
+            Title = "Off Topic",
+            Description = "Discussion forum for non-related topics.",
+        },
+        new ForumTopic
+        {
+            Id = Guid.NewGuid(),
+            Title = "Foreign Languages Forum",
+            Description = "Forum for discussing topics in different languages.",
+        },
+        new ForumTopic
+        {
+            Id = Guid.NewGuid(),
+            Title = "Archive",
+            Description = "Forum for archived topics and discussions.",
+        },
+    };
+    dbContext.ForumTopics.AddRange(topics);
+    dbContext.SaveChanges();
 }
