@@ -26,7 +26,7 @@ public class ForumTopicController : ControllerBase
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost]
-    public async Task<ActionResult<ForumTopic>> AddForumTopic(ForumTopic forumTopic)
+    public async Task<ActionResult<ForumTopic>> AddForumTopic([FromBody] ForumTopic forumTopic)
     {
         await _forumTopicRepository.AddForumTopicAsync(forumTopic);
         return CreatedAtAction(nameof(GetForumTopics), new { id = forumTopic.Id }, forumTopic);
@@ -34,7 +34,7 @@ public class ForumTopicController : ControllerBase
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateForumTopic(Guid id, ForumTopic forumTopic)
+    public async Task<IActionResult> UpdateForumTopic(Guid id, [FromBody] ForumTopic forumTopic)
     {
         if (id != forumTopic.Id)
         {
