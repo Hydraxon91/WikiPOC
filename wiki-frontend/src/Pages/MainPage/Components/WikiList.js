@@ -157,6 +157,14 @@ return (
           </Link>
         </div>
       ))}
+      <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Forum Tools</h3>
+      <ul>
+        <li>
+          <Link key="forum-page-link" to="/forum">
+            Forum
+          </Link>
+        </li>
+      </ul>
       {decodedTokenContext ? UserTools() : LoginTools()}
     </div>
     
