@@ -21,6 +21,7 @@ import ProfilePage from "./Pages/ProfilePage/ProfilePage.js";
 import EditProfilePage from "./Pages/ProfilePage/EditProfilePage.js";
 import CategoryPageComponent from "./Pages/Categories/CategoryPageComponent.js";
 import EditCategoriesPage from "./Pages/Categories/EditCategoriesPage.js";
+import ForumLandingPage from "./Pages/ForumPages/ForumLandingPage.js";
 
 function App() {
 
@@ -146,6 +147,7 @@ function App() {
                   <Route path="/profile/edit/:username" element={<EditProfilePage cookies={cookies["jwt_token"]}/>}/>
                   <Route path="/categories/edit" element={<EditCategoriesPage setAppCategories={setCategories} cookies={cookies["jwt_token"]}/>}/>
                   <Route path="/categories/:category" element={<CategoryPageComponent pages={wikiPageTitles} categories={categories}/>}/>
+                  <Route path="/forum" element={<ForumLandingPage/>}/>
                 </Route>
               </Routes>
             </StyleProvider>
