@@ -24,6 +24,13 @@ public class ForumTopicController : ControllerBase
         return Ok(forumTopics);
     }
     
+    [HttpGet("{id}")]
+    public async Task<ActionResult<IEnumerable<ForumTopic>>> GetForumTopicById(Guid id)
+    {
+        var forumTopic = await _forumTopicRepository.GetAllForumTopicByIdAsync(id);
+        return Ok(forumTopic);
+    }
+    
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost]
     public async Task<ActionResult<ForumTopic>> AddForumTopic([FromBody] ForumTopic forumTopic)
