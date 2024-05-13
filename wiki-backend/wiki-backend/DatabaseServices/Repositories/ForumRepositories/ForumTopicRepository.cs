@@ -19,6 +19,13 @@ public class ForumTopicRepository : IForumTopicRepository
             .Include(topic => topic.ForumPosts)
             .ToListAsync();
     }
+    
+    public async Task<ForumTopic> GetAllForumTopicByIdAsync(Guid id)
+    {
+        return await _context.ForumTopics
+            .Include(topic => topic.ForumPosts)
+            .FirstOrDefaultAsync(topic => topic.Id == id);
+    }
 
     public async Task AddForumTopicAsync(ForumTopic topic)
     {
