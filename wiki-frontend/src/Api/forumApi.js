@@ -10,6 +10,17 @@ export const getForumTopics = async () => {
     return data;
   };
 
+  export const getForumTopicBySlug = async (slug) => {
+    const response = await fetch(`${BASE_URL}/api/ForumTopic/{slug}`);
+    if (!response.ok) {
+      throw new Error(`Failed to get ForumTopic. Status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log(data);
+    return data;
+  };
+
+
   export const createForumTopic = async (forumTopic, token) => {
     const response = await fetch(`${BASE_URL}/api/ForumTopic`, {
       method: 'POST',
