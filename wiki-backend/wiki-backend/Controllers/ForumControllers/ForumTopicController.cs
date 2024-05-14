@@ -24,10 +24,14 @@ public class ForumTopicController : ControllerBase
         return Ok(forumTopics);
     }
     
-    [HttpGet("{id}")]
-    public async Task<ActionResult<IEnumerable<ForumTopic>>> GetForumTopicById(Guid id)
+    [HttpGet("{slug}")]
+    public async Task<ActionResult<IEnumerable<ForumTopic>>> GetForumTopicById(string slug)
     {
-        var forumTopic = await _forumTopicRepository.GetAllForumTopicByIdAsync(id);
+        var forumTopic = await _forumTopicRepository.GetForumTopicBySlugAsync(slug);
+        if (forumTopic == null)
+        {
+            return NotFound();
+        }
         return Ok(forumTopic);
     }
     
