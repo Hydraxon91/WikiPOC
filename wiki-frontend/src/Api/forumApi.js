@@ -90,6 +90,18 @@ export const getForumPostTitles = async () => {
     return data;
   };
 
+  export const getForumPostBySlug = async (slug) => {
+    const response = await fetch(`${BASE_URL}/api/ForumPost/${slug}`, {
+      method: 'GET'
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to get ForumPost. Status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log(data);
+    return data;
+};
+
   export const createForumPost = async (forumPost, token) => {
     const response = await fetch(`${BASE_URL}/api/ForumPost`, {
       method: 'POST',

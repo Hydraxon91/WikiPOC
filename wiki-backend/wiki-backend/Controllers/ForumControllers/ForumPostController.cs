@@ -30,7 +30,7 @@ public class ForumPostController : ControllerBase
     }
     
     
-    [HttpGet("/{slug}")]
+    [HttpGet("{slug}")]
     public async Task<ActionResult<ForumPost>> GetForumPostBySlug(string slug)
     {
         var forumPost = await _forumPostRepository.GetForumPostBySlugAsync(slug);

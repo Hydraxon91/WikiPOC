@@ -23,6 +23,7 @@ import CategoryPageComponent from "./Pages/Categories/CategoryPageComponent.js";
 import EditCategoriesPage from "./Pages/Categories/EditCategoriesPage.js";
 import ForumLandingPage from "./Pages/ForumPages/ForumLandingPage.js";
 import ForumPage from "./Pages/ForumPages/ForumPage.js";
+import ForumPost from "./Pages/ForumPages/ForumPost.js";
 
 function App() {
 
@@ -150,6 +151,7 @@ function App() {
                   <Route path="/categories/:category" element={<CategoryPageComponent pages={wikiPageTitles} categories={categories}/>}/>
                   <Route path="/forum" element={<ForumLandingPage/>}/>
                   <Route path="/forum/:slug" element={<ForumPage/>}/>
+                  <Route path="/forum/post/:slug" element={<ForumPost/>}/>
                 </Route>
               </Routes>
             </StyleProvider>
