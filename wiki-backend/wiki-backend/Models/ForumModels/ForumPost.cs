@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace wiki_backend.Models.ForumModels
 {
@@ -19,6 +20,7 @@ namespace wiki_backend.Models.ForumModels
         public bool IsActive { get; set; } = true;
 
         // Reference to the topic/category
+        [JsonIgnore]
         public ForumTopic ForumTopic { get; set; }
         public Guid ForumTopicId { get; set; }
 

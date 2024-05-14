@@ -69,6 +69,7 @@ if (Environment.GetEnvironmentVariable("Environment") != "Testing")
     AddUser();
     SeedComments();
     SeedForumTopics();
+    SeedForumPosts();
 }
 
 app.Run();
@@ -415,5 +416,67 @@ void SeedForumTopics()
         },
     };
     dbContext.ForumTopics.AddRange(topics);
+    dbContext.SaveChanges();
+}
+
+void SeedForumPosts()
+{
+    using var scope = app.Services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    
+    var adminUser = userManager.FindByEmailAsync("admin@admin.com").Result;
+    var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+
+    // Ensure database is created and migrated
+    dbContext.Database.Migrate();
+
+    // Get the predefined forum topics
+    var topics = dbContext.ForumTopics.ToList();
+
+    var forumPosts = new List<ForumPost>
+    {
+        new ForumPost
+        {
+            Id = Guid.NewGuid(),
+            PostTitle = "Welcome to the Main Forum!",
+            Content = "Feel free to start discussions about anything!",
+            PostDate = DateTime.Now,
+            ForumTopic = topics.FirstOrDefault(t => t.Slug == "main-forum"),
+            Slug = "welcome-to-the-main-forum",
+            UserId = adminUser.ProfileId
+        },
+        new ForumPost
+        {
+            Id = Guid.NewGuid(),
+            PostTitle = "Rules of the Off Topic Forum",
+            Content = "This is a place for non-related discussions. Please keep it friendly and respectful.",
+            PostDate = DateTime.Now,
+            ForumTopic = topics.FirstOrDefault(t => t.Slug == "off-topic"),
+            Slug = "rules-of-the-off-topic-forum",
+            UserId = adminUser.ProfileId
+        },
+        new ForumPost
+        {
+            Id = Guid.NewGuid(),
+            PostTitle = "Discussion in French",
+            Content = "Bonjour! Let's discuss various topics in French in this forum.",
+            PostDate = DateTime.Now,
+            ForumTopic = topics.FirstOrDefault(t => t.Slug == "foreign-languages-forum"),
+            Slug = "discussion-in-french",
+            UserId = adminUser.ProfileId
+        },
+        new ForumPost
+        {
+            Id = Guid.NewGuid(),
+            PostTitle = "Archived Topic: Previous Discussion",
+            Content = "This is an archived discussion. It's here for reference purposes.",
+            PostDate = DateTime.Now,
+            ForumTopic = topics.FirstOrDefault(t => t.Slug == "archive"),
+            Slug = "archived-topic-previous-discussion",
+            UserId = adminUser.ProfileId
+        }
+    };
+
+    dbContext.ForumPosts.AddRange(forumPosts);
     dbContext.SaveChanges();
 }
