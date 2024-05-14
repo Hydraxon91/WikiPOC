@@ -11,7 +11,7 @@ export const getForumTopics = async () => {
   };
 
   export const getForumTopicBySlug = async (slug) => {
-    const response = await fetch(`${BASE_URL}/api/ForumTopic/{slug}`);
+    const response = await fetch(`${BASE_URL}/api/ForumTopic/${slug}`);
     if (!response.ok) {
       throw new Error(`Failed to get ForumTopic. Status: ${response.status}`);
     }
