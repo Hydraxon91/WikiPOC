@@ -151,3 +151,44 @@ export const getForumPostTitles = async () => {
     const data = await response.json();
     return data;
   };
+
+
+  //Forum comment methods
+
+  export const postForumComment = async (comment, token) => {
+    const response = await fetch(`${BASE_URL}/api/ForumComment/comment/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(comment),
+      });
+
+      if (!response.ok) {
+        // Handle the error, you can throw an exception or return an error object
+        throw new Error(`Failed to delete WikiPage. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+  };
+
+  export const postEditedForumComment = async (commentId, editedComment, token) => {
+    const response = await fetch(`${BASE_URL}/api/ForumComment/comment/${commentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(editedComment),
+      });
+
+      if (!response.ok) {
+        // Handle the error, you can throw an exception or return an error object
+        throw new Error(`Failed to update comment. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+  };

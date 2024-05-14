@@ -6,6 +6,7 @@ export const getUserProfileByUsername = async (username, setUser) => {
       throw new Error(`Failed to get UserProfile for ${username}. Status: ${response.status}`);
     }
     const data = await response.json();
+    console.log(data);
     setUser(data);
   };
 
