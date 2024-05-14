@@ -118,6 +118,7 @@ void AddServices()
     builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
     builder.Services.AddTransient<IForumPostRepository, ForumPostRepository>();
     builder.Services.AddTransient<IForumTopicRepository, ForumTopicRepository>();
+    builder.Services.AddTransient<IForumCommentRepository, ForumCommentRepository>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ITokenServices, TokenServices>();
     builder.Services.AddSingleton(new ProfileImageSettings(picturesPath));

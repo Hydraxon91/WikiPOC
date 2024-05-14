@@ -25,4 +25,9 @@ public class ForumComment
     public Guid? ReplyToCommentId { get; set; }
 
     public bool IsEdited { get; set; } = false;
+    
+    public override string ToString()
+    {
+        return $"Id: {Id}, Content: {Content}, UserProfileId: {UserProfileId}, ForumPostId: {ForumPostId}, PostDate: {PostDate}, IsReply: {IsReply}, ReplyToCommentId: {ReplyToCommentId}, IsEdited: {IsEdited}";
+    }
 }

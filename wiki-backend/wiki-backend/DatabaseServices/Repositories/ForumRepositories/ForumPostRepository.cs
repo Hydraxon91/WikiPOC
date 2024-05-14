@@ -30,6 +30,7 @@ public class ForumPostRepository : IForumPostRepository
     {
         return await _context.ForumPosts
             .Include(post => post.Comments)
+                .ThenInclude(comment => comment.UserProfile)
             .FirstOrDefaultAsync(post => post.Slug == slug);
     }
 

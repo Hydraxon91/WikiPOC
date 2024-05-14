@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
-import { postComment } from '../../../Api/wikiUserApi';
 
-const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit }) => {
+const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit, postComment }) => {
     const [commentText, setCommentText] = useState('');
 
     const handleCommentChange = (event) => {
@@ -14,6 +13,7 @@ const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubm
         const newComment = {
             content: commentText,
             userProfileId: user.id,
+            // userProfile: user,
             wikiPageId: page.id,
             postDate: new Date(),
             isReply: false,
@@ -22,7 +22,8 @@ const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubm
         };
 
         try {
-            await postComment(newComment, cookies);
+            console.log(newComment);
+            await postComment(newComment, cookies, user);
             setCommentText('');
             newComment.userProfile = user;
             handleCommentSubmit(newComment);

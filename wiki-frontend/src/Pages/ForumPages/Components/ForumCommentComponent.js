@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getUserProfileByUsername } from '../../../Api/wikiUserApi';
+import { postForumComment } from '../../../Api/forumApi';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import WikiPageSubmitCommentComponent from '../../WikiPage-Article/Components/WikiPageSubmitCommentComponent';
 
@@ -55,6 +56,7 @@ const ForumCommentComponent = ({post, cookies}) =>{
           comments: [...currPost.comments, newComment],
         }));
       };
+      
 
     function formatDate(dateString) {
         const options = {
@@ -76,11 +78,11 @@ const ForumCommentComponent = ({post, cookies}) =>{
             {currPost && (
                 <div>
                     <h3>Comments</h3>
-                    {user?.profilePicture && <WikiPageSubmitCommentComponent user={user} page={currPost} cookies={cookies} handleCommentSubmit={handleCommentSubmit}/>}
+                    {user?.profilePicture && <WikiPageSubmitCommentComponent user={user} page={currPost} cookies={cookies} handleCommentSubmit={handleCommentSubmit} postComment={postForumComment}/>}
                     {currPost.comments.map((comment, index) => (
                         <div key={index} className='wikipage-comment'>
                             <div className='wikipage-comment-profilepic'>
-                                <DisplayProfileImageElement profilePicture={comment.userProfile.profilePicture}/>
+                            {user?.profilePicture && <DisplayProfileImageElement profilePicture={comment.userProfile.profilePicture}/>}
                             </div>
                             <div className='wikipage-comment-content'>
                                 <div className='wikipage-comment-data'>

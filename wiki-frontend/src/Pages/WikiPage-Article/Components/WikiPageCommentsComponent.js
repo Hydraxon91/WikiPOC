@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
-import { getUserProfileByUsername, postEditedComment } from '../../../Api/wikiUserApi';
+import { getUserProfileByUsername, postEditedComment, postComment } from '../../../Api/wikiUserApi';
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 
@@ -76,7 +76,7 @@ const WikiPageCommentsComponent = ({page, cookies, activeTab}) =>{
             {currPage && (
                 <div>
                     <h3>Comments</h3>
-                    {user?.profilePicture && <WikiPageSubmitCommentComponent user={user} page={currPage} cookies={cookies} handleCommentSubmit={handleCommentSubmit}/>}
+                    {user?.profilePicture && <WikiPageSubmitCommentComponent user={user} page={currPage} cookies={cookies} handleCommentSubmit={handleCommentSubmit} postComment={postComment}/>}
                     {currPage.comments.map((comment, index) => (
                         <div key={index} className='wikipage-comment'>
                             <div className='wikipage-comment-profilepic'>
