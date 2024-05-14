@@ -36,7 +36,7 @@ const ForumPage = () => {
                         <Link to={`/forum/${topic.slug}/${post.slug}`}><div className='topicTitle'>{post.postTitle}</div></Link>
                     </div>
                     <div className="grid-cell">{post.comments.length}</div>
-                    <div className="grid-cell">{post.user}</div>
+                    <div className="grid-cell">{post.userName}</div>
                     <div className="grid-cell">{topic.lastPostDate}</div>
                 </div>
             ))}

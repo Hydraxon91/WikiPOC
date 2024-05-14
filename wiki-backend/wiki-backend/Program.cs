@@ -443,7 +443,8 @@ void SeedForumPosts()
             PostDate = DateTime.Now,
             ForumTopic = topics.FirstOrDefault(t => t.Slug == "main-forum"),
             Slug = "welcome-to-the-main-forum",
-            UserId = adminUser.ProfileId
+            UserId = adminUser.ProfileId,
+            UserName = adminUser.UserName
         },
         new ForumPost
         {
@@ -453,7 +454,8 @@ void SeedForumPosts()
             PostDate = DateTime.Now,
             ForumTopic = topics.FirstOrDefault(t => t.Slug == "off-topic"),
             Slug = "rules-of-the-off-topic-forum",
-            UserId = adminUser.ProfileId
+            UserId = adminUser.ProfileId,
+            UserName = adminUser.UserName
         },
         new ForumPost
         {
@@ -463,7 +465,8 @@ void SeedForumPosts()
             PostDate = DateTime.Now,
             ForumTopic = topics.FirstOrDefault(t => t.Slug == "foreign-languages-forum"),
             Slug = "discussion-in-french",
-            UserId = adminUser.ProfileId
+            UserId = adminUser.ProfileId,
+            UserName = adminUser.UserName
         },
         new ForumPost
         {
@@ -473,7 +476,8 @@ void SeedForumPosts()
             PostDate = DateTime.Now,
             ForumTopic = topics.FirstOrDefault(t => t.Slug == "archive"),
             Slug = "archived-topic-previous-discussion",
-            UserId = adminUser.ProfileId
+            UserId = adminUser.ProfileId,
+            UserName = adminUser.UserName
         }
     };
 

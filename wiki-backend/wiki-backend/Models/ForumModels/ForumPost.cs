@@ -27,6 +27,7 @@ namespace wiki_backend.Models.ForumModels
         // Reference to user who posted it
         public UserProfile User { get; set; }
         public Guid UserId { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         public string Slug { get; set; }

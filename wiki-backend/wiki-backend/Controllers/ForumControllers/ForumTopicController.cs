@@ -21,10 +21,6 @@ public class ForumTopicController : ControllerBase
     public async Task<ActionResult<IEnumerable<ForumTopic>>> GetForumTopics()
     {
         var forumTopics = await _forumTopicRepository.GetAllForumTopicsAsync();
-        foreach (var topic in forumTopics)
-        {
-            Console.WriteLine(topic.Title);
-        }
         return Ok(forumTopics);
     }
     
