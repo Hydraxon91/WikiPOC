@@ -13,7 +13,7 @@ namespace wiki_backend.Models.ForumModels
         [Required]
         public string Content { get; set; }
 
-        public ICollection<UserComment> Comments { get; set; } = new List<UserComment>();
+        public ICollection<ForumComment> Comments { get; set; } = new List<ForumComment>();
 
         public DateTime? PostDate { get; set; }
 

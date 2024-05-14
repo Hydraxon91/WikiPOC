@@ -33,6 +33,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Category> Categories { get; set; }
     public DbSet<ForumPost> ForumPosts { get; set; }
     public DbSet<ForumTopic> ForumTopics { get; set; }
+    public DbSet<ForumComment> ForumComments { get; set; }
 
 protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -88,13 +89,36 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .HasOne(fp => fp.ForumTopic)
             .WithMany(ft => ft.ForumPosts) // Assuming you have a ForumPosts navigation property in ForumTopic
             .HasForeignKey(fp => fp.ForumTopicId)  
-            .IsRequired();
+            .OnDelete(DeleteBehavior.Restrict);
         
         modelBuilder.Entity<ForumPost>()
             .HasOne(fp => fp.User)
             .WithMany()
             .HasForeignKey(fp => fp.UserId)  
-            .IsRequired();
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<ForumPost>()
+            .HasMany(fp => fp.Comments)
+            .WithOne(c => c.ForumPost)
+            .HasForeignKey(c => c.ForumPostId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<ForumComment>()
+            .HasOne(fc => fc.ForumPost)
+            .WithMany(fp => fp.Comments)
+            .HasForeignKey(fc => fc.ForumPostId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ForumComment>()
+            .HasOne(fc => fc.UserProfile)
+            .WithMany()
+            .HasForeignKey(fc => fc.UserProfileId);
+
+        modelBuilder.Entity<ForumComment>()
+            .HasOne(fc => fc.ReplyToComment)
+            .WithMany()
+            .HasForeignKey(fc => fc.ReplyToCommentId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         //Generating Article IDs
         var wikiPage1Id = Guid.NewGuid();
