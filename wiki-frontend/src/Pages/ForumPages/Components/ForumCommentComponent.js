@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getUserProfileByUsername } from '../../../Api/wikiUserApi';
-import { postForumComment } from '../../../Api/forumApi';
+import { postForumComment, postEditedForumComment } from '../../../Api/forumApi';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import WikiPageSubmitCommentComponent from '../../WikiPage-Article/Components/WikiPageSubmitCommentComponent';
 
@@ -39,7 +39,7 @@ const ForumCommentComponent = ({post, cookies}) =>{
         const updatedComments = [...currPost.comments];
         updatedComments[index].content = editedComment;
         
-        // postEditedComment(updatedComments[index].id, editedComment, cookies); //Needs to be implemented
+        postEditedForumComment(updatedComments[index].id, editedComment, cookies); //Needs to be implemented
 
         setCurrPost((currPost) => ({
             ...currPost,
