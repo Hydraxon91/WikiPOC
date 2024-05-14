@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,15 +29,16 @@ public class ForumPostController : ControllerBase
         return Ok(forumPosts);
     }
     
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ForumPost>> GetForumPostById(Guid id)
+    
+    [HttpGet("/{slug}")]
+    public async Task<ActionResult<ForumPost>> GetForumPostBySlug(string slug)
     {
-        var forumPost = await _forumPostRepository.GetForumPostByIdAsync(id);
+        var forumPost = await _forumPostRepository.GetForumPostBySlugAsync(slug);
         if (forumPost == null)
         {
             return NotFound();
         }
-        return forumPost;
+        return Ok(forumPost);
     }
     
     [HttpPost]
@@ -44,10 +46,10 @@ public class ForumPostController : ControllerBase
     public async Task<ActionResult<ForumPost>> AddForumPost([FromBody] ForumPost forumPost)
     {
         await _forumPostRepository.AddForumPostAsync(forumPost);
-        return CreatedAtAction(nameof(GetForumPostById), new { id = forumPost.Id }, forumPost);
+        return CreatedAtAction(nameof(GetForumPostBySlug), new { slug = forumPost.Slug }, forumPost);
     }
     
-    [HttpPut("{id}")]
+    [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateForumPost(Guid id, [FromBody] ForumPost forumPost)
     {
         var userId = GetUserIdFromRequest();
@@ -55,62 +57,60 @@ public class ForumPostController : ControllerBase
         {
             return BadRequest();
         }
-        if (await IsAuthorizedToModifyPost(userId, forumPost))
+
+        var existingPost = await _forumPostRepository.GetForumPostByIdAsync(id);
+        if (existingPost == null)
+        {
+            return NotFound();
+        }
+
+        if (await IsAuthorizedToModifyPost(userId, existingPost))
         {
             await _forumPostRepository.UpdateForumPostAsync(forumPost);
             return Ok(new { Message = "Forum Post edited successfully" });
         }
-        return Unauthorized(new { Message = "Unauthorized to update this comment" });
+
+        return Unauthorized(new { Message = "Unauthorized to update this post" });
     }
     
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteForumPost(Guid id)
     {
         var userId = GetUserIdFromRequest();
         var existingPost = await _forumPostRepository.GetForumPostByIdAsync(id);
-        
-        if (await IsAuthorizedToModifyPost(userId, existingPost))
+        if (existingPost == null)
         {
-            await _forumPostRepository.UpdateForumPostAsync(existingPost);
-            return Ok(new { Message = "Forum Post edited successfully" });
+            return NotFound();
         }
 
-        return Unauthorized(new { Message = "Unauthorized to delete this Post" });
+        if (await IsAuthorizedToModifyPost(userId, existingPost))
+        {
+            await _forumPostRepository.DeleteForumPostAsync(id);
+            return Ok(new { Message = "Forum Post deleted successfully" });
+        }
+
+        return Unauthorized(new { Message = "Unauthorized to delete this post" });
     }
     
     private string GetUserIdFromRequest()
     {
-        // Retrieve the user ID from the claims in the current user's identity
-        // Extract token from request headers
-        var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-        var handler = new JwtSecurityTokenHandler();
-        var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
-
-        var nameClaim = jsonToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
-        
-        if (nameClaim != null)
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
         {
-            return nameClaim.Value;
+            throw new InvalidOperationException("User ID not found in claims.");
         }
-
-        // If the user ID is not found in claims, handle it accordingly (throw an exception, return null, etc.)
-        // This depends on how your application handles authentication errors
-        throw new InvalidOperationException("User ID not found in claims.");
+        return userId;
     }
     private async Task<bool> IsAuthorizedToModifyPost(string userId, ForumPost post)
     {
-        // Check if the user is the author of the comment or is an admin
-        return userId == post.User.UserName || await IsUserAdmin(userId);
+        return userId == post.UserId.ToString() || await IsUserAdmin(userId);
     }
     
     private async Task<bool> IsUserAdmin(string userId)
     {
-        // Implement logic to check if the user has admin privileges
-        // This might involve checking the user's roles or other criteria
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
-            // Handle the case where the user is not found
             return false;
         }
         return await _userManager.IsInRoleAsync(user, "Admin");

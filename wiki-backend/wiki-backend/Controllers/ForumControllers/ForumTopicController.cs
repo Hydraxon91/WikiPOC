@@ -25,7 +25,7 @@ public class ForumTopicController : ControllerBase
     }
     
     [HttpGet("{slug}")]
-    public async Task<ActionResult<IEnumerable<ForumTopic>>> GetForumTopicById(string slug)
+    public async Task<ActionResult<IEnumerable<ForumTopic>>> GetForumTopicBySlug(string slug)
     {
         var forumTopic = await _forumTopicRepository.GetForumTopicBySlugAsync(slug);
         if (forumTopic == null)
