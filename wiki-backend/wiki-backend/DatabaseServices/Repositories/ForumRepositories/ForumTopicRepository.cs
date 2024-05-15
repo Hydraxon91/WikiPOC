@@ -18,6 +18,8 @@ public class ForumTopicRepository : IForumTopicRepository
     {
         return await _context.ForumTopics
             .Include(topic => topic.ForumPosts)
+            .ThenInclude(fp => fp.Comments)
+            .OrderBy(ft => ft.Order)
             .ToListAsync();
     }
     
@@ -25,11 +27,14 @@ public class ForumTopicRepository : IForumTopicRepository
     {
         return await _context.ForumTopics
             .Include(topic => topic.ForumPosts)
+            .ThenInclude(fp => fp.Comments)
             .FirstOrDefaultAsync(topic => topic.Slug == slug);
     }
 
     public async Task AddForumTopicAsync(ForumTopic topic)
     {
+        int maxOrder = await _context.ForumTopics.MaxAsync(ft => (int?)ft.Order) ?? 0;
+        topic.Order = maxOrder + 1;
         topic.Slug = GenerateSlug(topic.Title);
         await _context.ForumTopics.AddAsync(topic);
         await _context.SaveChangesAsync();

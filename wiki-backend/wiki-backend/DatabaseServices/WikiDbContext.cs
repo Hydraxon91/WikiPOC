@@ -85,6 +85,9 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .WithMany() // No need to have a navigation property in UserProfile
             .HasForeignKey(uc => uc.UserProfileId);
         
+        modelBuilder.Entity<ForumTopic>()
+            .Property(ft => ft.Order);
+        
         modelBuilder.Entity<ForumPost>()
             .HasOne(fp => fp.ForumTopic)
             .WithMany(ft => ft.ForumPosts) // Assuming you have a ForumPosts navigation property in ForumTopic

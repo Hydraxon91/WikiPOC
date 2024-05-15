@@ -392,28 +392,32 @@ void SeedForumTopics()
             Id = Guid.NewGuid(),
             Title = "Main Forum",
             Description = "General discussion forum for all topics.",
-            Slug = "main-forum"
+            Slug = "main-forum",
+            Order = 0
         },
         new ForumTopic
         {
             Id = Guid.NewGuid(),
             Title = "Off Topic",
             Description = "Discussion forum for non-related topics.",
-            Slug = "off-topic"
+            Slug = "off-topic",
+            Order = 1
         },
         new ForumTopic
         {
             Id = Guid.NewGuid(),
             Title = "Foreign Languages Forum",
             Description = "Forum for discussing topics in different languages.",
-            Slug = "foreign-languages-forum"
+            Slug = "foreign-languages-forum",
+            Order = 2
         },
         new ForumTopic
         {
             Id = Guid.NewGuid(),
             Title = "Archive",
             Description = "Forum for archived topics and discussions.",
-            Slug = "archive"
+            Slug = "archive",
+            Order = 3
         },
     };
     dbContext.ForumTopics.AddRange(topics);
