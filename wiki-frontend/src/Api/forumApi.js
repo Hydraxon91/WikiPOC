@@ -154,11 +154,9 @@ export const getForumPostTitles = async () => {
 
 
   //Forum comment methods
-
-  export const postForumComment = async (comment, token, user) => {
+  export const postForumComment = async (comment, token) => {
     const { wikiPageId, ...updatedComment } = comment;
     updatedComment.forumPostId = wikiPageId;
-    // updatedComment.userProfile = user;
     console.log(updatedComment);
     const response = await fetch(`${BASE_URL}/api/ForumComment/comment/`, {
         method: 'POST',

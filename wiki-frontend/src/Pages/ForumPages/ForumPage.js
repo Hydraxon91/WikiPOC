@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { getForumTopicBySlug } from '../../Api/forumApi';
+import { format } from 'date-fns';
 import './Styles/forumlandingpage.css';
 
 const ForumPage = () => {
@@ -9,7 +10,6 @@ const ForumPage = () => {
     const { slug } = useParams();
 
     useEffect(() => {
-        console.log(slug);
         fetchForumTopic();
     }, []);
 
@@ -22,11 +22,40 @@ const ForumPage = () => {
         }
     };
 
+    const getLatestComment = (post) =>{
+        var latestComment = null;
+
+        post.comments.forEach(comment => {
+            if (!latestComment || new Date(comment.postDate) > new Date(latestComment.postDate)) {
+                latestComment = comment;
+            }
+        });   
+
+
+        if (!latestComment) {
+            return (
+                <div>No comments yet</div>
+            )
+        }
+
+        // Parse the date string as UTC
+        const utcDate = new Date(latestComment.postDate + 'Z');
+        // Format the zoned date
+        const formattedDate = format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
+
+        return (
+            <>
+             <div>{formattedDate}</div>
+             <Link to={`/profile/${latestComment.userProfile.userName}`}><div>{latestComment.userProfile.displayName}</div></Link>
+            </>
+        )
+    }
+
     return (
         <div className="forum-grid">
             <div className="grid-header">
                 <div className="header-cell">Topics</div>
-                <div className="header-cell">Comments</div>
+                <div className="header-cell">Replies</div>
                 <div className="header-cell">Author</div>
                 <div className="header-cell">Last Comment</div>
             </div>
@@ -37,7 +66,7 @@ const ForumPage = () => {
                     </div>
                     <div className="grid-cell">{post.comments.length}</div>
                     <div className="grid-cell">{post.userName}</div>
-                    <div className="grid-cell">{topic.lastPostDate}</div>
+                    <div className="grid-cell">{getLatestComment(post)}</div>
                 </div>
             ))}
         </div>

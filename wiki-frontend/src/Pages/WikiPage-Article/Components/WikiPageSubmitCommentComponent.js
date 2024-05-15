@@ -15,7 +15,7 @@ const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubm
             userProfileId: user.id,
             // userProfile: user,
             wikiPageId: page.id,
-            postDate: new Date(),
+            postDate: new Date().toISOString(),
             isReply: false,
             replyToCommentId: null,
             isEdited: false,

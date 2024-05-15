@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getUserProfileByUsername, postEditedComment, postComment } from '../../../Api/wikiUserApi';
+import { format } from 'date-fns';
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 
@@ -57,17 +58,10 @@ const WikiPageCommentsComponent = ({page, cookies, activeTab}) =>{
 
 
     function formatDate(dateString) {
-        const options = {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          timeZoneName: 'short',
-        };
-      
-        const formattedDate = new Intl.DateTimeFormat('en-UK', options).format(new Date(dateString));
+        // Parse the date string as UTC
+        const utcDate = new Date(dateString + 'Z');
+        // Format the zoned date
+        const formattedDate = format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
         return formattedDate.replace(/\//g, '-');
       }
 

@@ -19,6 +19,7 @@ public class ForumTopicRepository : IForumTopicRepository
         return await _context.ForumTopics
             .Include(topic => topic.ForumPosts)
             .ThenInclude(fp => fp.Comments)
+            .ThenInclude(comment => comment.UserProfile)
             .OrderBy(ft => ft.Order)
             .ToListAsync();
     }
@@ -28,6 +29,7 @@ public class ForumTopicRepository : IForumTopicRepository
         return await _context.ForumTopics
             .Include(topic => topic.ForumPosts)
             .ThenInclude(fp => fp.Comments)
+            .ThenInclude(comment => comment.UserProfile)
             .FirstOrDefaultAsync(topic => topic.Slug == slug);
     }
 

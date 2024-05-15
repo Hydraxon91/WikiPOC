@@ -21,6 +21,10 @@ public class ForumCommentRepository : IForumCommentRepository
 
     public async Task AddAsync(ForumComment comment)
     {
+        if (comment.PostDate.Kind != DateTimeKind.Utc)
+        {
+            comment.PostDate = comment.PostDate.ToUniversalTime();
+        }
         _context.ForumComments.Add(comment);
         await _context.SaveChangesAsync();
     }

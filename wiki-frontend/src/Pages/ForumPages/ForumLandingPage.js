@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getForumTopics } from '../../Api/forumApi';
+import { format } from 'date-fns';
 import './Styles/forumlandingpage.css';
 
 const ForumLandingPage = () => {
@@ -9,6 +10,10 @@ const ForumLandingPage = () => {
     useEffect(() => {
         fetchForumTopics();
     }, []);
+
+    useEffect(() => {
+        console.log(topics);
+    }, [topics]);
     
     const getCommentsLength = (topic) =>{
         var counter = 0;
@@ -16,6 +21,35 @@ const ForumLandingPage = () => {
             counter += post.comments.length;
         });
         return counter;
+    }
+
+    const getLatestComment = (topic) =>{
+        var latestComment = null;
+        topic.forumPosts.forEach(post => {
+            post.comments.forEach(comment => {
+                if (!latestComment || new Date(comment.postDate) > new Date(latestComment.postDate)) {
+                    latestComment = comment;
+                }
+            });
+        });
+
+        if (!latestComment) {
+            return (
+                <div>No comments yet</div>
+            )
+        }
+
+        // Parse the date string as UTC
+        const utcDate = new Date(latestComment.postDate + 'Z');
+        // Format the zoned date
+        const formattedDate = format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
+
+        return (
+            <>
+             <div>{formattedDate}</div>
+             <Link to={`/profile/${latestComment.userProfile.userName}`}><div>{latestComment.userProfile.displayName}</div></Link>
+            </>
+        )
     }
 
     const fetchForumTopics = async () =>{
@@ -43,7 +77,7 @@ const ForumLandingPage = () => {
                     </div>
                     <div className="grid-cell">{topic.forumPosts.length}</div>
                     <div className="grid-cell">{getCommentsLength(topic)}</div>
-                    <div className="grid-cell">{topic.lastPostDate}</div>
+                    <div className="grid-cell">{getLatestComment(topic)}</div>
                 </div>
             ))}
         </div>
