@@ -67,7 +67,7 @@ const ForumCommentComponent = ({post, cookies}) =>{
                             <div className="fp-grid">
                                 <div className="fp-grid-row">
                                     <div className="fp-grid-cell"><Link to={`/profile/${comment.userProfile.userName}`}>{comment.userProfile.displayName}</Link></div>
-                                    <div className="fp-grid-cell">
+                                    <div className="fp-grid-cell firstrow">
                                         <div className='fp-grid-cell-left'>Post Subject: re: {post.postTitle}</div>
                                         <div className='fp-grid-cell-right'>Posted: {formatDate(comment.postDate)}</div>
                                     </div>
