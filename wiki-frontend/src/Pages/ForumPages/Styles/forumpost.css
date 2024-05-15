@@ -1,8 +1,9 @@
-.forumpost-grid {
+.fp-grid {
     display: flex;
     flex-direction: column;
     width: 100%;
     font-size: small;
+    margin-bottom: 1rem;
 }
 
 .fp-grid-header {
@@ -13,13 +14,14 @@
 
 .fp-header-cell,
 .fp-grid-cell {
+    display: inline;
     padding: 10px;
     border: 1px solid #ccc; 
-    text-align: center; 
 }
 
 .fp-header-cell:nth-child(1) {
     flex: 1.5; 
+    text-align: center; 
 }
 
 .fp-header-cell:nth-child(2) {
@@ -28,38 +30,29 @@
 
 .fp-grid-row {
     display: flex;
-    height: fit-content;
 }
 
 .fp-grid-cell {
-    flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
-    /* text-align: center; */
+    width: 80%;
 }
 
-/* .fp-grid-cell-left {
-    margin-left: auto;
-} */
+.fp-grid-cell p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
 
 .fp-grid-cell-left {
     margin-right: auto;
 }
 
 .fp-grid-cell:nth-child(1) {
-    flex: 1.5; /* First cell takes up 70% of width */
+    flex: 1.5; 
+    text-align: center; 
 }
 
 .fp-grid-cell:nth-child(2){
-	display: flex;
-    flex: 8.5; /* Remaining cells (Topics, Posts, Last Post) take up equal parts of the remaining space */
-}
-
-
-.fp-grid-row {
-    transition: background-color 0.3s ease; 
-}
-
-.fp-grid-cell.title{
-    text-align: left;
+    flex: 8.5; 
 }

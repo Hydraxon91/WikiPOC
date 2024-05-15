@@ -50,11 +50,20 @@ const WikiPageCommentsComponent = ({page, cookies, activeTab}) =>{
     };
 
     const handleCommentSubmit = (newComment) => {
+        const postDate = newComment.postDate.endsWith('Z') ? newComment.postDate.slice(0, -1) : newComment.postDate;
         setCurrPage((currPage) => ({
           ...currPage,
-          comments: [...currPage.comments, newComment],
+          comments: [...currPage.comments, { ...newComment, postDate }],
         }));
       };
+
+      function formatDate(dateString) {
+        // Parse the date string as UTC
+        const utcDate = new Date(dateString + 'Z');
+        // Format the zoned date
+        const formattedDate = format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
+        return formattedDate.replace(/\//g, '-');
+      }
 
 
     function formatDate(dateString) {

@@ -2,20 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getUserProfileByUsername } from '../../../Api/wikiUserApi';
 import { postForumComment, postEditedForumComment } from '../../../Api/forumApi';
+import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import WikiPageSubmitCommentComponent from '../../WikiPage-Article/Components/WikiPageSubmitCommentComponent';
+import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
+import "../Styles/forumpost.css"
 
 const ForumCommentComponent = ({post, cookies}) =>{
     const {decodedTokenContext} = useUserContext();
     const [user, setUser] = useState();
     const [currPost, setCurrPost] = useState(post);
-    const [editingCommentIndex, setEditingCommentIndex] = useState(null);
-    const [editedComment, setEditedComment] = useState("");
 
     useEffect(() => {
         const decodedTokenName = decodedTokenContext?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-        console.log(decodedTokenName);
         if (decodedTokenName) {
             const decodedTokenName = decodedTokenContext["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
             getUserProfileByUsername(decodedTokenName, setUser);
@@ -26,40 +26,17 @@ const ForumCommentComponent = ({post, cookies}) =>{
         setCurrPost(post);
     },[post])
 
-    const handleEditClick = (index, initialContent) => {
-        setEditingCommentIndex(index);
-        setEditedComment(initialContent);
-    };
-
-    const handleCancelEdit = () => {
-        setEditingCommentIndex(null);
-        setEditedComment("");
-    };
-
-    const handleCommentEditSubmit = (index) => {
-        const updatedComments = [...currPost.comments];
-        updatedComments[index].content = editedComment;
-        
-        postEditedForumComment(updatedComments[index].id, editedComment, cookies); //Needs to be implemented
-
+    const handleCommentSubmit = (newComment) => {
+        console.log(newComment);
+        const postDate = newComment.postDate.endsWith('Z') ? newComment.postDate.slice(0, -1) : newComment.postDate;
         setCurrPost((currPost) => ({
             ...currPost,
-            comments: updatedComments,
-        }));
-
-        setEditingCommentIndex(null);
-        setEditedComment("");
-    };
-
-    const handleCommentSubmit = (newComment) => {
-        setCurrPost((currPost) => ({
-          ...currPost,
-          comments: [...currPost.comments, newComment],
+            comments: [...currPost.comments, { ...newComment, postDate }],
         }));
       };
       
 
-    function formatDate(dateString) {
+      const formatDate = (dateString) => {
         // Parse the date string as UTC
         const utcDate = new Date(dateString + 'Z');
         // Format the zoned date
@@ -67,50 +44,47 @@ const ForumCommentComponent = ({post, cookies}) =>{
         return formattedDate.replace(/\//g, '-');
       }
 
+      const renderContent = (htmlContent) => {
+        // Parse the HTML content string into a DOM element
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
+        
+        // Convert <p> elements to <div> elements
+        const divElements = Array.from(doc.querySelectorAll('p')).map((pElement, index) => (
+            <div key={index} className="paragraph">{pElement.innerHTML}</div>
+        ));
+    
+        // Return the array of <div> elements
+        return divElements;
+    };
+
       return (
-        <div className={'comments wikipage-component'}>
+        <>
             {currPost && (
-                <div>
-                    <h3>Comments</h3>
-                    {user?.profilePicture && <WikiPageSubmitCommentComponent user={user} page={currPost} cookies={cookies} handleCommentSubmit={handleCommentSubmit} postComment={postForumComment}/>}
+                <div>                   
                     {currPost.comments.map((comment, index) => (
-                        <div key={index} className='wikipage-comment'>
-                            <div className='wikipage-comment-profilepic'>
-                            {user?.profilePicture && <DisplayProfileImageElement profilePicture={comment.userProfile.profilePicture}/>}
-                            </div>
-                            <div className='wikipage-comment-content'>
-                                <div className='wikipage-comment-data'>
-                                    <a href={`/profile/${comment.userProfile.userName}`}>
-                                        <span>{comment.userProfile.displayName}</span>
-                                        <span> ({comment.userProfile.userName})</span>
-                                    </a>
-                                    {" | "}
-                                    <span>{formatDate(comment.postDate)}</span>
-                                    {comment.userProfile.userName === user?.userName && (
-                                        editingCommentIndex !== index ? (
-                                            <a href="#" onClick={() => handleEditClick(index, comment.content)}> edit</a>
-                                        ) : (
-                                            <>
-                                                <button onClick={() => handleCommentEditSubmit(index)}>Submit</button>
-                                                <button onClick={handleCancelEdit}>Cancel</button>
-                                            </>
-                                        )
-                                    )}
+                        <div key={index}>
+                            <div className="fp-grid">
+                                <div className="fp-grid-row">
+                                    <div className="fp-grid-cell"><Link to={`/profile/${comment.userProfile.userName}`}>{comment.userProfile.displayName}</Link></div>
+                                    <div className="fp-grid-cell">
+                                        <div className='fp-grid-cell-left'>Post Subject: re: {post.postTitle}</div>
+                                        <div className='fp-grid-cell-right'>Posted: {formatDate(comment.postDate)}</div>
+                                    </div>
                                 </div>
-                                <div className='wikipage-comment-text'>
-                                    {editingCommentIndex === index ? (
-                                        <textarea value={editedComment} onChange={(e) => setEditedComment(e.target.value)} />
-                                    ) : (
-                                        <p>{comment.content} {comment.isEdited && "(edited)"}</p>
-                                    )}
+                                <div className="fp-grid-row">
+                                    <div className="fp-grid-cell">
+                                        {comment.userProfile?.profilePicture && <DisplayProfileImageElement profilePicture={comment.userProfile.profilePicture}/>}
+                                    </div>
+                                    <div className="fp-grid-cell" dangerouslySetInnerHTML={{ __html: comment.content }}></div>
                                 </div>
-                            </div>
-                            
+                            </div>                            
                         </div>
                     ))}
+                    {user && <ForumSubmitCommentComponent user={user} page={currPost} cookies={cookies} handleCommentSubmit={handleCommentSubmit} postComment={postForumComment}/>}
                 </div>
             )}
-        </div>
+        </>
     )
 
 }
