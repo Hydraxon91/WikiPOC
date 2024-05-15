@@ -46,7 +46,7 @@ const ForumPost = ({cookies}) => {
                 </div>
                 <div className="fp-grid-row">
                     <div className="fp-grid-cell"><Link to={`/profile/${post.userName}`}>{post.user.displayName}</Link></div>
-                    <div className="fp-grid-cell">
+                    <div className="fp-grid-cell firstrow">
                         <div className='fp-grid-cell-left'>Post Subject: {post.postTitle}</div>
                         <div className='fp-grid-cell-right'>Posted: {formatDate(post.postDate)}</div>
                     </div>
