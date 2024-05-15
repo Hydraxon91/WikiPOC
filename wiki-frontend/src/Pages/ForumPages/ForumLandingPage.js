@@ -10,9 +10,13 @@ const ForumLandingPage = () => {
         fetchForumTopics();
     }, []);
     
-    useEffect(() => {
-        console.log(topics);
-    }, [topics]);
+    const getCommentsLength = (topic) =>{
+        var counter = 0;
+        topic.forumPosts.forEach(post => {
+            counter += post.comments.length;
+        });
+        return counter;
+    }
 
     const fetchForumTopics = async () =>{
         try {
@@ -38,7 +42,7 @@ const ForumLandingPage = () => {
                         <div>{topic.description}</div>
                     </div>
                     <div className="grid-cell">{topic.forumPosts.length}</div>
-                    <div className="grid-cell">{topic.forumPosts.length}</div>
+                    <div className="grid-cell">{getCommentsLength(topic)}</div>
                     <div className="grid-cell">{topic.lastPostDate}</div>
                 </div>
             ))}
