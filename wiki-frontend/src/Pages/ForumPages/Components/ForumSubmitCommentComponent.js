@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
-import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import "../Styles/forumsubmintcommentcomponent.css"
 
 const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit, postComment, togglePopupVisibility  }) => {

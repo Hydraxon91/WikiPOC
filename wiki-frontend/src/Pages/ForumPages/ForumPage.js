@@ -69,6 +69,7 @@ const ForumPage = () => {
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = topic.forumPosts && topic.forumPosts.slice(indexOfFirstPost, indexOfLastPost);
+    const totalPages = topic.forumPosts ? Math.ceil(topic.forumPosts.length / postsPerPage) : 0;
 
     return (
         <>
@@ -79,7 +80,7 @@ const ForumPage = () => {
                     <div className="header-cell">Topics</div>
                     <div className="header-cell">Replies</div>
                     <div className="header-cell">Author</div>
-                    <div className="header-cell">Last Comment</div>
+                    <div className="header-cell">Last Post</div>
                 </div>
                 {currentPosts && currentPosts.map(post =>(
                     <div className="grid-row" key={post.id}>
@@ -87,25 +88,30 @@ const ForumPage = () => {
                             <Link to={`/forum/${slug}/${post.slug}`}><div className='topicTitle'>{post.postTitle}</div></Link>
                         </div>
                         <div className="grid-cell">{post.comments.length}</div>
-                        <div className="grid-cell">{post.userName}</div>
+                        <div className="grid-cell"><Link to={`/profile/${post.user.userName}`}><div>{post.user.displayName}</div></Link></div>
                         <div className="grid-cell">{getLatestComment(post)}</div>
                     </div>
                 ))}
             </div>
             <div className="pagination">
-                {topic.forumPosts && topic.forumPosts.length > postsPerPage && (
-                    <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-                        Prev
-                    </button>
-                )}
-                {topic.forumPosts && topic.forumPosts.length > postsPerPage && (
-                    <button onClick={() => setCurrentPage(currentPage + 1)} disabled={indexOfLastPost >= topic.forumPosts.length}>
-                        Next
-                    </button>
-                )}
+            {totalPages > 1 && (
+                <>
+                    <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <>
+                            {(page === 1 || page === totalPages || (page >= currentPage - 2 && page <= currentPage + 2)) && (
+                                <button key={page} onClick={() => setCurrentPage(page)} className={currentPage === page ? "active" : ""}>{page}</button>
+                            )}
+                            {page === 1 && currentPage >= 5 && <span>...</span>}
+                        </>
+                    ))}
+                    <button onClick={() => setCurrentPage(currentPage + 1)} disabled={indexOfLastPost >= topic.forumPosts.length}>Next</button>
+                </>
+            )}
             </div>
         </>
     );
 }
 
 export default ForumPage;
+
