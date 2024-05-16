@@ -9,12 +9,12 @@ import "./Styles/forumpost.css"
 
 const ForumPost = ({cookies}) => {
     const [post, setPost] = useState(null);
-    const { slug } = useParams();
+    const { slug, postSlug } = useParams();
 
     useEffect(() => {
         const fetchForumPost = async () => {
             try {
-                const fetchedPost = await getForumPostBySlug(slug);
+                const fetchedPost = await getForumPostBySlug(postSlug);
                 console.log(fetchedPost);
                 setPost(fetchedPost);
             } catch (error) {
@@ -23,7 +23,7 @@ const ForumPost = ({cookies}) => {
         };
 
         fetchForumPost();
-    }, [slug]);
+    }, [postSlug]);
 
     function formatDate(dateString) {
         // Parse the date string as UTC

@@ -62,7 +62,7 @@ const ForumPage = () => {
             {topic && topic.forumPosts && topic.forumPosts.map(post =>(
                 <div className="grid-row" key={post.id}>
                     <div className="grid-cell title">
-                        <Link to={`/forum/post/${post.slug}`}><div className='topicTitle'>{post.postTitle}</div></Link>
+                        <Link to={`/forum/${slug}/${post.slug}`}><div className='topicTitle'>{post.postTitle}</div></Link>
                     </div>
                     <div className="grid-cell">{post.comments.length}</div>
                     <div className="grid-cell">{post.userName}</div>

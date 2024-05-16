@@ -151,7 +151,7 @@ function App() {
                   <Route path="/categories/:category" element={<CategoryPageComponent pages={wikiPageTitles} categories={categories}/>}/>
                   <Route path="/forum" element={<ForumLandingPage/>}/>
                   <Route path="/forum/:slug" element={<ForumPage/>}/>
-                  <Route path="/forum/post/:slug" element={<ForumPost cookies={cookies["jwt_token"]}/>}/>
+                  <Route path="/forum/:slug/:postSlug" element={<ForumPost cookies={cookies["jwt_token"]}/>}/>
                 </Route>
               </Routes>
             </StyleProvider>

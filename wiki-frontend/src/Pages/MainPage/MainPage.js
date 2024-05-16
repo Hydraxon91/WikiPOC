@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import WikiList from './Components/WikiList';
+import Breadcrumbs from '../ForumPages/Components/Breadcrumbs';
 import HeaderComponent from './Components/HeaderComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
@@ -45,6 +46,7 @@ const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, cate
     <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily}} >
       <div>
         <HeaderComponent userName={userName} userRole={userRole}/>
+        <Breadcrumbs/>
         <WikiList handleLogout={handleLogout} cookies={cookies} categories={categories}/>
         <div className="mainsection">
           {/* <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div> */}

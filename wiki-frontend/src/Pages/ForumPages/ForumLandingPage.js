@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ForumBreadcrumbs from './Components/Breadcrumbs';
 import { Link } from 'react-router-dom';
 import { getForumTopics } from '../../Api/forumApi';
 import { format } from 'date-fns';

@@ -319,14 +319,13 @@ a:hover {
 .sidebar {
 	float: left;
 	width: 10em;
-	padding: 2em 1em 1em 1em;
+	padding: 0em 1em 1em 1em;
 	position: absolute;
 }
 .sidebar h3 {
 	font-size: 0.75em;
 	color: #252525;
 	font-weight: bolder;
-	margin: 0.5em 0 0 0;
 	padding: 0.25em 0;
 	cursor: default;
 	border: 0;
@@ -466,7 +465,7 @@ div.articleRightInner {
 }
 .article {
 	/* padding: 1.25em 1.5em 1.5em 1.5em; */
-	margin-top: 3.5em;
+	margin-top: 1em;
 	border-left: 1px solid #f3f3f3;
 	border-right: 1px solid #f3f3f3;
 	background: #526cad;
