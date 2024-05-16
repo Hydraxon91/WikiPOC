@@ -8,7 +8,7 @@ import { useStyleContext } from '../../Components/contexts/StyleContext';
 import Breadcrumbs from './Components/Breadcrumbs';
 import './Styles/forumlandingpage.css';
 
-const ForumPage = () => {
+const ForumPage = ({cookies}) => {
     const [topic, setTopic] = useState([]);
     const { slug } = useParams();
     const {styles} = useStyleContext();
@@ -74,7 +74,7 @@ const ForumPage = () => {
     return (
         <>
             <Breadcrumbs/>
-            <ForumPostButton buttonTitle="New Topic" linkTo={`/forum/${slug}/create-topic`} />
+            <ForumPostButton buttonTitle="New Topic" linkTo={`/forum/${slug}/create-topic`} cookies={cookies}/>
             <div className="forum-grid article" style={{backgroundColor: styles.articleColor}}>
                 <div className="grid-header">
                     <div className="header-cell">Topics</div>

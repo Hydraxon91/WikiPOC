@@ -1,14 +1,24 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import '../Styles/modularbutton.css';
 
-const ForumPostButton = ({ buttonTitle, linkTo }) => {
-    const {styles} = useStyleContext();
+const ForumPostButton = ({ buttonTitle, linkTo, cookies }) => {
+    const { styles } = useStyleContext();
+    const navigate = useNavigate()
+
+    const handleClick = () => {
+        if (!cookies) { // Assuming `cookies.user` is null when the user is not logged in
+            alert('You need to log in to perform this action.');
+        } else {
+            navigate(linkTo)
+        }
+    };
+
     return (
-        <Link to={linkTo} className="modular-button" style={{backgroundColor: styles.articleColor}}>
+        <button onClick={handleClick} className="modular-button" style={{ backgroundColor: styles.articleColor }}>
             {buttonTitle}
-        </Link>
+        </button>
     );
 };
 

@@ -29,7 +29,11 @@ const ForumPost = ({cookies}) => {
     }, [postSlug]);
 
     const togglePopupVisibility = () => {
-        setIsPopupVisible(!isPopupVisible);
+        if (!cookies) {
+            alert('You need to log in to post a reply.');
+        } else {
+            setIsPopupVisible(!isPopupVisible);
+        }
     };
 
     function formatDate(dateString) {
