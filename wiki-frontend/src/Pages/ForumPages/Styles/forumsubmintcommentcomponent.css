@@ -19,6 +19,14 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     overflow-y: scroll;
   }
+
+  .fp-custom-popup::-webkit-scrollbar {
+    width: 0; /* hide scrollbar for webkit browsers */
+}
+
+.fp-custom-popup {
+    scrollbar-width: none; /* hide scrollbar for firefox */
+}
   
 .fp-custom-popup label {
     display: block;

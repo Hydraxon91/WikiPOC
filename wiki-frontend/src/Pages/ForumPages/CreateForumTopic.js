@@ -7,6 +7,7 @@ import { getUserProfileByUsername } from '../../Api/wikiUserApi';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import "./Styles/createforumtopic.css"
+import Breadcrumbs from './Components/Breadcrumbs';
 
 const CreateForumTopic = ({ cookies }) => {
     const {decodedTokenContext} = useUserContext();
@@ -83,10 +84,12 @@ const CreateForumTopic = ({ cookies }) => {
     };
 
     return (
-        <div className="create-forum-topic"  style={{ backgroundColor: styles.articleRightColor}}>
+        <>
+        <Breadcrumbs/>
+        <div className="create-forum-topic fp-custom-popup"  style={{ backgroundColor: styles.articleRightColor}}>
             <h2>Create a New Forum Topic</h2>
             <form onSubmit={handleSubmit}>
-                <div>
+                <div className="fp-comment-write-textarea">
                     <label htmlFor="title">Title:</label>
                     <input
                         type="text"
@@ -96,21 +99,24 @@ const CreateForumTopic = ({ cookies }) => {
                         required
                     />
                 </div>
-                <div>
+                <div className="fp-comment-write-container">
                     <label htmlFor="description">Description:</label>
-                    <ReactQuill
-                        id="description"
-                        value={content}
-                        onChange={setContent}
-                        modules={modules}
-                        formats={formats}
-                        required
-                    />
+                    <div className="fp-comment-write-textarea">
+                        <ReactQuill
+                            id="description"
+                            theme="snow"
+                            value={content}
+                            onChange={setContent}
+                            modules={modules}
+                            formats={formats}
+                        />
+                    </div>
                 </div>
                 {error && <div className="error">{error}</div>}
-                <button type="submit">Create Topic</button>
+                <button className="fp-comment-button" type="submit">Create Topic</button>
             </form>
         </div>
+        </>
     );
 };
 
