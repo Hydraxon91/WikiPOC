@@ -144,8 +144,8 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
     // console.log(images);
     const image = images && images.find(image => image.name === imageRef || image.fileName === imageRef);
     if (image) {
-      const constructedParts = `<div class="thumbnail ${className}" style="background-color: rgb(60, 95, 184);">
-                    <div class="thumbnail-inner" style="background-color: rgb(43, 78, 166);">
+      const constructedParts = `<div class="thumbnail ${className}" style="background-color: ${styles.articleRightColor};">
+                    <div class="thumbnail-inner" style="background-color: ${styles.articleRightInnerColor};">
                         <img class="paragraphImage" src="${image.dataURL}" alt="logo"/>
                     </div>
                     <div class="wikipage-content-container">${text}</div>
@@ -168,7 +168,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
 
 
   return (
-    <>
+    <div className="article" style={{backgroundColor: styles.articleColor}}>
       {page && (
         <div className={activeTab === 'wiki' ? 'wikipage-component' : 'wikipage-component wikipage-hidden'}>
           <h1>
@@ -215,7 +215,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
           { processHTMLContent(page.content) }
         </div>
       )}
-    </>
+    </div>
   );
 };
 

@@ -50,7 +50,7 @@ const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, cate
         <WikiList handleLogout={handleLogout} cookies={cookies} categories={categories}/>
         <div className="mainsection">
           {/* <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div> */}
-          <div className="article" style={{backgroundColor: styles.articleColor}}>
+          <div>
             {/* Render children, which will be the specific WikiPage component */}
             <Outlet />
           </div>

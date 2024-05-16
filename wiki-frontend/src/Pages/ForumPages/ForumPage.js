@@ -3,11 +3,14 @@ import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { getForumTopicBySlug } from '../../Api/forumApi';
 import { format } from 'date-fns';
+import ForumPostButton from './Components/ForumPostButton';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
 import './Styles/forumlandingpage.css';
 
 const ForumPage = () => {
     const [topic, setTopic] = useState([]);
     const { slug } = useParams();
+    const {styles} = useStyleContext();
 
     useEffect(() => {
         fetchForumTopic();
@@ -52,24 +55,27 @@ const ForumPage = () => {
     }
 
     return (
-        <div className="forum-grid">
-            <div className="grid-header">
-                <div className="header-cell">Topics</div>
-                <div className="header-cell">Replies</div>
-                <div className="header-cell">Author</div>
-                <div className="header-cell">Last Comment</div>
-            </div>
-            {topic && topic.forumPosts && topic.forumPosts.map(post =>(
-                <div className="grid-row" key={post.id}>
-                    <div className="grid-cell title">
-                        <Link to={`/forum/${slug}/${post.slug}`}><div className='topicTitle'>{post.postTitle}</div></Link>
-                    </div>
-                    <div className="grid-cell">{post.comments.length}</div>
-                    <div className="grid-cell">{post.userName}</div>
-                    <div className="grid-cell">{getLatestComment(post)}</div>
+        <>
+            <ForumPostButton buttonTitle="New Topic" linkTo={`/forum/${slug}/create-topic`} />
+            <div className="forum-grid article" style={{backgroundColor: styles.articleColor}}>
+                <div className="grid-header">
+                    <div className="header-cell">Topics</div>
+                    <div className="header-cell">Replies</div>
+                    <div className="header-cell">Author</div>
+                    <div className="header-cell">Last Comment</div>
                 </div>
-            ))}
-        </div>
+                {topic && topic.forumPosts && topic.forumPosts.map(post =>(
+                    <div className="grid-row" key={post.id}>
+                        <div className="grid-cell title">
+                            <Link to={`/forum/${slug}/${post.slug}`}><div className='topicTitle'>{post.postTitle}</div></Link>
+                        </div>
+                        <div className="grid-cell">{post.comments.length}</div>
+                        <div className="grid-cell">{post.userName}</div>
+                        <div className="grid-cell">{getLatestComment(post)}</div>
+                    </div>
+                ))}
+            </div>
+        </>
     );
 }
 

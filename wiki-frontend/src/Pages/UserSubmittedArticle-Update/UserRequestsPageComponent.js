@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getUpdatePageTitles, getNewPageTitles } from '../../Api/wikiApi';
 import { useCookies } from 'react-cookie';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
 
 const UserRequestsPageComponent = () => {
     const [pages, setPages] = useState([]);
+    const {styles} = useStyleContext();
     const location = useLocation();
     const [cookies] = useCookies(['jwt_token']);
 
@@ -27,7 +29,7 @@ const UserRequestsPageComponent = () => {
       };
 
     return (
-    <div>
+    <div className="article" style={{backgroundColor: styles.articleColor}}>
       {location && location.pathname === '/user-submissions' && (
         <h2 key="wiki-pages-heading">User Submitted Pages</h2>
       )}

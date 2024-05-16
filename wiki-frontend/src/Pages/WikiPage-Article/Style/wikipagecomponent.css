@@ -50,7 +50,7 @@
 }
 
 .article-preview {
-    display: block; /* or inline-block */
+    display: block;
     margin: 0 auto;
     text-align: center; /* optional: to center the text inside the label */
 }

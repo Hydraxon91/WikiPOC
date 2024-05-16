@@ -96,7 +96,7 @@ export default function LoginPageComponent({handleLogin}){
                     <div className="register">
                         <p>
                             Don't have an account? 
-                            <Link to="/registration">
+                            <Link to="/register">
                                 <a> Register here!</a>
                             </Link>
                         </p>

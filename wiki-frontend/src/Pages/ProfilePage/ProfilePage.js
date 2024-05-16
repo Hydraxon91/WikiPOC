@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { getUserProfileByUsername } from "../../Api/wikiUserApi";
+import { useStyleContext } from "../../Components/contexts/StyleContext";
 import "../../Styles/profilepage.css";
 
 const ProfilePage = () => {
     const navigate = useNavigate();
+    const {styles} = useStyleContext();
     const {decodedTokenContext} = useUserContext();
     const { username } = useParams();
     const [userProfile, setUserProfile] = useState(null);
@@ -28,7 +30,7 @@ const ProfilePage = () => {
     }, [decodedTokenContext]);
 
     return (
-        <div className="profilepage">
+        <div className="profilepage article" style={{backgroundColor: styles.articleColor}}>
             {userProfile?.userName && <ProfileElement user={userProfile} canEdit={isYourProfile}/>}
         </div>
     )

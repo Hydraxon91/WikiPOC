@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import LegacyWikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
 import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
 import '../../Styles/wikipage.css';
 
 const NewCompareUpdatePage = ({page: wikipage, setDecodedTitle}) => {
     const [activeTab, setActiveTab] = useState("wiki");
     const [page, setPage] = useState(null);
     const [images, setImages] = useState(null);
-
+    const {styles} = useStyleContext();
 
     useEffect(()=>{
         if (wikipage && (wikipage.wikiPage || wikipage.userSubmittedWikiPage))  {
@@ -19,7 +20,7 @@ const NewCompareUpdatePage = ({page: wikipage, setDecodedTitle}) => {
 
 
     return(
-        <>         
+        <div className="article" style={{backgroundColor: styles.articleColor}}>         
             <div className="update-page-container">
                 {page && !page.legacyWikiPage ? 
                 (
@@ -39,7 +40,7 @@ const NewCompareUpdatePage = ({page: wikipage, setDecodedTitle}) => {
                     />
                 )}
             </div>
-        </>
+        </div>
     )
 };
 
