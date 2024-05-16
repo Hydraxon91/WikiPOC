@@ -55,7 +55,7 @@ const ForumPost = ({cookies}) => {
                     <div className="fp-grid-cell">
                         <DisplayProfileImageElement profilePicture={post.user.profilePicture}/>
                     </div>
-                    <div className="fp-grid-cell">{post.content}</div>
+                    <div className="fp-grid-cell" dangerouslySetInnerHTML={{ __html: post.content }}></div>
                 </div>
             </div>
             <ForumCommentComponent post={post} cookies={cookies}/>

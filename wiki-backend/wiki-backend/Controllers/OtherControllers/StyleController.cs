@@ -24,7 +24,7 @@ public class StyleController : ControllerBase
         return Ok(styles);
     }
 
-    // [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut]
     public async Task<IActionResult> UpdateStyles([FromForm] StyleUpdateForm styleUpdateForm)
     {

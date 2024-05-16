@@ -5,7 +5,6 @@ import { postForumComment, postEditedForumComment } from '../../../Api/forumApi'
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
-import WikiPageSubmitCommentComponent from '../../WikiPage-Article/Components/WikiPageSubmitCommentComponent';
 import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
 import "../Styles/forumpost.css"
 

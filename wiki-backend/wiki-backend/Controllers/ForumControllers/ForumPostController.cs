@@ -41,10 +41,20 @@ public class ForumPostController : ControllerBase
         return Ok(forumPost);
     }
     
-    [HttpPost]
-    [Authorize(Roles = "User,Admin")]
-    public async Task<ActionResult<ForumPost>> AddForumPost([FromBody] ForumPost forumPost)
+    [HttpPost("postTopic")]
+    [Authorize(Roles = "Admin, User")]
+    public async Task<ActionResult<ForumPost>> AddForumPost([FromForm] ForumPostForm forumPostForm)
     {
+        Console.WriteLine(forumPostForm);
+        var forumPost = new ForumPost
+        {
+            PostTitle = forumPostForm.PostTitle,
+            PostDate = forumPostForm.PostDate,
+            Content = forumPostForm.Content,
+            ForumTopicId = Guid.Parse(forumPostForm.ForumTopicId), // Convert string to Guid
+            UserId = Guid.Parse(forumPostForm.UserId), 
+            UserName = forumPostForm.UserName
+        };
         await _forumPostRepository.AddForumPostAsync(forumPost);
         return CreatedAtAction(nameof(GetForumPostBySlug), new { slug = forumPost.Slug }, forumPost);
     }

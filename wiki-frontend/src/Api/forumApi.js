@@ -16,7 +16,6 @@ export const getForumTopics = async () => {
       throw new Error(`Failed to get ForumTopic. Status: ${response.status}`);
     }
     const data = await response.json();
-    console.log(data);
     return data;
   };
 
@@ -103,13 +102,24 @@ export const getForumPostTitles = async () => {
 };
 
   export const createForumPost = async (forumPost, token) => {
-    const response = await fetch(`${BASE_URL}/api/ForumPost`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(forumPost),
+    console.log(forumPost);
+
+    const forumTopicId = forumPost.forumTopicId.toString();
+    const userId = forumPost.userId.toString();
+
+    const formData = new FormData();
+    formData.append('forumPostForm.PostTitle', forumPost.postTitle);
+    formData.append('forumPostForm.Content', forumPost.content);
+    formData.append('forumPostForm.ForumTopicId', forumTopicId);
+    formData.append('forumPostForm.UserId', userId);
+    formData.append('forumPostForm.UserName', forumPost.userName);
+
+    const response = await fetch(`${BASE_URL}/api/ForumPost/postTopic`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
     });
   
     if (!response.ok) {
