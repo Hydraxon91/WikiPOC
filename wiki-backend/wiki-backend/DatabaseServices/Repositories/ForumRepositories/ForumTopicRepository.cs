@@ -18,8 +18,10 @@ public class ForumTopicRepository : IForumTopicRepository
     {
         return await _context.ForumTopics
             .Include(topic => topic.ForumPosts)
-            .ThenInclude(fp => fp.Comments)
-            .ThenInclude(comment => comment.UserProfile)
+                .ThenInclude(fp => fp.Comments)
+                    .ThenInclude(comment => comment.UserProfile)
+            .Include(topic => topic.ForumPosts)
+                .ThenInclude(fp => fp.User)
             .OrderBy(ft => ft.Order)
             .ToListAsync();
     }
@@ -28,8 +30,10 @@ public class ForumTopicRepository : IForumTopicRepository
     {
         return await _context.ForumTopics
             .Include(topic => topic.ForumPosts)
-            .ThenInclude(fp => fp.Comments)
-            .ThenInclude(comment => comment.UserProfile)
+                .ThenInclude(fp => fp.Comments)
+                    .ThenInclude(comment => comment.UserProfile)
+            .Include(topic => topic.ForumPosts)
+                .ThenInclude(fp => fp.User)
             .FirstOrDefaultAsync(topic => topic.Slug == slug);
     }
 

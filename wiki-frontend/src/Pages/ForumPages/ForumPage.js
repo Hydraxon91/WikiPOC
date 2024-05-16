@@ -26,34 +26,38 @@ const ForumPage = () => {
         }
     };
 
-    const getLatestComment = (post) =>{
-        var latestComment = null;
-
-        post.comments.forEach(comment => {
-            if (!latestComment || new Date(comment.postDate) > new Date(latestComment.postDate)) {
-                latestComment = comment;
+    const getLatestComment = (post) => {
+        let latestComment = null;
+            // Check if the forum post itself is the latest
+            if (!latestComment || (post.postDate && new Date(post.postDate) > new Date(latestComment.postDate))) {
+                latestComment = post;
             }
-        });   
-
-
-        if (!latestComment) {
+            // Check each comment within the post
+            post.comments.forEach(comment => {
+                if (!latestComment || new Date(comment.postDate) > new Date(latestComment.postDate)) {
+                    latestComment = comment;
+                }
+            });
+        if (!latestComment.userProfile) {
             return (
                 <div>No comments yet</div>
-            )
+            );
         }
-
+    
+        const userProfile = latestComment.userProfile ? latestComment.userProfile : latestComment.user; 
+    
         // Parse the date string as UTC
         const utcDate = new Date(latestComment.postDate + 'Z');
         // Format the zoned date
         const formattedDate = format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
-
+    
         return (
             <>
-             <div>{formattedDate}</div>
-             <Link to={`/profile/${latestComment.userProfile.userName}`}><div>{latestComment.userProfile.displayName}</div></Link>
+                <div>{formattedDate}</div>
+                <Link to={`/profile/${userProfile.userName}`}><div>{userProfile.displayName}</div></Link>
             </>
-        )
-    }
+        );
+    };
 
     return (
         <>

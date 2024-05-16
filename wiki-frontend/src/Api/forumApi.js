@@ -97,13 +97,10 @@ export const getForumPostTitles = async () => {
         throw new Error(`Failed to get ForumPost. Status: ${response.status}`);
     }
     const data = await response.json();
-    console.log(data);
     return data;
 };
 
   export const createForumPost = async (forumPost, token) => {
-    console.log(forumPost);
-
     const forumTopicId = forumPost.forumTopicId.toString();
     const userId = forumPost.userId.toString();
 

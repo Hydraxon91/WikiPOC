@@ -8,7 +8,7 @@ import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProf
 import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
 import "../Styles/forumpost.css"
 
-const ForumCommentComponent = ({post, cookies}) =>{
+const ForumCommentComponent = ({post, cookies, isPopupVisible, togglePopupVisibility}) =>{
     const {decodedTokenContext} = useUserContext();
     const [user, setUser] = useState();
     const [currPost, setCurrPost] = useState(post);
@@ -33,7 +33,6 @@ const ForumCommentComponent = ({post, cookies}) =>{
             comments: [...currPost.comments, { ...newComment, postDate }],
         }));
       };
-      
 
       const formatDate = (dateString) => {
         // Parse the date string as UTC
@@ -42,20 +41,6 @@ const ForumCommentComponent = ({post, cookies}) =>{
         const formattedDate = format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
         return formattedDate.replace(/\//g, '-');
       }
-
-      const renderContent = (htmlContent) => {
-        // Parse the HTML content string into a DOM element
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlContent, 'text/html');
-        
-        // Convert <p> elements to <div> elements
-        const divElements = Array.from(doc.querySelectorAll('p')).map((pElement, index) => (
-            <div key={index} className="paragraph">{pElement.innerHTML}</div>
-        ));
-    
-        // Return the array of <div> elements
-        return divElements;
-    };
 
       return (
         <>
@@ -80,7 +65,7 @@ const ForumCommentComponent = ({post, cookies}) =>{
                             </div>                            
                         </div>
                     ))}
-                    {user && <ForumSubmitCommentComponent user={user} page={currPost} cookies={cookies} handleCommentSubmit={handleCommentSubmit} postComment={postForumComment}/>}
+                    { isPopupVisible && user && <ForumSubmitCommentComponent user={user} page={currPost} cookies={cookies} handleCommentSubmit={handleCommentSubmit} postComment={postForumComment} togglePopupVisibility={togglePopupVisibility}/>}
                 </div>
             )}
         </>

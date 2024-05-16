@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import ReactQuill from 'react-quill';
+import { useStyleContext } from '../../../Components/contexts/StyleContext';
+import "../Styles/forumsubmintcommentcomponent.css"
 
-const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit, postComment }) => {
+const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit, postComment, togglePopupVisibility  }) => {
     const [commentText, setCommentText] = useState('');
 
     const handleCommentChange = (event) => {
@@ -14,7 +15,6 @@ const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit,
         const newComment = {
             content: commentText,
             userProfileId: user.id,
-            // userProfile: user,
             wikiPageId: page.id,
             postDate: new Date().toISOString(),
             isReply: false,
@@ -29,31 +29,58 @@ const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit,
             newComment.userProfile = user;
             handleCommentSubmit(newComment);
             alert('Successfully submitted comment');
+            togglePopupVisibility();
         } catch (error) {
             console.error('Error posting comment:', error);
         }
     };
 
+    // Define custom modules for ReactQuill
+    const modules = {
+        toolbar: [
+            [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+            [{size: []}],
+            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+            [{'list': 'ordered'}, {'list': 'bullet'}, 
+            {'indent': '-1'}, {'indent': '+1'}],
+            ['link', 'image'],
+            ['clean']
+        ],
+        clipboard: {
+            matchVisual: false,
+        }
+    };
+
+    // Define custom styles for ReactQuill
+    const formats = [
+        'header', 'font', 'size',
+        'bold', 'italic', 'underline', 'strike', 'blockquote',
+        'list', 'bullet', 'indent',
+        'link', 'image'
+    ];
+
     return (
-        <form autoComplete="off" method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
-            <div className="comment-write-container">
-                {/* <div className="wikipage-comment-profilepic">
-                    <DisplayProfileImageElement profilePicture={user.profilePicture}/>
-                </div> */}
-                <div className="comment-write-textarea">
-                    <ReactQuill
-                        onChange={handleCommentChange}
-                    />
-                </div>
+        <div className='fp-custom-popup-overlay'>
+            <div className="fp-custom-popup">
+                <form autoComplete="off" method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
+                    <div className="fp-comment-write-container">
+                        <div className="fp-comment-write-textarea">
+                            <ReactQuill
+                                theme="snow"
+                                onChange={handleCommentChange}
+                                value={commentText}
+                                modules={modules}
+                                formats={formats}
+                            />
+                        </div>
+                    </div>
+                    <button className="fp-comment-button" type="submit">
+                        Submit Comment
+                    </button>
+                    <button className='fp-comment-button right' onClick={togglePopupVisibility}>Cancel</button>
+                </form>
             </div>
-            <button className="comment-button" type="submit">
-                <span className="btn-left"></span>
-                <span className="btn-center">
-                    <span>Send</span>
-                </span>
-                <span className="btn-right"></span>
-            </button>
-        </form>
+        </div>
     );
 };
 
