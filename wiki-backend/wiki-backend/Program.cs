@@ -64,12 +64,12 @@ app.MapControllers();
 
 if (Environment.GetEnvironmentVariable("Environment") != "Testing")
 {
-    AddRoles();
-    AddAdmin();
-    AddUser();
-    SeedComments();
-    SeedForumTopics();
-    SeedForumPosts();
+    await AddRolesAsync();
+    await AddAdminAsync();
+    await AddUserAsync();
+    await SeedCommentsAsync();
+    await SeedForumTopicsAsync();
+    await SeedForumPostsAsync();
 }
 
 app.Run();
@@ -199,21 +199,19 @@ void ConfigureSwagger()
     });
 }
 
-void AddRoles()
+async Task AddRolesAsync()
 {
     using var scope = app.Services.CreateScope();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    if (!roleManager.RoleExistsAsync("Admin").Result)
+    if (!await roleManager.RoleExistsAsync("Admin"))
     {
-        var tAdmin = CreateAdminRole(roleManager);
-        tAdmin.Wait();
+        await CreateAdminRole(roleManager);
     }
 
-    if (!roleManager.RoleExistsAsync("User").Result)
+    if (!await roleManager.RoleExistsAsync("User"))
     {
-        var tUser = CreateUserRole(roleManager);
-        tUser.Wait();
+        await CreateUserRole(roleManager);
     }
 }
 
@@ -227,10 +225,9 @@ async Task CreateUserRole(RoleManager<IdentityRole> roleManager)
     await roleManager.CreateAsync(new IdentityRole("User"));
 }
 
-void AddAdmin()
+async Task AddAdminAsync()
 {
-    var tAdmin = CreateAdminIfNotExists();
-    tAdmin.Wait();
+    await CreateAdminIfNotExists();
 }
 
 async Task CreateAdminIfNotExists()
@@ -277,10 +274,9 @@ async Task CreateAdminIfNotExists()
     }
 }
 
-void AddUser()
+async Task AddUserAsync()
 {
-    var tUser = CreateUserIfNotExists();
-    tUser.Wait();
+    await CreateUserIfNotExists();
 }
 
 async Task CreateUserIfNotExists()
@@ -326,19 +322,19 @@ async Task CreateUserIfNotExists()
     }
 }
 
-void SeedComments()
+async Task SeedCommentsAsync()
 {
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-    // Ensure that user profiles exist for the users you created
-    var adminUser = userManager.FindByEmailAsync("admin@admin.com").Result;
-    var testUser = userManager.FindByEmailAsync("test@test.com").Result;
+    var adminUser = await userManager.FindByEmailAsync("admin@admin.com");
+    var testUser = await userManager.FindByEmailAsync("test@test.com");
 
     if (adminUser != null && testUser != null)
     {
-        var wikiPage = dbContext.WikiPages.FirstOrDefault(wp => wp.Title == "Example Page 1" && wp.SiteSub == "Example SiteSub 1");
+        var wikiPage = await dbContext.WikiPages
+            .FirstOrDefaultAsync(wp => wp.Title == "Example Page 1" && wp.SiteSub == "Example SiteSub 1");
 
         if (wikiPage != null)
         {
@@ -376,12 +372,12 @@ void SeedComments()
                 }
             };
             dbContext.UserComments.AddRange(comments);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
         }
     }
 }
 
-void SeedForumTopics()
+async Task SeedForumTopicsAsync()
 {
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
@@ -421,22 +417,20 @@ void SeedForumTopics()
         },
     };
     dbContext.ForumTopics.AddRange(topics);
-    dbContext.SaveChanges();
+    await dbContext.SaveChangesAsync();
 }
 
-void SeedForumPosts()
+async Task SeedForumPostsAsync()
 {
     using var scope = app.Services.CreateScope();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    
-    var adminUser = userManager.FindByEmailAsync("admin@admin.com").Result;
+
+    var adminUser = await userManager.FindByEmailAsync("admin@admin.com");
     var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
 
-    // Ensure database is created and migrated
-    dbContext.Database.Migrate();
+    await dbContext.Database.MigrateAsync();
 
-    // Get the predefined forum topics
-    var topics = dbContext.ForumTopics.ToList();
+    var topics = await dbContext.ForumTopics.ToListAsync();
 
     var forumPosts = new List<ForumPost>
     {
@@ -449,7 +443,8 @@ void SeedForumPosts()
             ForumTopic = topics.FirstOrDefault(t => t.Slug == "main-forum"),
             Slug = "welcome-to-the-main-forum",
             UserId = adminUser.ProfileId,
-            UserName = adminUser.UserName
+            UserName = adminUser.UserName,
+            User = adminUser.Profile
         },
         new ForumPost
         {
@@ -460,7 +455,8 @@ void SeedForumPosts()
             ForumTopic = topics.FirstOrDefault(t => t.Slug == "off-topic"),
             Slug = "rules-of-the-off-topic-forum",
             UserId = adminUser.ProfileId,
-            UserName = adminUser.UserName
+            UserName = adminUser.UserName,
+            User = adminUser.Profile
         },
         new ForumPost
         {
@@ -471,7 +467,8 @@ void SeedForumPosts()
             ForumTopic = topics.FirstOrDefault(t => t.Slug == "foreign-languages-forum"),
             Slug = "discussion-in-french",
             UserId = adminUser.ProfileId,
-            UserName = adminUser.UserName
+            UserName = adminUser.UserName,
+            User = adminUser.Profile
         },
         new ForumPost
         {
@@ -482,10 +479,11 @@ void SeedForumPosts()
             ForumTopic = topics.FirstOrDefault(t => t.Slug == "archive"),
             Slug = "archived-topic-previous-discussion",
             UserId = adminUser.ProfileId,
-            UserName = adminUser.UserName
+            UserName = adminUser.UserName,
+            User = adminUser.Profile
         }
     };
 
     dbContext.ForumPosts.AddRange(forumPosts);
-    dbContext.SaveChanges();
+    await dbContext.SaveChangesAsync();
 }
