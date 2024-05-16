@@ -3,6 +3,7 @@ import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { Link } from 'react-router-dom';
 import { getForumTopics } from '../../Api/forumApi';
 import { format } from 'date-fns';
+import Breadcrumbs from './Components/Breadcrumbs';
 import './Styles/forumlandingpage.css';
 
 const ForumLandingPage = () => {
@@ -64,6 +65,8 @@ const ForumLandingPage = () => {
     };
 
     return (
+        <>
+        <Breadcrumbs/>
         <div className="forum-grid article" style={{backgroundColor: styles.articleColor}}>
             <div className="grid-header">
                 <div className="header-cell">Forum</div>
@@ -83,6 +86,7 @@ const ForumLandingPage = () => {
                 </div>
             ))}
         </div>
+        </>
     );
 }
 

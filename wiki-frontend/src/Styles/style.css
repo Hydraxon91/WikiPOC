@@ -374,6 +374,7 @@ div.articleRightInner {
 	max-width: 100%;
 }
 .navigation {
+	margin-top: 1rem;
 	padding: 0.15em 0 0 0.45em;
 }
 .mainsection {
@@ -465,7 +466,7 @@ div.articleRightInner {
 }
 .article {
 	/* padding: 1.25em 1.5em 1.5em 1.5em; */
-	margin-top: 1em;
+	margin-top: 1.5rem;
 	border-left: 1px solid #f3f3f3;
 	border-right: 1px solid #f3f3f3;
 	background: #526cad;

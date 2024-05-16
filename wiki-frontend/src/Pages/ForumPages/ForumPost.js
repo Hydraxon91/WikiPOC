@@ -5,6 +5,7 @@ import { getForumPostBySlug } from '../../Api/forumApi';
 import ForumCommentComponent from './Components/ForumCommentComponent';
 import DisplayProfileImageElement from '../ProfilePage/Components/DisplayProfileImageElement';
 import { format } from 'date-fns';
+import Breadcrumbs from './Components/Breadcrumbs';
 import "./Styles/forumpost.css"
 
 const ForumPost = ({cookies}) => {
@@ -39,6 +40,7 @@ const ForumPost = ({cookies}) => {
 
     return (
         <>
+            <Breadcrumbs/>
             <div className="fp-grid">
                 <div className="fp-grid-header">
                     <div className="fp-header-cell">Author</div>

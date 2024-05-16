@@ -5,6 +5,7 @@ import { getForumTopicBySlug } from '../../Api/forumApi';
 import { format } from 'date-fns';
 import ForumPostButton from './Components/ForumPostButton';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
+import Breadcrumbs from './Components/Breadcrumbs';
 import './Styles/forumlandingpage.css';
 
 const ForumPage = () => {
@@ -56,6 +57,7 @@ const ForumPage = () => {
 
     return (
         <>
+            <Breadcrumbs/>
             <ForumPostButton buttonTitle="New Topic" linkTo={`/forum/${slug}/create-topic`} />
             <div className="forum-grid article" style={{backgroundColor: styles.articleColor}}>
                 <div className="grid-header">
