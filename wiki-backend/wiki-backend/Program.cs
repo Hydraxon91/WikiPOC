@@ -338,41 +338,45 @@ async Task SeedCommentsAsync()
 
         if (wikiPage != null)
         {
-            var comments = new List<UserComment>
+            // Check if comments exist for this wiki page
+            if (!dbContext.UserComments.Any(comment => comment.WikiPageId == wikiPage.Id))
             {
-                new UserComment
+                var comments = new List<UserComment>
                 {
-                    UserProfileId = adminUser.ProfileId,
-                    UserProfile = adminUser.Profile,
-                    Content = "Test comment from Admin",
-                    WikiPageId = wikiPage.Id,
-                    PostDate = DateTime.Now,
-                    IsReply = false,
-                    IsEdited = false
-                },
-                new UserComment
-                {
-                    UserProfileId = testUser.ProfileId,
-                    UserProfile = testUser.Profile,
-                    Content = "Test comment from Tester",
-                    WikiPageId = wikiPage.Id,
-                    PostDate = DateTime.Now,
-                    IsReply = false,
-                    IsEdited = false
-                },
-                new UserComment
-                {
-                    UserProfileId = testUser.ProfileId,
-                    UserProfile = testUser.Profile,
-                    Content = "Test comment 2 from Tester",
-                    WikiPageId = wikiPage.Id,
-                    PostDate = DateTime.Now,
-                    IsReply = false,
-                    IsEdited = true
-                }
-            };
-            dbContext.UserComments.AddRange(comments);
-            await dbContext.SaveChangesAsync();
+                    new UserComment
+                    {
+                        UserProfileId = adminUser.ProfileId,
+                        UserProfile = adminUser.Profile,
+                        Content = "Test comment from Admin",
+                        WikiPageId = wikiPage.Id,
+                        PostDate = DateTime.Now,
+                        IsReply = false,
+                        IsEdited = false
+                    },
+                    new UserComment
+                    {
+                        UserProfileId = testUser.ProfileId,
+                        UserProfile = testUser.Profile,
+                        Content = "Test comment from Tester",
+                        WikiPageId = wikiPage.Id,
+                        PostDate = DateTime.Now,
+                        IsReply = false,
+                        IsEdited = false
+                    },
+                    new UserComment
+                    {
+                        UserProfileId = testUser.ProfileId,
+                        UserProfile = testUser.Profile,
+                        Content = "Test comment 2 from Tester",
+                        WikiPageId = wikiPage.Id,
+                        PostDate = DateTime.Now,
+                        IsReply = false,
+                        IsEdited = true
+                    }
+                };
+                dbContext.UserComments.AddRange(comments);
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }
@@ -381,43 +385,48 @@ async Task SeedForumTopicsAsync()
 {
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
-    var topics = new List<ForumTopic>
+    if (!dbContext.ForumTopics.Any())
     {
-        new ForumTopic
+        var topics = new List<ForumTopic>
         {
-            Id = Guid.NewGuid(),
-            Title = "Main Forum",
-            Description = "General discussion forum for all topics.",
-            Slug = "main-forum",
-            Order = 0
-        },
-        new ForumTopic
-        {
-            Id = Guid.NewGuid(),
-            Title = "Off Topic",
-            Description = "Discussion forum for non-related topics.",
-            Slug = "off-topic",
-            Order = 1
-        },
-        new ForumTopic
-        {
-            Id = Guid.NewGuid(),
-            Title = "Foreign Languages Forum",
-            Description = "Forum for discussing topics in different languages.",
-            Slug = "foreign-languages-forum",
-            Order = 2
-        },
-        new ForumTopic
-        {
-            Id = Guid.NewGuid(),
-            Title = "Archive",
-            Description = "Forum for archived topics and discussions.",
-            Slug = "archive",
-            Order = 3
-        },
-    };
-    dbContext.ForumTopics.AddRange(topics);
-    await dbContext.SaveChangesAsync();
+            new ForumTopic
+            {
+                Id = Guid.NewGuid(),
+                Title = "Main Forum",
+                Description = "General discussion forum for all topics.",
+                Slug = "main-forum",
+                Order = 0
+            },
+            new ForumTopic
+            {
+                Id = Guid.NewGuid(),
+                Title = "Off Topic",
+                Description = "Discussion forum for non-related topics.",
+                Slug = "off-topic",
+                Order = 1
+            },
+            new ForumTopic
+            {
+                Id = Guid.NewGuid(),
+                Title = "Foreign Languages Forum",
+                Description = "Forum for discussing topics in different languages.",
+                Slug = "foreign-languages-forum",
+                Order = 2
+            },
+            new ForumTopic
+            {
+                Id = Guid.NewGuid(),
+                Title = "Archive",
+                Description = "Forum for archived topics and discussions.",
+                Slug = "archive",
+                Order = 3
+            },
+        };
+        dbContext.ForumTopics.AddRange(topics);
+        await dbContext.SaveChangesAsync();
+    }
+
+    
 }
 
 async Task SeedForumPostsAsync()
@@ -432,58 +441,61 @@ async Task SeedForumPostsAsync()
 
     var topics = await dbContext.ForumTopics.ToListAsync();
 
-    var forumPosts = new List<ForumPost>
+    if (!dbContext.ForumPosts.Any())
     {
-        new ForumPost
+        var forumPosts = new List<ForumPost>
         {
-            Id = Guid.NewGuid(),
-            PostTitle = "Welcome to the Main Forum!",
-            Content = "Feel free to start discussions about anything!",
-            PostDate = DateTime.Now,
-            ForumTopic = topics.FirstOrDefault(t => t.Slug == "main-forum"),
-            Slug = "welcome-to-the-main-forum",
-            UserId = adminUser.ProfileId,
-            UserName = adminUser.UserName,
-            User = adminUser.Profile
-        },
-        new ForumPost
-        {
-            Id = Guid.NewGuid(),
-            PostTitle = "Rules of the Off Topic Forum",
-            Content = "This is a place for non-related discussions. Please keep it friendly and respectful.",
-            PostDate = DateTime.Now,
-            ForumTopic = topics.FirstOrDefault(t => t.Slug == "off-topic"),
-            Slug = "rules-of-the-off-topic-forum",
-            UserId = adminUser.ProfileId,
-            UserName = adminUser.UserName,
-            User = adminUser.Profile
-        },
-        new ForumPost
-        {
-            Id = Guid.NewGuid(),
-            PostTitle = "Discussion in French",
-            Content = "Bonjour! Let's discuss various topics in French in this forum.",
-            PostDate = DateTime.Now,
-            ForumTopic = topics.FirstOrDefault(t => t.Slug == "foreign-languages-forum"),
-            Slug = "discussion-in-french",
-            UserId = adminUser.ProfileId,
-            UserName = adminUser.UserName,
-            User = adminUser.Profile
-        },
-        new ForumPost
-        {
-            Id = Guid.NewGuid(),
-            PostTitle = "Archived Topic: Previous Discussion",
-            Content = "This is an archived discussion. It's here for reference purposes.",
-            PostDate = DateTime.Now,
-            ForumTopic = topics.FirstOrDefault(t => t.Slug == "archive"),
-            Slug = "archived-topic-previous-discussion",
-            UserId = adminUser.ProfileId,
-            UserName = adminUser.UserName,
-            User = adminUser.Profile
-        }
-    };
+            new ForumPost
+            {
+                Id = Guid.NewGuid(),
+                PostTitle = "Welcome to the Main Forum!",
+                Content = "Feel free to start discussions about anything!",
+                PostDate = DateTime.Now,
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "main-forum"),
+                Slug = "welcome-to-the-main-forum",
+                UserId = adminUser.ProfileId,
+                UserName = adminUser.UserName,
+                User = adminUser.Profile
+            },
+            new ForumPost
+            {
+                Id = Guid.NewGuid(),
+                PostTitle = "Rules of the Off Topic Forum",
+                Content = "This is a place for non-related discussions. Please keep it friendly and respectful.",
+                PostDate = DateTime.Now,
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "off-topic"),
+                Slug = "rules-of-the-off-topic-forum",
+                UserId = adminUser.ProfileId,
+                UserName = adminUser.UserName,
+                User = adminUser.Profile
+            },
+            new ForumPost
+            {
+                Id = Guid.NewGuid(),
+                PostTitle = "Discussion in French",
+                Content = "Bonjour! Let's discuss various topics in French in this forum.",
+                PostDate = DateTime.Now,
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "foreign-languages-forum"),
+                Slug = "discussion-in-french",
+                UserId = adminUser.ProfileId,
+                UserName = adminUser.UserName,
+                User = adminUser.Profile
+            },
+            new ForumPost
+            {
+                Id = Guid.NewGuid(),
+                PostTitle = "Archived Topic: Previous Discussion",
+                Content = "This is an archived discussion. It's here for reference purposes.",
+                PostDate = DateTime.Now,
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "archive"),
+                Slug = "archived-topic-previous-discussion",
+                UserId = adminUser.ProfileId,
+                UserName = adminUser.UserName,
+                User = adminUser.Profile
+            }
+        };
 
-    dbContext.ForumPosts.AddRange(forumPosts);
-    await dbContext.SaveChangesAsync();
+        dbContext.ForumPosts.AddRange(forumPosts);
+        await dbContext.SaveChangesAsync();
+    }
 }

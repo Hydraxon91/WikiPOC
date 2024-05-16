@@ -77,7 +77,7 @@ const CreateForumTopic = ({ cookies }) => {
 
         try {
             await createForumPost(forumPost, cookies);
-            navigate('/forum'); // Redirect to forum page after successful creation
+            navigate(`/forum/${slug}`); // Redirect to forum page after successful creation
         } catch (err) {
             setError(err.message);
         }

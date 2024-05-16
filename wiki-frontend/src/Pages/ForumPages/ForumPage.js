@@ -12,6 +12,8 @@ const ForumPage = () => {
     const [topic, setTopic] = useState([]);
     const { slug } = useParams();
     const {styles} = useStyleContext();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage] = useState(3);
 
     useEffect(() => {
         fetchForumTopic();
@@ -38,18 +40,23 @@ const ForumPage = () => {
                     latestComment = comment;
                 }
             });
-        if (!latestComment.userProfile) {
+        
+        const userProfile = latestComment.userProfile ? latestComment.userProfile : latestComment.user;
+
+        if (!userProfile) {
             return (
                 <div>No comments yet</div>
             );
         }
-    
-        const userProfile = latestComment.userProfile ? latestComment.userProfile : latestComment.user; 
-    
+
         // Parse the date string as UTC
         const utcDate = new Date(latestComment.postDate + 'Z');
+        // Calculate time difference in minutes
+         const diffInMinutes = Math.floor((new Date() - utcDate) / (1000 * 60));
+
         // Format the zoned date
-        const formattedDate = format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
+        const formattedDate = diffInMinutes < 60 ? `${diffInMinutes} minutes ago` : format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
+
     
         return (
             <>
@@ -58,6 +65,10 @@ const ForumPage = () => {
             </>
         );
     };
+
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = topic.forumPosts && topic.forumPosts.slice(indexOfFirstPost, indexOfLastPost);
 
     return (
         <>
@@ -70,7 +81,7 @@ const ForumPage = () => {
                     <div className="header-cell">Author</div>
                     <div className="header-cell">Last Comment</div>
                 </div>
-                {topic && topic.forumPosts && topic.forumPosts.map(post =>(
+                {currentPosts && currentPosts.map(post =>(
                     <div className="grid-row" key={post.id}>
                         <div className="grid-cell title">
                             <Link to={`/forum/${slug}/${post.slug}`}><div className='topicTitle'>{post.postTitle}</div></Link>
@@ -80,6 +91,18 @@ const ForumPage = () => {
                         <div className="grid-cell">{getLatestComment(post)}</div>
                     </div>
                 ))}
+            </div>
+            <div className="pagination">
+                {topic.forumPosts && topic.forumPosts.length > postsPerPage && (
+                    <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                        Prev
+                    </button>
+                )}
+                {topic.forumPosts && topic.forumPosts.length > postsPerPage && (
+                    <button onClick={() => setCurrentPage(currentPage + 1)} disabled={indexOfLastPost >= topic.forumPosts.length}>
+                        Next
+                    </button>
+                )}
             </div>
         </>
     );

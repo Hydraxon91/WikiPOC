@@ -32,8 +32,17 @@ public class ForumTopicController : ControllerBase
         {
             return NotFound();
         }
+
+        // Sort the forum posts based on the latest comment date or the post date itself
+        forumTopic.ForumPosts = forumTopic.ForumPosts.OrderByDescending(post =>
+        {
+            var latestComment = post.Comments.OrderByDescending(comment => comment.PostDate).FirstOrDefault();
+            return latestComment != null ? latestComment.PostDate : post.PostDate;
+        }).ToList();
+
         return Ok(forumTopic);
     }
+
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost]
