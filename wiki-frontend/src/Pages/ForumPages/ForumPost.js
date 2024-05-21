@@ -36,7 +36,11 @@ const ForumPost = ({cookies}) => {
         }
     };
 
-    function formatDate(dateString) {
+    const setQuotedPost = () => {
+
+    }
+
+    const formatDate = (dateString) => {
         // Parse the date string as UTC
         const utcDate = new Date(dateString + 'Z');
         // Format the zoned date
@@ -49,7 +53,7 @@ const ForumPost = ({cookies}) => {
     }
 
     return (
-        <>
+        <div className='forum-mainsection'>
             <Breadcrumbs/>
             <button className="modular-button" style={{backgroundColor: styles.articleColor}} onClick={togglePopupVisibility}>
                 Post Reply
@@ -64,6 +68,9 @@ const ForumPost = ({cookies}) => {
                     <div className="fp-grid-cell firstrow">
                         <div className='fp-grid-cell-left'>Post Subject: {post.postTitle}</div>
                         <div className='fp-grid-cell-right'>Posted: {formatDate(post.postDate)}</div>
+                        <button className="quote-button" style={{backgroundColor: styles.articleColor}} onClick={togglePopupVisibility}>
+                            Quote
+                        </button>
                     </div>
                 </div>
                 <div className="fp-grid-row">
@@ -74,7 +81,7 @@ const ForumPost = ({cookies}) => {
                 </div>
             </div>
             <ForumCommentComponent post={post} cookies={cookies} isPopupVisible={isPopupVisible} togglePopupVisibility={togglePopupVisibility}/>
-        </>
+        </div>
     );
 };
 
