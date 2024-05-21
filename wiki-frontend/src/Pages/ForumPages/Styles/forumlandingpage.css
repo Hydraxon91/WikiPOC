@@ -1,3 +1,7 @@
+.forum-mainsection{
+ width: 98%;
+}
+
 .forum-grid {
     display: flex;
     flex-direction: column;

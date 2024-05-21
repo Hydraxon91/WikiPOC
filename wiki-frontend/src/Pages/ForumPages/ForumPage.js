@@ -72,7 +72,7 @@ const ForumPage = ({cookies}) => {
     const totalPages = topic.forumPosts ? Math.ceil(topic.forumPosts.length / postsPerPage) : 0;
 
     return (
-        <>
+        <div className='forum-mainsection'>
             <Breadcrumbs/>
             <ForumPostButton buttonTitle="New Topic" linkTo={`/forum/${slug}/create-topic`} cookies={cookies}/>
             <div className="forum-grid article" style={{backgroundColor: styles.articleColor}}>
@@ -109,7 +109,7 @@ const ForumPage = ({cookies}) => {
                 </>
             )}
             </div>
-        </>
+        </div>
     );
 }
 

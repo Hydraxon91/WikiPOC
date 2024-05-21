@@ -73,7 +73,7 @@ const ForumLandingPage = () => {
     };
 
     return (
-        <>
+        <div className='forum-mainsection'> 
         <Breadcrumbs/>
         <div className="forum-grid article" style={{backgroundColor: styles.articleColor}}>
             <div className="grid-header">
@@ -94,7 +94,7 @@ const ForumLandingPage = () => {
                 </div>
             ))}
         </div>
-        </>
+        </div>
     );
 }
 
