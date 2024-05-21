@@ -11,8 +11,9 @@ import "./Styles/forumpost.css"
 
 const ForumPost = ({cookies}) => {
     const [post, setPost] = useState(null);
-    const { slug, postSlug } = useParams();
+    const { postSlug } = useParams();
     const {styles} = useStyleContext();
+    const [quotedPostId, setQuotedPostId] = useState(null);
     const [isPopupVisible, setIsPopupVisible] = useState(false);
 
     useEffect(() => {
@@ -36,17 +37,14 @@ const ForumPost = ({cookies}) => {
         }
     };
 
-    const setQuotedPost = () => {
-
+    const setQuotedPostMethod = (comment) => {
+        if (!cookies) {
+            alert('You need to log in to post a reply.');
+        } else {
+            setQuotedPostId(comment.id);
+            setIsPopupVisible(!isPopupVisible);
+        }
     }
-
-    const formatDate = (dateString) => {
-        // Parse the date string as UTC
-        const utcDate = new Date(dateString + 'Z');
-        // Format the zoned date
-        const formattedDate = format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
-        return formattedDate.replace(/\//g, '-');
-      }
 
     if (!post) {
         return <div>Loading...</div>;
@@ -58,29 +56,9 @@ const ForumPost = ({cookies}) => {
             <button className="modular-button" style={{backgroundColor: styles.articleColor}} onClick={togglePopupVisibility}>
                 Post Reply
             </button>
-            <div className="fp-grid">
-                <div className="fp-grid-header">
-                    <div className="fp-header-cell">Author</div>
-                    <div className="fp-header-cell">Message</div>
-                </div>
-                <div className="fp-grid-row">
-                    <div className="fp-grid-cell"><Link to={`/profile/${post.userName}`}>{post.user.displayName}</Link></div>
-                    <div className="fp-grid-cell firstrow">
-                        <div className='fp-grid-cell-left'>Post Subject: {post.postTitle}</div>
-                        <div className='fp-grid-cell-right'>Posted: {formatDate(post.postDate)}</div>
-                        <button className="quote-button" style={{backgroundColor: styles.articleColor}} onClick={togglePopupVisibility}>
-                            Quote
-                        </button>
-                    </div>
-                </div>
-                <div className="fp-grid-row">
-                    <div className="fp-grid-cell">
-                        <DisplayProfileImageElement profilePicture={post.user.profilePicture}/>
-                    </div>
-                    <div className="fp-grid-cell" dangerouslySetInnerHTML={{ __html: post.content }}></div>
-                </div>
-            </div>
-            <ForumCommentComponent post={post} cookies={cookies} isPopupVisible={isPopupVisible} togglePopupVisibility={togglePopupVisibility}/>
+            <ForumCommentComponent post={post} cookies={cookies} isPopupVisible={isPopupVisible} 
+                togglePopupVisibility={togglePopupVisibility} quotedPostId={quotedPostId} setQuotedPostMethod={setQuotedPostMethod}
+            />
         </div>
     );
 };

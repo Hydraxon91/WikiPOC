@@ -46,14 +46,24 @@ public class ForumPostController : ControllerBase
     public async Task<ActionResult<ForumPost>> AddForumPost([FromForm] ForumPostForm forumPostForm)
     {
         Console.WriteLine(forumPostForm);
+        var forumPostId = new Guid();
+        var firstComment = new ForumComment
+        {
+            Id = new Guid(),
+            Content = forumPostForm.Content,
+            UserProfileId = Guid.Parse(forumPostForm.UserId), 
+            ForumPostId = forumPostId
+        };
         var forumPost = new ForumPost
         {
+            Id = forumPostId,
             PostTitle = forumPostForm.PostTitle,
             PostDate = forumPostForm.PostDate,
             Content = forumPostForm.Content,
             ForumTopicId = Guid.Parse(forumPostForm.ForumTopicId), // Convert string to Guid
             UserId = Guid.Parse(forumPostForm.UserId), 
-            UserName = forumPostForm.UserName
+            UserName = forumPostForm.UserName,
+            Comments = new List<ForumComment>{firstComment}
         };
         await _forumPostRepository.AddForumPostAsync(forumPost);
         return CreatedAtAction(nameof(GetForumPostBySlug), new { slug = forumPost.Slug }, forumPost);
