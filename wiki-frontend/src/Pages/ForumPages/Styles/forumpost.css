@@ -82,3 +82,11 @@
     color: #333; /* Color of the quote character */
   }
   
+  .quoted-comment {
+    backdrop-filter: brightness(80%);
+    border: 0.1em solid #ccc;
+    border-left: 0.4em solid #ccc;
+    padding: 1em;
+    margin-bottom: 4em;
+    font-style: italic;
+}

@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import "../Styles/forumsubmintcommentcomponent.css"
 
-const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit, postComment, togglePopupVisibility  }) => {
+const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit, postComment, togglePopupVisibility, quotedPostId  }) => {
     const [commentText, setCommentText] = useState('');
 
     const handleCommentChange = (event) => {
         setCommentText(event);
     };
+
+    useEffect(()=>{console.log(quotedPostId);},[])
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -17,12 +19,11 @@ const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit,
             wikiPageId: page.id,
             postDate: new Date().toISOString(),
             isReply: false,
-            replyToCommentId: null,
+            replyToCommentId: quotedPostId,
             isEdited: false,
         };
-
+        console.log(newComment);
         try {
-            console.log(newComment);
             await postComment(newComment, cookies, user);
             setCommentText('');
             newComment.userProfile = user;

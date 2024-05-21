@@ -6,12 +6,15 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
+import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import "../Styles/forumpost.css"
 
-const ForumCommentComponent = ({post, cookies, isPopupVisible, togglePopupVisibility}) =>{
+const ForumCommentComponent = ({post, cookies, isPopupVisible, togglePopupVisibility, quotedPostId, setQuotedPostMethod}) =>{
     const {decodedTokenContext} = useUserContext();
     const [user, setUser] = useState();
     const [currPost, setCurrPost] = useState(post);
+    const { styles } = useStyleContext();
+    const maxQuoteDepth = 1;
 
     useEffect(() => {
         const decodedTokenName = decodedTokenContext?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
@@ -42,30 +45,53 @@ const ForumCommentComponent = ({post, cookies, isPopupVisible, togglePopupVisibi
         return formattedDate.replace(/\//g, '-');
       }
 
+      const renderQuote = (comment, currentDepth, maxDepth) => {
+        if (!comment.replyToComment || currentDepth > maxDepth) {
+            return null;
+        }
+    
+        return (
+            <div className="quoted-comment">
+                <p>{comment.replyToComment.userProfile.displayName} wrote:</p>
+                <div dangerouslySetInnerHTML={{ __html: comment.replyToComment.content }} />
+                {renderQuote(comment.replyToComment, currentDepth + 1, maxDepth)}
+            </div>
+        );
+    };
       return (
         <>
             {currPost && (
                 <div>                   
                     {currPost.comments.map((comment, index) => (
                         <div key={index}>
+                            {console.log(comment)}
                             <div className="fp-grid">
                                 <div className="fp-grid-row">
                                     <div className="fp-grid-cell"><Link to={`/profile/${comment.userProfile.userName}`}>{comment.userProfile.displayName}</Link></div>
                                     <div className="fp-grid-cell firstrow">
                                         <div className='fp-grid-cell-left'>Post Subject: re: {post.postTitle}</div>
                                         <div className='fp-grid-cell-right'>Posted: {formatDate(comment.postDate)}</div>
+                                        <button className="quote-button" style={{backgroundColor: styles.articleColor}} onClick={() => setQuotedPostMethod(comment)}>
+                                            Quote
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="fp-grid-row">
                                     <div className="fp-grid-cell">
                                         {comment.userProfile?.profilePicture && <DisplayProfileImageElement profilePicture={comment.userProfile.profilePicture}/>}
                                     </div>
-                                    <div className="fp-grid-cell" dangerouslySetInnerHTML={{ __html: comment.content }}></div>
+                                    <div className="fp-grid-cell" >
+                                        {renderQuote(comment, 0, maxQuoteDepth)}
+                                        <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
+                                    </div>
                                 </div>
                             </div>                            
                         </div>
                     ))}
-                    { isPopupVisible && user && <ForumSubmitCommentComponent user={user} page={currPost} cookies={cookies} handleCommentSubmit={handleCommentSubmit} postComment={postForumComment} togglePopupVisibility={togglePopupVisibility}/>}
+                    { isPopupVisible && user && <ForumSubmitCommentComponent user={user} page={currPost} cookies={cookies} 
+                        handleCommentSubmit={handleCommentSubmit} postComment={postForumComment} 
+                        togglePopupVisibility={togglePopupVisibility} quotedPostId={quotedPostId}
+                    />}
                 </div>
             )}
         </>
