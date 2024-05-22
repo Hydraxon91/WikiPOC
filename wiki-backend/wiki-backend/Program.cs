@@ -350,7 +350,6 @@ async Task SeedCommentsAsync()
                         Content = "Test comment from Admin",
                         WikiPageId = wikiPage.Id,
                         PostDate = DateTime.Now,
-                        IsReply = false,
                         IsEdited = false
                     },
                     new UserComment
@@ -360,7 +359,6 @@ async Task SeedCommentsAsync()
                         Content = "Test comment from Tester",
                         WikiPageId = wikiPage.Id,
                         PostDate = DateTime.Now,
-                        IsReply = false,
                         IsEdited = false
                     },
                     new UserComment
@@ -370,7 +368,6 @@ async Task SeedCommentsAsync()
                         Content = "Test comment 2 from Tester",
                         WikiPageId = wikiPage.Id,
                         PostDate = DateTime.Now,
-                        IsReply = false,
                         IsEdited = true
                     }
                 };

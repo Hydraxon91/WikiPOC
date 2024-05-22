@@ -16,9 +16,9 @@ public class UserComment
     public WikiPage? WikiPage { get; set; }
     public Guid WikiPageId { get; set; }
     public DateTime PostDate { get; set; }
-    public bool IsReply { get; set; }
-    [ForeignKey(nameof(ReplayToCommentId))]
+    [ForeignKey(nameof(ReplyToCommentId))]
     public UserComment? ReplyToComment { get; set; }
-    public Guid? ReplayToCommentId { get; set; }
+    public Guid? ReplyToCommentId { get; set; }
     public bool IsEdited { get; set; } = false;
+    public ICollection<UserComment> Replies { get; set; } = new List<UserComment>();
 }
