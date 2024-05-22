@@ -17,6 +17,7 @@ public class UserComment
     public Guid WikiPageId { get; set; }
     public DateTime PostDate { get; set; }
     [ForeignKey(nameof(ReplyToCommentId))]
+    [JsonIgnore]
     public UserComment? ReplyToComment { get; set; }
     public Guid? ReplyToCommentId { get; set; }
     public bool IsEdited { get; set; } = false;

@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { getProfilePicture } from '../../../Api/wikiUserApi';
 import "../../../Styles/profilepage.css";
 
-function DisplayProfileImageElement({profilePicture}) {
+function DisplayProfileImageElement({profilePicture, classNameProp}) {
     const defaultImageUrl = 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Default-avatar.jpg'; 
     const [imageSrc, setImageSrc] = useState(defaultImageUrl);
 
@@ -31,7 +31,7 @@ function DisplayProfileImageElement({profilePicture}) {
 
 
     return (
-        <div className='wikipage-comment-profilepic'>
+        <div className={classNameProp}>
             <img src={imageSrc} alt="Uploaded"/>
         </div>
     );

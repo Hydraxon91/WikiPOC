@@ -21,7 +21,22 @@ public class UserCommentRepository : IUserCommentRepository
 
     public async Task AddAsync(UserComment comment)
     {
-        _context.UserComments.Add(comment);
+        if (comment.ReplyToCommentId.HasValue)
+        {
+            var parentComment = await _context.UserComments
+                .Include(c => c.Replies) // Ensure replies collection is included
+                .FirstOrDefaultAsync(c => c.Id == comment.ReplyToCommentId);
+
+            if (parentComment != null)
+            {
+                parentComment.Replies ??= new List<UserComment>();
+                parentComment.Replies.Add(comment);
+            }
+        }
+        else
+        {
+            _context.UserComments.Add(comment);
+        }
         await _context.SaveChangesAsync();
     }
 
