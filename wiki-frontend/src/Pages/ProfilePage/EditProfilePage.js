@@ -1,5 +1,5 @@
 import ProfileEditorElement from './Components/ProfileEditorElement';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { getUserProfileByUsername } from '../../Api/wikiUserApi';
@@ -29,7 +29,7 @@ const EditProfilePage = ({cookies}) => {
             (
                 <ProfileEditorElement user={userProfile} cookies={cookies}/>
             ) : (
-                <div>You have no access to this profile 3:</div>
+                <Navigate to="/" />
             )}
         </div>
     )
