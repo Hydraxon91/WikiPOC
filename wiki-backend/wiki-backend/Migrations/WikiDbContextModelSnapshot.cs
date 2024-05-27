@@ -243,64 +243,171 @@ namespace wiki_backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("74f028aa-fbc0-4367-916c-0a3594f0fef2"),
+                            Id = new Guid("ff6c5f6a-aeb5-4a8a-88df-9bebe463e136"),
                             CategoryName = "Characters"
                         },
                         new
                         {
-                            Id = new Guid("00915953-6c7b-4a3c-b134-de4e4b606ea4"),
+                            Id = new Guid("b8a91816-0463-4eb7-b079-3f30bff7f60f"),
                             CategoryName = "Stories"
                         },
                         new
                         {
-                            Id = new Guid("a350914b-0878-4a3f-a881-a19987d02b8e"),
+                            Id = new Guid("47fa806b-4324-4bea-be54-5771bbe6ab2b"),
                             CategoryName = "Locations"
                         },
                         new
                         {
-                            Id = new Guid("112f76e0-9c50-4b53-b653-5896641151c7"),
+                            Id = new Guid("6c655e2a-3639-4f05-914e-30e5b253378f"),
                             CategoryName = "Events"
                         },
                         new
                         {
-                            Id = new Guid("a4be4270-7bfb-4c10-94a0-8d445d38665d"),
+                            Id = new Guid("ec3b51e9-8eee-403a-9b49-41cc801363cd"),
                             CategoryName = "Organizations"
                         },
                         new
                         {
-                            Id = new Guid("3908eded-bc9d-4e9e-a5c5-8712042d36dc"),
+                            Id = new Guid("698c635b-efb7-48f5-9776-4b671b49b41b"),
                             CategoryName = "Concepts"
                         },
                         new
                         {
-                            Id = new Guid("19ec408c-cb09-4ab4-84f4-4abff52c68e1"),
+                            Id = new Guid("9d7c3daf-03d4-415f-913d-0dd60a1a1d02"),
                             CategoryName = "Technologies"
                         },
                         new
                         {
-                            Id = new Guid("1b3669bf-2028-4b03-b47a-0bf7de5ae76e"),
+                            Id = new Guid("412a6b07-479e-4973-9bc7-e7a5070b1a9c"),
                             CategoryName = "Arts and Entertainment"
                         },
                         new
                         {
-                            Id = new Guid("b8243405-5fcd-4c20-8da2-1dadbfded3bd"),
+                            Id = new Guid("32210ee1-3db3-47e9-9513-250af46c243d"),
                             CategoryName = "Sports and Recreation"
                         },
                         new
                         {
-                            Id = new Guid("272b5711-b21b-48f9-a5e2-9f37f076e598"),
+                            Id = new Guid("08333e40-af8d-412d-b2da-663e9355954f"),
                             CategoryName = "Science and Technology"
                         },
                         new
                         {
-                            Id = new Guid("d7a411b0-6b2f-4070-8f15-ae932718d358"),
+                            Id = new Guid("9f8127ef-de08-4fc7-af49-fd3d8f181bb2"),
                             CategoryName = "History and Culture"
                         },
                         new
                         {
-                            Id = new Guid("19c4077a-e6bb-4489-a3a0-44ff0e5f4083"),
+                            Id = new Guid("266e46e8-42c6-4751-98bb-f8b216692aaf"),
                             CategoryName = "Food and Drink"
                         });
+                });
+
+            modelBuilder.Entity("wiki_backend.Models.ForumModels.ForumComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ForumPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsEdited")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsReply")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("PostDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ReplyToCommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForumPostId");
+
+                    b.HasIndex("ReplyToCommentId");
+
+                    b.HasIndex("UserProfileId");
+
+                    b.ToTable("ForumComments");
+                });
+
+            modelBuilder.Entity("wiki_backend.Models.ForumModels.ForumPost", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ForumTopicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("PostDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PostTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForumTopicId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ForumPosts");
+                });
+
+            modelBuilder.Entity("wiki_backend.Models.ForumModels.ForumTopic", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ForumTopics");
                 });
 
             modelBuilder.Entity("wiki_backend.Models.Paragraph", b =>
@@ -333,127 +440,127 @@ namespace wiki_backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("08baf736-6b15-45e3-90d1-a7309ef05eba"),
-                            Content = "Voluptatibus sed asperiores enim ipsa voluptatem ipsam in recusandae perspiciatis. Id qui molestias ipsum voluptatem dolorem odio quia animi dolor. Assumenda officiis et eligendi cupiditate molestiae. Quo consequatur ut. Sit sed reprehenderit sed eaque est aliquid.\n\nConsequatur officiis debitis. Sit est corrupti voluptas sequi. Voluptas a modi. Dolores nulla enim deleniti provident a commodi eos. Non facilis ratione facere molestiae eum. Numquam molestias quisquam rerum magni voluptatem sed.\n\nQuam inventore consectetur porro excepturi voluptate corrupti dicta molestias animi. Nisi aliquid consequatur est. Doloribus odio nostrum amet dolores delectus rerum ea. Architecto saepe non minima velit suscipit itaque.",
+                            Id = new Guid("78b67dfd-8228-43e5-9d82-601e58b3e7f9"),
+                            Content = "Temporibus esse soluta. Labore et aperiam assumenda vel et consequatur et. Necessitatibus corrupti eos magnam soluta quasi fuga veritatis accusantium nihil. Voluptate quibusdam officia. Praesentium aut libero voluptas et corrupti sit eos officiis.\n\nSequi rerum harum fuga. Maxime aut perferendis molestiae placeat qui quas consectetur vitae. Doloribus ducimus neque qui animi dolorem. Nam sed molestiae. Incidunt illum voluptatibus consequuntur alias tempore aut et. Ad nam at expedita possimus accusantium.\n\nSapiente sed tenetur perspiciatis quia quia quia quae dolores. Eum libero veritatis est placeat natus. Tenetur sit iure autem laborum ratione.\n\nEx aut tempore praesentium. In ad quia omnis consequuntur repellat distinctio consequatur. Sapiente fugit illo. Aut hic omnis et porro autem.\n\nEx tenetur aliquid nihil quaerat sit. Excepturi et dolorem. Aliquid eaque quis qui. Et ut eum non quo quo cum qui.",
                             ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
                             ParagraphImageText = "Example ParagraphImageText 1",
                             Title = "Example Page 1 - Paragraph 1",
-                            WikiPageId = new Guid("1178b9f4-0fa9-4a5e-a462-36adcedb4032")
+                            WikiPageId = new Guid("7982bd1c-f21d-4439-9034-0f03fc6ada8c")
                         },
                         new
                         {
-                            Id = new Guid("3f1e48ba-a931-4a4b-917e-a6b28a295f83"),
-                            Content = "Illum aliquam necessitatibus dolor. Ex natus fugiat deserunt quaerat. Molestiae aut enim nostrum explicabo.",
+                            Id = new Guid("850a94c8-08e7-4d50-9b7e-0c867f6b0625"),
+                            Content = "Fugit vel quia quae ut. Sed voluptatem at. Quasi est reiciendis laborum. Et hic dicta commodi. Temporibus fuga placeat voluptatibus ipsa quam et et. Rerum similique aliquid eius aut beatae nesciunt repudiandae cupiditate sunt.\n\nFuga eaque voluptatem dolores. Eum quo et autem. Eos possimus ipsa esse. Quae ab ut perspiciatis nam laboriosam rerum. Quos esse non in veniam omnis odio dignissimos est.\n\nAut esse recusandae fugit aut repellat. Quae rerum dicta facere et accusantium ad mollitia. Doloremque optio consectetur sunt rerum rerum ea et earum.\n\nOmnis est dignissimos et non eligendi quis. Facere quos consequatur consequatur occaecati quidem. Voluptatem aperiam illum quibusdam inventore exercitationem molestiae. Nobis excepturi non reiciendis quos repellat cumque qui est et. Molestias accusamus quas quidem iusto sit quisquam dolorem.\n\nEum rerum adipisci est est. Hic aut aliquam delectus. Ut provident ad quae et non dolorem qui laudantium debitis. Molestiae quidem expedita ut.\n\nAperiam a exercitationem ab natus similique voluptatem. Asperiores dolores molestiae ut molestias. Aspernatur similique molestiae incidunt minus ea. Autem rerum at numquam velit voluptas aut. Maxime ut ut quasi incidunt quod enim. A ex facere repellendus quo cupiditate voluptas.",
                             Title = "Example Page 1 - Paragraph 2",
-                            WikiPageId = new Guid("1178b9f4-0fa9-4a5e-a462-36adcedb4032")
+                            WikiPageId = new Guid("7982bd1c-f21d-4439-9034-0f03fc6ada8c")
                         },
                         new
                         {
-                            Id = new Guid("edb16cbc-160a-4ee8-b296-362c8bd9570f"),
-                            Content = "Libero et qui consequatur ab consequatur iusto. Et voluptatem perspiciatis. Voluptates non dolorem.\n\nDelectus alias omnis consequatur sunt quia ut eius voluptatibus. Qui recusandae ex aut aliquam rerum nulla. Dolor quis quasi asperiores modi magnam minima suscipit.\n\nPerspiciatis ratione voluptas amet modi quia autem voluptatem dolor amet. Nostrum harum similique dicta. Totam ea itaque asperiores ut aperiam ut.\n\nQuod qui similique beatae aut et. Atque explicabo vero. Officiis reprehenderit qui sit atque. Deserunt qui nihil possimus minus consequatur corrupti.\n\nEst quia voluptatum laborum nihil officiis odit qui omnis quo. Hic est aut dolores qui doloribus voluptas est facere atque. Consequatur et distinctio. Voluptatem soluta dicta quaerat omnis aut asperiores.",
+                            Id = new Guid("e3b5cdfa-cbea-4bb7-aa07-434f4b780945"),
+                            Content = "Quae dolore aliquid necessitatibus nulla tempora rerum. Unde voluptates autem consequatur. Non consectetur et. Fuga temporibus et. Est voluptatibus voluptatibus minus rerum delectus.\n\nDoloribus ut debitis aperiam nulla. Rerum dolor corrupti nemo voluptatibus veritatis quia accusamus tempore illo. Occaecati culpa et eligendi eius culpa vel. Provident ea cupiditate voluptatem perspiciatis quia accusantium. Debitis aut veniam. Odio est nobis iusto.\n\nCupiditate sint qui non quia excepturi nemo omnis. Exercitationem asperiores sit. Vel rerum sint ea dicta animi error natus earum. Nesciunt in molestias occaecati reprehenderit fugit et laudantium.\n\nTotam doloribus quia veniam ducimus totam asperiores. Illum porro iusto incidunt quia rerum sed suscipit. Deserunt libero earum dolores dolorem quia voluptas dolore. Deserunt dolor repellendus nam laudantium incidunt beatae ea. Dolorum placeat sint dolorem pariatur eum esse explicabo.\n\nOmnis deleniti voluptatem et nisi odio animi neque eligendi. Tenetur aspernatur nihil et. Aut necessitatibus dolor. Illo tenetur in unde sed est fugiat asperiores est. Et suscipit vel. Modi quia fugiat error nesciunt voluptatibus praesentium laboriosam quaerat amet.",
                             Title = "Example Page 1 - Paragraph 3",
-                            WikiPageId = new Guid("1178b9f4-0fa9-4a5e-a462-36adcedb4032")
+                            WikiPageId = new Guid("7982bd1c-f21d-4439-9034-0f03fc6ada8c")
                         },
                         new
                         {
-                            Id = new Guid("e0608fb0-9b25-4016-a758-15ca5630c420"),
-                            Content = "Voluptas sint qui est reiciendis maxime. Tempore soluta quibusdam odit earum molestiae cumque modi. Omnis provident quia et vitae sit. Assumenda eligendi placeat officia et dolores. Laboriosam qui voluptatem debitis sunt quasi sunt quis.\n\nVoluptate perferendis culpa excepturi voluptatem alias est suscipit ducimus. Voluptas possimus aliquid quia et dicta impedit eos error molestias. Voluptatem dolor quia voluptatem nisi consectetur nostrum mollitia nihil asperiores. A exercitationem vero eligendi labore enim. Molestiae cumque eligendi unde ipsam. Quo placeat atque eveniet quisquam.\n\nEos numquam excepturi sed consequatur nihil est consequuntur et. Et voluptatem laborum ducimus molestiae. Itaque temporibus nihil dolorum placeat.\n\nEnim sit unde dolores molestiae eum. Fugiat consequatur et ipsa repellat mollitia eum quas. Rerum illo et repellendus dolores qui doloribus odit. Ea molestiae rerum modi nostrum sit temporibus id.\n\nSunt placeat cupiditate sit ea ullam sed dolorum labore. Consequatur aperiam culpa quo ipsum dignissimos illo omnis. Non sit ipsa accusamus sed.\n\nEa numquam et non voluptatum dolor ipsam neque ea assumenda. Numquam quasi eaque. Amet et exercitationem.\n\nSed id architecto assumenda ipsam nesciunt quaerat. Quia omnis laborum voluptatem. Dicta labore suscipit soluta qui quis illum nesciunt cum in. Pariatur occaecati eaque illo quo aut. Doloribus ut quos consequatur. Delectus et consequatur.\n\nAsperiores possimus debitis non libero aut. Ipsam voluptatem consequatur aut ipsa tempore. Fugit est cum est autem et est. Rerum ex vitae qui iure illo sunt maiores. Eum et incidunt sint.\n\nEnim vel officiis qui et libero consectetur. Aut voluptatibus porro ratione modi iusto laborum. Est nisi rem. Voluptatem ex provident sit eum temporibus ipsa. Modi architecto et minus rerum omnis accusantium doloremque voluptatem debitis. Quia vel velit rem ut et enim beatae cum ea.\n\nDolorum eum quae ut libero quaerat ipsum reiciendis qui assumenda. Sed autem nihil cumque corporis perferendis ut rerum. Ex voluptatem qui ea inventore quia. Cupiditate veritatis iure sit. Autem fuga et. Non et earum aut quis nihil voluptatem.",
+                            Id = new Guid("1903eb36-5111-401b-8bb6-1ac806954152"),
+                            Content = "Ut aut et dolor consequuntur in nostrum. Sunt quos reiciendis quod sed provident voluptas. Sit facilis earum impedit. Corporis odit veniam labore tempora voluptates. Consequatur voluptatibus nulla veritatis architecto vitae facilis. Quidem ipsum quia dolor non itaque.",
                             Title = "Example Page 1 - Paragraph 4",
-                            WikiPageId = new Guid("1178b9f4-0fa9-4a5e-a462-36adcedb4032")
+                            WikiPageId = new Guid("7982bd1c-f21d-4439-9034-0f03fc6ada8c")
                         },
                         new
                         {
-                            Id = new Guid("ddbdaf30-1c10-4f0c-9d66-01298a86b02b"),
-                            Content = "Enim placeat sunt sed labore sapiente. Pariatur qui sed quia voluptates quasi. Cum ab provident incidunt.\n\nLaudantium similique asperiores fugit possimus velit deserunt neque debitis. Earum aut ipsum. Blanditiis maiores et sit tempore similique libero sed repellendus laudantium. Vero harum amet non occaecati dicta.\n\nNon optio vitae non aliquid. Eos quia dolorem dolorem illo culpa dicta. Molestiae vero velit et facilis dolor facilis quo ut et. Asperiores laborum non in laboriosam doloribus officia odit quo. Eum omnis ipsa sint numquam et vero assumenda enim. Aliquid illo occaecati.\n\nVoluptas dignissimos accusamus non deleniti sed officiis quis dolorum. Voluptatem perferendis amet laudantium dolorem voluptatum aut sit rerum quas. Nihil suscipit aut. Incidunt qui molestiae occaecati.\n\nNon perspiciatis vel ut occaecati dolores quaerat. Nobis deleniti ipsam id consequatur sed nam. Explicabo id error ipsam. Neque sit optio beatae nulla qui molestias eligendi ut.\n\nDolores reiciendis tempora ad perspiciatis nemo ex. Fuga voluptas repellat. Debitis eum alias recusandae amet eos error nisi.",
+                            Id = new Guid("9c3e48fe-cf6e-48e1-a40f-cacd5f04adb0"),
+                            Content = "Alias autem non nesciunt qui iusto officiis dolores voluptatem. Commodi repellat provident earum enim est officiis qui enim velit. Et placeat eligendi dolor a omnis. Quis molestias repellat sint est blanditiis.\n\nMaiores sint dolor ut rem repellat facere porro. Voluptatem vel modi ut velit et debitis voluptatem cupiditate delectus. Aut ut rerum quos hic. Sunt aut minima expedita.\n\nLabore unde modi qui accusamus totam facilis porro officiis. Recusandae ut delectus officia est aspernatur eum iste. Optio non quia enim et rerum praesentium. Laborum nihil nam molestiae culpa labore totam.\n\nCupiditate tempora quo dolor molestias ab. Quis magnam aperiam pariatur saepe et id. Cumque omnis ut. Dolorum repellendus dicta.\n\nSapiente facilis exercitationem reprehenderit. Deserunt accusantium omnis labore aperiam ea deserunt nihil incidunt corporis. Quia neque quod cupiditate. Ea dolorem et optio ea commodi.",
                             Title = "Example Page 1 - Paragraph 5",
-                            WikiPageId = new Guid("1178b9f4-0fa9-4a5e-a462-36adcedb4032")
+                            WikiPageId = new Guid("7982bd1c-f21d-4439-9034-0f03fc6ada8c")
                         },
                         new
                         {
-                            Id = new Guid("60ac5e69-34ed-436f-bbf5-e34d5f3a74bd"),
-                            Content = "Iste voluptas aperiam. Distinctio molestiae architecto dolorem vero explicabo. Suscipit sunt mollitia id in ratione.\n\nVoluptates voluptas vel atque ratione minima et maiores. Quo libero ea officiis vero nostrum sed est. Et possimus et commodi corporis quas quia. Distinctio dolor corporis et repellendus vel quia atque aut. Vitae et nam qui. Eaque tempora asperiores magnam vel enim officiis.\n\nFacere ut sunt. Ad voluptas est suscipit eos et tempore perferendis aut. Non commodi placeat expedita quam autem hic amet sed. Sit nobis iusto et aut consequuntur doloribus provident excepturi. Et et eum a corporis debitis ipsa assumenda excepturi non. Quae ab nihil autem perspiciatis nesciunt ad omnis provident.\n\nSaepe aut assumenda. Vel hic quam ut in quod. Dolor labore et quo provident ipsum iusto delectus natus.\n\nVoluptas deserunt tenetur dolor incidunt et quasi temporibus velit. Ratione voluptate vero vitae harum velit sed. Odit blanditiis et modi maxime est est ut. Possimus voluptatem et. Beatae ipsum assumenda accusamus non aut quisquam mollitia esse accusantium. Corrupti est nihil eveniet.\n\nHarum et eos est. Maiores ex asperiores id consequatur. Velit tenetur in et assumenda dolores eum cupiditate qui debitis. Expedita quisquam adipisci iste nam.\n\nOdit velit impedit accusamus. Nisi autem sint temporibus sit quo praesentium. Minima est sunt et consequuntur.\n\nNeque sed molestiae amet quia temporibus ea voluptatibus. Aut nesciunt quos eveniet numquam officia voluptatibus est laudantium. Quaerat rerum magni voluptas et aliquid asperiores. Fugiat aut sed dolorem nihil temporibus et est voluptas.",
+                            Id = new Guid("1dacc715-02cf-461f-a597-a87bca5d162a"),
+                            Content = "Voluptas eius quasi accusamus vel. Quod omnis esse non earum et voluptatibus voluptas natus. Sint neque omnis iste perferendis accusantium aut harum vero. Ipsam dolore totam rerum quisquam alias aperiam sunt. Nulla tenetur ea.",
                             Title = "Example Page 1 - Paragraph 6",
-                            WikiPageId = new Guid("1178b9f4-0fa9-4a5e-a462-36adcedb4032")
+                            WikiPageId = new Guid("7982bd1c-f21d-4439-9034-0f03fc6ada8c")
                         },
                         new
                         {
-                            Id = new Guid("c4bde50c-680e-40c5-8b7f-aa3279cb1500"),
-                            Content = "Qui suscipit sit. Molestias voluptas beatae. Sint et ad aut. Quisquam rerum exercitationem explicabo possimus unde qui minus architecto cumque. In quisquam sit quas consequatur laborum.\n\nDolores praesentium soluta et atque tenetur. Consectetur fuga perspiciatis ipsum hic illo. Sint exercitationem velit cupiditate ullam alias. Aut doloribus minima error debitis quod dicta molestiae.\n\nQui et eos. Itaque quidem sit provident eos aliquid. Aut repellat similique unde atque quam aliquid vel et nulla. Consequuntur enim et soluta.\n\nDoloribus hic qui quis delectus dolor assumenda. Officiis ut error ab quia omnis accusantium. Architecto fuga esse ipsam repellat reprehenderit.",
+                            Id = new Guid("1fad3ac9-7cc4-4db3-870a-9783b59acb55"),
+                            Content = "Consequatur totam nostrum praesentium et et explicabo quis corporis voluptatem. Saepe id soluta. Magnam perferendis natus quo aut. Quidem eveniet qui qui vero debitis dolores vitae nobis sed.\n\nEt minus mollitia quasi eaque quas dolores voluptatum consequatur quia. Asperiores et adipisci nostrum dolorem culpa laborum id. Ipsum iste voluptas laboriosam. Est deleniti illo ad cupiditate voluptate illum eligendi eum. Porro voluptas veritatis aut pariatur occaecati consequuntur.\n\nSit nulla a voluptatem voluptates. Dignissimos commodi perspiciatis distinctio doloribus cum accusantium dignissimos. Ullam maxime consequatur pariatur officia eum.\n\nNobis quasi voluptatem nulla. Dolor ut voluptates dolorem magnam eligendi alias ducimus optio. Aut mollitia sed. Perferendis modi sed sed ut vel et ut inventore officia.\n\nAssumenda at libero aut ipsum qui quos ipsa. Incidunt eius ad sit. Illum quo molestias aut facilis et harum. Illo fuga dolor harum error occaecati quos cumque explicabo. Quas et aperiam. Est voluptatem voluptates.",
                             ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
                             ParagraphImageText = "Example ParagraphImageText 2",
                             Title = "Example Page 2 - Paragraph 1",
-                            WikiPageId = new Guid("3bef0ff7-8486-46a5-aac8-5c801b656506")
+                            WikiPageId = new Guid("1c9cf25b-7958-4807-92ec-432640994f0c")
                         },
                         new
                         {
-                            Id = new Guid("08466df0-dc50-484a-8547-87bb499924db"),
-                            Content = "Pariatur esse repellat. Sed nulla alias ex saepe officia. Vitae quae eligendi ullam quisquam excepturi accusantium debitis. Ut voluptates delectus consequatur. Qui nostrum a animi adipisci. Harum est omnis nobis ad est quia eum sit laboriosam.\n\nEsse omnis sint libero deserunt sapiente. Expedita omnis et. Placeat sunt pariatur dicta et quibusdam dolore sapiente maxime. Explicabo iusto nihil similique tempore. Harum molestiae blanditiis.",
+                            Id = new Guid("6f52cffb-37f5-453b-a0ab-88a2317d4d3e"),
+                            Content = "Suscipit labore fuga optio facere doloribus deserunt. Ipsam sapiente deserunt voluptatem dignissimos vel nihil accusantium voluptatem aperiam. Nulla quo repudiandae omnis laborum. Sed et alias. Ipsum dolor molestias occaecati quia aut vel id rerum aut.\n\nRerum et aut dolorem aliquam voluptatem sapiente. Excepturi quam in. Quae qui aut dolorum vero inventore impedit voluptatem odit accusantium. Quo voluptatem itaque rerum minima repellendus. Aspernatur inventore sint hic officiis asperiores suscipit.\n\nExercitationem est inventore rerum commodi omnis est non quam est. Quis debitis quas est atque corporis dolorem qui ut sed. Qui perferendis laborum occaecati ut culpa. Enim harum maiores illum voluptatem enim ullam. Et omnis ad ut ut. Rem corrupti officiis.\n\nTemporibus enim debitis beatae esse quia odit. Quos et necessitatibus. Est debitis cum aut qui velit sit architecto perspiciatis et.\n\nSint aut occaecati ducimus et. Magnam deleniti ut consequatur qui. Nulla aspernatur sit cupiditate iusto eius hic et vitae recusandae. Accusantium quia ducimus maiores dolor. Velit autem nisi sit omnis et est aut sed aut. Ut nisi voluptatem qui.\n\nQuia nemo sit voluptatem accusamus omnis voluptate facilis in. Ut facere fugit quis ipsa qui dolorem. Asperiores voluptatibus labore vel voluptatem delectus est. Quia voluptas qui eum illum commodi dolore totam veniam omnis.",
                             Title = "Example Page 2 - Paragraph 2",
-                            WikiPageId = new Guid("3bef0ff7-8486-46a5-aac8-5c801b656506")
+                            WikiPageId = new Guid("1c9cf25b-7958-4807-92ec-432640994f0c")
                         },
                         new
                         {
-                            Id = new Guid("bb470934-f6de-4140-bc35-2df9cb285f79"),
-                            Content = "Et sit corporis fugit soluta odit eaque. Iure ut aliquid impedit sit iusto inventore assumenda earum aspernatur. Accusantium porro illo ducimus. Quo ut quod perspiciatis illum eius eaque in.\n\nConsequatur inventore sunt voluptatem debitis saepe officia aut est. Omnis cupiditate molestiae qui reprehenderit aliquam. Deserunt corrupti distinctio rerum dolor consequatur.",
+                            Id = new Guid("7202da56-9c7f-4f3f-be31-57bf1823cdce"),
+                            Content = "Voluptatem temporibus enim ut ipsum sed voluptatem rerum nisi voluptas. Modi mollitia quas eligendi distinctio sapiente esse. Earum tempora voluptas ut. Adipisci fugit illo tempora nam voluptatem accusantium vel dicta. Provident labore est repellat. Beatae praesentium consequatur.\n\nAt repellendus doloribus doloremque sit earum excepturi. Omnis saepe cumque dolorem non possimus illum ut numquam. Mollitia ab numquam dolores.\n\nQuasi non aliquid tempore minima est et. Maxime facilis beatae odio. Amet voluptate eveniet et ex.\n\nQuo dolorem illum rerum. Quia debitis voluptatum. In accusantium est possimus. Fugit aut consequatur ut architecto voluptatum eaque officia inventore.\n\nOfficiis iure architecto blanditiis sed laborum accusantium. At eum minus atque sed beatae nesciunt. Repellat laudantium et. Delectus adipisci quasi. Corrupti tenetur nobis voluptas et esse. Deleniti cum rerum ut fugiat.\n\nFugiat ut est repellendus. Vel qui assumenda delectus blanditiis deleniti perferendis ut qui quia. Cum non et eaque qui modi. Exercitationem rerum atque ut voluptatibus. Saepe et repellendus omnis nihil aut aut. Libero aut nobis ad optio est consequuntur possimus.\n\nTempora autem debitis sed nihil eveniet est aut consequuntur sapiente. Nostrum ut minima nemo rem quia quia. Rerum enim earum ad veniam dolores hic accusamus. Qui nesciunt doloremque autem et. Non et velit vel sit. Veritatis qui possimus.\n\nMollitia quod incidunt a sit nemo adipisci. Laboriosam natus tempora ullam asperiores. Rerum provident recusandae rerum ut qui. Vel molestiae sit necessitatibus eum distinctio est voluptatibus cum. Accusantium qui voluptates. Perspiciatis a eveniet atque.",
                             Title = "Example Page 2 - Paragraph 3",
-                            WikiPageId = new Guid("3bef0ff7-8486-46a5-aac8-5c801b656506")
+                            WikiPageId = new Guid("1c9cf25b-7958-4807-92ec-432640994f0c")
                         },
                         new
                         {
-                            Id = new Guid("a29307b9-6d25-409b-ad16-0c9f2c73d5b1"),
-                            Content = "Aut recusandae sunt incidunt. Nobis a libero similique inventore. Dolor velit ratione libero molestiae et et. Eos et eos voluptatibus praesentium dolorem. Ducimus minima qui sapiente rerum est ut.\n\nTotam ut fugit quam iste minima ipsa. Ratione est neque voluptates magni mollitia nihil minus. Et velit quod repellendus illo ad qui.\n\nHarum odit libero. Aut quia quaerat id expedita quod dolorem quibusdam labore. Sint doloribus ipsam id ea id ducimus natus quod exercitationem. Minus dolores deserunt enim aut velit quis.\n\nNostrum vel dicta et dolor culpa repellat exercitationem. Quia ea ea delectus temporibus iste ipsum culpa voluptatem. Et enim aut consequuntur id molestiae non. Tempore magnam necessitatibus a earum maiores eum laborum. Aperiam quasi voluptatem architecto velit non quo quo vitae explicabo.\n\nDolor vel omnis. Delectus fuga blanditiis assumenda sit dolorum qui iusto. Veniam atque sint aut maxime maiores non temporibus sapiente sapiente.\n\nNecessitatibus asperiores est. Est rem beatae excepturi facilis laborum. Facilis aspernatur quia porro qui. Et quia omnis fuga totam rerum sit aut soluta.\n\nIpsam et eligendi repudiandae pariatur magni voluptates. Sint nulla error. Corporis voluptatem aut rerum.\n\nAb nisi quia dolorem laboriosam. Tempora consequuntur at voluptatem ullam dignissimos. Voluptatem quam et omnis vero suscipit accusamus. Voluptatem eligendi itaque et voluptatem iure dolorum.",
+                            Id = new Guid("1c26dbd1-4c0a-485e-b1cd-a58ad61d8546"),
+                            Content = "Repudiandae iste rerum quis ut reprehenderit quaerat iusto iste. Fugiat aspernatur vel provident dolorem ipsam est omnis. Quis vel excepturi nesciunt ut laudantium harum cumque ut.\n\nEx saepe distinctio nam soluta mollitia tempore dolores. Eveniet sint est. Ipsum omnis blanditiis soluta aut sit blanditiis. In nisi labore facilis error. Aut sunt sunt est quia iusto eveniet ullam non.\n\nIn optio omnis vel exercitationem doloribus aut eos. Laboriosam eaque harum in tempore. Quaerat dolorum reprehenderit aut modi porro soluta distinctio et.\n\nAtque illo et provident. Est necessitatibus totam et ratione. Provident qui occaecati vel officiis cumque fuga.\n\nEnim autem aut et qui molestias magnam laudantium. Iure commodi modi aut similique quam consequatur quo. Nihil sit ea voluptas repellat necessitatibus voluptatem et.\n\nEos omnis vero est. Numquam occaecati consequatur unde qui corporis. Consequuntur quos optio qui repudiandae tempora excepturi. Corporis repellendus dolores enim.",
                             Title = "Example Page 2 - Paragraph 4",
-                            WikiPageId = new Guid("3bef0ff7-8486-46a5-aac8-5c801b656506")
+                            WikiPageId = new Guid("1c9cf25b-7958-4807-92ec-432640994f0c")
                         },
                         new
                         {
-                            Id = new Guid("c614d0ce-77ff-4cad-b4e5-318c6badb9c4"),
-                            Content = "Cum et libero cupiditate fuga nisi eveniet qui minus. Voluptates in velit odit voluptas sapiente at. Eos enim est deserunt.\n\nQuis quae natus enim qui vero recusandae iste. Occaecati dignissimos rerum ex expedita beatae earum occaecati. Ut saepe expedita hic ratione omnis assumenda iure laboriosam. Nihil quidem fugiat. Magnam quia voluptatum voluptate repudiandae perspiciatis ut.\n\nAliquam tenetur laborum nostrum at suscipit repellat est ipsa. Voluptatem nostrum voluptas repellendus quas nobis minima aliquam. Et et ullam optio qui. Quae beatae vitae odio et ab voluptas porro alias in.\n\nDucimus et ducimus iste expedita sint odio exercitationem blanditiis corporis. Quia adipisci sunt asperiores officiis est qui autem ipsum. Incidunt nulla molestiae.\n\nEt cum vel id. Dicta eum illo. Beatae eos praesentium et incidunt provident perspiciatis. A ut quod mollitia sit. Sint vel quibusdam.\n\nAut quos deleniti. Sequi rerum aut. Sint ducimus est vel est expedita. Voluptatem et aut voluptates aut tenetur quae.\n\nIste dolores eos est doloremque reiciendis quia. Laboriosam architecto in unde quia molestiae molestiae itaque rerum. Quod consequatur et.\n\nSed illo perspiciatis nam. Nemo rerum aliquam ea. Iusto in consequatur quia laboriosam aut voluptate.\n\nSint sed ullam laudantium sed minima maiores aut laboriosam. Nisi aut porro. Et blanditiis sed sed ut. Ad et aspernatur et consequatur vero cupiditate et et.",
+                            Id = new Guid("1af6c5c3-45df-482d-811f-6bc76163bff9"),
+                            Content = "Perferendis doloremque beatae. Commodi laborum similique et voluptatem veritatis quisquam atque id. Sit et ipsam facilis debitis in. Sunt maxime eum est quis ea. At quibusdam perferendis quo et consectetur eum id totam quia.\n\nQuibusdam quam nulla totam autem aut unde. Natus qui sit quibusdam nemo ipsam quis qui omnis. Beatae nulla quibusdam. Necessitatibus omnis ea qui qui quod. Et autem ea.\n\nNeque molestias sit eos reiciendis in blanditiis. Quae ducimus eius officiis omnis. Omnis velit blanditiis autem quo aut. At distinctio provident ut id molestiae placeat eveniet eveniet adipisci.\n\nDoloremque et cum expedita accusamus nobis. Rerum deserunt ab. Quasi eveniet dolorem voluptas et itaque.\n\nEligendi et vel. Doloribus repudiandae incidunt eligendi blanditiis est. Qui quae doloribus ea dolorem possimus exercitationem. Vel et qui occaecati blanditiis. Distinctio ut ad occaecati suscipit.\n\nRem aliquam sit odit dignissimos nihil inventore. Adipisci laudantium ratione soluta debitis et unde amet dolorem hic. Dignissimos qui et. Beatae animi nihil eligendi qui.\n\nEius officia voluptatem sequi earum optio. Ratione quam aut aut ut impedit error nulla voluptas ullam. Eum et est. Officiis assumenda sunt labore minima expedita facilis aperiam expedita nobis. Sint et expedita sit quis ab. Voluptate incidunt sint est pariatur sit enim ut.\n\nMinus dolorem nisi doloribus quis magnam. Quia sunt culpa quia quia est repellat est consectetur. Ut voluptas est autem rem quos aut. Nihil sed unde dignissimos omnis autem vero est. Corrupti illum nisi pariatur hic voluptas id alias qui tenetur.\n\nExplicabo odit eos sed qui quas reiciendis et nemo. Omnis et minus rerum qui. Veritatis velit eaque maxime nulla. Sit eaque ea et. Repellendus modi voluptas atque eos quibusdam et. Id eos nesciunt dolor unde non molestias non.\n\nOmnis et quas atque totam dolor. Earum molestias aut. Asperiores et porro. Sit sint non ut accusamus doloremque natus nulla.",
                             Title = "Example Page 2 - Paragraph 5",
-                            WikiPageId = new Guid("3bef0ff7-8486-46a5-aac8-5c801b656506")
+                            WikiPageId = new Guid("1c9cf25b-7958-4807-92ec-432640994f0c")
                         },
                         new
                         {
-                            Id = new Guid("cd8d24dc-854a-463e-9584-5acfb6676961"),
-                            Content = "Suscipit perferendis repudiandae libero et. Fugit facere repudiandae cupiditate omnis suscipit fugit. Ut cumque aliquam. Laborum voluptatem in iure. Excepturi officiis et et commodi minus cumque voluptatem.\n\nDeleniti quisquam voluptas sit. Fugiat dolore culpa id. Exercitationem hic omnis rerum temporibus saepe enim. Eos voluptas cum rem voluptas est. Rerum at nisi voluptatem reprehenderit iste voluptates voluptate. Iste qui reprehenderit ut nam qui.\n\nOccaecati aut id odit voluptate et asperiores excepturi. Et quo illo quos ea omnis velit. Ut dolorem facere hic qui. Rem ipsa rerum et. Quo praesentium neque ipsa voluptatem quasi ducimus perspiciatis ullam veniam.\n\nEius voluptas pariatur ipsa sit amet numquam amet in. Et porro quia maiores sunt. Impedit aliquid repudiandae omnis rerum aut maxime et error. Illo qui molestiae fuga aut quis sunt. Voluptatem labore dicta.\n\nEum officiis quibusdam qui. Impedit adipisci repellendus. Qui aliquam praesentium deserunt sed quia quia. Et adipisci rerum ad quia quia.",
+                            Id = new Guid("f69370b4-d603-4ab1-a807-4fb0300496e1"),
+                            Content = "Culpa facere minima. Excepturi voluptatibus sapiente neque. Voluptatem tempora recusandae amet nemo. Est molestiae sed nulla repellat. Et culpa natus facere harum explicabo commodi aliquam perferendis facilis. Ut ullam quasi.\n\nDeserunt voluptas optio repudiandae velit quae nostrum quia hic qui. Reprehenderit aut quisquam sit non. Iusto sequi ducimus dolorem enim sapiente dolor velit. Earum saepe voluptatibus.\n\nQuam occaecati enim porro laboriosam voluptas doloremque. Qui tenetur quo temporibus sit et reiciendis culpa id. Expedita sit perspiciatis et sapiente numquam est sit voluptas recusandae. Ipsam commodi est nostrum dolorem. Iusto tenetur ut at amet qui veniam voluptatem inventore.\n\nBeatae ad est sit eligendi. Eligendi nulla rerum error. Mollitia et laborum ab. Quis iste beatae magnam ab est nemo enim. Corporis temporibus distinctio tempore corporis ratione minima. Nam laborum sed et.\n\nDistinctio velit tempore ea voluptates aut dignissimos culpa unde repellat. Aut aperiam provident nihil id sit voluptatibus quae unde. Eos et nam. Qui deleniti necessitatibus iste qui sed. Id maiores nisi quia aspernatur fuga. Qui vel architecto minima ut.\n\nRerum est neque rerum aut. Aut recusandae ad aut minus. Temporibus sint aspernatur.\n\nAut pariatur quo qui. Sit molestiae fugiat quia nesciunt at hic. Ea neque aut accusamus molestiae molestiae laborum sequi. Porro veniam in. Iure sint corrupti quo voluptatem. Est atque sit quas quaerat consequatur omnis molestiae.\n\nOdit quae non voluptates blanditiis. Qui odio iure omnis rerum eos. Qui quas nisi doloribus incidunt molestiae sequi necessitatibus. Ut assumenda qui sint ut sed doloribus odit et illum. Aut nesciunt perspiciatis fugit.\n\nSuscipit placeat voluptatem deserunt odio explicabo ut debitis et cum. Necessitatibus eaque velit qui soluta veritatis enim vel dicta excepturi. Optio et velit vel vero. Non incidunt assumenda odio ipsa. Sed consequuntur est. Vel id aut quis aut est ab.\n\nRecusandae ut doloribus asperiores minus doloribus quod eligendi qui. Nobis fugiat eos laudantium non voluptatem fugiat quo at. Provident fuga dignissimos quaerat voluptate voluptas perspiciatis eius. Deleniti repellat natus aut rerum autem provident est quasi dolorem.",
                             Title = "Example Page 2 - Paragraph 6",
-                            WikiPageId = new Guid("3bef0ff7-8486-46a5-aac8-5c801b656506")
+                            WikiPageId = new Guid("1c9cf25b-7958-4807-92ec-432640994f0c")
                         },
                         new
                         {
-                            Id = new Guid("df93b5b4-59fe-44a4-b612-e1345f1051b5"),
+                            Id = new Guid("cdb78f01-92cc-43ac-9a5e-a0f775093e68"),
                             Content = "User Submitted Content 1",
                             ParagraphImage = "https://i.kym-cdn.com/entries/icons/original/000/029/079/hellothere.jpg",
                             ParagraphImageText = "Hello there",
                             Title = "User Submitted Paragraph 1",
-                            WikiPageId = new Guid("02296446-cfc4-438b-9f19-91d7fbbd46f0")
+                            WikiPageId = new Guid("e782cd19-84ec-4304-b12c-f25d27fb304b")
                         },
                         new
                         {
-                            Id = new Guid("22d34b68-edd9-466a-b5a6-317e16084781"),
+                            Id = new Guid("d4f1b8c7-a2b7-4d46-9064-cf48bd548019"),
                             Content = "User Submitted Content 2",
                             ParagraphImage = "https://i.ytimg.com/vi/jAB3mMdS0xE/maxresdefault.jpg",
                             ParagraphImageText = "General Kenobi",
                             Title = "User Submitted Paragraph 2",
-                            WikiPageId = new Guid("02296446-cfc4-438b-9f19-91d7fbbd46f0")
+                            WikiPageId = new Guid("e782cd19-84ec-4304-b12c-f25d27fb304b")
                         },
                         new
                         {
-                            Id = new Guid("70cfa0bd-2697-4529-ab78-3b32b30d5705"),
+                            Id = new Guid("27212c70-3234-4698-93b0-e00a5b10f7a3"),
                             Content = "Helldivers never die!",
                             ParagraphImage = "https://i.ytimg.com/vi/nhhICroqfpU/hq720_live.jpg",
                             ParagraphImageText = "Helldivers never die!",
                             Title = "New Paragraph 1",
-                            WikiPageId = new Guid("650a9022-7ad9-478a-b178-768ef017b36f")
+                            WikiPageId = new Guid("5de36ea0-59ff-4986-8fc7-f4d7d08bdffc")
                         },
                         new
                         {
-                            Id = new Guid("f902cebf-fea2-44b4-a91c-3349e4ff9e2c"),
+                            Id = new Guid("8b569117-378d-42d4-a052-d274d19174a1"),
                             Content = "Liber-Tea is a funny line haha",
                             ParagraphImage = "https://i.kym-cdn.com/photos/images/original/002/760/001/66d",
                             ParagraphImageText = "Time for a nice cup of Liber-Tea",
                             Title = "Liber-Tea",
-                            WikiPageId = new Guid("650a9022-7ad9-478a-b178-768ef017b36f")
+                            WikiPageId = new Guid("5de36ea0-59ff-4986-8fc7-f4d7d08bdffc")
                         });
                 });
 
@@ -524,13 +631,10 @@ namespace wiki_backend.Migrations
                     b.Property<bool>("IsEdited")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsReply")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("PostDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("ReplayToCommentId")
+                    b.Property<Guid?>("ReplyToCommentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserProfileId")
@@ -541,7 +645,7 @@ namespace wiki_backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReplayToCommentId");
+                    b.HasIndex("ReplyToCommentId");
 
                     b.HasIndex("UserProfileId");
 
@@ -621,20 +725,20 @@ namespace wiki_backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1178b9f4-0fa9-4a5e-a462-36adcedb4032"),
-                            CategoryId = new Guid("74f028aa-fbc0-4367-916c-0a3594f0fef2"),
+                            Id = new Guid("7982bd1c-f21d-4439-9034-0f03fc6ada8c"),
+                            CategoryId = new Guid("ff6c5f6a-aeb5-4a8a-88df-9bebe463e136"),
                             LegacyWikiPage = true,
-                            PostDate = new DateTime(2024, 5, 2, 19, 5, 14, 237, DateTimeKind.Local).AddTicks(1461),
+                            PostDate = new DateTime(2024, 5, 22, 21, 28, 5, 705, DateTimeKind.Local).AddTicks(879),
                             RoleNote = "Example RoleNote 1",
                             SiteSub = "Example SiteSub 1",
                             Title = "Example Page 1"
                         },
                         new
                         {
-                            Id = new Guid("3bef0ff7-8486-46a5-aac8-5c801b656506"),
-                            CategoryId = new Guid("00915953-6c7b-4a3c-b134-de4e4b606ea4"),
+                            Id = new Guid("1c9cf25b-7958-4807-92ec-432640994f0c"),
+                            CategoryId = new Guid("b8a91816-0463-4eb7-b079-3f30bff7f60f"),
                             LegacyWikiPage = true,
-                            PostDate = new DateTime(2024, 5, 2, 19, 5, 14, 237, DateTimeKind.Local).AddTicks(1504),
+                            PostDate = new DateTime(2024, 5, 22, 21, 28, 5, 705, DateTimeKind.Local).AddTicks(941),
                             RoleNote = "Example RoleNote 2",
                             SiteSub = "Example SiteSub 2",
                             Title = "Example Page 2"
@@ -665,10 +769,10 @@ namespace wiki_backend.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("02296446-cfc4-438b-9f19-91d7fbbd46f0"),
-                            CategoryId = new Guid("a350914b-0878-4a3f-a881-a19987d02b8e"),
+                            Id = new Guid("e782cd19-84ec-4304-b12c-f25d27fb304b"),
+                            CategoryId = new Guid("47fa806b-4324-4bea-be54-5771bbe6ab2b"),
                             LegacyWikiPage = true,
-                            PostDate = new DateTime(2024, 5, 2, 19, 5, 14, 237, DateTimeKind.Local).AddTicks(1639),
+                            PostDate = new DateTime(2024, 5, 22, 21, 28, 5, 705, DateTimeKind.Local).AddTicks(1238),
                             RoleNote = "User Submitted RoleNote",
                             SiteSub = "User Submitted SiteSub",
                             Title = "User Submitted Page",
@@ -678,17 +782,17 @@ namespace wiki_backend.Migrations
                         },
                         new
                         {
-                            Id = new Guid("650a9022-7ad9-478a-b178-768ef017b36f"),
-                            CategoryId = new Guid("112f76e0-9c50-4b53-b653-5896641151c7"),
+                            Id = new Guid("5de36ea0-59ff-4986-8fc7-f4d7d08bdffc"),
+                            CategoryId = new Guid("6c655e2a-3639-4f05-914e-30e5b253378f"),
                             LegacyWikiPage = true,
-                            PostDate = new DateTime(2024, 5, 2, 19, 5, 14, 237, DateTimeKind.Local).AddTicks(1643),
+                            PostDate = new DateTime(2024, 5, 22, 21, 28, 5, 705, DateTimeKind.Local).AddTicks(1248),
                             RoleNote = "Example RoleNote 1 Update",
                             SiteSub = "Example SiteSub 1 Update",
                             Title = "Example Page 1",
                             Approved = false,
                             IsNewPage = false,
                             SubmittedBy = "tester",
-                            WikiPageId = new Guid("1178b9f4-0fa9-4a5e-a462-36adcedb4032")
+                            WikiPageId = new Guid("7982bd1c-f21d-4439-9034-0f03fc6ada8c")
                         });
                 });
 
@@ -754,6 +858,51 @@ namespace wiki_backend.Migrations
                     b.Navigation("Profile");
                 });
 
+            modelBuilder.Entity("wiki_backend.Models.ForumModels.ForumComment", b =>
+                {
+                    b.HasOne("wiki_backend.Models.ForumModels.ForumPost", "ForumPost")
+                        .WithMany("Comments")
+                        .HasForeignKey("ForumPostId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("wiki_backend.Models.ForumModels.ForumComment", "ReplyToComment")
+                        .WithMany()
+                        .HasForeignKey("ReplyToCommentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("wiki_backend.Models.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForumPost");
+
+                    b.Navigation("ReplyToComment");
+
+                    b.Navigation("UserProfile");
+                });
+
+            modelBuilder.Entity("wiki_backend.Models.ForumModels.ForumPost", b =>
+                {
+                    b.HasOne("wiki_backend.Models.ForumModels.ForumTopic", "ForumTopic")
+                        .WithMany("ForumPosts")
+                        .HasForeignKey("ForumTopicId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("wiki_backend.Models.UserProfile", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ForumTopic");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("wiki_backend.Models.Paragraph", b =>
                 {
                     b.HasOne("wiki_backend.Models.WikiPage", "WikiPage")
@@ -768,8 +917,8 @@ namespace wiki_backend.Migrations
             modelBuilder.Entity("wiki_backend.Models.UserComment", b =>
                 {
                     b.HasOne("wiki_backend.Models.UserComment", "ReplyToComment")
-                        .WithMany()
-                        .HasForeignKey("ReplayToCommentId");
+                        .WithMany("Replies")
+                        .HasForeignKey("ReplyToCommentId");
 
                     b.HasOne("wiki_backend.Models.UserProfile", "UserProfile")
                         .WithMany()
@@ -813,6 +962,21 @@ namespace wiki_backend.Migrations
             modelBuilder.Entity("wiki_backend.Models.Category", b =>
                 {
                     b.Navigation("WikiPages");
+                });
+
+            modelBuilder.Entity("wiki_backend.Models.ForumModels.ForumPost", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("wiki_backend.Models.ForumModels.ForumTopic", b =>
+                {
+                    b.Navigation("ForumPosts");
+                });
+
+            modelBuilder.Entity("wiki_backend.Models.UserComment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("wiki_backend.Models.UserProfile", b =>

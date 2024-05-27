@@ -21,6 +21,12 @@ import ProfilePage from "./Pages/ProfilePage/ProfilePage.js";
 import EditProfilePage from "./Pages/ProfilePage/EditProfilePage.js";
 import CategoryPageComponent from "./Pages/Categories/CategoryPageComponent.js";
 import EditCategoriesPage from "./Pages/Categories/EditCategoriesPage.js";
+import ForumLandingPage from "./Pages/ForumPages/ForumLandingPage.js";
+import ForumPage from "./Pages/ForumPages/ForumPage.js";
+import ForumPost from "./Pages/ForumPages/ForumPost.js";
+import CreateForumTopic from "./Pages/ForumPages/CreateForumTopic.js";
+import ProtectedRoute from "./Components/ProtectedRoute.js";
+import PublicRoute from "./Components/PublicRoute.js";
 
 function App() {
 
@@ -122,33 +128,96 @@ function App() {
     setDecodedToken(null);
   };
 
-  return (
+   return (
     <CookiesProvider>
       <UserContextProvider>
         <Router>
-            <StyleProvider>
-              <Routes>
-                <Route path="/" element={<MainPage decodedToken={decodedToken} handleLogout={handleLogout} cookies={cookies} setWikiPageTitles = {setWikiPageTitles} categories={categories}/>} > 
-                  <Route path="/" element={<HomeComponent pages={wikiPageTitles} categories={categories}/>} />
-                  <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} cookies={cookies["jwt_token"]}/>} />
-                  <Route path="/page/:title/edit" element={<EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
-                  <Route path="/page/:title/legacyedit" element={<LegacyEditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/> } />
-                  <Route path="/legacycreate" element={<LegacyEditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
-                  <Route path="/create" element={<EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>} />
-                  <Route path="/edit-wiki" element={<EditStylePage cookies={cookies["jwt_token"]}></EditStylePage>}/>
-                  <Route path="/login" element = {<LoginPageComponent handleLogin={handleLogin}></LoginPageComponent>}/>
-                  <Route path="/register" element = {<RegisterPageComponent/>}/>
-                  <Route path="/user-submissions" element = {<UserRequestsPageComponent/>}/>
-                  <Route path="/user-submissions/:id" element = {<CheckUserSubmittedPage/>}/>
-                  <Route path="/user-updates" element = {<UserRequestsPageComponent/>}/>
-                  <Route path="/user-updates/:id" element = {<CompareUpdatePage/>}/>
-                  <Route path="/profile/:username" element= {<ProfilePage loggedInUser={decodedToken?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]}/>}/>
-                  <Route path="/profile/edit/:username" element={<EditProfilePage cookies={cookies["jwt_token"]}/>}/>
-                  <Route path="/categories/edit" element={<EditCategoriesPage setAppCategories={setCategories} cookies={cookies["jwt_token"]}/>}/>
-                  <Route path="/categories/:category" element={<CategoryPageComponent pages={wikiPageTitles} categories={categories}/>}/>
-                </Route>
-              </Routes>
-            </StyleProvider>
+          <StyleProvider>
+            <Routes>
+              <Route path="/" element={<MainPage decodedToken={decodedToken} handleLogout={handleLogout} cookies={cookies} setWikiPageTitles={setWikiPageTitles} categories={categories} />}>
+                <Route path="/" element={<HomeComponent pages={wikiPageTitles} categories={categories} />} />
+                <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} cookies={cookies["jwt_token"]} />}/>
+                <Route path="/page/:title/edit" 
+                  element={
+                  <ProtectedRoute>
+                    <EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>
+                  </ProtectedRoute>
+                  } 
+                />
+                <Route path="/page/:title/legacyedit" element={
+                  <ProtectedRoute>
+                    <LegacyEditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>
+                  </ProtectedRoute>
+                } />
+                <Route path="/legacycreate" element={
+                  <ProtectedRoute>
+                    <LegacyEditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>
+                  </ProtectedRoute>
+                } />
+                <Route path="/create" element={
+                  <ProtectedRoute>
+                    <EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>
+                  </ProtectedRoute>
+                } />
+                <Route path="/edit-wiki" element={
+                  <ProtectedRoute roles={['Admin']} >
+                    <EditStylePage cookies={cookies["jwt_token"]}/>
+                  </ProtectedRoute>
+                } />
+                <Route path="/login" element={
+                  <PublicRoute>
+                    <LoginPageComponent handleLogin={handleLogin}/>
+                  </PublicRoute>
+                } />
+                <Route path="/register" element={
+                  <PublicRoute>
+                    <RegisterPageComponent/>
+                  </PublicRoute>
+                } />
+                <Route path="/user-submissions" element={
+                  <ProtectedRoute roles={['Admin']} >
+                    <UserRequestsPageComponent/>
+                  </ProtectedRoute>
+                } />
+                <Route path="/user-submissions/:id" element={
+                  <ProtectedRoute roles={['Admin']} >
+                    <CheckUserSubmittedPage/>
+                  </ProtectedRoute>
+                } />
+                <Route path="/user-updates" element={
+                  <ProtectedRoute roles={['Admin']} >
+                    <UserRequestsPageComponent/>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/user-updates/:id" element={
+                  <ProtectedRoute  roles={['Admin']} >
+                    <CompareUpdatePage/>
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile/:username" element={<ProfilePage loggedInUser={decodedToken?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]}/>} />
+                <Route path="/profile/edit/:username" element={
+                  <ProtectedRoute>
+                    <EditProfilePage cookies={cookies["jwt_token"]}/>
+                  </ProtectedRoute>
+                } />
+                <Route path="/categories/edit" element={
+                  <ProtectedRoute  roles={['Admin']} >
+                    <EditCategoriesPage setAppCategories={setCategories} cookies={cookies["jwt_token"]}/>
+                  </ProtectedRoute>
+                }/>
+                <Route path="/categories/:category" element={<CategoryPageComponent pages={wikiPageTitles} categories={categories} />} />
+                <Route path="/forum" element={<ForumLandingPage />} />
+                <Route path="/forum/:slug" element={<ForumPage cookies={cookies["jwt_token"]} />} />
+                <Route path="/forum/:slug/create-topic" element={
+                  <ProtectedRoute  roles={['Admin']}>
+                    <CreateForumTopic cookies={cookies["jwt_token"]}/>
+                  </ProtectedRoute>
+                }/>
+                <Route path="/forum/:slug/:postSlug" element={<ForumPost cookies={cookies["jwt_token"]} />} />
+              </Route>
+            </Routes>
+          </StyleProvider>
         </Router>
       </UserContextProvider>
     </CookiesProvider>

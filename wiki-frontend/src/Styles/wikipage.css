@@ -59,7 +59,8 @@
 
 .wikipage-comment{
     display: flex;
-    margin-bottom: 10px;
+    margin-bottom: 1em;
+    width: 100%;
 }
 
 .wikipage-comment-profilepic{
@@ -74,6 +75,20 @@
     object-fit: cover;
 }
 
+.wikipage-reply{
+    display: flex;
+    align-items: center; /* Vertically center align items */
+    margin-bottom: 1em; /* Adjust margin as needed */
+    /* margin-left: 1em; */
+}
+
+.wikipage-reply-profile {
+    margin-right: 0.1em; /* Adjust margin as needed */
+}
+
+.wikipage-reply-content {
+    flex: 1; /* Takes remaining width */
+}
 
 .profilepage-profilepic img{
     display: block;
@@ -103,7 +118,6 @@
 .wikipage-comment-text p{
     margin: 0;
     font-size: 14px;
-    margin-top: 5px;
     text-align: justify;
 }
 

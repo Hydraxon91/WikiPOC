@@ -55,12 +55,7 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
     }
   }, [page]);
 
-  // useEffect(()=>{
-  //   console.log("images");
-  //   console.log(images);
-  //   console.log("used images");
-  //   console.log(usedImages);
-  // },[usedImages])
+
 
   const handleContentChange = (value) => {
     // setContent(value);

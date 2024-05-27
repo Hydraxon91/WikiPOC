@@ -28,7 +28,7 @@ const WikiPage = ({page: wikipage, setDecodedTitle, cookies, disableNavbar = fal
     }
 
     return(
-        <>
+        <div className="article" style={{backgroundColor: styles.articleColor}}>
             {!disableNavbar &&(
                 <>
                     <div className="wiki-navbar" style={{backgroundColor: styles.articleRightInnerColor}}>
@@ -75,7 +75,7 @@ const WikiPage = ({page: wikipage, setDecodedTitle, cookies, disableNavbar = fal
                     activeTab={activeTab}
                 />
             </div>
-        </>
+        </div>
     )
 };
 

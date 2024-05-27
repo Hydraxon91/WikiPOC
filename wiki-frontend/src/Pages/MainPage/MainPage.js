@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import WikiList from './Components/WikiList';
+import Breadcrumbs from '../ForumPages/Components/Breadcrumbs';
+import HeaderComponent from './Components/HeaderComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { getWikiPageTitles } from '../../Api/wikiApi';
@@ -9,7 +11,7 @@ const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, cate
   const location = useLocation();
   const { styles }  = useStyleContext();
   const { updateUser } = useUserContext();
-  const [userName, setUserName] = useState("Not logged in");
+  const [userName, setUserName] = useState(null);
   const [userRole, setUserRole] = useState(null);
 
   useEffect(()=>{
@@ -20,7 +22,7 @@ const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, cate
       setUserRole("Role: " +decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
     }
     else{
-      setUserName("Not logged in")
+      setUserName(null)
       setUserRole(null);
     }
   }, [decodedToken])
@@ -43,10 +45,12 @@ const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, cate
   return (
     <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily}} >
       <div>
+        <HeaderComponent userName={userName} userRole={userRole}/>
+        {/* <Breadcrumbs/> */}
         <WikiList handleLogout={handleLogout} cookies={cookies} categories={categories}/>
         <div className="mainsection">
-          <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div>
-          <div className="article" style={{backgroundColor: styles.articleColor}}>
+          {/* <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div> */}
+          <div>
             {/* Render children, which will be the specific WikiPage component */}
             <Outlet />
           </div>

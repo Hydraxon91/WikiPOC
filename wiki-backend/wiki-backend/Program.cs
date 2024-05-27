@@ -7,8 +7,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
+using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Identity;
 using wiki_backend.Models;
+using wiki_backend.Models.ForumModels;
 using wiki_backend.Services.Authentication;
 using wiki_backend.Services.Profile;
 
@@ -62,10 +64,12 @@ app.MapControllers();
 
 if (Environment.GetEnvironmentVariable("Environment") != "Testing")
 {
-    AddRoles();
-    AddAdmin();
-    AddUser();
-    SeedComments();
+    await AddRolesAsync();
+    await AddAdminAsync();
+    await AddUserAsync();
+    await SeedCommentsAsync();
+    await SeedForumTopicsAsync();
+    await SeedForumPostsAsync();
 }
 
 app.Run();
@@ -112,6 +116,9 @@ void AddServices()
     builder.Services.AddTransient<IUserProfileRepository, UserProfileRepository>();
     builder.Services.AddTransient<IUserCommentRepository, UserCommentRepository>();
     builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
+    builder.Services.AddTransient<IForumPostRepository, ForumPostRepository>();
+    builder.Services.AddTransient<IForumTopicRepository, ForumTopicRepository>();
+    builder.Services.AddTransient<IForumCommentRepository, ForumCommentRepository>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ITokenServices, TokenServices>();
     builder.Services.AddSingleton(new ProfileImageSettings(picturesPath));
@@ -192,21 +199,19 @@ void ConfigureSwagger()
     });
 }
 
-void AddRoles()
+async Task AddRolesAsync()
 {
     using var scope = app.Services.CreateScope();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    if (!roleManager.RoleExistsAsync("Admin").Result)
+    if (!await roleManager.RoleExistsAsync("Admin"))
     {
-        var tAdmin = CreateAdminRole(roleManager);
-        tAdmin.Wait();
+        await CreateAdminRole(roleManager);
     }
 
-    if (!roleManager.RoleExistsAsync("User").Result)
+    if (!await roleManager.RoleExistsAsync("User"))
     {
-        var tUser = CreateUserRole(roleManager);
-        tUser.Wait();
+        await CreateUserRole(roleManager);
     }
 }
 
@@ -220,10 +225,9 @@ async Task CreateUserRole(RoleManager<IdentityRole> roleManager)
     await roleManager.CreateAsync(new IdentityRole("User"));
 }
 
-void AddAdmin()
+async Task AddAdminAsync()
 {
-    var tAdmin = CreateAdminIfNotExists();
-    tAdmin.Wait();
+    await CreateAdminIfNotExists();
 }
 
 async Task CreateAdminIfNotExists()
@@ -270,10 +274,9 @@ async Task CreateAdminIfNotExists()
     }
 }
 
-void AddUser()
+async Task AddUserAsync()
 {
-    var tUser = CreateUserIfNotExists();
-    tUser.Wait();
+    await CreateUserIfNotExists();
 }
 
 async Task CreateUserIfNotExists()
@@ -319,57 +322,177 @@ async Task CreateUserIfNotExists()
     }
 }
 
-void SeedComments()
+async Task SeedCommentsAsync()
 {
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-    // Ensure that user profiles exist for the users you created
-    var adminUser = userManager.FindByEmailAsync("admin@admin.com").Result;
-    var testUser = userManager.FindByEmailAsync("test@test.com").Result;
+    var adminUser = await userManager.FindByEmailAsync("admin@admin.com");
+    var testUser = await userManager.FindByEmailAsync("test@test.com");
 
     if (adminUser != null && testUser != null)
     {
-        var wikiPage = dbContext.WikiPages.FirstOrDefault(wp => wp.Title == "Example Page 1" && wp.SiteSub == "Example SiteSub 1");
+        var wikiPage = await dbContext.WikiPages
+            .FirstOrDefaultAsync(wp => wp.Title == "Example Page 1" && wp.SiteSub == "Example SiteSub 1");
 
         if (wikiPage != null)
         {
-            var comments = new List<UserComment>
+            // Check if comments exist for this wiki page
+            if (!dbContext.UserComments.Any(comment => comment.WikiPageId == wikiPage.Id))
             {
-                new UserComment
+                var comments = new List<UserComment>
                 {
-                    UserProfileId = adminUser.ProfileId,
-                    UserProfile = adminUser.Profile,
-                    Content = "Test comment from Admin",
-                    WikiPageId = wikiPage.Id,
-                    PostDate = DateTime.Now,
-                    IsReply = false,
-                    IsEdited = false
-                },
-                new UserComment
-                {
-                    UserProfileId = testUser.ProfileId,
-                    UserProfile = testUser.Profile,
-                    Content = "Test comment from Tester",
-                    WikiPageId = wikiPage.Id,
-                    PostDate = DateTime.Now,
-                    IsReply = false,
-                    IsEdited = false
-                },
-                new UserComment
-                {
-                    UserProfileId = testUser.ProfileId,
-                    UserProfile = testUser.Profile,
-                    Content = "Test comment 2 from Tester",
-                    WikiPageId = wikiPage.Id,
-                    PostDate = DateTime.Now,
-                    IsReply = false,
-                    IsEdited = true
-                }
-            };
-            dbContext.UserComments.AddRange(comments);
-            dbContext.SaveChanges();
+                    new UserComment
+                    {
+                        UserProfileId = adminUser.ProfileId,
+                        UserProfile = adminUser.Profile,
+                        Content = "Test comment from Admin",
+                        WikiPageId = wikiPage.Id,
+                        PostDate = DateTime.Now,
+                        IsEdited = false
+                    },
+                    new UserComment
+                    {
+                        UserProfileId = testUser.ProfileId,
+                        UserProfile = testUser.Profile,
+                        Content = "Test comment from Tester",
+                        WikiPageId = wikiPage.Id,
+                        PostDate = DateTime.Now,
+                        IsEdited = false
+                    },
+                    new UserComment
+                    {
+                        UserProfileId = testUser.ProfileId,
+                        UserProfile = testUser.Profile,
+                        Content = "Test comment 2 from Tester",
+                        WikiPageId = wikiPage.Id,
+                        PostDate = DateTime.Now,
+                        IsEdited = true
+                    }
+                };
+                dbContext.UserComments.AddRange(comments);
+                await dbContext.SaveChangesAsync();
+            }
         }
+    }
+}
+
+async Task SeedForumTopicsAsync()
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+    if (!dbContext.ForumTopics.Any())
+    {
+        var topics = new List<ForumTopic>
+        {
+            new ForumTopic
+            {
+                Id = Guid.NewGuid(),
+                Title = "Main Forum",
+                Description = "General discussion forum for all topics.",
+                Slug = "main-forum",
+                Order = 0
+            },
+            new ForumTopic
+            {
+                Id = Guid.NewGuid(),
+                Title = "Off Topic",
+                Description = "Discussion forum for non-related topics.",
+                Slug = "off-topic",
+                Order = 1
+            },
+            new ForumTopic
+            {
+                Id = Guid.NewGuid(),
+                Title = "Foreign Languages Forum",
+                Description = "Forum for discussing topics in different languages.",
+                Slug = "foreign-languages-forum",
+                Order = 2
+            },
+            new ForumTopic
+            {
+                Id = Guid.NewGuid(),
+                Title = "Archive",
+                Description = "Forum for archived topics and discussions.",
+                Slug = "archive",
+                Order = 3
+            },
+        };
+        dbContext.ForumTopics.AddRange(topics);
+        await dbContext.SaveChangesAsync();
+    }
+
+    
+}
+
+async Task SeedForumPostsAsync()
+{
+    using var scope = app.Services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    var adminUser = await userManager.FindByEmailAsync("admin@admin.com");
+    var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+
+    var topics = await dbContext.ForumTopics.ToListAsync();
+
+    if (!dbContext.ForumPosts.Any())
+    {
+        var forumPosts = new List<ForumPost>
+        {
+            new ForumPost
+            {
+                Id = Guid.NewGuid(),
+                PostTitle = "Welcome to the Main Forum!",
+                Content = "Feel free to start discussions about anything!",
+                PostDate = DateTime.Now,
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "main-forum"),
+                Slug = "welcome-to-the-main-forum",
+                UserId = adminUser.ProfileId,
+                UserName = adminUser.UserName,
+                User = adminUser.Profile
+            },
+            new ForumPost
+            {
+                Id = Guid.NewGuid(),
+                PostTitle = "Rules of the Off Topic Forum",
+                Content = "This is a place for non-related discussions. Please keep it friendly and respectful.",
+                PostDate = DateTime.Now,
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "off-topic"),
+                Slug = "rules-of-the-off-topic-forum",
+                UserId = adminUser.ProfileId,
+                UserName = adminUser.UserName,
+                User = adminUser.Profile
+            },
+            new ForumPost
+            {
+                Id = Guid.NewGuid(),
+                PostTitle = "Discussion in French",
+                Content = "Bonjour! Let's discuss various topics in French in this forum.",
+                PostDate = DateTime.Now,
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "foreign-languages-forum"),
+                Slug = "discussion-in-french",
+                UserId = adminUser.ProfileId,
+                UserName = adminUser.UserName,
+                User = adminUser.Profile
+            },
+            new ForumPost
+            {
+                Id = Guid.NewGuid(),
+                PostTitle = "Archived Topic: Previous Discussion",
+                Content = "This is an archived discussion. It's here for reference purposes.",
+                PostDate = DateTime.Now,
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "archive"),
+                Slug = "archived-topic-previous-discussion",
+                UserId = adminUser.ProfileId,
+                UserName = adminUser.UserName,
+                User = adminUser.Profile
+            }
+        };
+
+        dbContext.ForumPosts.AddRange(forumPosts);
+        await dbContext.SaveChangesAsync();
     }
 }

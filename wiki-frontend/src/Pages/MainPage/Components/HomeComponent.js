@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { StyleProvider, useStyleContext } from '../../../Components/contexts/StyleContext';
 
 const HomeComponent = ({ pages, categories }) => {
   const [pagesByCategory, setPagesByCategory] = useState({});
+  const {styles} = useStyleContext();
 
   useEffect(() => {
     // Organize pages by category
@@ -18,7 +20,7 @@ const HomeComponent = ({ pages, categories }) => {
   }, [pages, categories]);
 
   return (
-    <div className='home-component'>
+    <div className='home-component article' style={{backgroundColor: styles.articleColor}}>
       <h2>Wiki Articles Categorized</h2>
       {Object.entries(pagesByCategory).map(([category, pages]) => (
         <div key={category}>

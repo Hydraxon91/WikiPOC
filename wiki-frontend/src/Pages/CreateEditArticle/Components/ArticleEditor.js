@@ -3,11 +3,13 @@ import ReactQuill from 'react-quill';
 import CustomHTMLPopup from './CustomHTMLPopup';
 import UserImagesContainer from './UserImagesContainer';
 import { fetchCategories } from '../../../Api/wikiApi';
+import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import 'react-quill/dist/quill.snow.css';
 
 
 const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave, images, setImages, category }) => {
   const quillRef = useRef(null); // Define quillRef
+  const {styles} = useStyleContext();
   const [lastSelection, setLastSelection] = useState(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -157,7 +159,7 @@ const getCategories = async () => {
 
 
   return (
-    <div className="article article-editor">
+    <div className="article article-editor" style={{backgroundColor: styles.articleColor}}>
       <div className='editDiv'>
         <label className="editLabel">Article Title:</label>
         <input 

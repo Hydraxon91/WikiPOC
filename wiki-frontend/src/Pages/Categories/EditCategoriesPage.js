@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { addCategory, deleteCategory, fetchCategories } from '../../Api/wikiApi';
 import './Style/categorypagestyle.css';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
 
 const EditCategoriesPage = ({ setAppCategories, cookies }) => {
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState('');
+    const {styles} = useStyleContext();
 
     useEffect(() => {
         fetchCategories()
@@ -61,7 +63,7 @@ const EditCategoriesPage = ({ setAppCategories, cookies }) => {
     };
   
     return (
-      <div>
+      <div className="article" style={{backgroundColor: styles.articleColor}}>
         <p className='cat-text'>Categories:</p>
         <ul>
           {categories.map((category, index) => (

@@ -1,40 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
-import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getNewPageTitles, getUpdatePageTitles } from "../../../Api/wikiApi";
-import { getLogo } from "../../../Api/wikiApi";
 
 const WikiList = ({ handleLogout, cookies, categories}) => {
-  const { styles }  = useStyleContext();
-  const [imageSrc, setImageSrc] = useState("/img/logo.png");
   const {decodedTokenContext, updateUser} = useUserContext();
   const [role, setRole] = useState(null);
   const [pagesWaitingForApproval, setPagesWaitingForApproval] = useState();
   const [updatesWaitingForApproval, setUpdatesWaitingForApproval] = useState();
 
-  useEffect(()=>{
-    if (styles && styles.logo) {
-        // Fetch profile picture when the component mounts or profilePicture prop changes
-        getLogo(styles.logo)
-            .then(data => {
-                if (data instanceof Blob) { // Check if data is a Blob object
-                    const imageUrl = URL.createObjectURL(data);
-                    setImageSrc(imageUrl);
-                } else if (typeof data === 'string' && data.startsWith('blob:')) {
-                    setImageSrc(data);
-                } else {
-                    console.error('Invalid profile picture data:', data);
-                    throw new Error('Invalid profile picture data');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching profile picture:', error);
-                // Use default image URL in case of error
-                setImageSrc("/img/logo.png");
-            });
-    }
-},[styles.logo])
 
   useEffect(() => {
     if (decodedTokenContext) {
@@ -145,9 +119,6 @@ const WikiList = ({ handleLogout, cookies, categories}) => {
   
 return (
   <div className="sidebar">
-    <div className="logo">
-      <Link to="/"><img src={imageSrc} alt="logo"/></Link>
-    </div>
     <div className="navigation">
       <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Categories</h3>
       {categories && categories.map((category, index) => (
@@ -157,6 +128,14 @@ return (
           </Link>
         </div>
       ))}
+      <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Forum Tools</h3>
+      <ul>
+        <li>
+          <Link key="forum-page-link" to="/forum">
+            Forum
+          </Link>
+        </li>
+      </ul>
       {decodedTokenContext ? UserTools() : LoginTools()}
     </div>
     

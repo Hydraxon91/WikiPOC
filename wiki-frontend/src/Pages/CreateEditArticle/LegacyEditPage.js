@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
 import EditPageComponent from './Components/LegacyEditPageComponent';
 import LegacyWikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
 
 
 const LegacyEditPage = ({ page, handleFieldChange, handleSave, category, setCategory }) => {
-  const navigate = useNavigate();
-
+  const {styles} = useStyleContext();
   const [temporaryPage, setTemporaryPage] = useState(null);
   const [title, setTitle] = useState('');
   const [siteSub, setSiteSub] = useState('');
@@ -78,7 +77,7 @@ const LegacyEditPage = ({ page, handleFieldChange, handleSave, category, setCate
 
 
   return (
-    <div style={{display: 'flex'}}>
+    <div style={{backgroundColor: styles.articleColor, display: 'flex'}} className="article">
       <EditPageComponent newPage={newPage} title={title} handleFieldChange={handleFieldChange} siteSub={siteSub} roleNote={roleNote} paragraphs={paragraphs} emptyFields={emptyFields} handleParagraphChange={handleParagraphChange} handleRemoveParagraph={handleRemoveParagraph} handleAddParagraph={handleAddParagraph} handleSave={handleSave} category={category} />
       <LegacyWikiPageComponent page={temporaryPage} activeTab={"wiki"}/>
     </div>

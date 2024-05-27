@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
 
 const CategoryPageComponent = ({ pages, categories }) => {
   const { category } = useParams(); // Extract category from URL
   const [pagesByCategory, setPagesByCategory] = useState({});
   const [pagesInCurrentCategory, setPagesInCurrentCategory] = useState([])
-
+  const {styles} = useStyleContext()
+;
   useEffect(() => {
     // Organize pages by category
     const pagesByCategory = {};
@@ -25,7 +27,7 @@ const CategoryPageComponent = ({ pages, categories }) => {
   },[pagesByCategory])
 
   return (
-    <div className='home-component'>
+    <div className='home-component article' style={{backgroundColor: styles.articleColor}}>
       <h2>Category: {category}</h2>
       {pagesInCurrentCategory.length > 0 ? (
         <ul>
