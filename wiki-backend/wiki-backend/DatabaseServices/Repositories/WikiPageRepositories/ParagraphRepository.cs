@@ -12,7 +12,7 @@ public class ParagraphRepository : IParagraphRepository
         _context = context;
     }
 
-    public async Task<Paragraph?> GetByIdAsync(int id)
+    public async Task<Paragraph?> GetByIdAsync(Guid id)
     {
         return await _context.Paragraphs.FindAsync(id);
     }
@@ -37,7 +37,7 @@ public class ParagraphRepository : IParagraphRepository
         return paragraph;
     }
     
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         var paragraphToDelete = await GetByIdAsync(id);
         if (paragraphToDelete != null)

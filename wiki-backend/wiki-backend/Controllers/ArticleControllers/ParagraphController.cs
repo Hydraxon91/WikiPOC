@@ -20,7 +20,7 @@ namespace wiki_backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Paragraph>> GetParagraph(int id)
+        public async Task<ActionResult<Paragraph>> GetParagraph(Guid id)
         {
             var paragraph = await _paragraphRepository.GetByIdAsync(id);
 
@@ -41,7 +41,7 @@ namespace wiki_backend.Controllers
         }
         
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteParagraph(int id)
+        public async Task<IActionResult> DeleteParagraph(Guid id)
         {
             await _paragraphRepository.DeleteAsync(id);
             return NoContent();
