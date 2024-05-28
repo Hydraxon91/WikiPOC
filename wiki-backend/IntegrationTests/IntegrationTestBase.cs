@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
+using DotNetEnv;
 
 namespace IntegrationTests
 {
@@ -15,6 +16,8 @@ namespace IntegrationTests
         
         public IntegrationTestBase()
         {
+            Env.Load();
+            
             var services = new ServiceCollection();
             services.AddDbContext<WikiDbContext>(options =>
                 options.UseSqlServer(GetConnectionString())); // Use the method to get connection string
