@@ -23,22 +23,10 @@ namespace IntegrationTests.Services
         public void Setup()
         {
             // Initialize AuthService with required services
-
-            // Register required services and dependencies
-            var services = new ServiceCollection();
-            services.AddLogging();
-            services.AddDbContext<WikiDbContext>(options =>
-                options.UseSqlServer("Server=localhost,1433;Database=IntTestDb;User=sa;Password=YourPassword123!;Encrypt=false;"));
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<WikiDbContext>()
-                .AddDefaultTokenProviders();
-
+            _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             _tokenServicesMock = new Mock<ITokenServices>();
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             _authService = new AuthService(_userManager, _tokenServicesMock.Object, DbContext);
+            // ResetDatabase();
         }
         
         [Test]
@@ -60,7 +48,6 @@ namespace IntegrationTests.Services
                 Console.WriteLine(error.Key, " ", error.Value);
             }
             Assert.IsTrue(result.Success);
-            // Add more assertions if needed
         }
 
         [Test]
@@ -85,7 +72,88 @@ namespace IntegrationTests.Services
             Console.WriteLine(result);
             Assert.IsTrue(result.Success);
             Assert.AreEqual("mocked_token", result.Token); // Check if the mocked token is returned
-            // Add more assertions if needed
         }
+        [Test]
+        public async Task RegisterAsync_ShouldFail_WhenInvalidInputData()
+        {
+            // Arrange
+            var email = "test";
+            var username = "testuser3";
+            var password = "@Testpassword2";
+            var role = "User";
+
+            // Act
+            var result = await _authService.RegisterAsync(null, null, null, role);
+
+            // Assert
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Bad request", result.ErrorMessages.Keys.First());
+            Assert.AreEqual("Invalid input data", result.ErrorMessages.Values.First());
+        }
+
+        [Test]
+        public async Task RegisterAsync_ShouldFail_WhenDuplicateEmail()
+        {
+            // Arrange
+            var email = "test4@example.com";
+            var username = "testuser4";
+            var password = "@Testpassword2";
+            var role = "User";
+
+            // First, register a new user
+            await _authService.RegisterAsync(email, username, password, role);
+
+            // Act
+            var result = await _authService.RegisterAsync(email, "newuser", password, role);
+
+            foreach (var error in result.ErrorMessages)
+            {
+                Console.WriteLine(error.Key, " ", error.Value);
+            }
+            // Assert
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Duplicate email", result.ErrorMessages.Keys.First());
+            Assert.AreEqual("Email is already taken", result.ErrorMessages.Values.First());
+        }
+        
+        [Test]
+        public async Task RegisterAsync_ShouldFail_WhenInvalidEmailFormat()
+        {
+            // Arrange
+            var email = "invalidemail";
+            var username = "testuser";
+            var password = "@Testpassword2";
+            var role = "User";
+
+            // Act
+            var result = await _authService.RegisterAsync(email, username, password, role);
+
+            // Assert
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Invalid email", result.ErrorMessages.Keys.First());
+            Assert.AreEqual("Email is not in a valid format", result.ErrorMessages.Values.First());
+        }
+        
+        [Test]
+        public async Task LoginAsync_ShouldFail_WhenInvalidCredentials()
+        {
+            // Arrange
+            var email = "test5@example.com";
+            var username = "testuser5";
+            var password = "@Testpassword2";
+
+            // First, register a new user
+            await _authService.RegisterAsync(email, username, password, "User");
+
+            // Act
+            var result = await _authService.LoginAsync(email, "invalidpassword");
+
+            // Assert
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Bad credentials", result.ErrorMessages.Keys.First());
+            Assert.AreEqual("Invalid password", result.ErrorMessages.Values.First());
+        }
+        
+
     }
 }

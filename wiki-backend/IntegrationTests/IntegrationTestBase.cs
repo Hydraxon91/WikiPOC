@@ -58,6 +58,13 @@ namespace IntegrationTests
                 await roleManager.CreateAsync(new IdentityRole("User"));
             }
         }
+        
+        protected void ResetDatabase()
+        {
+            DbContext.Database.EnsureDeleted();
+            DbContext.Database.EnsureCreated();
+            Task.Run(async () => await EnsureRolesAsync()).Wait(); 
+        }
 
         public void Dispose()
         {
