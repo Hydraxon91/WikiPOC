@@ -10,6 +10,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
 {
     private readonly IConfiguration _configuration;
 
+
     public WikiDbContext(DbContextOptions<WikiDbContext> options, IConfiguration configuration)
         : base(options)
     {
@@ -17,11 +18,12 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
         if (Database.IsRelational()) Database.Migrate();
     }
 
-    // Parameterless constructor for Moq (only for testing purposes)
-    // public WikiDbContext() : base()
-    // {
-    //     // Parameterless constructor
-    // }
+    public WikiDbContext(DbContextOptions<WikiDbContext> options)
+        : base(options)
+    {
+        if (Database.IsRelational()) Database.Migrate();
+    }
+    
 
     public DbSet<WikiPage> WikiPages { get; set; }
     public DbSet<UserSubmittedWikiPage> UserSubmittedWikiPages { get; set; }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NUnit.Framework;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Identity;
@@ -15,28 +17,48 @@ namespace IntegrationTests.Services
     {
         private AuthService _authService;
         private UserManager<ApplicationUser> _userManager;
+        private Mock<ITokenServices> _tokenServicesMock;
 
         [SetUp]
         public void Setup()
         {
             // Initialize AuthService with required services
-            _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            _authService = new AuthService(_userManager, new TokenServices(), DbContext);
-        }
 
+            // Register required services and dependencies
+            var services = new ServiceCollection();
+            services.AddLogging();
+            services.AddDbContext<WikiDbContext>(options =>
+                options.UseSqlServer("Server=localhost,1433;Database=IntTestDb;User=sa;Password=YourPassword123!;Encrypt=false;"));
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<WikiDbContext>()
+                .AddDefaultTokenProviders();
+
+            _tokenServicesMock = new Mock<ITokenServices>();
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            _authService = new AuthService(_userManager, _tokenServicesMock.Object, DbContext);
+        }
+        
         [Test]
         public async Task RegisterAsync_ShouldRegisterNewUser()
         {
             // Arrange
             var email = "test@example.com";
             var username = "testuser";
-            var password = "testpassword";
-            var role = "User"; // Provide a valid role
+            var password = "@Testpassword2";
+            var role = "User";
 
             // Act
             var result = await _authService.RegisterAsync(email, username, password, role);
 
             // Assert
+            Console.WriteLine(result);
+            foreach (var error in result.ErrorMessages)
+            {
+                Console.WriteLine(error.Key, " ", error.Value);
+            }
             Assert.IsTrue(result.Success);
             // Add more assertions if needed
         }
@@ -45,19 +67,24 @@ namespace IntegrationTests.Services
         public async Task LoginAsync_ShouldLoginUser()
         {
             // Arrange
-            var email = "test@example.com";
-            var username = "testuser";
-            var password = "testpassword";
+            var email = "test2@example.com";
+            var username = "testuser2";
+            var password = "@Testpassword2";
+            var role = "User";
 
             // First, register a new user
-            await _authService.RegisterAsync(email, username, password, "User");
+            await _authService.RegisterAsync(email, username, password, role);
+
+            // Mock token generation
+            _tokenServicesMock.Setup(x => x.CreateToken(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns("mocked_token");
 
             // Act
             var result = await _authService.LoginAsync(email, password);
 
             // Assert
+            Console.WriteLine(result);
             Assert.IsTrue(result.Success);
-            Assert.NotNull(result.Token);
+            Assert.AreEqual("mocked_token", result.Token); // Check if the mocked token is returned
             // Add more assertions if needed
         }
     }

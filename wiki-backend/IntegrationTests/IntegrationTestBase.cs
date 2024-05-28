@@ -1,11 +1,12 @@
 ﻿using System;
-using IntegrationTests.Services;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
 using DotNetEnv;
+using Microsoft.Extensions.Logging;
 
 namespace IntegrationTests
 {
@@ -13,28 +14,49 @@ namespace IntegrationTests
     {
         protected readonly ServiceProvider ServiceProvider;
         protected readonly WikiDbContext DbContext;
-        
+
         public IntegrationTestBase()
         {
-            Env.Load();
-            
+            DotNetEnv.Env.Load(".env"); // Load environment variables from the .env file
+            Console.WriteLine(Environment.GetEnvironmentVariable("INTEGRATIONTEST_CONNECTIONSTRING"));
+            Console.WriteLine("Test");
+
             var services = new ServiceCollection();
+
+            services.AddLogging(); // Add logging service
+
             services.AddDbContext<WikiDbContext>(options =>
-                options.UseSqlServer(GetConnectionString())); // Use the method to get connection string
-            
+            {
+                var connectionString = "Server=localhost,1433;Database=IntTestDb;User=sa;Password=YourPassword123!;Encrypt=false;";
+                options.UseSqlServer(connectionString);
+            });
+
             services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddUserStore<TestUserStore>() // Use the test user store
-                .AddDefaultTokenProviders(); // Add token provider
-            
+                    .AddEntityFrameworkStores<WikiDbContext>()
+                    .AddDefaultTokenProviders();
+
             ServiceProvider = services.BuildServiceProvider();
             DbContext = ServiceProvider.GetRequiredService<WikiDbContext>();
             DbContext.Database.EnsureCreated();
+
+            // Ensure roles exist
+            Task.Run(async () => await EnsureRolesAsync()).Wait(); // Wait for roles creation to finish
         }
 
-        private static string GetConnectionString()
+        private async Task EnsureRolesAsync()
         {
-            // Retrieve the connection string from environment variables or configuration
-            return Environment.GetEnvironmentVariable("INTEGRATIONTEST_CONNECTIONSTRING");
+            using var scope = ServiceProvider.CreateScope();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            if (!await roleManager.RoleExistsAsync("Admin"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+
+            if (!await roleManager.RoleExistsAsync("User"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("User"));
+            }
         }
 
         public void Dispose()
