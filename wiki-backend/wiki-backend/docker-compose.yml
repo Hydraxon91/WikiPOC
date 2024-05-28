@@ -36,25 +36,3 @@ services:
     ports:
       - "1433:1433"  # Adjust the port mapping as needed
   
-  integration-tests:
-    image: integration-tests:latest
-    build:
-      context: .
-      dockerfile: IntegrationTests.Dockerfile
-    depends_on:
-      - sql-server
-    environment:
-      INTEGRATIONTEST_CONNECTIONSTRING: ${INTEGRATIONTEST_CONNECTIONSTRING}
-      ADMINUSER_EMAIL: ${ADMINUSER_EMAIL}
-      ADMINUSER_PASSWORD: ${ADMINUSER_PASSWORD}
-      ADMINUSER_USERNAME: ${ADMINUSER_USERNAME}
-      TESTUSER_EMAIL: ${TESTUSER_EMAIL}
-      TESTUSER_PASSWORD: ${TESTUSER_PASSWORD}
-      TESTUSER_USERNAME: ${TESTUSER_USERNAME}
-      JWT_ISSUER_SIGNING_KEY: ${JWT_ISSUER_SIGNING_KEY}
-      JWT_VALID_AUDIENCE: ${JWT_VALID_AUDIENCE}
-      JWT_VALID_ISSUER: ${JWT_VALID_ISSUER}
-      JWT_TOKEN_TIME: ${JWT_TOKEN_TIME}
-      PICTURES_PATH: ${PROFILE_PICTURES_PATH}
-      PICTURES_PATH_CONTAINER: ${PICTURES_PATH_CONTAINER}
-    entrypoint: [ "dotnet", "test", "--logger:trx" ]
