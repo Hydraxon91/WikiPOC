@@ -27,7 +27,7 @@ public class ParagraphRepositoryTests
         // Use AddDbContext to configure the WikiDbContext
         _wikiDbContext = new WikiDbContext(options, configuration: null); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
-        _wikiDbContext.Database.EnsureDeleted();
+        // _wikiDbContext.Database.EnsureDeleted();
         _paragraphRepository = new ParagraphRepository(_wikiDbContext);
     }
     
@@ -43,7 +43,8 @@ public class ParagraphRepositoryTests
     public async Task GetByIdAsync_ShouldReturnParagraph()
     {
         // Arrange
-        var testData = new Paragraph { Id = 1, Title = "Test Paragraph" };
+        var testId = Guid.NewGuid();
+        var testData = new Paragraph { Id = testId, Title = "Test Paragraph" };
 
         // Add the test data to the in-memory database
         _wikiDbContext.Paragraphs.Add(testData);
@@ -52,9 +53,10 @@ public class ParagraphRepositoryTests
         var repository = new ParagraphRepository(_wikiDbContext);
 
         // Act
-        var result = await repository.GetByIdAsync(1);
+        var result = await repository.GetByIdAsync(testId);
 
         // Assert
+        Console.WriteLine(result);
         Assert.IsNotNull(result);
         Assert.AreEqual(testData.Id, result.Id);
         Assert.AreEqual(testData.Title, result.Title);
@@ -64,9 +66,10 @@ public class ParagraphRepositoryTests
     public async Task CreateAsync_ShouldReturnCreatedParagraph()
     {
         // Arrange
+        var articleId = Guid.NewGuid();
         var testWikiPage = new WikiPage
         {
-            Id = 1,
+            Id = articleId,
             Title = "To be used for testing",
             RoleNote = "RoleNote",
             SiteSub = "SiteSub",
@@ -74,7 +77,7 @@ public class ParagraphRepositoryTests
         
         _wikiDbContext.WikiPages.Add(testWikiPage);
         await _wikiDbContext.SaveChangesAsync();
-        var testData = new Paragraph { Title = "New Paragraph", WikiPageId = 1};
+        var testData = new Paragraph { Title = "New Paragraph", WikiPageId = articleId};
     
         // Act
         await _paragraphRepository.CreateAsync(testData);
@@ -88,7 +91,7 @@ public class ParagraphRepositoryTests
     public async Task CreateAsync_ShouldReturnNullWhenWikiPageNotFound()
     {
         // Arrange
-        var testData = new Paragraph { Title = "New Paragraph", WikiPageId = 1 };
+        var testData = new Paragraph { Title = "New Paragraph", WikiPageId = Guid.NewGuid() };
 
         // Act
         var result = await _paragraphRepository.CreateAsync(testData);
@@ -103,7 +106,7 @@ public class ParagraphRepositoryTests
         // Arrange
         var testWikiPage = new WikiPage
         {
-            Id = 1,
+            Id = Guid.NewGuid(),
             Title = "To be deleted",
             RoleNote = "RoleNote",
             SiteSub = "SiteSub",
@@ -111,7 +114,7 @@ public class ParagraphRepositoryTests
 
         var testParagraph = new Paragraph
         {
-            Id = 1,
+            Id = Guid.NewGuid(),
             Title = "Paragraph to be deleted",
             WikiPageId = testWikiPage.Id,
         };

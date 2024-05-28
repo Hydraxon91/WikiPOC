@@ -39,19 +39,21 @@ public class UserCommentRepositoryTests
     public async Task GetByIdAsync_ShouldReturnUserCommentWhenExists()
     {
         // Arrange
+        var commentId = Guid.NewGuid();
+        var profileId = Guid.NewGuid();
         var testUserComment = new UserComment
         {
-            Id = 1,
+            Id = commentId,
             Content = "Test comment",
-            UserProfileId = 1,
-            UserProfile = new UserProfile { Id = 1, UserName = "test_user" }
+            UserProfileId = profileId,
+            UserProfile = new UserProfile { Id = profileId, UserName = "test_user" }
         };
 
         _wikiDbContext.UserComments.Add(testUserComment);
         await _wikiDbContext.SaveChangesAsync();
 
         // Act
-        var result = await _userCommentRepository.GetByIdAsync(1);
+        var result = await _userCommentRepository.GetByIdAsync(commentId);
 
         // Assert
         Assert.IsNotNull(result);
@@ -65,13 +67,14 @@ public class UserCommentRepositoryTests
     public async Task AddAsync_ShouldAddCommentToDatabase()
     {
         // Arrange
+        var articleId = Guid.NewGuid();
+        var profileId = Guid.NewGuid();
         var testComment = new UserComment
         {
             Content = "Test comment",
-            UserProfileId = 1,
-            WikiPageId = 1,
+            UserProfileId = profileId,
+            WikiPageId = articleId,
             PostDate = DateTime.Now,
-            IsReply = false,
             IsEdited = false
         };
 
@@ -89,13 +92,14 @@ public class UserCommentRepositoryTests
     public async Task UpdateAsync_ShouldUpdateComment()
     {
         // Arrange
+        var articleId = Guid.NewGuid();
+        var profileId = Guid.NewGuid();
         var testComment = new UserComment
         {
             Content = "Original comment",
-            UserProfileId = 1,
-            WikiPageId = 1,
+            UserProfileId = profileId,
+            WikiPageId = articleId,
             PostDate = DateTime.Now,
-            IsReply = false,
             IsEdited = false
         };
         await _wikiDbContext.UserComments.AddAsync(testComment);
@@ -118,7 +122,7 @@ public class UserCommentRepositoryTests
     public async Task UpdateAsync_InvalidId_ShouldThrowException()
     {
         // Arrange
-        var invalidCommentId = 999;
+        var invalidCommentId = Guid.NewGuid();
 
         // Act & Assert
         var exception = Assert.ThrowsAsync<InvalidOperationException>(async () =>
@@ -134,13 +138,14 @@ public class UserCommentRepositoryTests
     public async Task DeleteAsync_ShouldDeleteComment()
     {
         // Arrange
+        var articleId = Guid.NewGuid();
+        var profileId = Guid.NewGuid();
         var testComment = new UserComment
         {
             Content = "Comment to delete",
-            UserProfileId = 1,
-            WikiPageId = 1,
+            UserProfileId = profileId,
+            WikiPageId = articleId,
             PostDate = DateTime.Now,
-            IsReply = false,
             IsEdited = false
         };
         await _wikiDbContext.UserComments.AddAsync(testComment);
