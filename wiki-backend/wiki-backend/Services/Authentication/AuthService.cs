@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Identity;
@@ -21,6 +22,33 @@ public class AuthService : IAuthService
     
     public async Task<AuthResult> RegisterAsync(string email, string username, string password, string role)
     {
+        // Check if any of the required parameters are null or empty
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            return new AuthResult(false, email, username, null)
+            {
+                ErrorMessages = { { "Bad request", "Invalid input data" } }
+            };
+        }
+        
+        if (!IsValidEmail(email))
+        {
+            return new AuthResult(false, email, username, null)
+            {
+                ErrorMessages = { { "Invalid email", "Email is not in a valid format" } }
+            };
+        }
+        
+        // Check if the email is already in use
+        var existingUserWithEmail = await _userManager.FindByEmailAsync(email);
+        if (existingUserWithEmail != null)
+        {
+            return new AuthResult(false, email, username, null)
+            {
+                ErrorMessages = { { "Duplicate email", "Email is already taken" } }
+            };
+        }
+        
         var user = new ApplicationUser() { UserName = username, Email = email };
     
         // Create UserProfile instance
@@ -107,6 +135,12 @@ public class AuthService : IAuthService
         var result = new AuthResult(false, email, userName, "");
         result.ErrorMessages.Add("Bad credentials", "Invalid password");
         return result;
+    }
+    private bool IsValidEmail(string email)
+    {
+        // Use a simple regular expression to validate email format
+        string pattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
+        return Regex.IsMatch(email, pattern);
     }
 }
 
