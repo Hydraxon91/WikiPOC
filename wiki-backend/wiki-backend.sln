@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wiki-backend", "wiki-backen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "..\WikiPOC.Tests\UnitTests\UnitTests.csproj", "{5713A216-479F-47A2-8206-AFD89593FD57}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{A71C2DE0-33E4-4E84-BB03-ABEDBF29C159}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{5713A216-479F-47A2-8206-AFD89593FD57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5713A216-479F-47A2-8206-AFD89593FD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5713A216-479F-47A2-8206-AFD89593FD57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A71C2DE0-33E4-4E84-BB03-ABEDBF29C159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A71C2DE0-33E4-4E84-BB03-ABEDBF29C159}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A71C2DE0-33E4-4E84-BB03-ABEDBF29C159}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A71C2DE0-33E4-4E84-BB03-ABEDBF29C159}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
