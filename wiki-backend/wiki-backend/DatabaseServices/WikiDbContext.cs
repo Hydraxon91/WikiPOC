@@ -41,13 +41,16 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
+        var isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Testing";
+
+        if (isTesting) return;
         var faker = new Faker();
-        
+
         modelBuilder.Entity<WikiPage>()
             .Property(wp => wp.Id)
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("NEWID()");
-        
+
         modelBuilder.Entity<WikiPage>()
             .HasMany(wp => wp.Paragraphs)
             .WithOne(p => p.WikiPage)
@@ -58,13 +61,13 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .HasMany(wp => wp.Comments)
             .WithOne(c => c.WikiPage)
             .HasForeignKey(c => c.WikiPageId);
-        
+
         modelBuilder.Entity<WikiPage>()
             .HasOne(wp => wp.Category) // Navigation property
             .WithMany(c => c.WikiPages) // Collection navigation property in Category
             .HasForeignKey(wp => wp.CategoryId) // Foreign key
             .OnDelete(DeleteBehavior.Restrict); // Set delete behavior as you need
-        
+
         modelBuilder.Entity<UserSubmittedWikiPage>()
             .HasBaseType<WikiPage>()
             .HasOne(uswp => uswp.WikiPage)
@@ -76,38 +79,38 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .HasOne(au => au.Profile)
             .WithOne(up => up.User)
             .HasForeignKey<ApplicationUser>(au => au.ProfileId);
-        
+
         modelBuilder.Entity<UserComment>()
             .HasOne(uc => uc.WikiPage)
             .WithMany(wp => wp.Comments)
             .HasForeignKey(uc => uc.WikiPageId);
-        
+
         modelBuilder.Entity<UserComment>()
             .HasOne(uc => uc.UserProfile)
             .WithMany() // No need to have a navigation property in UserProfile
             .HasForeignKey(uc => uc.UserProfileId);
-        
+
         modelBuilder.Entity<ForumTopic>()
             .Property(ft => ft.Order);
-        
+
         modelBuilder.Entity<ForumPost>()
             .HasOne(fp => fp.ForumTopic)
             .WithMany(ft => ft.ForumPosts) // Assuming you have a ForumPosts navigation property in ForumTopic
-            .HasForeignKey(fp => fp.ForumTopicId)  
+            .HasForeignKey(fp => fp.ForumTopicId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         modelBuilder.Entity<ForumPost>()
             .HasOne(fp => fp.User)
             .WithMany()
-            .HasForeignKey(fp => fp.UserId)  
+            .HasForeignKey(fp => fp.UserId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         modelBuilder.Entity<ForumPost>()
             .HasMany(fp => fp.Comments)
             .WithOne(c => c.ForumPost)
             .HasForeignKey(c => c.ForumPostId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         modelBuilder.Entity<ForumComment>()
             .HasOne(fc => fc.ForumPost)
             .WithMany(fp => fp.Comments)
@@ -124,34 +127,35 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .WithMany()
             .HasForeignKey(fc => fc.ReplyToCommentId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         //Generating Article IDs
         var wikiPage1Id = Guid.NewGuid();
         var wikiPage2Id = Guid.NewGuid();
         var wikiPage3Id = Guid.NewGuid();
         var wikiPage4Id = Guid.NewGuid();
-        
+
         //Generating Category Ids
         var category1Id = Guid.NewGuid();
         var category2Id = Guid.NewGuid();
         var category3Id = Guid.NewGuid();
         var category4Id = Guid.NewGuid();
-        
+
         var paragraphs1 = new List<Paragraph>()
         {
             new Paragraph
             {
-                Id = Guid.NewGuid(), 
+                Id = Guid.NewGuid(),
                 WikiPageId = wikiPage1Id,
                 Title = $"Example Page 1 - Paragraph 1",
-                Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
+                Content = faker.Lorem.Paragraphs(faker.Random.Number(1,
+                    10)), // Generate bogus lorem ipsum-like content
                 ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
                 ParagraphImageText = "Example ParagraphImageText 1"
             }
         };
         paragraphs1.AddRange(Enumerable.Range(2, 5).Select(index => new Paragraph
         {
-            Id = Guid.NewGuid(), 
+            Id = Guid.NewGuid(),
             WikiPageId = wikiPage1Id,
             Title = $"Example Page 1 - Paragraph {index}",
             Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
@@ -161,17 +165,18 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             new Paragraph
             {
-                Id = Guid.NewGuid(), 
+                Id = Guid.NewGuid(),
                 WikiPageId = wikiPage2Id,
                 Title = $"Example Page 2 - Paragraph 1",
-                Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
+                Content = faker.Lorem.Paragraphs(faker.Random.Number(1,
+                    10)), // Generate bogus lorem ipsum-like content
                 ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
                 ParagraphImageText = "Example ParagraphImageText 2"
             }
         };
         paragraphs2.AddRange(Enumerable.Range(2, 5).Select(index => new Paragraph
         {
-            Id = Guid.NewGuid(), 
+            Id = Guid.NewGuid(),
             WikiPageId = wikiPage2Id,
             Title = $"Example Page 2 - Paragraph {index}",
             Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)),
@@ -200,7 +205,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             CategoryId = category2Id,
             // Paragraphs = paragraphs2
         };
-        
+
         modelBuilder.Entity<WikiPage>().HasData(
             wp1,
             wp2
@@ -275,7 +280,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
                 ParagraphImageText = "Time for a nice cup of Liber-Tea"
             }
         };
-        
+
         modelBuilder.Entity<Paragraph>().HasData(
             paragraphs1.Concat(paragraphs2).Concat(paragraphs3).ToList()
         );
@@ -346,7 +351,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             }
         );
 
-        
+
         modelBuilder.Entity<StyleModel>().HasData(
             new StyleModel
             {
@@ -362,7 +367,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
                 FontFamily = "Arial, sans-serif",
             }
         );
-        
+
     }
     
 }

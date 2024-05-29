@@ -18,15 +18,18 @@ namespace IntegrationTests
         protected readonly string JwtValidIssuer;
         protected readonly string JwtValidAudience;
         protected readonly string JwtIssuerSigningKey;
+        protected readonly string PicturesPathContainer;
         
         public IntegrationTestBase()
         {
             Env.TraversePath().Load(); // Load environment variables from the .env file
             var dbConnectionString = Environment.GetEnvironmentVariable("INTEGRATIONTEST_CONNECTIONSTRING");
+            Console.WriteLine(dbConnectionString);
             JwtTokenTime = Environment.GetEnvironmentVariable("JWT_TOKEN_TIME");
             JwtValidIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER");
             JwtValidAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE");
             JwtIssuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
+            PicturesPathContainer = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER") ?? "default/pictures/path";
 
             var services = new ServiceCollection();
 
@@ -69,7 +72,7 @@ namespace IntegrationTests
         {
             DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();
-            Task.Run(async () => await EnsureRolesAsync()).Wait(); 
+            // Task.Run(async () => await EnsureRolesAsync()).Wait(); 
         }
 
         public void Dispose()

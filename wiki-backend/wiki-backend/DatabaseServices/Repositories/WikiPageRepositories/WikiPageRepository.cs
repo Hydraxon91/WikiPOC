@@ -198,6 +198,7 @@ public class WikiPageRepository : IWikiPageRepository
     public async Task AcceptUserSubmittedWikiPage(UserSubmittedWikiPage userSubmittedWikiPage)
     {
         _context.Entry(userSubmittedWikiPage).State = EntityState.Modified;
+        userSubmittedWikiPage.Approved = true;
         // Add the article to the category
         await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId.Value, userSubmittedWikiPage);
         await _context.SaveChangesAsync();
