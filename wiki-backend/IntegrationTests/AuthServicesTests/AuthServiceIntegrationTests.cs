@@ -29,12 +29,18 @@ namespace IntegrationTests.Services
             // ResetDatabase();
         }
         
+        private static string GetRandomizedString(string baseString)
+        {
+            var random = new Random();
+            return $"{baseString}{random.Next(1, 99999)}";
+        }
+        
         [Test]
         public async Task RegisterAsync_ShouldRegisterNewUser()
         {
             // Arrange
-            var email = "test@example.com";
-            var username = "testuser";
+            var email = $"{GetRandomizedString("test")}@example.com";
+            var username = GetRandomizedString("testuser");
             var password = "@Testpassword2";
             var role = "User";
 
@@ -42,44 +48,32 @@ namespace IntegrationTests.Services
             var result = await _authService.RegisterAsync(email, username, password, role);
 
             // Assert
-            Console.WriteLine(result);
-            foreach (var error in result.ErrorMessages)
-            {
-                Console.WriteLine(error.Key, " ", error.Value);
-            }
             Assert.IsTrue(result.Success);
         }
-
+        
         [Test]
-        public async Task LoginAsync_ShouldLoginUser()
+        public async Task RegisterAsync_PasswordRequiresNonAlphanumeric_UpperCase_Numeric_ShouldFail()
         {
             // Arrange
-            var email = "test2@example.com";
-            var username = "testuser2";
-            var password = "@Testpassword2";
+            var email = $"{GetRandomizedString("test")}@example.com";
+            var username = GetRandomizedString("testuser");
+            var password = "wrongpassword"; // Password missing non-alphanumeric, digits, and uppercase
             var role = "User";
 
-            // First, register a new user
-            await _authService.RegisterAsync(email, username, password, role);
-
-            // Mock token generation
-            _tokenServicesMock.Setup(x => x.CreateToken(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns("mocked_token");
-
             // Act
-            var result = await _authService.LoginAsync(email, password);
+            var result = await _authService.RegisterAsync(email, username, password, role);
 
             // Assert
-            Console.WriteLine(result);
-            Assert.IsTrue(result.Success);
-            Assert.AreEqual("mocked_token", result.Token); // Check if the mocked token is returned
+            Assert.IsFalse(result.Success);
+            Assert.IsTrue(result.ErrorMessages.ContainsKey("PasswordRequiresNonAlphanumeric"), "Expected error message for missing non-alphanumeric characters.");
+            Assert.IsTrue(result.ErrorMessages.ContainsKey("PasswordRequiresDigit"), "Expected error message for missing digits.");
+            Assert.IsTrue(result.ErrorMessages.ContainsKey("PasswordRequiresUpper"), "Expected error message for missing uppercase letters.");
         }
+        
         [Test]
         public async Task RegisterAsync_ShouldFail_WhenInvalidInputData()
         {
             // Arrange
-            var email = "test";
-            var username = "testuser3";
-            var password = "@Testpassword2";
             var role = "User";
 
             // Act
@@ -90,13 +84,13 @@ namespace IntegrationTests.Services
             Assert.AreEqual("Bad request", result.ErrorMessages.Keys.First());
             Assert.AreEqual("Invalid input data", result.ErrorMessages.Values.First());
         }
-
+        
         [Test]
-        public async Task RegisterAsync_ShouldFail_WhenDuplicateEmail()
+        public async Task RegisterAsync_ShouldFail_WhenDuplicateUser()
         {
             // Arrange
-            var email = "test4@example.com";
-            var username = "testuser4";
+            var email = $"{GetRandomizedString("test55")}@example.com";
+            var username = "testuser";
             var password = "@Testpassword2";
             var role = "User";
 
@@ -104,12 +98,29 @@ namespace IntegrationTests.Services
             await _authService.RegisterAsync(email, username, password, role);
 
             // Act
-            var result = await _authService.RegisterAsync(email, "newuser", password, role);
+            var result = await _authService.RegisterAsync($"{GetRandomizedString("test56")}@example.com", username, password, role);
 
-            foreach (var error in result.ErrorMessages)
-            {
-                Console.WriteLine(error.Key, " ", error.Value);
-            }
+            // Assert
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("DuplicateUserName", result.ErrorMessages.Keys.First());
+            Assert.AreEqual("Username 'testuser' is already taken.", result.ErrorMessages.Values.First());
+        }
+
+        [Test]
+        public async Task RegisterAsync_ShouldFail_WhenDuplicateEmail()
+        {
+            // Arrange
+            var email = $"{GetRandomizedString("test")}@example.com";
+            var username = GetRandomizedString("testuser");
+            var password = "@Testpassword2";
+            var role = "User";
+
+            // First, register a new user
+            await _authService.RegisterAsync(email, username, password, role);
+
+            // Act
+            var result = await _authService.RegisterAsync(email, GetRandomizedString("newuser"), password, role);
+
             // Assert
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Duplicate email", result.ErrorMessages.Keys.First());
@@ -121,7 +132,7 @@ namespace IntegrationTests.Services
         {
             // Arrange
             var email = "invalidemail";
-            var username = "testuser";
+            var username = GetRandomizedString("testuser");
             var password = "@Testpassword2";
             var role = "User";
 
@@ -135,11 +146,34 @@ namespace IntegrationTests.Services
         }
         
         [Test]
+        public async Task LoginAsync_ShouldLoginUser()
+        {
+            // Arrange
+            var email = $"{GetRandomizedString("test")}@example.com";
+            var username = GetRandomizedString("testuser");
+            var password = "@Testpassword2";
+            var role = "User";
+
+            // First, register a new user
+            await _authService.RegisterAsync(email, username, password, role);
+
+            // Mock token generation
+            _tokenServicesMock.Setup(x => x.CreateToken(It.IsAny<ApplicationUser>(), It.IsAny<string>())).Returns("mocked_token");
+
+            // Act
+            var result = await _authService.LoginAsync(email, password);
+
+            // Assert
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("mocked_token", result.Token); // Check if the mocked token is returned
+        }
+        
+        [Test]
         public async Task LoginAsync_ShouldFail_WhenInvalidCredentials()
         {
             // Arrange
-            var email = "test5@example.com";
-            var username = "testuser5";
+            var email = $"{GetRandomizedString("test5")}@example.com";
+            var username = GetRandomizedString("testuser5");
             var password = "@Testpassword2";
 
             // First, register a new user
@@ -154,6 +188,41 @@ namespace IntegrationTests.Services
             Assert.AreEqual("Invalid password", result.ErrorMessages.Values.First());
         }
         
+        [Test]
+        public async Task LoginAsync_ShouldFail_WhenNonExistentUser_Email()
+        {
+            // Arrange
+            var email = $"{GetRandomizedString("test5")}@example.com";
+            var password = "@Testpassword2";
 
+            // Act
+            var result = await _authService.LoginAsync(email, password);
+
+            // Assert
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Bad credentials", result.ErrorMessages.Keys.First());
+            Assert.AreEqual("Invalid email", result.ErrorMessages.Values.First());
+        }
+
+        
+        [Test]
+        public async Task LoginAsync_ShouldFail_WhenNonExistentUser_Username()
+        {
+            // Arrange
+            var username = GetRandomizedString("testuser69");
+            var password = "@Testpassword2";
+
+            // Act
+            var result = await _authService.LoginAsync(username, password);
+            // Console.WriteLine(result);
+            // foreach (var error in result.ErrorMessages)
+            // {
+            //     Console.WriteLine(error.Key, " ", error.Value);
+            // }
+            // Assert
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Bad credentials", result.ErrorMessages.Keys.First());
+            Assert.AreEqual("Invalid Username", result.ErrorMessages.Values.First());
+        }
     }
 }
