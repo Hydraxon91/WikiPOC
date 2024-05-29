@@ -17,9 +17,8 @@ namespace IntegrationTests
 
         public IntegrationTestBase()
         {
-            DotNetEnv.Env.Load(".env"); // Load environment variables from the .env file
-            Console.WriteLine(Environment.GetEnvironmentVariable("INTEGRATIONTEST_CONNECTIONSTRING"));
-            Console.WriteLine("Test");
+            Env.TraversePath().Load(); // Load environment variables from the .env file
+            var dbConnectionString = Environment.GetEnvironmentVariable("INTEGRATIONTEST_CONNECTIONSTRING");
 
             var services = new ServiceCollection();
 
@@ -27,8 +26,7 @@ namespace IntegrationTests
 
             services.AddDbContext<WikiDbContext>(options =>
             {
-                var connectionString = "Server=localhost,1433;Database=IntTestDb;User=sa;Password=YourPassword123!;Encrypt=false;";
-                options.UseSqlServer(connectionString);
+                options.UseSqlServer(dbConnectionString);
             });
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
