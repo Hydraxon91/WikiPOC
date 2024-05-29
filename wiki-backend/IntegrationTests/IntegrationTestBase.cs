@@ -14,11 +14,19 @@ namespace IntegrationTests
     {
         protected readonly ServiceProvider ServiceProvider;
         protected readonly WikiDbContext DbContext;
-
+        protected readonly string JwtTokenTime;
+        protected readonly string JwtValidIssuer;
+        protected readonly string JwtValidAudience;
+        protected readonly string JwtIssuerSigningKey;
+        
         public IntegrationTestBase()
         {
             Env.TraversePath().Load(); // Load environment variables from the .env file
             var dbConnectionString = Environment.GetEnvironmentVariable("INTEGRATIONTEST_CONNECTIONSTRING");
+            JwtTokenTime = Environment.GetEnvironmentVariable("JWT_TOKEN_TIME");
+            JwtValidIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER");
+            JwtValidAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE");
+            JwtIssuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
 
             var services = new ServiceCollection();
 
@@ -66,8 +74,15 @@ namespace IntegrationTests
 
         public void Dispose()
         {
-            DbContext.Database.EnsureDeleted();
+            DbContext?.Database.EnsureDeleted();
             DbContext.Dispose();
+            ServiceProvider?.Dispose();
+        }
+        
+        protected static string GetRandomizedString(string baseString)
+        {
+            var random = new Random();
+            return $"{baseString}{random.Next(1, 99999)}";
         }
     }
 }

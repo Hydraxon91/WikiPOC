@@ -29,11 +29,7 @@ namespace IntegrationTests.Services
             // ResetDatabase();
         }
         
-        private static string GetRandomizedString(string baseString)
-        {
-            var random = new Random();
-            return $"{baseString}{random.Next(1, 99999)}";
-        }
+        
         
         [Test]
         public async Task RegisterAsync_ShouldRegisterNewUser()
@@ -203,7 +199,6 @@ namespace IntegrationTests.Services
             Assert.AreEqual("Bad credentials", result.ErrorMessages.Keys.First());
             Assert.AreEqual("Invalid email", result.ErrorMessages.Values.First());
         }
-
         
         [Test]
         public async Task LoginAsync_ShouldFail_WhenNonExistentUser_Username()
