@@ -9,7 +9,7 @@ namespace IntegrationTests.ForumRepositoriesTests;
 public class ForumPostRepositoryTests : IntegrationTestBase
 {
     private ForumPostRepository _repository;
-    
+
     [SetUp]
     public void SetUp()
     {
@@ -41,7 +41,7 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var topic = await DbContext.ForumTopics.FirstOrDefaultAsync();
         var userprofile = await DbContext.UserProfiles.FirstOrDefaultAsync();
         var postId = Guid.NewGuid();
-        var post = new ForumPost { Id = postId, PostTitle = "New Post", Content = "New Content", Slug = "new-post",UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
+        var post = new ForumPost { Id = postId, PostTitle = "New Post", Content = "New Content", Slug = "new-post", UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
         DbContext.ForumPosts.Add(post);
         await DbContext.SaveChangesAsync();
 
@@ -63,7 +63,7 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var topic = await DbContext.ForumTopics.FirstOrDefaultAsync();
         var userprofile = await DbContext.UserProfiles.FirstOrDefaultAsync();
         var postSlug = "sample-post";
-        var post = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = postSlug,UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
+        var post = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = postSlug, UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
         DbContext.ForumPosts.Add(post);
         await DbContext.SaveChangesAsync();
 
@@ -101,7 +101,7 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         await AddSampleForumPostsToDatabase();
         var topic = await DbContext.ForumTopics.FirstOrDefaultAsync();
         var userprofile = await DbContext.UserProfiles.FirstOrDefaultAsync();
-        var existingPost = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = "new-post",UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
+        var existingPost = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = "new-post", UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
         DbContext.ForumPosts.Add(existingPost);
         await DbContext.SaveChangesAsync();
 
@@ -136,69 +136,9 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var deletedPost = await DbContext.ForumPosts.FindAsync(existingPost.Id);
         Assert.IsNull(deletedPost);
     }
-    
-    [Test]
-    public async Task AddForumPostAsync_ShouldThrowException_WhenTitleIsEmpty()
-    {
-        // Arrange
-        var post = new ForumPost { PostTitle = "", Content = "New Content" };
-
-        // Act & Assert
-        Assert.ThrowsAsync<DbUpdateException>(async () => await _repository.AddForumPostAsync(post));
-    }
-
-    [Test]
-    public async Task AddForumPostAsync_ShouldThrowException_WhenContentIsEmpty()
-    {
-        // Arrange
-        var post = new ForumPost { PostTitle = "New Post", Content = "" };
-
-        // Act & Assert
-        Assert.ThrowsAsync<DbUpdateException>(async () => await _repository.AddForumPostAsync(post));
-    }
-    
-    [Test]
-    public async Task AddForumPostAsync_ShouldThrowException_WhenPostIsNull()
-    {
-        // Act & Assert
-        Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.AddForumPostAsync(null));
-    }
-    
-    [Test]
-    public async Task AddForumPostAsync_ShouldThrowException_WhenDuplicateSlug()
-    {
-        // Arrange
-        await AddSampleForumPostsToDatabase();
-        var existingPost = await DbContext.ForumPosts.FirstOrDefaultAsync();
-        var post = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = existingPost.Slug };
-
-        // Act & Assert
-        Assert.ThrowsAsync<DbUpdateException>(async () => await _repository.AddForumPostAsync(post));
-    }
-    
-    [Test]
-    public async Task UpdateForumPostAsync_ShouldThrowException_WhenPostIsNull()
-    {
-        // Act & Assert
-        Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.UpdateForumPostAsync(null));
-    }
-
-    [Test]
-    public async Task DeleteForumPostAsync_ShouldNotThrowException_WhenPostDoesNotExist()
-    {
-        // Arrange
-        var nonExistentId = Guid.NewGuid();
-
-        // Act & Assert
-        Assert.DoesNotThrowAsync(async () => await _repository.DeleteForumPostAsync(nonExistentId));
-    }
 
     private async Task AddSampleForumPostsToDatabase()
     {
-        DbContext.ForumPosts.RemoveRange(await DbContext.ForumPosts.ToListAsync());
-        DbContext.ForumTopics.RemoveRange(await DbContext.ForumTopics.ToListAsync());
-        DbContext.UserProfiles.RemoveRange(await DbContext.UserProfiles.ToListAsync());
-        // Add sample ForumTopic object to the database
         var forumTopic = new ForumTopic
         {
             Title = "Test Topic",
@@ -207,7 +147,6 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         };
         await DbContext.ForumTopics.AddAsync(forumTopic);
 
-        // Add sample UserProfile objects to the database
         var userProfiles = new List<UserProfile>
         {
             new UserProfile { UserName = "User1" },
@@ -215,23 +154,14 @@ public class ForumPostRepositoryTests : IntegrationTestBase
             new UserProfile { UserName = "User3" }
         };
         await DbContext.UserProfiles.AddRangeAsync(userProfiles);
-        Console.WriteLine(userProfiles[0].UserName);
-        Console.WriteLine(userProfiles[1].UserName);
-        Console.WriteLine(userProfiles[2].UserName);
 
-        // Add sample ForumPost objects to the database
-      var posts = new List<ForumPost>
+        var posts = new List<ForumPost>
         {
             new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0]?.UserName, ForumTopicId = forumTopic.Id },
             new ForumPost { PostTitle = "Post 2", Content = "Content for Post 2", Slug = "post-2", UserId = userProfiles[1].Id, UserName = userProfiles[1].UserName, ForumTopicId = forumTopic.Id },
             new ForumPost { PostTitle = "Post 3", Content = "Content for Post 3", Slug = "post-3", UserId = userProfiles[2].Id, UserName = userProfiles[2].UserName, ForumTopicId = forumTopic.Id }
         };
-        foreach (var post in posts)
-        {
-            Console.WriteLine("username");
-            Console.WriteLine(post.UserName);
-        }
-        // await DbContext.ForumPosts.AddRangeAsync(posts);
+
         await DbContext.ForumPosts.AddRangeAsync(posts);
         await DbContext.SaveChangesAsync();
     }

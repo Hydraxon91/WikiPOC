@@ -20,6 +20,7 @@ namespace IntegrationTests
         protected readonly string JwtIssuerSigningKey;
         protected readonly string PicturesPathContainer;
         protected readonly string DbConnectionString;
+        private readonly string _uniqueDatabaseName;
         
         public IntegrationTestBase()
         {
@@ -31,13 +32,16 @@ namespace IntegrationTests
             JwtIssuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
             PicturesPathContainer = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER") ?? "default/pictures/path";
 
+            _uniqueDatabaseName = $"TestDb_{Guid.NewGuid()}";
+            var completeConnectionString = $"{DbConnectionString};Database={_uniqueDatabaseName}";
+            
             var services = new ServiceCollection();
 
             services.AddLogging(); // Add logging service
 
             services.AddDbContext<WikiDbContext>(options =>
             {
-                options.UseSqlServer(DbConnectionString);
+                options.UseSqlServer(completeConnectionString);
             });
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
