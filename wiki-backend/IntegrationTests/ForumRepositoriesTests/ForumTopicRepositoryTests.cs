@@ -113,6 +113,62 @@ namespace IntegrationTests.ForumRepositoriesTests
             Assert.IsNull(deletedTopic);
         }
         
+        [Test]
+        public async Task AddForumTopicAsync_ShouldThrowException_WhenTitleIsNull()
+        {
+            // Arrange
+            var topic = new ForumTopic { Description = "Description"};
+
+            // Act & Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _repository.AddForumTopicAsync(topic));
+        }
+
+        [Test]
+        public async Task AddForumTopicAsync_ShouldThrowException_WhenDescriptionIsNull()
+        {
+            // Arrange
+            var topic = new ForumTopic { Title = "Title" };
+
+            // Act & Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _repository.AddForumTopicAsync(topic));
+        }
+
+
+        [Test]
+        public async Task AddForumTopicAsync_ShouldThrowException_WhenTitleAndDescriptionAreEmpty()
+        {
+            // Arrange
+            var topic = new ForumTopic { Title = "", Description = "" };
+
+            // Act & Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _repository.AddForumTopicAsync(topic));
+        }
+
+        [Test]
+        public async Task UpdateForumTopicAsync_ShouldThrowException_WhenTopicIsNull()
+        {
+            // Act & Assert
+            Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.UpdateForumTopicAsync(null));
+        }
+        
+        [Test]
+        public async Task AddForumTopicAsync_ShouldGenerateUniqueSlug()
+        {
+            // Arrange
+            var existingTopic = new ForumTopic { Title = "Existing Topic", Description = "Description for Existing Topic"};
+            var newTopic = new ForumTopic { Title = "Existing Topic", Description = "Description for New Topic" };
+
+            await _repository.AddForumTopicAsync(existingTopic);
+
+            // Act
+            await _repository.AddForumTopicAsync(newTopic);
+
+            // Assert
+            var addedTopic = await DbContext.ForumTopics.FirstOrDefaultAsync(t => t.Description == "Description for New Topic");
+            Assert.IsNotNull(addedTopic);
+            Assert.AreNotEqual(existingTopic.Slug, addedTopic.Slug);
+        }
+        
         private async Task AddSampleForumTopicsToDatabase()
         {
             // Add sample ForumTopic objects to the database
