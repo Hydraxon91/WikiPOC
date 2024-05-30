@@ -53,13 +53,15 @@ public class CategoryRepositoryTests : IntegrationTestBase
         var categoryName = "New Category";
 
         // Act
-        var result = await _repository.AddCategoryAsync(categoryName);
+        await _repository.AddCategoryAsync(categoryName);
 
         // Assert
         var addedCategory = await DbContext.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);
         Assert.IsNotNull(addedCategory);
         Assert.AreEqual(categoryName, addedCategory.CategoryName);
     }
+    
+    
 
     [Test]
     public async Task DeleteCategoryAsync_ShouldDeleteCategory()
@@ -74,6 +76,19 @@ public class CategoryRepositoryTests : IntegrationTestBase
         Assert.IsTrue(result);
         var deletedCategory = await DbContext.Categories.FindAsync(categoryToDelete.Id);
         Assert.IsNull(deletedCategory);
+    }
+    
+    [Test]
+    public async Task DeleteCategoryAsync_ShouldReturnFalse_WhenCategoryNotFound()
+    {
+        // Arrange
+        var categoryId = Guid.NewGuid(); // Generate a random non-existent category ID
+
+        // Act
+        var result = await _repository.DeleteCategoryAsync(categoryId);
+
+        // Assert
+        Assert.IsFalse(result);
     }
 
     [Test]
