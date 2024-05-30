@@ -59,7 +59,6 @@ public class ForumPostRepositoryTests : IntegrationTestBase
     public async Task GetForumPostBySlugAsync_ShouldReturnPost()
     {
         // Arrange
-        // Arrange
         await AddSampleForumPostsToDatabase();
         var topic = await DbContext.ForumTopics.FirstOrDefaultAsync();
         var userprofile = await DbContext.UserProfiles.FirstOrDefaultAsync();
@@ -207,33 +206,32 @@ public class ForumPostRepositoryTests : IntegrationTestBase
             Slug = "test-topic"
         };
         await DbContext.ForumTopics.AddAsync(forumTopic);
-        await DbContext.SaveChangesAsync();
 
         // Add sample UserProfile objects to the database
         var userProfiles = new List<UserProfile>
         {
-            new UserProfile
-            {
-                UserName = "User1"  
-            },
-            new UserProfile
-            {
-                UserName = "User2"  
-            },
-            new UserProfile
-            {
-                UserName = "User3"  
-            }
+            new UserProfile { UserName = "User1" },
+            new UserProfile { UserName = "User2" },
+            new UserProfile { UserName = "User3" }
         };
         await DbContext.UserProfiles.AddRangeAsync(userProfiles);
-        await DbContext.SaveChangesAsync();
+        Console.WriteLine(userProfiles[0].UserName);
+        Console.WriteLine(userProfiles[1].UserName);
+        Console.WriteLine(userProfiles[2].UserName);
+
         // Add sample ForumPost objects to the database
-        var posts = new List<ForumPost>
+      var posts = new List<ForumPost>
         {
-            new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0].UserName, ForumTopicId = forumTopic.Id },
+            new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0]?.UserName, ForumTopicId = forumTopic.Id },
             new ForumPost { PostTitle = "Post 2", Content = "Content for Post 2", Slug = "post-2", UserId = userProfiles[1].Id, UserName = userProfiles[1].UserName, ForumTopicId = forumTopic.Id },
             new ForumPost { PostTitle = "Post 3", Content = "Content for Post 3", Slug = "post-3", UserId = userProfiles[2].Id, UserName = userProfiles[2].UserName, ForumTopicId = forumTopic.Id }
         };
+        foreach (var post in posts)
+        {
+            Console.WriteLine("username");
+            Console.WriteLine(post.UserName);
+        }
+        // await DbContext.ForumPosts.AddRangeAsync(posts);
         await DbContext.ForumPosts.AddRangeAsync(posts);
         await DbContext.SaveChangesAsync();
     }
