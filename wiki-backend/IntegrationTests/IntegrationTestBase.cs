@@ -101,5 +101,56 @@ namespace IntegrationTests
             var authService = new AuthService(userManager, new MockTokenServices());
             return new AuthController(authService);
         }
+        
+        protected UsersController CreateUserController()
+        {
+            var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            return new UsersController(userManager, DbContext);
+        }
+        protected async Task EnsureUserRoleExistsAsync()
+        {
+            var roleManager = ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userRoleExists = await roleManager.RoleExistsAsync("User");
+            if (!userRoleExists)
+            {
+                await roleManager.CreateAsync(new IdentityRole("User"));
+            }
+        }
+
+        protected async Task CreateTestUserAsync()
+        {
+            var testUsername = "test_user";
+
+            var testUserProfile = new UserProfile()
+            {
+                UserName = testUsername,
+                DisplayName = "Peter Griffin",
+                ProfilePicture = "tester_base.gif"
+            };
+            // Save UserProfile to the database
+            DbContext.UserProfiles.Add(testUserProfile);
+
+            await DbContext.SaveChangesAsync();
+
+            var testUser = new ApplicationUser
+            {
+                UserName = testUsername,
+                Email = "test@example.com",
+                ProfileId = testUserProfile.Id
+            };
+            var password = "@Testpassword1";
+            var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var userCreated = await userManager.CreateAsync(testUser, password);
+            if (userCreated.Succeeded)
+            {
+                await userManager.AddToRoleAsync(testUser, "User");
+                // Set the UserId of adminProfile
+                testUserProfile.UserId = testUser.Id;
+
+                // Update UserProfile in the database
+                DbContext.UserProfiles.Update(testUserProfile);
+                await DbContext.SaveChangesAsync();
+            }
+        }
     }
 }
