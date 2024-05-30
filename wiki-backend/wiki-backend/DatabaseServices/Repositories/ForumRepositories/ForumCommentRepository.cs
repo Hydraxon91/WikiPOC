@@ -21,6 +21,10 @@ public class ForumCommentRepository : IForumCommentRepository
 
     public async Task AddAsync(ForumComment comment)
     {
+        if (comment.Content == null)
+        {
+            throw new ArgumentNullException(nameof(comment.Content), "Content must not be null.");
+        }
         if (comment.PostDate.Kind != DateTimeKind.Utc)
         {
             comment.PostDate = comment.PostDate.ToUniversalTime();
