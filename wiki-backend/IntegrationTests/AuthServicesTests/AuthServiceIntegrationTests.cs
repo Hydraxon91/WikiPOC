@@ -25,7 +25,7 @@ namespace IntegrationTests.Services
             // Initialize AuthService with required services
             _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             _tokenServicesMock = new Mock<ITokenServices>();
-            _authService = new AuthService(_userManager, _tokenServicesMock.Object, DbContext);
+            _authService = new AuthService(_userManager, _tokenServicesMock.Object);
             // ResetDatabase();
         }
         

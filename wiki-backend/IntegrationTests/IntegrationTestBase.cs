@@ -6,7 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
 using DotNetEnv;
+using IntegrationTests.Services;
 using Microsoft.Extensions.Logging;
+using wiki_backend.Controllers;
+using wiki_backend.Services.Authentication;
 
 namespace IntegrationTests
 {
@@ -90,6 +93,13 @@ namespace IntegrationTests
         {
             var random = new Random();
             return $"{baseString}{random.Next(1, 99999)}";
+        }
+        
+        protected AuthController CreateAuthController()
+        {
+            var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var authService = new AuthService(userManager, new MockTokenServices());
+            return new AuthController(authService);
         }
     }
 }

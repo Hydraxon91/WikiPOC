@@ -11,13 +11,11 @@ public class AuthService : IAuthService
 {
     private readonly ITokenServices _tokenService;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly WikiDbContext _dbContext;
     
-    public AuthService(UserManager<ApplicationUser> userManager, ITokenServices tokenService, WikiDbContext dbContext)
+    public AuthService(UserManager<ApplicationUser> userManager, ITokenServices tokenService)
     {
         _userManager = userManager;
         _tokenService = tokenService;
-        _dbContext = dbContext;
     }
     
     public async Task<AuthResult> RegisterAsync(string email, string username, string password, string role)
