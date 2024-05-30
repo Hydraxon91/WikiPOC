@@ -86,11 +86,8 @@ namespace IntegrationTests.Repositories
             // Arrange
             var paragraph = new Paragraph { Title = "New Paragraph", Content = "New Content", WikiPageId = Guid.NewGuid() };
 
-            // Act
-            var result = await _repository.CreateAsync(paragraph);
-
-            // Assert
-            Assert.IsNull(result);
+            // Act & Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _repository.CreateAsync(paragraph));
         }
 
         [Test]

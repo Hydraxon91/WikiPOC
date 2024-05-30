@@ -42,7 +42,6 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
         base.OnModelCreating(modelBuilder);
 
         var isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Testing";
-
         if (isTesting) return;
         var faker = new Faker();
 
@@ -367,7 +366,5 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
                 FontFamily = "Arial, sans-serif",
             }
         );
-
     }
-    
 }
