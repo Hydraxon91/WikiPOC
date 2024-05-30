@@ -51,9 +51,9 @@ const UserCommentComponent = ({ comment, user, cookies, handleCommentSubmit, pos
                         <p>{comment.content} {comment.isEdited && "(edited)"}</p>
                         )}
                 </div>
-                <div>
+                { user && (<div>
                     <a href="#" onClick={() => setShowReplyBox(!showReplyBox)}> Reply</a>
-                </div>
+                </div>)}
                 {showReplyBox && (
                     <WikiPageReplyComponent user={user} page={page} cookies={cookies} handleCommentSubmit={handleCommentSubmit} postComment={postComment} replyTo={comment} />
                 )}
