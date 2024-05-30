@@ -107,6 +107,8 @@ public class UserCommentController : ControllerBase
     private async Task<bool> IsAuthorizedToDeleteComment(string userId, UserComment comment)
     {
         // Check if the user is the author of the comment or is an admin
+        Console.WriteLine(userId);
+        Console.WriteLine(comment.UserProfile.UserName);
         return userId == comment.UserProfile.UserName || await IsUserAdmin(userId);
     }
     
