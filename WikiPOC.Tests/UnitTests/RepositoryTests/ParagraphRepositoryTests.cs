@@ -93,11 +93,8 @@ public class ParagraphRepositoryTests
         // Arrange
         var testData = new Paragraph { Title = "New Paragraph", WikiPageId = Guid.NewGuid() };
 
-        // Act
-        var result = await _paragraphRepository.CreateAsync(testData);
-
-        // Assert
-        Assert.IsNull(result);
+        // Act & Assert
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await _paragraphRepository.CreateAsync(testData));
     }
 
     [Test]
