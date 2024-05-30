@@ -9,6 +9,7 @@ using DotNetEnv;
 using IntegrationTests.Services;
 using Microsoft.Extensions.Logging;
 using wiki_backend.Controllers;
+using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Services.Authentication;
 
 namespace IntegrationTests
@@ -107,6 +108,13 @@ namespace IntegrationTests
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             return new UsersController(userManager, DbContext);
         }
+        
+        protected UserProfileController CreateUserProfileController()
+        {
+            var userProfileRepository = new UserProfileRepository(DbContext);
+            return new UserProfileController(userProfileRepository);
+        }
+        
         protected async Task EnsureUserRoleExistsAsync()
         {
             var roleManager = ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();

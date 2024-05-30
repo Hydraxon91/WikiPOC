@@ -70,8 +70,15 @@ public class UserProfileController : ControllerBase
     [HttpDelete("DeleteUserProfile/{id:guid}")]
     public async Task<IActionResult> DeleteUserProfile(Guid id)
     {
+        var userProfile = await _profileRepository.GetByIdAsync(id);
+        if (userProfile == null)
+        {
+            return NotFound(); // Return NotFoundResult if user profile does not exist
+        }
+
         await _profileRepository.DeleteAsync(id);
         
         return Ok("UserProfile deleted successfully");
     }
+
 }
