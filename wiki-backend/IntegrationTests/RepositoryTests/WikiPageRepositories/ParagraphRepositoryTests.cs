@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
 
@@ -121,6 +122,47 @@ namespace IntegrationTests.Repositories
         {
             // Act & Assert
             Assert.DoesNotThrowAsync(async () => await _repository.DeleteAsync(Guid.NewGuid()));
+        }
+        
+        [Test]
+        public async Task UpdateAsync_ShouldUpdateParagraph()
+        {
+            // Arrange
+            var category = new Category { CategoryName = "TestCategory" };
+            DbContext.Categories.Add(category);
+            await DbContext.SaveChangesAsync();
+
+            var wikiPage = new WikiPage { Title = "Test Wiki Page", CategoryId = category.Id };
+            DbContext.WikiPages.Add(wikiPage);
+            await DbContext.SaveChangesAsync();
+
+            var paragraph = new Paragraph { Title = "Old Title", Content = "Old Content", WikiPageId = wikiPage.Id };
+            DbContext.Paragraphs.Add(paragraph);
+            await DbContext.SaveChangesAsync();
+
+            paragraph.Title = "New Title";
+            paragraph.Content = "New Content";
+
+            // Act
+            DbContext.Paragraphs.Update(paragraph);
+            await DbContext.SaveChangesAsync();
+
+            // Assert
+            var updatedParagraph = await _repository.GetByIdAsync(paragraph.Id);
+            Assert.IsNotNull(updatedParagraph);
+            Assert.AreEqual("New Title", updatedParagraph.Title);
+            Assert.AreEqual("New Content", updatedParagraph.Content);
+        }
+        
+        [Test]
+        public void CreateAsync_ShouldThrowException_WhenWikiPageIdIsInvalid()
+        {
+            // Arrange
+            var paragraph = new Paragraph { Title = "Invalid Paragraph", Content = "Invalid Content", WikiPageId = Guid.NewGuid() };
+
+            // Act & Assert
+            var ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await _repository.CreateAsync(paragraph));
+            Assert.That(ex.Message, Is.EqualTo("WikiPage not found."));
         }
     }
 }
