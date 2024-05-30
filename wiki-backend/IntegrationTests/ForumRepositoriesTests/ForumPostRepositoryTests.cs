@@ -137,6 +137,62 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var deletedPost = await DbContext.ForumPosts.FindAsync(existingPost.Id);
         Assert.IsNull(deletedPost);
     }
+    
+    [Test]
+    public async Task AddForumPostAsync_ShouldThrowException_WhenTitleIsEmpty()
+    {
+        // Arrange
+        var post = new ForumPost { PostTitle = "", Content = "New Content" };
+
+        // Act & Assert
+        Assert.ThrowsAsync<DbUpdateException>(async () => await _repository.AddForumPostAsync(post));
+    }
+
+    [Test]
+    public async Task AddForumPostAsync_ShouldThrowException_WhenContentIsEmpty()
+    {
+        // Arrange
+        var post = new ForumPost { PostTitle = "New Post", Content = "" };
+
+        // Act & Assert
+        Assert.ThrowsAsync<DbUpdateException>(async () => await _repository.AddForumPostAsync(post));
+    }
+    
+    [Test]
+    public async Task AddForumPostAsync_ShouldThrowException_WhenPostIsNull()
+    {
+        // Act & Assert
+        Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.AddForumPostAsync(null));
+    }
+    
+    [Test]
+    public async Task AddForumPostAsync_ShouldThrowException_WhenDuplicateSlug()
+    {
+        // Arrange
+        await AddSampleForumPostsToDatabase();
+        var existingPost = await DbContext.ForumPosts.FirstOrDefaultAsync();
+        var post = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = existingPost.Slug };
+
+        // Act & Assert
+        Assert.ThrowsAsync<DbUpdateException>(async () => await _repository.AddForumPostAsync(post));
+    }
+    
+    [Test]
+    public async Task UpdateForumPostAsync_ShouldThrowException_WhenPostIsNull()
+    {
+        // Act & Assert
+        Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.UpdateForumPostAsync(null));
+    }
+
+    [Test]
+    public async Task DeleteForumPostAsync_ShouldNotThrowException_WhenPostDoesNotExist()
+    {
+        // Arrange
+        var nonExistentId = Guid.NewGuid();
+
+        // Act & Assert
+        Assert.DoesNotThrowAsync(async () => await _repository.DeleteForumPostAsync(nonExistentId));
+    }
 
     private async Task AddSampleForumPostsToDatabase()
     {
