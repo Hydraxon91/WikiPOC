@@ -209,11 +209,6 @@ namespace IntegrationTests.Services
 
             // Act
             var result = await _authService.LoginAsync(username, password);
-            // Console.WriteLine(result);
-            // foreach (var error in result.ErrorMessages)
-            // {
-            //     Console.WriteLine(error.Key, " ", error.Value);
-            // }
             // Assert
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Bad credentials", result.ErrorMessages.Keys.First());

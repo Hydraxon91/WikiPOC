@@ -42,7 +42,6 @@ namespace IntegrationTests.Repositories
 
             // Act
             var result = await _repository.GetStylesAsync();
-            Console.WriteLine(result);
 
             // Assert
             Assert.IsNotNull(result);

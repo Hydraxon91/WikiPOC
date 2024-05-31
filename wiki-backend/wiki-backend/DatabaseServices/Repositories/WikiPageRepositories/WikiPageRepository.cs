@@ -51,10 +51,8 @@ public class WikiPageRepository : IWikiPageRepository
         if (wikiPage!=null)
         {
             var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Id.ToString());
-            Console.WriteLine(directoryPath);
             if (Directory.Exists(directoryPath))
             {
-                Console.WriteLine("Got into the directory");
                 var imageFiles = Directory.GetFiles(directoryPath);
                 var images = imageFiles.Select(file =>
                 {
@@ -100,10 +98,8 @@ public class WikiPageRepository : IWikiPageRepository
         if (wikiPage!=null)
         {
             var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Id.ToString());
-            Console.WriteLine(directoryPath);
             if (Directory.Exists(directoryPath))
             {
-                Console.WriteLine("Got into the directory");
                 var imageFiles = Directory.GetFiles(directoryPath);
                 var images = imageFiles.Select(file =>
                 {
@@ -139,7 +135,6 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images)
     {
-        Console.WriteLine($"AddAsync wikipage id: {wikiPage.Id}");
         if (images.Count>0)
         {
             foreach (var image in images)
@@ -207,8 +202,6 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task UpdateAsync(WikiPage existingWikiPage, WikiPage updatedWikiPage, ICollection<ImageFormModel> images)
     {
-        // Console.WriteLine(updatedWikiPage);
-        // Console.WriteLine(existingWikiPage);
         existingWikiPage.Title = updatedWikiPage.Title;
         existingWikiPage.RoleNote = updatedWikiPage.RoleNote;
         existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
@@ -291,7 +284,6 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage, ICollection<ImageFormModel> images)
     {
-        // Console.WriteLine("inside UserSubmittedUpdateAsync");
         foreach (var paragraph in updatedWikiPage.Paragraphs)
         {
             paragraph.Id = new Guid();
@@ -354,36 +346,26 @@ public class WikiPageRepository : IWikiPageRepository
 
         if (wikiPage != null)
         {
-            // Console.WriteLine("Removing old article paragraphs");
             _context.Paragraphs.RemoveRange(wikiPage.Paragraphs);
-            // Console.WriteLine("Removing old article");
             _context.WikiPages.Remove(wikiPage);
-            // Console.WriteLine("Saving context");
             await _context.SaveChangesAsync();
-            // Console.WriteLine("Saved Context");
             
             if (newId != null)
             {
-                // Console.WriteLine($"New id is: {newId}");
                 // Rename the old folder to the new ID if new ID is not null
                 var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", id.ToString());
                 var newFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", newId.ToString());
-                // Console.WriteLine($"newfolderpath: {newFolderPath}");
                 if (Directory.Exists(oldFolderPath))
                 {
-                    // Console.WriteLine($"folder exists: {oldFolderPath}, moving it to {newFolderPath}");
                     Directory.Move(oldFolderPath, newFolderPath);
                 }
             }
             else
             {
-                // Console.WriteLine($"newid is null");
                 // Delete the old folder if new ID is null
                 var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", id.ToString());
-                // Console.WriteLine($"oldfolder is: {oldFolderPath}");
                 if (Directory.Exists(oldFolderPath))
                 {
-                    // Console.WriteLine($"Oldfolder exists, deleting it");
                     Directory.Delete(oldFolderPath, true);
                 }
             }
@@ -397,22 +379,18 @@ public class WikiPageRepository : IWikiPageRepository
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedPageByIdAsync(Guid id)
     {
-        // Console.WriteLine($"inside GetSubmittedPageByIdAsync, id: {id}");
         var wikiPage = await _context.UserSubmittedWikiPages
             .Where((page => page.IsNewPage==true))
             .Include(p => p.Paragraphs)
             .Include(wp => wp.Comments)
             .ThenInclude(uc => uc.UserProfile)
             .FirstOrDefaultAsync(p => p.Id == id);
-        Console.WriteLine($"wikipage: {wikiPage}");
         
         if (wikiPage!=null)
         {
             var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Id.ToString());
-            Console.WriteLine(directoryPath);
             if (Directory.Exists(directoryPath))
             {
-                Console.WriteLine("Got into the directory");
                 var imageFiles = Directory.GetFiles(directoryPath);
                 var images = imageFiles.Select(file =>
                 {
@@ -463,10 +441,8 @@ public class WikiPageRepository : IWikiPageRepository
         if (wikiPage!=null)
         {
             var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Id.ToString());
-            Console.WriteLine(directoryPath);
             if (Directory.Exists(directoryPath))
             {
-                Console.WriteLine("Got into the directory");
                 var imageFiles = Directory.GetFiles(directoryPath);
                 var images = imageFiles.Select(file =>
                 {

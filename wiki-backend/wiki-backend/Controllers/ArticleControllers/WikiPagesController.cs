@@ -28,10 +28,6 @@ public class WikiPagesController : ControllerBase
     public async Task<ActionResult<List<TitleAndCategory>>> GetWikiPageTitles()
     {
         var wikiPageTitlesAndCategories = await _wikiPageRepository.GetAllTitlesAndCategoriesAsync();
-        foreach (var article in wikiPageTitlesAndCategories)
-        {
-            Console.WriteLine(article);
-        }
         return Ok(wikiPageTitlesAndCategories);
     }
 
@@ -141,7 +137,6 @@ public class WikiPagesController : ControllerBase
     public async Task<ActionResult<WikiPage>> AcceptCreatedPageForUser([FromBody] string id)
     {
         var guid = Guid.Parse(id);
-        Console.WriteLine($"id is: {guid}");
         var userSubmittedWikiPage = await _wikiPageRepository.GetSubmittedPageByIdAsync(guid);
 
         if (userSubmittedWikiPage is { UserSubmittedWikiPage: null })
@@ -150,7 +145,6 @@ public class WikiPagesController : ControllerBase
         }
 
         // Update the Approved property to true
-        Console.WriteLine(userSubmittedWikiPage.UserSubmittedWikiPage);
         userSubmittedWikiPage.UserSubmittedWikiPage.Approved = true;
 
         // Save the changes to the database
@@ -164,7 +158,6 @@ public class WikiPagesController : ControllerBase
     [HttpPut("admin/{id:guid}")]
     public async Task<IActionResult> UpdateWikiPageForAdmin(Guid id, [FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
-        Console.WriteLine(wikiPageWithImagesInputModel);
         var existingWikiPageOutputModel = await _wikiPageRepository.GetByIdAsync(id);
 
         if (existingWikiPageOutputModel == null)
@@ -191,7 +184,6 @@ public class WikiPagesController : ControllerBase
     [HttpPut("userUpdate/{id:guid}")]
     public async Task<IActionResult> UpdateWikiPageForUser(Guid id, [FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
-        Console.WriteLine("inside UpdateWikiPageForUser in controller");
         var updatedWikiPage = new UserSubmittedWikiPage()
         {
             Title = wikiPageWithImagesInputModel.Title,
@@ -216,7 +208,6 @@ public class WikiPagesController : ControllerBase
         updatedWikiPage.Id = Guid.NewGuid();
         updatedWikiPage.PostDate = DateTime.Now;
         var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
-        Console.WriteLine("calling UserSubmittedUpdateAsync");
         await _wikiPageRepository.UserSubmittedUpdateAsync(updatedWikiPage, images);
 
         return CreatedAtAction(nameof(GetWikiPage), new { id = updatedWikiPage.Id }, updatedWikiPage);
@@ -273,7 +264,6 @@ public class WikiPagesController : ControllerBase
     [HttpGet("GetSubmittedPageById/{id:guid}")]
     public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedPageById(Guid id)
     {
-        Console.WriteLine(id);
         var wikiPage = await _wikiPageRepository.GetSubmittedPageByIdAsync(id);
         
         if (wikiPage == null)

@@ -56,7 +56,6 @@ public class ParagraphRepositoryTests
         var result = await repository.GetByIdAsync(testId);
 
         // Assert
-        Console.WriteLine(result);
         Assert.IsNotNull(result);
         Assert.AreEqual(testData.Id, result.Id);
         Assert.AreEqual(testData.Title, result.Title);

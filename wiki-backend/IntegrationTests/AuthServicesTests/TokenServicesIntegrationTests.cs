@@ -56,11 +56,6 @@ namespace IntegrationTests.Services
                 .GroupBy(c => c.Type)
                 .ToDictionary(g => g.Key, g => g.First().Value);
 
-            foreach (var claim in claims)
-            {
-                Console.WriteLine($"{claim.Key}: {claim.Value}");
-            }
-
             Assert.AreEqual(user.UserName, claims[ClaimTypes.Name]);
             Assert.AreEqual(user.Email, claims[ClaimTypes.Email]);
             Assert.AreEqual(role, claims[ClaimTypes.Role]);

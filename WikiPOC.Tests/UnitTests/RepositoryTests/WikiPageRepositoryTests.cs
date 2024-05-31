@@ -266,14 +266,6 @@ public class WikiPageRepositoryTests
         await _wikiPageRepository.AddUserSubmittedPageAsync(userSubmittedWikiPageToAdd, new List<ImageFormModel>());
         await _wikiDbContext.SaveChangesAsync(); // Save changes to the in-memory database
             
-        // Log the UserSubmittedWikiPages for debugging
-        var userSubmittedPages = _wikiDbContext.UserSubmittedWikiPages.ToList();
-        Console.WriteLine("UserSubmittedWikiPages in database:");
-        foreach (var page in userSubmittedPages)
-        {
-            Console.WriteLine($"Id: {page.Id}, Title: {page.Title}");
-        }
-            
         // Assert
         // Check if the WikiPage is added to the context
         CollectionAssert.Contains(_wikiDbContext.WikiPages.ToList(), userSubmittedWikiPageToAdd);
@@ -292,83 +284,6 @@ public class WikiPageRepositoryTests
         }
     }
     
-    // [Test]
-    // public async Task UpdateAsync_ShouldUpdateWikiPageAndParagraphs()
-    // {
-    //     // Add a dummy category to the in-memory database
-    //     var dummyCategory = new Category
-    //     {
-    //         Id = Guid.NewGuid(),
-    //         CategoryName = "Dummy Category"
-    //     };
-    //     _wikiDbContext.Categories.Add(dummyCategory);
-    //     await _wikiDbContext.SaveChangesAsync();
-    //
-    //     // Arrange
-    //     var articleId1 = Guid.NewGuid();
-    //     var articleId2 = Guid.NewGuid();
-    //     var articleId3 = Guid.NewGuid();
-    //     var existingWikiPage = new WikiPage
-    //     {
-    //         Id = articleId1,
-    //         Title = "Existing Page",
-    //         RoleNote = "Existing RoleNote",
-    //         SiteSub = "Existing SiteSub",
-    //         Paragraphs = new List<Paragraph>
-    //         {
-    //             new Paragraph { Id = articleId2, Title = "Existing Paragraph 1", Content = "Existing Content 1" },
-    //             new Paragraph { Id = articleId3, Title = "Existing Paragraph 2", Content = "Existing Content 2" }
-    //         },
-    //         CategoryId = dummyCategory.Id
-    //     };
-    //
-    //     await _wikiPageRepository.AddAsync(existingWikiPage, new List<ImageFormModel>());
-    //     
-    //     // Act
-    //     var updatedWikiPage = new WikiPage
-    //     {
-    //         Id = existingWikiPage.Id, // Retain the original ID
-    //         Title = "Updated Page",
-    //         RoleNote = "Updated RoleNote",
-    //         SiteSub = "Updated SiteSub",
-    //         Paragraphs = new List<Paragraph>
-    //         {
-    //             new Paragraph { Id = articleId2, Title = "Updated Paragraph 1", Content = "Updated Content 1" },
-    //             new Paragraph { Id = Guid.NewGuid(), Title = "New Paragraph 3", Content = "New Content 3" }
-    //         },
-    //         CategoryId = dummyCategory.Id
-    //     };
-    //     
-    //     existingWikiPage = await _wikiDbContext.WikiPages.FindAsync(existingWikiPage.Id);
-    //     if (existingWikiPage == null)
-    //     {
-    //         Console.WriteLine(existingWikiPage);
-    //         // Handle the case where the WikiPage doesn't exist
-    //         // (e.g., throw an exception or log an error)
-    //     }
-    //
-    //     await _wikiPageRepository.UpdateAsync(existingWikiPage, updatedWikiPage, new List<ImageFormModel>());
-    //     await _wikiDbContext.SaveChangesAsync(); // Save changes to the in-memory database
-    //
-    //     // Assert
-    //     // Verify WikiPage is updated
-    //     var updatedWikiPageInDb = await _wikiDbContext.WikiPages.FirstOrDefaultAsync(wp => wp.Id == existingWikiPage.Id);
-    //     Assert.NotNull(updatedWikiPageInDb);
-    //     Assert.AreEqual(updatedWikiPage.Title, updatedWikiPageInDb.Title);
-    //     Assert.AreEqual(updatedWikiPage.RoleNote, updatedWikiPageInDb.RoleNote);
-    //     Assert.AreEqual(updatedWikiPage.SiteSub, updatedWikiPageInDb.SiteSub);
-    //
-    //     // Verify Paragraphs are updated and new one is added
-    //     var paragraphsInDb = await _wikiDbContext.Paragraphs.ToListAsync();
-    //     foreach (var updatedParagraph in updatedWikiPage.Paragraphs)
-    //     {
-    //         var matchingParagraph = paragraphsInDb.FirstOrDefault(p => p.Id == updatedParagraph.Id);
-    //         Assert.NotNull(matchingParagraph);
-    //         Assert.AreEqual(updatedParagraph.Title, matchingParagraph.Title);
-    //         Assert.AreEqual(updatedParagraph.Content, matchingParagraph.Content);
-    //     }
-    // }
-
     
 [Test]
 public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagraphs()

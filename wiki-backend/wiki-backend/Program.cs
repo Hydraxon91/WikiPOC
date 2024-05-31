@@ -238,7 +238,6 @@ async Task CreateAdminIfNotExists()
     var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
     if (adminInDb == null)
     {
-        // Console.WriteLine(Environment.GetEnvironmentVariable("ADMINUSER_PASSWORD"));
         var adminName = Environment.GetEnvironmentVariable("ADMINUSER_USERNAME");
         
         var adminProfile = new UserProfile()
@@ -287,7 +286,6 @@ async Task CreateUserIfNotExists()
     var userInDb = await userManager.FindByEmailAsync(Environment.GetEnvironmentVariable("TESTUSER_EMAIL"));
     if (userInDb == null)
     {
-        // Console.WriteLine(Environment.GetEnvironmentVariable("TESTUSER_PASSWORD"));
         var testUsername = Environment.GetEnvironmentVariable("TESTUSER_USERNAME");
         
         var testUserProfile = new UserProfile()

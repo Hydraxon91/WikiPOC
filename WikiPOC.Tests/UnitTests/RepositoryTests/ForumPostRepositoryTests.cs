@@ -119,22 +119,6 @@ namespace UnitTests.RepositoryTests
             // Fetching the post by slug
             var postInDb = await _forumPostRepository.GetForumPostBySlugAsync("unique-slug-post");
 
-            // Additional logging for debugging
-            Console.WriteLine("Database contents during query:");
-            var debugPosts = await _wikiDbContext.ForumPosts
-                .Include(post => post.Comments)
-                .ThenInclude(comment => comment.UserProfile)
-                .Include(post => post.User)
-                .ToListAsync();
-            foreach (var post in debugPosts)
-            {
-                Console.WriteLine($"ID: {post.Id}, Title: {post.PostTitle}, Slug: {post.Slug}, Content: {post.Content}, UserId: {post.UserId}, UserName: {post.UserName}");
-                foreach (var comment in post.Comments)
-                {
-                    Console.WriteLine($"-- Comment ID: {comment.Id}, UserProfileId: {comment.UserProfileId}");
-                }
-            }
-
             // Assertions
             Assert.NotNull(postInDb);
             Assert.AreEqual("Unique Slug Post", postInDb.PostTitle);
@@ -236,22 +220,6 @@ namespace UnitTests.RepositoryTests
             // Fetching posts by slug
             var postInDb1 = await _forumPostRepository.GetForumPostBySlugAsync("duplicate-title");
             var postInDb2 = await _forumPostRepository.GetForumPostBySlugAsync("duplicate-title-1");
-
-            // Additional logging for debugging
-            Console.WriteLine("Database contents during query:");
-            var debugPosts = await _wikiDbContext.ForumPosts
-                .Include(post => post.Comments)
-                    .ThenInclude(comment => comment.UserProfile)
-                .Include(post => post.User)
-                .ToListAsync();
-            foreach (var post in debugPosts)
-            {
-                Console.WriteLine($"ID: {post.Id}, Title: {post.PostTitle}, Slug: {post.Slug}, Content: {post.Content}, UserId: {post.UserId}");
-                foreach (var comment in post.Comments)
-                {
-                    Console.WriteLine($"-- Comment ID: {comment.Id}, UserProfileId: {comment.UserProfileId}");
-                }
-            }
 
             // Assertions
             Assert.NotNull(postInDb1);

@@ -45,7 +45,6 @@ public class ForumPostController : ControllerBase
     [Authorize(Roles = "Admin, User")]
     public async Task<ActionResult<ForumPost>> AddForumPost([FromForm] ForumPostForm forumPostForm)
     {
-        Console.WriteLine(forumPostForm);
         var forumPostId = new Guid();
         var firstComment = new ForumComment
         {

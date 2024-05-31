@@ -66,10 +66,8 @@ public class AuthControllerTests : IntegrationTestBase
 
             // Act
             var result = await _controller.Authenticate(request);
-            Console.WriteLine(result);
             // Assert
             var okResult = result.Result as OkObjectResult;
-            Console.WriteLine(result.Result);
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             var responseData = okResult.Value as AuthResponse;
@@ -105,10 +103,6 @@ public class AuthControllerTests : IntegrationTestBase
             var badRequestResult = (BadRequestObjectResult)result.Result;
             // Extract the error messages from the SerializableError object
             var errors = (SerializableError)badRequestResult.Value;
-            foreach (var error in errors)
-            {
-                Console.WriteLine($"key: {error.Key} value: {error.Value}");
-            }
             Assert.IsTrue(errors.ContainsKey("Duplicate email"));
             var errorMessages = (string[])errors["Duplicate email"];
             Assert.IsTrue(errorMessages.Contains("Email is already taken"));
