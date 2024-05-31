@@ -45,15 +45,16 @@ const ForumCommentComponent = ({ post, cookies, isPopupVisible, togglePopupVisib
     };
 
     const renderQuote = (comment, currentDepth, maxDepth) => {
-        if (!comment.replyToComment || currentDepth > maxDepth) {
+        var replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
+        if (!replyComment || currentDepth > maxDepth) {
             return null;
         }
-
+        
         return (
             <div className="quoted-comment">
-                <p>{comment.replyToComment.userProfile.displayName} wrote:</p>
-                <div dangerouslySetInnerHTML={{ __html: comment.replyToComment.content }} />
-                {renderQuote(comment.replyToComment, currentDepth + 1, maxDepth)}
+                <p>{replyComment.userProfile.displayName} wrote:</p>
+                <div dangerouslySetInnerHTML={{ __html: replyComment.content }} />
+                {renderQuote(replyComment, currentDepth + 1, maxDepth)}
             </div>
         );
     };
@@ -93,6 +94,7 @@ const ForumCommentComponent = ({ post, cookies, isPopupVisible, togglePopupVisib
                 <div>
                     {currentComments.map((comment, index) => (
                         <div key={index}>
+                            {/* {console.log(comment)} */}
                             <div className="fp-grid">
                                 <div className="fp-grid-row">
                                     <div className="fp-grid-cell"><Link to={`/profile/${comment.userProfile.userName}`}>{comment.userProfile.displayName}</Link></div>
