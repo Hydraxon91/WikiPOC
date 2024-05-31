@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using DotNetEnv;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,17 +18,25 @@ public class UserCommentControllerTests : IntegrationTestBase
     private UserCommentController _controller;
     private AuthController _authController;
     private string? _token;
+    private string? _userName;
 
     [SetUp]
     public async Task SetUp()
     {
-        ResetDatabase();
+        // Check JWT configuration, This shouldn't fix anything but somehow it did?
+        Env.TraversePath().Load();
+        // var signingKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
+        // if (string.IsNullOrEmpty(signingKey))
+        // {
+        //     throw new InvalidOperationException("JWT_ISSUER_SIGNING_KEY is not configured.");
+        // }
         // Ensure necessary setup
         await EnsureUserRoleExistsAsync();
         // await AddTestUser("testuser99");
         _controller = CreateUserCommentController();
         _authController = CreateAuthController();
-        _token = await GetValidUserToken("testuser3@example.com", "testuser3", "@Password123");
+        _userName = $"{GetRandomizedString("testuser")}";
+        _token = await GetValidUserToken($"{GetRandomizedString("test")}@example.com", _userName, "@Password123");
     }
     private UserCommentController CreateUserCommentController()
     {
@@ -44,10 +52,10 @@ public class UserCommentControllerTests : IntegrationTestBase
         return new AuthController(new AuthService(userManager, tokenService));
     }
 
-    private async Task<UserComment> AddTestComment(string content, string userName)
+    private async Task<UserComment> AddTestComment(string content)
     {
         // var userProfile = await AddTestUser(userName);
-        var userProfile = await DbContext.UserProfiles.FirstOrDefaultAsync(up => up.UserName == userName);
+        var userProfile = await DbContext.UserProfiles.FirstOrDefaultAsync(up => up.UserName == _userName);
         var wikiPage = new WikiPage
         {
             Id = Guid.NewGuid(),
@@ -129,7 +137,7 @@ public class UserCommentControllerTests : IntegrationTestBase
     public async Task GetComment_ExistingId_ShouldReturnComment()
     {
         // Arrange
-        var testComment = await AddTestComment("Test comment", "testuser3");
+        var testComment = await AddTestComment("Test comment");
         var commentId = testComment.Id;
 
         // Act
@@ -170,7 +178,7 @@ public class UserCommentControllerTests : IntegrationTestBase
             Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
         };
 
-        var comment = await AddTestComment("content", "testuser3");
+        var comment = await AddTestComment("content");
         comment.Id = new Guid();
 
         // Act
@@ -188,7 +196,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         {
             Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
         };
-        var testComment = await AddTestComment("Original Comment", "testuser3");
+        var testComment = await AddTestComment("Original Comment");
         var updatedContent = "Updated Comment";
     
         // Detach the entity before modifying it
@@ -216,7 +224,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         {
             Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
         };
-        var testComment = await AddTestComment("Test Comment", "testuser3");
+        var testComment = await AddTestComment("Test Comment");
 
         // Act
         var result = await _controller.DeleteComment(testComment.Id);
