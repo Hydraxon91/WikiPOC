@@ -25,6 +25,13 @@ const WikiPageReplyComponent = ({ user, page, cookies, handleCommentSubmit, post
             setCommentText('');
             newComment.userProfile = user;
             handleCommentSubmit(newComment);
+            // Ensure replyTo.replies is initialized
+            if (!replyTo.replies) {
+                replyTo.replies = [];
+            }
+
+            // Add newComment to replyTo.replies
+            replyTo.replies.push(newComment);
             alert('Successfully submitted comment');
         } catch (error) {
             console.error('Error posting comment:', error);

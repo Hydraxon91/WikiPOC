@@ -284,7 +284,7 @@ async Task CreateUserIfNotExists()
     using var scope = app.Services.CreateScope();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
-    var userInDb = await userManager.FindByEmailAsync("test@test.com");
+    var userInDb = await userManager.FindByEmailAsync(Environment.GetEnvironmentVariable("TESTUSER_EMAIL"));
     if (userInDb == null)
     {
         // Console.WriteLine(Environment.GetEnvironmentVariable("TESTUSER_PASSWORD"));

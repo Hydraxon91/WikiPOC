@@ -25,7 +25,7 @@ public class ParagraphRepository : IParagraphRepository
 
         if (wikiPage == null)
         {
-            return null; // Or throw an exception indicating that the wiki page was not found
+            throw new InvalidOperationException("WikiPage not found.");
         }
 
         paragraph.WikiPage = wikiPage;

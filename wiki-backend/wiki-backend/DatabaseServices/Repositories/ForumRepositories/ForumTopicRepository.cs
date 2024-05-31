@@ -39,6 +39,16 @@ public class ForumTopicRepository : IForumTopicRepository
 
     public async Task AddForumTopicAsync(ForumTopic topic)
     {
+        if (string.IsNullOrWhiteSpace(topic.Title))
+        {
+            throw new ArgumentException("Title cannot be null or empty", nameof(topic.Title));
+        }
+
+        if (string.IsNullOrWhiteSpace(topic.Description))
+        {
+            throw new ArgumentException("Description cannot be null or empty", nameof(topic.Description));
+        }
+        
         int maxOrder = await _context.ForumTopics.MaxAsync(ft => (int?)ft.Order) ?? 0;
         topic.Order = maxOrder + 1;
         topic.Slug = GenerateSlug(topic.Title);
@@ -69,6 +79,8 @@ public class ForumTopicRepository : IForumTopicRepository
         {
             slug = $"{originalSlug}-{counter}";
             counter++;
+            // Update originalSlug for the next iteration
+            originalSlug = slug;
         }
 
         return slug;
