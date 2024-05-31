@@ -13,6 +13,7 @@ using wiki_backend.Services.Authentication;
 namespace IntegrationTests.ControllerTests.UserControllers;
 
 [TestFixture]
+[NonParallelizable]
 public class UserCommentControllerTests : IntegrationTestBase
 {
     private UserCommentController _controller;
@@ -25,11 +26,11 @@ public class UserCommentControllerTests : IntegrationTestBase
     {
         // Check JWT configuration, This shouldn't fix anything but somehow it did?
         Env.TraversePath().Load();
-        // var signingKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
-        // if (string.IsNullOrEmpty(signingKey))
-        // {
-        //     throw new InvalidOperationException("JWT_ISSUER_SIGNING_KEY is not configured.");
-        // }
+        var signingKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
+        if (string.IsNullOrEmpty(signingKey))
+        {
+            throw new InvalidOperationException("JWT_ISSUER_SIGNING_KEY is not configured.");
+        }
         // Ensure necessary setup
         await EnsureUserRoleExistsAsync();
         // await AddTestUser("testuser99");
