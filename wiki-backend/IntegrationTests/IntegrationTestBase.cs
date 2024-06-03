@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,9 @@ using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
 using DotNetEnv;
 using IntegrationTests.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using wiki_backend.Contracts;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Services.Authentication;
@@ -23,7 +26,8 @@ namespace IntegrationTests
         protected readonly string JwtValidAudience;
         protected readonly string JwtIssuerSigningKey;
         protected readonly string PicturesPathContainer;
-        protected readonly string DbConnectionString;
+        private readonly string DbConnectionString;
+        protected AuthController _authController;
         private readonly string _uniqueDatabaseName;
         
         public IntegrationTestBase()
@@ -55,6 +59,8 @@ namespace IntegrationTests
             ServiceProvider = services.BuildServiceProvider();
             DbContext = ServiceProvider.GetRequiredService<WikiDbContext>();
             DbContext.Database.EnsureCreated();
+            
+            _authController = CreateAuthController();
 
             // Ensure roles exist
             Task.Run(async () => await EnsureRolesAsync()).Wait(); // Wait for roles creation to finish
@@ -96,11 +102,18 @@ namespace IntegrationTests
             return $"{baseString}{random.Next(1, 99999)}";
         }
         
+        // protected AuthController CreateAuthController()
+        // {
+        //     var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        //     var authService = new AuthService(userManager, new MockTokenServices());
+        //     return new AuthController(authService);
+        // }
+        
         protected AuthController CreateAuthController()
         {
+            var tokenService = new TokenServices();
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var authService = new AuthService(userManager, new MockTokenServices());
-            return new AuthController(authService);
+            return new AuthController(new AuthService(userManager, tokenService));
         }
         
         protected UsersController CreateUserController()
@@ -119,15 +132,20 @@ namespace IntegrationTests
         {
             var roleManager = ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userRoleExists = await roleManager.RoleExistsAsync("User");
+            var adminRoleExists = await roleManager.RoleExistsAsync("Admin");
             if (!userRoleExists)
             {
                 await roleManager.CreateAsync(new IdentityRole("User"));
             }
+            if (!adminRoleExists)
+            {
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
         }
 
-        protected async Task CreateTestUserAsync()
+        protected async Task<ApplicationUser> CreateTestUserAsync(string email, string username, string password)
         {
-            var testUsername = "test_user";
+            var testUsername = username;
 
             var testUserProfile = new UserProfile()
             {
@@ -143,10 +161,9 @@ namespace IntegrationTests
             var testUser = new ApplicationUser
             {
                 UserName = testUsername,
-                Email = "test@example.com",
+                Email = email,
                 ProfileId = testUserProfile.Id
             };
-            var password = "@Testpassword1";
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var userCreated = await userManager.CreateAsync(testUser, password);
             if (userCreated.Succeeded)
@@ -159,6 +176,54 @@ namespace IntegrationTests
                 DbContext.UserProfiles.Update(testUserProfile);
                 await DbContext.SaveChangesAsync();
             }
+
+            return testUser;
         }
+        protected async Task<ApplicationUser> CreateAdminUserAsync(string email, string username, string password)
+        {
+            var testUserProfile = new UserProfile()
+            {
+                UserName = username,
+                DisplayName = "Admin User",
+                ProfilePicture = "admin_base.gif"
+            };
+
+            DbContext.UserProfiles.Add(testUserProfile);
+            await DbContext.SaveChangesAsync();
+
+            var adminUser = new ApplicationUser
+            {
+                UserName = username,
+                Email = email,
+                ProfileId = testUserProfile.Id
+            };
+            
+            var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var userCreated = await userManager.CreateAsync(adminUser, password);
+            if (userCreated.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+                testUserProfile.UserId = adminUser.Id;
+
+                DbContext.UserProfiles.Update(testUserProfile);
+                await DbContext.SaveChangesAsync();
+            }
+            return adminUser;
+        }
+        
+        protected async Task<string> GetValidUserToken(string email, string username, string password)
+        {
+            // Login the user
+            var loginRequest = new AuthRequest(email, password);
+            var loginResult = await _authController.Authenticate(loginRequest);
+            if (!(loginResult.Result is OkObjectResult okResult))
+            {
+                throw new InvalidOperationException("User login failed.");
+            }
+
+            var authResponse = okResult.Value as AuthResponse;
+            return authResponse?.Token;
+        }
+        
     }
 }
