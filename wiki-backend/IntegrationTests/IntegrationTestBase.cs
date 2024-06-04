@@ -102,13 +102,6 @@ namespace IntegrationTests
             return $"{baseString}{random.Next(1, 99999)}";
         }
         
-        // protected AuthController CreateAuthController()
-        // {
-        //     var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        //     var authService = new AuthService(userManager, new MockTokenServices());
-        //     return new AuthController(authService);
-        // }
-        
         protected AuthController CreateAuthController()
         {
             var tokenService = new TokenServices();
