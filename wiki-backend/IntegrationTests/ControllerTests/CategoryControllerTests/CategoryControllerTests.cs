@@ -9,6 +9,7 @@ using wiki_backend.Models;
 namespace IntegrationTests.ControllerTests.CategoryControllerTests;
 
 [TestFixture]
+[NonParallelizable]
 public class CategoryControllerTests : IntegrationTestBase
 {
     private CategoryRepository _categoryRepository;
