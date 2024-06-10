@@ -328,8 +328,11 @@ public class WikiPageRepository : IWikiPageRepository
             
                     
             // Remove the old article from the category
-            await _categoryRepository.RemoveArticleFromCategoryAsync(wikiPage.CategoryId.Value, wikiPage.Id);
-
+            if (wikiPage.CategoryId.HasValue)
+            {
+                // Remove the old article from the category
+                await _categoryRepository.RemoveArticleFromCategoryAsync(wikiPage.CategoryId.Value, wikiPage.Id);
+            }
             // Remove paragraphs and the wiki page itself
             _context.Paragraphs.RemoveRange(wikiPage.Paragraphs);
             _context.WikiPages.Remove(wikiPage);
