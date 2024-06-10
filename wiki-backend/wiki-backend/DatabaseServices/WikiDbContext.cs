@@ -108,13 +108,13 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .HasMany(fp => fp.Comments)
             .WithOne(c => c.ForumPost)
             .HasForeignKey(c => c.ForumPostId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<ForumComment>()
             .HasOne(fc => fc.ForumPost)
             .WithMany(fp => fp.Comments)
             .HasForeignKey(fc => fc.ForumPostId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<ForumComment>()
             .HasOne(fc => fc.UserProfile)

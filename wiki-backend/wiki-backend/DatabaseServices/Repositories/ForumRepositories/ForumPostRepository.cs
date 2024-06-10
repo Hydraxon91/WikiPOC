@@ -78,10 +78,12 @@ public class ForumPostRepository : IForumPostRepository
 
     public async Task DeleteForumPostAsync(Guid id)
     {
-        var post = await _context.ForumPosts.FindAsync(id);
-        if (post != null)
+        var forumPost = await _context.ForumPosts
+            .Include(p => p.Comments)
+            .FirstOrDefaultAsync(p => p.Id == id);
+        if (forumPost != null)
         {
-            _context.ForumPosts.Remove(post);
+            _context.ForumPosts.Remove(forumPost);
             await _context.SaveChangesAsync();
         }
     }

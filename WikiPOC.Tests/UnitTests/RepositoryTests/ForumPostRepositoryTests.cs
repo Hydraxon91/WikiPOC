@@ -146,7 +146,7 @@ namespace UnitTests.RepositoryTests
             forumPost.PostTitle = "Updated Post";
             forumPost.Content = "Updated Content";
 
-            await _forumPostRepository.UpdateForumPostAsync(forumPost);
+            await _forumPostRepository.UpdateForumPostAsync(forumPost, forumPost);
 
             var postInDb = await _wikiDbContext.ForumPosts.FirstOrDefaultAsync(p => p.Id == forumPost.Id);
 
@@ -158,24 +158,40 @@ namespace UnitTests.RepositoryTests
         [Test]
         public async Task DeleteForumPostAsync_ShouldDeleteForumPost()
         {
+            var forumPostId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+
             var forumPost = new ForumPost
             {
-                Id = Guid.NewGuid(),
+                Id = forumPostId,
                 PostTitle = "Post to Delete",
                 Content = "Content to Delete",
                 ForumTopicId = Guid.NewGuid(),
-                UserId = Guid.NewGuid(),
+                UserId = userId,
                 UserName = "DeleteUser"
             };
 
+            var forumComment = new ForumComment
+            {
+                Id = Guid.NewGuid(),
+                Content = "Comment to Delete",
+                UserProfileId = userId,
+                ForumPostId = forumPostId
+            };
+
             await _forumPostRepository.AddForumPostAsync(forumPost);
+            await _wikiDbContext.ForumComments.AddAsync(forumComment);
+            await _wikiDbContext.SaveChangesAsync();
 
-            await _forumPostRepository.DeleteForumPostAsync(forumPost.Id);
+            await _forumPostRepository.DeleteForumPostAsync(forumPostId);
 
-            var postInDb = await _wikiDbContext.ForumPosts.FirstOrDefaultAsync(p => p.Id == forumPost.Id);
+            var postInDb = await _wikiDbContext.ForumPosts.FirstOrDefaultAsync(p => p.Id == forumPostId);
+            var commentInDb = await _wikiDbContext.ForumComments.FirstOrDefaultAsync(c => c.ForumPostId == forumPostId);
 
             Assert.Null(postInDb);
+            Assert.Null(commentInDb);
         }
+
 
         [Test]
         public async Task GenerateSlug_ShouldCreateUniqueSlug()
