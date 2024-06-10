@@ -15,7 +15,7 @@ namespace IntegrationTests.ControllerTests.ForumControllerTests;
 [NonParallelizable]
 public class ForumPostControllerTests : IntegrationTestBase
 {
-            private ForumPostController _controller;
+        private ForumPostController _controller;
         private IForumPostRepository _forumPostRepository;
         private UserManager<ApplicationUser> _userManager;
         private string? _token;
