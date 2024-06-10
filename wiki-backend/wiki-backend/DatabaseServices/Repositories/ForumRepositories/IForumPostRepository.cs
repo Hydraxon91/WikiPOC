@@ -8,6 +8,6 @@ public interface IForumPostRepository
     Task<ForumPost> GetForumPostByIdAsync(Guid id);
     Task<ForumPost> GetForumPostBySlugAsync(string slug);
     Task AddForumPostAsync(ForumPost post);
-    Task UpdateForumPostAsync(ForumPost post);
+    Task UpdateForumPostAsync(ForumPost post, ForumPost updatedPost);
     Task DeleteForumPostAsync(Guid id);
 }

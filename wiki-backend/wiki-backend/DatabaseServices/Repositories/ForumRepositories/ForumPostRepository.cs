@@ -37,14 +37,41 @@ public class ForumPostRepository : IForumPostRepository
 
     public async Task AddForumPostAsync(ForumPost post)
     {
+        var firstComment = new ForumComment
+        {
+            Id = new Guid(),
+            Content = post.Content,
+            UserProfileId = post.UserId,
+            ForumPostId = post.Id
+        };
+        post.Comments = new List<ForumComment> { firstComment };
         post.Slug = await GenerateUniqueSlugAsync(post.PostTitle);
         await _context.ForumPosts.AddAsync(post);
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateForumPostAsync(ForumPost post)
+    public async Task UpdateForumPostAsync(ForumPost post, ForumPost updatedPost)
     {
+        post.PostTitle = updatedPost.PostTitle;
+        post.ForumTopicId = updatedPost.ForumTopicId;
         post.Slug = await GenerateUniqueSlugAsync(post.PostTitle);
+        // edit first comment
+        var firstComment = post.Comments.FirstOrDefault();
+        if (firstComment != null)
+        {
+            firstComment.Content = updatedPost.Content;
+        }
+        else
+        {
+            var newComment = new ForumComment
+            {
+                Id = new Guid(),
+                Content = updatedPost.Content,
+                UserProfileId = updatedPost.UserId,
+                ForumPostId = post.Id
+            };
+            post.Comments = new List<ForumComment> { newComment };
+        }
         _context.ForumPosts.Update(post);
         await _context.SaveChangesAsync();
     }
