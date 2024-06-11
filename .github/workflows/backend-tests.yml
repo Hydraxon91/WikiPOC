@@ -12,6 +12,9 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wiki-backend 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -24,14 +27,13 @@ jobs:
         dotnet-version: '7.0'
 
     - name: Restore dependencies
-      run: dotnet restore
-      working-directory: ../../wiki-backend
+      run: dotnet restore ./wiki-backend/wiki-backend.csproj 
 
     - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet build ./wiki-backend/wiki-backend.csproj --configuration Release
 
     - name: Run unit tests
-      run: dotnet test ../../wiki-backend/UnitTests/UnitTests.csproj --configuration Release
+      run: dotnet test ./UnitTests/UnitTests.csproj --configuration Release
 
     - name: Run integration tests
-      run: dotnet test ../../wiki-backend/IntegrationTests/IntegrationTests.csproj --configuration Release
+      run: dotnet test ./IntegrationTests/IntegrationTests.csproj --configuration Release
