@@ -24,13 +24,13 @@ jobs:
         dotnet-version: '7.0'
 
     - name: Restore dependencies
-      run: dotnet restore ./wiki-backend/wiki-backend.csproj
+      run: dotnet restore ../../wiki-backend/wiki-backend/wiki-backend.csproj
 
     - name: Build
       run: dotnet build --configuration Release
 
     - name: Run unit tests
-      run: dotnet test ./UnitTests/UnitTests.csproj --configuration Release
+      run: dotnet test ../../wiki-backend/UnitTests/UnitTests.csproj --configuration Release
 
     - name: Run integration tests
-      run: dotnet test ./IntegrationTests/IntegrationTests.csproj --configuration Release
+      run: dotnet test ../../wiki-backend/IntegrationTests/IntegrationTests.csproj --configuration Release
