@@ -53,9 +53,5 @@ jobs:
     - name: Wait for SQL Server to be ready
       run: dockerize -wait tcp://localhost:1433 -timeout 1m
 
-    - name: Set file permissions
-      run: |
-        chmod -R 777 /pictures
-
     - name: Run integration tests
       run: dotnet test ./wiki-backend/IntegrationTests/IntegrationTests.csproj --configuration Release
