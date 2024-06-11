@@ -6,25 +6,9 @@ on:
       - main
       - '**'
 
-jobs:
-  setup-sql-server:
-    runs-on: ubuntu-latest
-    
-    services:
-      mssql:
-        image: mcr.microsoft.com/mssql/server
-        env:
-          SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          ACCEPT_EULA: Y
-        ports:
-          - 1433:1433
-    steps:
-      - name: Wait for MSSQL server to be ready
-        run: dockerize -wait tcp://localhost:1433 -timeout 1m
-
+jobs:  
   build:
     runs-on: ubuntu-latest
-    needs: setup-sql-server
     env:
       PICTURES_PATH: ${{ secrets.PICTURES_PATH }}
       ASPNETCORE_CONNECTIONSTRING: ${{ secrets.ASPNETCORE_CONNECTIONSTRING }}
