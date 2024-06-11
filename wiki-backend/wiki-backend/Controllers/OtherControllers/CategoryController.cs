@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Identity;
@@ -61,6 +62,6 @@ public class CategoryController : ControllerBase
             return NotFound(); // Category not found
         }
 
-        return NoContent(); // Category deleted successfully
+        return Ok(result); // Category deleted successfully
     }
 }

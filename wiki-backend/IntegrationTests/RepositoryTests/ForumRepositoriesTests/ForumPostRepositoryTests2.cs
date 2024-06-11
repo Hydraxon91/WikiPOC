@@ -49,7 +49,7 @@ public class ForumPostRepositoryTests2 : IntegrationTestBase
     public async Task UpdateForumPostAsync_ShouldThrowException_WhenPostIsNull()
     {
         // Act & Assert
-        Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.UpdateForumPostAsync(null));
+        Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.UpdateForumPostAsync(null, null));
     }
 
     [Test]

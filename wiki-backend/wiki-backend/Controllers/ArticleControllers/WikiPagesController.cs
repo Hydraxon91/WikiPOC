@@ -11,10 +11,12 @@ namespace wiki_backend.Controllers;
 public class WikiPagesController : ControllerBase
 {
     private readonly IWikiPageRepository _wikiPageRepository;
+    private readonly ICategoryRepository _categoryRepository;
     
-    public WikiPagesController(IWikiPageRepository wikiPageRepository)
+    public WikiPagesController(IWikiPageRepository wikiPageRepository, ICategoryRepository categoryRepository)
     {
         _wikiPageRepository = wikiPageRepository;
+        _categoryRepository = categoryRepository;
     }
     
     [HttpGet]
@@ -162,7 +164,14 @@ public class WikiPagesController : ControllerBase
 
         if (existingWikiPageOutputModel == null)
             return NotFound();
-        
+
+        if (wikiPageWithImagesInputModel.CategoryId != null)
+        {
+            var category = await _categoryRepository.GetCategoryByIdAsync(wikiPageWithImagesInputModel.CategoryId.Value);
+            if (category == null)
+                return BadRequest(new { Message = "Invalid CategoryId" });
+        }
+
         var updatedWikiPage = new WikiPage
         {
             Title = wikiPageWithImagesInputModel.Title,
@@ -173,11 +182,13 @@ public class WikiPagesController : ControllerBase
             CategoryId = wikiPageWithImagesInputModel.CategoryId,
             LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage
         };
+
         var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage, updatedWikiPage, images);
 
         return Ok(new { Message = "WikiPage updated successfully" });
     }
+
     
     //This method returns 400 for some reason, will need to check later
     [Authorize(Policy = IdentityData.UserPolicyName)]
@@ -238,7 +249,12 @@ public class WikiPagesController : ControllerBase
     [HttpDelete("admin/{id:guid}")]
     public async Task<IActionResult> DeleteWikiPageForAdmin(Guid id)
     {
-        await _wikiPageRepository.DeleteAsync(id);
+        var result = await _wikiPageRepository.DeleteAsync(id);
+
+        if (!result)
+        {
+            return NotFound(new { Message = "WikiPage doesn't exist" });
+        }
 
         return Ok(new { Message = "WikiPage deleted successfully" });
     }
@@ -247,8 +263,11 @@ public class WikiPagesController : ControllerBase
     [HttpDelete("AdminDecline/{id:guid}")]
     public async Task<IActionResult> DeleteUserSubmittedWikiPage(Guid id)
     {
-        await _wikiPageRepository.DeleteUserSubmittedAsync(id, null);
-
+        var result =  await _wikiPageRepository.DeleteUserSubmittedAsync(id, null);
+        if (!result)
+        {
+            return NotFound(new { Message = "WikiPage doesn't exist" });
+        }
         return Ok(new { Message = "UserSubmittedWikiPage deleted successfully" });
     }
     

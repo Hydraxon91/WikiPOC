@@ -1,8 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
 

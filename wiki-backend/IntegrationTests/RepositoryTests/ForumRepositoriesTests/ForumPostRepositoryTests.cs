@@ -109,7 +109,7 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         existingPost.Content = "Updated Content";
 
         // Act
-        await _repository.UpdateForumPostAsync(existingPost);
+        await _repository.UpdateForumPostAsync(existingPost, existingPost);
 
         // Assert
         var updatedPost = await DbContext.ForumPosts.FirstOrDefaultAsync(p => p.PostTitle == "Updated Title");

@@ -20,7 +20,7 @@ public class UserControllerTests : IntegrationTestBase
             // Create or retrieve the "User" role
             await EnsureUserRoleExistsAsync();
             // Create a test user
-            await CreateTestUserAsync();
+            await CreateTestUserAsync("test@example.com", "test2_user", "@Testpassword1");
             // Create a test user
             _controller = CreateUserController();
         }

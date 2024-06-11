@@ -17,9 +17,9 @@ namespace IntegrationTests.ControllerTests.UserControllers;
 public class UserCommentControllerTests : IntegrationTestBase
 {
     private UserCommentController _controller;
-    private AuthController _authController;
     private string? _token;
     private string? _userName;
+    private string? _email;
 
     [SetUp]
     public async Task SetUp()
@@ -35,9 +35,10 @@ public class UserCommentControllerTests : IntegrationTestBase
         await EnsureUserRoleExistsAsync();
         // await AddTestUser("testuser99");
         _controller = CreateUserCommentController();
-        _authController = CreateAuthController();
         _userName = $"{GetRandomizedString("testuser")}";
-        _token = await GetValidUserToken($"{GetRandomizedString("test")}@example.com", _userName, "@Password123");
+        _email = $"{GetRandomizedString("test")}@example.com";
+        await CreateTestUserAsync(_email, _userName, "@Password123");
+        _token = await GetValidUserToken(_email, _userName, "@Password123");
     }
     private UserCommentController CreateUserCommentController()
     {
@@ -45,13 +46,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         return new UserCommentController(userCommentRepository, userManager);
     }
-
-    private AuthController CreateAuthController()
-    {
-        var tokenService = new TokenServices();
-        var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        return new AuthController(new AuthService(userManager, tokenService));
-    }
+    
 
     private async Task<UserComment> AddTestComment(string content)
     {
@@ -78,60 +73,6 @@ public class UserCommentControllerTests : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         return comment;
-    }
-
-    private async Task<UserProfile> AddTestUser(string userName)
-    {
-        var userId = Guid.NewGuid().ToString();
-        var userProfileId = Guid.NewGuid();
-        var user = new ApplicationUser
-        {
-            UserName = userName,
-            Id = userId,
-            ProfileId = userProfileId,
-            Profile = new UserProfile
-            {
-                Id = userProfileId,
-                UserName = userName,
-                UserId = userId,
-            }
-        };
-        DbContext.ApplicationUsers.Add(user);
-        DbContext.UserProfiles.Add(user.Profile);
-        await DbContext.SaveChangesAsync();
-
-        return user.Profile;
-    }
-
-    private async Task EnsureUserRoleExistsAsync()
-    {
-        var roleManager = ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        if (!await roleManager.RoleExistsAsync("USER"))
-        {
-            await roleManager.CreateAsync(new IdentityRole("USER"));
-        }
-    }
-
-    private async Task<string> GetValidUserToken(string email, string username, string password)
-    {
-        // Register the user
-        var registerRequest = new RegistrationRequest(email, username, password);
-        var registerResult = await _authController.Register(registerRequest);
-        if (!(registerResult.Result is CreatedAtActionResult))
-        {
-            throw new InvalidOperationException("User registration failed.");
-        }
-
-        // Login the user
-        var loginRequest = new AuthRequest(email, password);
-        var loginResult = await _authController.Authenticate(loginRequest);
-        if (!(loginResult.Result is OkObjectResult okResult))
-        {
-            throw new InvalidOperationException("User login failed.");
-        }
-
-        var authResponse = okResult.Value as AuthResponse;
-        return authResponse?.Token;
     }
 
     [Test]

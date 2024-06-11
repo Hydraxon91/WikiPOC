@@ -24,6 +24,11 @@ public class CategoryRepository : ICategoryRepository
         return await _context.Categories.Include(category => category.WikiPages).FirstOrDefaultAsync(c => c.CategoryName == categoryName);
     }
 
+    public async Task<Category> GetCategoryByIdAsync(Guid categoryId)
+    {
+        return await _context.Categories.Include(category => category.WikiPages).FirstOrDefaultAsync(c => c.Id == categoryId);
+    }
+
     public async Task<Category> AddCategoryAsync(string categoryName)
     {
         var existingCategory = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);
