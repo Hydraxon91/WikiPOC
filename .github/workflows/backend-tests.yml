@@ -24,8 +24,8 @@ jobs:
         dotnet-version: '7.0'
 
     - name: Restore dependencies
-      working-directory: ./wiki-backend
       run: dotnet restore
+      working-directory: ../../wiki-backend
 
     - name: Build
       run: dotnet build --configuration Release
