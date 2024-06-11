@@ -37,6 +37,13 @@ jobs:
       run: |
         docker run -d --name sql-server -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ secrets.DB_PASSWORD }}" -p 1433:1433 mcr.microsoft.com/mssql/server:latest
 
+    - name: Install dockerize
+      run: |
+        wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz
+        tar -xzvf dockerize-linux-amd64-v0.6.1.tar.gz
+        sudo mv dockerize /usr/local/bin
+        rm dockerize-linux-amd64-v0.6.1.tar.gz
+
     - name: Wait for SQL Server to be ready
       run: dockerize -wait tcp://localhost:1433 -timeout 1m
 
