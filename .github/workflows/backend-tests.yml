@@ -6,8 +6,8 @@ on:
     branches:
       - '**'
     paths:
-    - '**.cs'
-    - '**.csproj'
+      - '**.cs'
+      - '**.csproj'
 
 jobs:
   tests:
