@@ -12,7 +12,6 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -25,6 +24,7 @@ jobs:
         dotnet-version: '7.0'
 
     - name: Restore dependencies
+      working-directory: ./wiki-backend
       run: dotnet restore
 
     - name: Build
