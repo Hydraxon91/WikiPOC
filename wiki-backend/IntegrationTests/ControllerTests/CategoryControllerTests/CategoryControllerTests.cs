@@ -93,7 +93,6 @@ public class CategoryControllerTests : IntegrationTestBase
         Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
         
         var category = okResult.Value as Category;
-        Console.WriteLine(category);
         Assert.AreEqual(catId, category.Id);
         Assert.AreEqual(categoryName, category.CategoryName);
     }

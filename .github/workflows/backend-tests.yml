@@ -15,6 +15,11 @@ jobs:
     env: 
       INTEGRATIONTEST_CONNECTIONSTRING: ${{ secrets.INTEGRATIONTEST_CONNECTIONSTRING }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      JWT_ISSUER_SIGNING_KEY: ${{ secrets.JWT_ISSUER_SIGNING_KEY }}
+      JWT_VALID_AUDIENCE: ${{ secrets.JWT_VALID_AUDIENCE }}
+      JWT_VALID_ISSUER: ${{ secrets.JWT_VALID_ISSUER }}
+      JWT_TOKEN_TIME: ${{ secrets.JWT_TOKEN_TIME }}
+      PICTURES_PATH_CONTAINER: ${{ secrets.PICTURES_PATH_CONTAINER }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
