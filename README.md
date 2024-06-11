@@ -36,7 +36,7 @@ WikiPOC was created to address the need for a flexible and scalable platform for
 To install WikiPOC, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/Hydraxon91/WikiPOC.git`
-2. Navigate to the backend directory: `cd WikiPOC/wiki-backend/wiki-backend`
+2. Navigate to the Main directory: `cd WikiPOC/`
 3. Create a `.env` file with the following environment variables:
    - `ASPNETCORE_CONNECTIONSTRING`: Connection string for the database
    - `ADMINUSER_EMAIL`: Email address for the admin user (Will add the ability to create new administrators)
@@ -52,13 +52,8 @@ To install WikiPOC, follow these steps:
    - `PICTURES_PATH`: Path for pictures
    - `PICTURES_PATH_CONTAINER`: Container path for pictures
    - `DB_PASSWORD`: Password for the database
-4. Start the backend services using Docker Compose: `docker-compose up`
-5. Once the backend services are running, navigate to the frontend directory: `cd ../../wiki-frontend`
-6. Create a `.env` file in the frontend directory with the following environment variable:
    - `REACT_APP_API_URL`: URL for the API endpoint
-7. Install dependencies: `npm install`
-8. Start the frontend application: `npm start`
-
+4. Start the services using Docker Compose: `docker-compose up`
 
 
 ## Usage
