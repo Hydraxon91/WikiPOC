@@ -12,6 +12,8 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    env: 
+      INTEGRATIONTEST_CONNECTIONSTRING: ${{ secrets.INTEGRATIONTEST_CONNECTIONSTRING }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
