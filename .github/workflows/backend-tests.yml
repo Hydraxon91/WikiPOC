@@ -40,10 +40,10 @@ jobs:
       run: dotnet test ./wiki-backend/UnitTests/UnitTests.csproj --configuration Release
 
     - name: Create test folder
-      run: mkdir ${{ secrets.PICTURES_PATH_CONTAINER }}
+      run: sudo mkdir ${{ secrets.PICTURES_PATH_CONTAINER }}
 
     - name: Set permissions for test folder
-      run: chmod -R 777 ${{ secrets.PICTURES_PATH_CONTAINER }}
+      run: sudo chmod -R 777 ${{ secrets.PICTURES_PATH_CONTAINER }}
 
     - name: Start SQL Server container
       run: |
