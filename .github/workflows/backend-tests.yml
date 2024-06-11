@@ -1,0 +1,63 @@
+name: Backend Tests
+
+on:
+  push:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '**.cs'
+      - '**.csproj'
+
+jobs:
+  tests:
+    runs-on: ubuntu-20.04
+    env: 
+      INTEGRATIONTEST_CONNECTIONSTRING: ${{ secrets.INTEGRATIONTEST_CONNECTIONSTRING }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      JWT_ISSUER_SIGNING_KEY: ${{ secrets.JWT_ISSUER_SIGNING_KEY }}
+      JWT_VALID_AUDIENCE: ${{ secrets.JWT_VALID_AUDIENCE }}
+      JWT_VALID_ISSUER: ${{ secrets.JWT_VALID_ISSUER }}
+      JWT_TOKEN_TIME: ${{ secrets.JWT_TOKEN_TIME }}
+      PROFILE_PICTURES_PATH: ${{ secrets.PROFILE_PICTURES_PATH }}
+      PICTURES_PATH_CONTAINER: ${{ secrets.PICTURES_PATH_CONTAINER }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '7.0'
+
+    - name: Restore dependencies
+      run: dotnet restore ./wiki-backend/wiki-backend/wiki-backend.csproj 
+
+    - name: Build
+      run: dotnet build ./wiki-backend/wiki-backend/wiki-backend.csproj --configuration Release
+
+    - name: Run unit tests
+      run: dotnet test ./wiki-backend/UnitTests/UnitTests.csproj --configuration Release
+
+    - name: Create test folder
+      run: sudo mkdir ${{ secrets.PICTURES_PATH_CONTAINER }}
+
+    - name: Set permissions for test folder
+      run: sudo chmod -R 777 ${{ secrets.PICTURES_PATH_CONTAINER }}
+
+    - name: Start SQL Server container
+      run: |
+        docker run -d --name sql-server -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ secrets.DB_PASSWORD }}" -p 1433:1433 mcr.microsoft.com/mssql/server:latest
+
+    - name: Install dockerize
+      run: |
+        wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz
+        tar -xzvf dockerize-linux-amd64-v0.6.1.tar.gz
+        sudo mv dockerize /usr/local/bin
+        rm dockerize-linux-amd64-v0.6.1.tar.gz
+
+    - name: Wait for SQL Server to be ready
+      run: dockerize -wait tcp://localhost:1433 -timeout 1m
+
+    - name: Run integration tests
+      run: dotnet test ./wiki-backend/IntegrationTests/IntegrationTests.csproj --configuration Release
