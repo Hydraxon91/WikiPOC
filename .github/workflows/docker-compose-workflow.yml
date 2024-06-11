@@ -48,8 +48,6 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-        repository: ${{ secrets.DOCKERHUB_BACKEND_REPO_NAME }}
-        tag_with_ref: true
 
     - name: Build and push wiki-backend Docker image
       run: |
