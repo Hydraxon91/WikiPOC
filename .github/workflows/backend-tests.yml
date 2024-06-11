@@ -19,6 +19,7 @@ jobs:
       JWT_VALID_AUDIENCE: ${{ secrets.JWT_VALID_AUDIENCE }}
       JWT_VALID_ISSUER: ${{ secrets.JWT_VALID_ISSUER }}
       JWT_TOKEN_TIME: ${{ secrets.JWT_TOKEN_TIME }}
+      PROFILE_PICTURES_PATH: ${{ secrets.PROFILE_PICTURES_PATH }}
       PICTURES_PATH_CONTAINER: ${{ secrets.PICTURES_PATH_CONTAINER }}
     steps:
     - name: Checkout code
@@ -51,6 +52,10 @@ jobs:
 
     - name: Wait for SQL Server to be ready
       run: dockerize -wait tcp://localhost:1433 -timeout 1m
+
+    - name: Set file permissions
+      run: |
+        chmod -R 777 "${{ secrets.PICTURES_PATH_CONTAINER }}"
 
     - name: Run integration tests
       run: dotnet test ./wiki-backend/IntegrationTests/IntegrationTests.csproj --configuration Release
