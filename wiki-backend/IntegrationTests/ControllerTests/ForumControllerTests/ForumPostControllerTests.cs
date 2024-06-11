@@ -144,7 +144,6 @@ public class ForumPostControllerTests : IntegrationTestBase
             var result = await _controller.UpdateForumPost(post.Id, updatedPost);
 
             // Assert
-            Console.WriteLine(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             var updatedPostInDb = await DbContext.ForumPosts.FindAsync(post.Id);
             Assert.AreEqual("Updated Post", updatedPostInDb.PostTitle);
