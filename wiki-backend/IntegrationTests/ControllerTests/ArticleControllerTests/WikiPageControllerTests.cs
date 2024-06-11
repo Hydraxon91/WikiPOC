@@ -10,6 +10,7 @@ using wiki_backend.Models;
 
 namespace IntegrationTests.ControllerTests.ArticleControllerTests;
 
+[NonParallelizable]
 [TestFixture]
 public class WikiPageControllerTests : IntegrationTestBase
 {
@@ -30,8 +31,9 @@ public class WikiPageControllerTests : IntegrationTestBase
         var signingKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
         
         _wikiPageRepository = new WikiPageRepository(DbContext);
+        var categoryRepository = new CategoryRepository(DbContext);
         _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        _controller = new WikiPagesController(_wikiPageRepository);
+        _controller = new WikiPagesController(_wikiPageRepository, categoryRepository);
         ResetDatabase();
         await EnsureUserRoleExistsAsync();
     
@@ -99,6 +101,17 @@ public class WikiPageControllerTests : IntegrationTestBase
     }
     
     [Test]
+    public async Task GetWikiPageByTitle_NonExistentTitle_ShouldReturnNull()
+    {
+        // Arrange & Act
+        var result = await _controller.GetWikiPageByTitle("Non existent page");
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOf<NotFoundResult>(result.Result);
+    }
+    
+    [Test]
     public async Task CreateWikiPageForAdmin_ShouldCreatePage()
     {
         // Arrange
@@ -111,7 +124,6 @@ public class WikiPageControllerTests : IntegrationTestBase
             Title = "Test Page",
             Content = "Test content",
             CategoryId = _catId
-            // Add other necessary properties
         };
 
         // Act
@@ -123,6 +135,52 @@ public class WikiPageControllerTests : IntegrationTestBase
         var createdPage = await DbContext.WikiPages.FirstOrDefaultAsync(wp => wp.Title == pageModel.Title);
         Assert.IsNotNull(createdPage);
         Assert.AreEqual(pageModel.Title, createdPage.Title);
+    }
+    
+    [Test]
+    public async Task CreateWikiPageForAdmin_InvalidTitle_ShouldReturnBadRequest()
+    {
+        // Arrange
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            Request = { Headers = { ["Authorization"] = $"Bearer {_adminToken}" } }
+        };
+        var pageModel = new WikiPageWithImagesInputModel
+        {
+            Content = "Test content",
+            CategoryId = _catId
+        };
+
+        // Act
+        var result = await _controller.CreateWikiPageForAdmin(pageModel);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOf<BadRequestObjectResult>(result.Result);
+    }
+    
+    [Test]
+    public async Task CreateWikiPageForAdmin_NoCategoryId_ShouldReturn500()
+    {
+        // Arrange
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            Request = { Headers = { ["Authorization"] = $"Bearer {_adminToken}" } }
+        };
+        var pageModel = new WikiPageWithImagesInputModel
+        {
+            Content = "Test content",
+            Title = "Title"
+        };
+
+        // Act
+        var result = await _controller.CreateWikiPageForAdmin(pageModel);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOf<ObjectResult>(result.Result);
+        var objectResult = result.Result as ObjectResult;
+        Assert.AreEqual(500, objectResult.StatusCode);
     }
     
     [Test]
@@ -144,7 +202,6 @@ public class WikiPageControllerTests : IntegrationTestBase
             Title = "Updated Test Page",
             Content = "Updated test content",
             CategoryId = _catId
-            // Add other necessary properties
         };
 
         // Act
@@ -156,6 +213,71 @@ public class WikiPageControllerTests : IntegrationTestBase
         var updatedPage = await DbContext.WikiPages.FindAsync(existingPage.Id);
         Assert.IsNotNull(updatedPage);
         Assert.AreEqual(pageModel.Title, updatedPage.Title);
+    }
+    
+    [Test]
+    public async Task UpdateWikiPageForAdmin_NonExistentPage_ShouldReturnNotFoundResult()
+    {
+        // Arrange
+        // Add existing WikiPage data to the database
+        var existingId = Guid.NewGuid();
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            Request = { Headers = { ["Authorization"] = $"Bearer {_adminToken}" } }
+        };
+        var pageModel = new WikiPageWithImagesInputModel
+        {
+            Content = "Updated test content",
+            CategoryId = _catId
+        };
+
+        // Act
+        var result = await _controller.UpdateWikiPageForAdmin(existingId, pageModel);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOf<NotFoundResult>(result);
+    }
+    
+    [Test]
+    public async Task UpdateWikiPageForAdmin_InvalidCategoryId_ShouldReturnBadRequest()
+    {
+        // Arrange
+        // Add existing WikiPage data to the database
+        var existingId = Guid.NewGuid();
+        var existingPage = new WikiPage { Id = existingId, Title = "Test Title UpdateAdmin"};
+        await DbContext.WikiPages.AddAsync(existingPage);
+        await DbContext.SaveChangesAsync();
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            Request = { Headers = { ["Authorization"] = $"Bearer {_adminToken}" } }
+        };
+        var pageModel = new WikiPageWithImagesInputModel
+        {
+            Content = "Updated test content",
+            CategoryId = Guid.NewGuid()
+        };
+
+        // Act
+        var result = await _controller.UpdateWikiPageForAdmin(existingId, pageModel);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        var badRequestResult = result as BadRequestObjectResult;
+        
+        // Ensure the Value is not null
+        Assert.IsNotNull(badRequestResult.Value);
+
+        // Cast Value to dynamic
+        dynamic value = badRequestResult.Value;
+
+        // Access the Message property
+        string message = $"'{value}'";
+
+        Assert.AreEqual($"'{{ Message = Invalid CategoryId }}'", message);
     }
     
     [Test]
@@ -242,6 +364,25 @@ public class WikiPageControllerTests : IntegrationTestBase
         var deletedPage = await DbContext.WikiPages.FindAsync(pageId);
         Assert.IsNull(deletedPage);
     }
+    
+    [Test]
+    public async Task DeleteWikiPageForAdmin_NonExistentPage_ShouldReturnNotFoundObjectResult()
+    {
+        // Arrange
+        var pageId = Guid.NewGuid();
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            Request = { Headers = { ["Authorization"] = $"Bearer {_adminToken}" } }
+        };
+
+        // Act
+        var result = await _controller.DeleteWikiPageForAdmin(pageId);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOf<NotFoundObjectResult>(result);
+    }
 
     [Test]
     public async Task DeleteUserSubmittedWikiPage_ShouldDeletePage()
@@ -265,6 +406,25 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.IsInstanceOf<OkObjectResult>(result);
         var deletedPage = await DbContext.UserSubmittedWikiPages.FindAsync(pageId);
         Assert.IsNull(deletedPage);
+    }
+    
+    [Test]
+    public async Task DeleteUserSubmittedWikiPage_NonExistentPage_ShouldReturnNotFoundObjectResult()
+    {
+        // Arrange
+        var pageId = Guid.NewGuid();
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            Request = { Headers = { ["Authorization"] = $"Bearer {_adminToken}" } }
+        };
+
+        // Act
+        var result = await _controller.DeleteUserSubmittedWikiPage(pageId);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOf<NotFoundObjectResult>(result);
     }
 
     [Test]
@@ -320,6 +480,25 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.IsNotNull(returnedPage);
         Assert.AreEqual(updateId, returnedPage.UserSubmittedWikiPage.Id);
     }
+    
+    [Test]
+    public async Task GetSubmittedUpdateByTitle_NonExistentPage_ShouldReturnNotFoundResult()
+    {
+        // Arrange
+        var updateId = Guid.NewGuid();
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            Request = { Headers = { ["Authorization"] = $"Bearer {_adminToken}" } }
+        };
+
+        // Act
+        var result = await _controller.GetSubmittedUpdateByTitle(updateId);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOf<NotFoundResult>(result.Result);
+    }
 
     [Test]
     public async Task GetSubmittedPages_ShouldReturnTitlesAndIds()
@@ -346,6 +525,33 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.IsNotNull(okResult);
         var titlesAndIds = okResult.Value as IEnumerable<Tuple<string, Guid>>;
         Assert.IsNotNull(titlesAndIds);
+        // Assert.IsTrue(titlesAndIds.Value.Any());
+    }
+    
+    [Test]
+    public async Task GetSubmittedPages_EmptyDb_ShouldReturnEmptyList()
+    {
+        // Arrange
+        DbContext.UserSubmittedWikiPages.RemoveRange(await DbContext.UserSubmittedWikiPages.ToListAsync());
+        await DbContext.SaveChangesAsync();
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            Request = { Headers = { ["Authorization"] = $"Bearer {_adminToken}" } }
+        };
+
+        // Act
+        var result = await _controller.GetSubmittedPages();
+
+        
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        var titlesAndIds = okResult.Value as IEnumerable<Tuple<string, Guid>>;
+        Assert.IsNotNull(titlesAndIds);
+        Assert.AreEqual(0, titlesAndIds.Count());
         // Assert.IsTrue(titlesAndIds.Value.Any());
     }
     
