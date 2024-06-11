@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       INTEGRATIONTEST_CONNECTIONSTRING: ${{ secrets.INTEGRATIONTEST_CONNECTIONSTRING }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -31,6 +32,13 @@ jobs:
 
     - name: Run unit tests
       run: dotnet test ./wiki-backend/UnitTests/UnitTests.csproj --configuration Release
+
+    - name: Start SQL Server container
+      run: |
+        docker run -d --name sql-server -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ secrets.DB_PASSWORD }}" -p 1433:1433 mcr.microsoft.com/mssql/server:latest
+
+    - name: Wait for SQL Server to be ready
+      run: dockerize -wait tcp://localhost:1433 -timeout 1m
 
     - name: Run integration tests
       run: dotnet test ./wiki-backend/IntegrationTests/IntegrationTests.csproj --configuration Release
