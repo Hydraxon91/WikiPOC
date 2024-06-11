@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wiki-backend", "wiki-backend\wiki-backend.csproj", "{7F4EAD90-85EE-4E19-BBBA-9B84FC13E1FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "..\WikiPOC.Tests\UnitTests\UnitTests.csproj", "{5713A216-479F-47A2-8206-AFD89593FD57}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{A71C2DE0-33E4-4E84-BB03-ABEDBF29C159}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{712762DE-41B8-46A7-8E9C-970D1039A0C2}"

@@ -55,7 +55,7 @@ jobs:
 
     - name: Set file permissions
       run: |
-        chmod -R 777 "${{ secrets.PICTURES_PATH_CONTAINER }}"
+        chmod -R 777 /pictures
 
     - name: Run integration tests
       run: dotnet test ./wiki-backend/IntegrationTests/IntegrationTests.csproj --configuration Release
