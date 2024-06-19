@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.DatabaseServices;
@@ -38,6 +39,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("CreateUser")]
     public async Task<IActionResult> CreateUser([FromBody] ApplicationUser model)
     {
@@ -52,6 +54,7 @@ public class UsersController : ControllerBase
         return Ok(model);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("UpdateUser")]
     public async Task<IActionResult> UpdateUser(string id, [FromBody] ApplicationUser model)
     {
@@ -72,6 +75,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("DeleteUser")]
     public async Task<IActionResult> DeleteUser(string id)
     {

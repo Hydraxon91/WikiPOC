@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
 
@@ -48,6 +49,7 @@ public class UserProfileController : ControllerBase
         return Ok(profile);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPut("UpdateProfile/{id:guid}")]
     public async Task<IActionResult> UpdateUserProfile(Guid id, [FromForm] UserUpdateForm userUpdateForm)
     {
@@ -67,6 +69,7 @@ public class UserProfileController : ControllerBase
         }
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("DeleteUserProfile/{id:guid}")]
     public async Task<IActionResult> DeleteUserProfile(Guid id)
     {
