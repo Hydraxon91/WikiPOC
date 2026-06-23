@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
@@ -172,7 +172,8 @@ void ConfigureSwagger()
 {
     builder.Services.AddSwaggerGen(option =>
     {
-        option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+        option.SwaggerDoc("v1", new() { Title = "Demo API", Version = "v1" });
+
         option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             In = ParameterLocation.Header,
@@ -182,19 +183,10 @@ void ConfigureSwagger()
             BearerFormat = "JWT",
             Scheme = "Bearer"
         });
-        option.AddSecurityRequirement(new OpenApiSecurityRequirement
+
+        option.AddSecurityRequirement(document => new OpenApiSecurityRequirement
         {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type=ReferenceType.SecurityScheme,
-                        Id="Bearer"
-                    }
-                },
-                new string[]{}
-            }
+            [new OpenApiSecuritySchemeReference("Bearer", document)] = []
         });
     });
 }
