@@ -1,9 +1,16 @@
 # AGENTS.md - WikiPOC Development Guide
 
+## Important Rule for AI Agents
+
+**Before performing any destructive actions** (like file deletions, large refactors, or package downgrades), you **must**:
+1. Explicitly propose the plan
+2. Explain your reasoning
+3. Wait for the user's 'y' confirmation before executing
+
 ## Project Overview
 
 WikiPOC is a Wikipedia-like platform with:
-- **.NET 7.0 ASP.NET Core backend** (wiki-backend/)
+- **.NET 10 ASP.NET Core backend** (wiki-backend/)
 - **React 18 frontend** (wiki-frontend/)
 - **SQL Server database**
 - **Docker Compose** orchestration
@@ -24,7 +31,7 @@ WikiPOC/
 
 ### Prerequisites
 - Docker & Docker Compose
-- .NET 7.0 SDK (for local backend dev)
+- .NET 10 SDK (for local backend dev)
 - Node.js 16+ (for local frontend dev)
 
 ### Run with Docker (Recommended)
