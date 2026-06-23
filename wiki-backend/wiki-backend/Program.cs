@@ -68,8 +68,8 @@ if (Environment.GetEnvironmentVariable("Environment") != "Testing")
     await AddAdminAsync();
     await AddUserAsync();
     await SeedCommentsAsync();
-    await SeedForumTopicsAsync();
-    await SeedForumPostsAsync();
+    //await SeedForumTopicsAsync();
+    //await SeedForumPostsAsync();
 }
 
 app.Run();
