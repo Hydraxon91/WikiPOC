@@ -77,6 +77,21 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/problem+json";
+        await context.Response.WriteAsJsonAsync(new
+        {
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+            Title = "An error occurred while processing your request.",
+            Status = StatusCodes.Status500InternalServerError
+        });
+    });
+});
+
 app.UseCors();
 
 app.UseRateLimiter();

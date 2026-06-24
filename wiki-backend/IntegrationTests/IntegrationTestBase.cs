@@ -61,7 +61,7 @@ namespace IntegrationTests
             _authController = CreateAuthController();
 
             // Ensure roles exist
-            Task.Run(async () => await EnsureRolesAsync()).Wait(); // Wait for roles creation to finish
+            EnsureRolesAsync().GetAwaiter().GetResult();
         }
 
         private async Task EnsureRolesAsync()

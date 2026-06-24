@@ -39,7 +39,7 @@ public class ForumPostRepository : IForumPostRepository
     {
         var firstComment = new ForumComment
         {
-            Id = new Guid(),
+            Id = Guid.NewGuid(),
             Content = post.Content,
             UserProfileId = post.UserId,
             ForumPostId = post.Id
@@ -55,7 +55,6 @@ public class ForumPostRepository : IForumPostRepository
         post.PostTitle = updatedPost.PostTitle;
         post.ForumTopicId = updatedPost.ForumTopicId;
         post.Slug = await GenerateUniqueSlugAsync(post.PostTitle);
-        // edit first comment
         var firstComment = post.Comments.FirstOrDefault();
         if (firstComment != null)
         {
@@ -65,14 +64,14 @@ public class ForumPostRepository : IForumPostRepository
         {
             var newComment = new ForumComment
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Content = updatedPost.Content,
                 UserProfileId = updatedPost.UserId,
                 ForumPostId = post.Id
             };
             post.Comments = new List<ForumComment> { newComment };
+            _context.ForumComments.Add(newComment);
         }
-        _context.ForumPosts.Update(post);
         await _context.SaveChangesAsync();
     }
 

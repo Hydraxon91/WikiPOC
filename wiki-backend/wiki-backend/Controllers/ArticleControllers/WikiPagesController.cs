@@ -98,9 +98,9 @@ public class WikiPagesController : ControllerBase
             await _wikiPageRepository.AddAsync(newWikiPage, images);
             return Ok(new { Message = "Article submitted successfully" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, $"An error occurred while submitting the article: {ex.Message}");
+            return StatusCode(500, "An error occurred while submitting the article.");
         }
     }
     

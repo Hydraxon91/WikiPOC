@@ -38,9 +38,9 @@ public class StyleController : ControllerBase
             await _styleRepository.UpdateStylesAsync(styleUpdateForm.StyleModel, styleUpdateForm.LogoPictureFile);
             return Ok(new { Message = "StyleContext updated successfully" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, $"An error occurred while updating the StyleContext: {ex.Message}");
+            return StatusCode(500, "An error occurred while updating the StyleContext.");
         }
     }
 }

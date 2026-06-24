@@ -65,9 +65,9 @@ public class UserProfileController : ControllerBase
             await _profileRepository.UpdateAsync(id, userUpdateForm.UserProfile, userUpdateForm.ProfilePictureFile);
             return Ok(new { Message = "UserProfile updated successfully" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, $"An error occurred while updating the UserProfile: {ex.Message}");
+            return StatusCode(500, "An error occurred while updating the UserProfile.");
         }
     }
     

@@ -40,11 +40,17 @@
 
 ### Test Output Handling
 
-- **Save test output to a file once; don't re-run the suite to retry a filter.**
-  Integration tests hit a real SQL Server and are slow — re-running them just to
-  try a different `grep` pattern wastes time and (on free-tier hosted models)
-  rate limit. Redirect once: `dotnet test ... --no-build > test-output.log 2>&1`,
-  then grep/read that file as many times as needed.
+- **Run integration/unit tests with output redirected to a file — every time,
+  no exceptions:**
+  ```bash
+  dotnet test wiki-backend/IntegrationTests/IntegrationTests.csproj --no-build > test-output.log 2>&1
+  ```
+  Never pipe `dotnet test` straight into `grep`/`tail` and then run it again
+  with a different filter. If you need to look at the results a different
+  way (failed tests only, full error messages, summary line), grep or `cat`
+  `test-output.log` — do not re-run the test suite. These tests hit a real
+  SQL Server and take several minutes; re-running to change a filter is
+  always wrong.
 - **Stop running tests once you have a clear lead, even if you don't have a
   full pass/fail summary.** A test name plus its error message is usually
   enough to start debugging. Example: if several JWT-related tests fail with
