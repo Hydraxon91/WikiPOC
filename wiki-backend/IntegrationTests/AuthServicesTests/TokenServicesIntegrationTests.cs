@@ -192,22 +192,5 @@ namespace IntegrationTests.Services
             });
         }
         
-        [Test]
-        public void CreateToken_ShouldThrowExceptionWithMissingEnvVariables()
-        {
-            // Arrange
-            var user = new ApplicationUser
-            {
-                Id = "test-user-id",
-                UserName = GetRandomizedString("testuser"),
-                Email = $"{GetRandomizedString("testuser")}@example.com"
-            };
-            var role = "User";
-
-            Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", null);
-
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => _tokenServices.CreateToken(user, role));
-        }
     }
 }

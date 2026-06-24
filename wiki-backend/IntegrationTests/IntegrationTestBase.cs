@@ -111,7 +111,7 @@ namespace IntegrationTests
             });
             var tokenService = new TokenServices(jwtSettings);
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            return new AuthController(new AuthService(userManager, tokenService));
+            return new AuthController(new AuthService(userManager, tokenService, DbContext));
         }
         
         protected UsersController CreateUserController()

@@ -1,4 +1,6 @@
-﻿using DotNetEnv;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using DotNetEnv;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -138,6 +140,12 @@ public class UserCommentControllerTests : IntegrationTestBase
         {
             Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
         };
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadJwtToken(_token);
+        var claimsIdentity = new ClaimsIdentity(jsonToken.Claims, "TestAuth");
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        _controller.ControllerContext.HttpContext.User = claimsPrincipal;
+
         var testComment = await AddTestComment("Original Comment");
         var updatedContent = "Updated Comment";
     
@@ -166,6 +174,12 @@ public class UserCommentControllerTests : IntegrationTestBase
         {
             Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
         };
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadJwtToken(_token);
+        var claimsIdentity = new ClaimsIdentity(jsonToken.Claims, "TestAuth");
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        _controller.ControllerContext.HttpContext.User = claimsPrincipal;
+
         var testComment = await AddTestComment("Test Comment");
 
         // Act

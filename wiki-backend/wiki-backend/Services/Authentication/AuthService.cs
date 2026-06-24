@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Identity;
 using wiki_backend.Models;
@@ -11,11 +12,13 @@ public class AuthService : IAuthService
 {
     private readonly ITokenServices _tokenService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly WikiDbContext _dbContext;
     
-    public AuthService(UserManager<ApplicationUser> userManager, ITokenServices tokenService)
+    public AuthService(UserManager<ApplicationUser> userManager, ITokenServices tokenService, WikiDbContext dbContext)
     {
         _userManager = userManager;
         _tokenService = tokenService;
+        _dbContext = dbContext;
     }
     
     public async Task<AuthResult> RegisterAsync(string email, string username, string password, string role)
@@ -49,11 +52,8 @@ public class AuthService : IAuthService
         
         var user = new ApplicationUser() { UserName = username, Email = email };
     
-        // Create UserProfile instance
-        // var userProfile = new UserProfile() { UserId = user.Id, UserName = username, DisplayName = username, ProfilePicture = "https://localhost:5000/profile_pictures/default_pfp.png"};
-        var userProfile = new UserProfile() { UserId = user.Id, UserName = username, DisplayName = username, ProfilePicture = "default_pfp.png"};
+        var userProfile = new UserProfile() { UserName = username, DisplayName = username, ProfilePicture = "default_pfp.png"};
         
-        // Set navigation properties
         user.Profile = userProfile;
         user.ProfileId = userProfile.Id;
 
@@ -62,10 +62,13 @@ public class AuthService : IAuthService
         if (!result.Succeeded)
             return FailedRegistration(result, email, username);
 
-        // Add user to the specified role
+        // user.Id is now assigned by Identity's CreateAsync — fix the profile's UserId
+        user.Profile.UserId = user.Id;
+        _dbContext.UserProfiles.Update(user.Profile);
+        await _dbContext.SaveChangesAsync();
+
         await _userManager.AddToRoleAsync(user, role);
 
-        // Add a claim for the user
         await _userManager.AddClaimAsync(user, new Claim(IdentityData.UserClaimName, "true"));
 
         return new AuthResult(true, email, username, "");

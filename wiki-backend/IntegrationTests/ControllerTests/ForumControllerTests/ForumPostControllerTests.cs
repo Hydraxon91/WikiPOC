@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using DotNetEnv;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -122,6 +124,11 @@ public class ForumPostControllerTests : IntegrationTestBase
             {
                 Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
             };
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(_token);
+            var claimsIdentity = new ClaimsIdentity(jsonToken.Claims, "TestAuth");
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            _controller.ControllerContext.HttpContext.User = claimsPrincipal;
 
             var userProfileId = await AddUserProfile();
             var forumPostId = await AddForumTopicAndPost(userProfileId);
@@ -157,6 +164,11 @@ public class ForumPostControllerTests : IntegrationTestBase
             {
                 Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
             };
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(_token);
+            var claimsIdentity = new ClaimsIdentity(jsonToken.Claims, "TestAuth");
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            _controller.ControllerContext.HttpContext.User = claimsPrincipal;
 
             var userProfileId = await AddUserProfile();
             var forumPostId = await AddForumTopicAndPost(userProfileId);

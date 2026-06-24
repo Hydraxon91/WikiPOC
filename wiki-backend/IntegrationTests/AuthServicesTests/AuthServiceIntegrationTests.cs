@@ -25,7 +25,7 @@ namespace IntegrationTests.Services
             // Initialize AuthService with required services
             _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             _tokenServicesMock = new Mock<ITokenServices>();
-            _authService = new AuthService(_userManager, _tokenServicesMock.Object);
+            _authService = new AuthService(_userManager, _tokenServicesMock.Object, DbContext);
             // ResetDatabase();
         }
         
@@ -181,7 +181,7 @@ namespace IntegrationTests.Services
             // Assert
             Assert.That(result.Success, Is.False);
             Assert.That(result.ErrorMessages.Keys.First(), Is.EqualTo("Bad credentials"));
-            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Invalid password"));
+            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Invalid credentials"));
         }
         
         [Test]
@@ -197,7 +197,7 @@ namespace IntegrationTests.Services
             // Assert
             Assert.That(result.Success, Is.False);
             Assert.That(result.ErrorMessages.Keys.First(), Is.EqualTo("Bad credentials"));
-            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Invalid email"));
+            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Invalid credentials"));
         }
         
         [Test]
@@ -212,7 +212,7 @@ namespace IntegrationTests.Services
             // Assert
             Assert.That(result.Success, Is.False);
             Assert.That(result.ErrorMessages.Keys.First(), Is.EqualTo("Bad credentials"));
-            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Invalid Username"));
+            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Invalid credentials"));
         }
     }
 }

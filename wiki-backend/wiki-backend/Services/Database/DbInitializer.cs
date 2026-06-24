@@ -20,6 +20,12 @@ public class DbInitializer : IHostedService
         if (Environment.GetEnvironmentVariable("Environment") == "Testing")
             return;
 
+        using (var scope = _scopeFactory.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+            await dbContext.Database.MigrateAsync(cancellationToken);
+        }
+
         await AddRolesAsync();
         await AddAdminAsync();
         await AddUserAsync();
