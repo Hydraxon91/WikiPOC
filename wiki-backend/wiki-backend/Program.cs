@@ -120,12 +120,15 @@ app.Run();
 
 void AddCors()
 {
+    var allowedOrigins = builder.Configuration["AllowedOrigins"] ?? "http://localhost:3000;http://localhost:3001";
+    var origins = allowedOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
     builder.Services.AddCors(options =>
     {
         options.AddDefaultPolicy(policy =>
         {
             policy
-                .WithOrigins("http://localhost:3000", "http://localhost:3001")
+                .WithOrigins(origins)
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();

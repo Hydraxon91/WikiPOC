@@ -117,7 +117,9 @@ namespace IntegrationTests
         protected UsersController CreateUserController()
         {
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            return new UsersController(userManager, DbContext);
+            var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+            var userProfileRepository = new UserProfileRepository(DbContext, storageSettings);
+            return new UsersController(userManager, userProfileRepository);
         }
         
         protected UserProfileController CreateUserProfileController()

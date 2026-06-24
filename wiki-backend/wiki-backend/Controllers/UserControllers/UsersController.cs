@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using wiki_backend.DatabaseServices;
+using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Identity;
 using wiki_backend.Models;
 
@@ -14,12 +13,12 @@ namespace wiki_backend.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly WikiDbContext _context;
+    private readonly IUserProfileRepository _profileRepository;
 
-    public UsersController(UserManager<ApplicationUser> userManager, WikiDbContext context)
+    public UsersController(UserManager<ApplicationUser> userManager, IUserProfileRepository profileRepository)
     {
         _userManager = userManager;
-        _context = context;
+        _profileRepository = profileRepository;
     }
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
@@ -86,16 +85,14 @@ public class UsersController : ControllerBase
         if (user == null)
             return NotFound();
         
-        var userProfile = await _context.UserProfiles.SingleOrDefaultAsync(up => up.UserId == id);
+        var userProfile = await _profileRepository.GetByUserIdAsync(id);
         if (userProfile != null)
-            _context.UserProfiles.Remove(userProfile);
+            await _profileRepository.RemoveAsync(userProfile.Id);
         
         var result = await _userManager.DeleteAsync(user);
 
         if (!result.Succeeded)
             return BadRequest(result.Errors);
-
-        await _context.SaveChangesAsync();
 
         return Ok("User deleted successfully");
     }

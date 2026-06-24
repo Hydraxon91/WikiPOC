@@ -81,4 +81,11 @@ public class UserProfileRepository : IUserProfileRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task RemoveAsync(Guid id)
+    {
+        var existingProfile = await _context.UserProfiles.FindAsync(id);
+        if (existingProfile != null)
+            _context.UserProfiles.Remove(existingProfile);
+    }
 }
