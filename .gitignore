@@ -314,5 +314,4 @@ wiki-backend/wiki-backend/obj/Debug/net7.0/wiki-backend.AssemblyInfo.cs
 wiki-frontend/.env
 /pictures
 .env
-wiki-backend/IntegrationTests/.env
 /wiki-frontend/dist
