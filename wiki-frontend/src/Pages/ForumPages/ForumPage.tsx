@@ -38,7 +38,7 @@ const ForumPage = ({ jwtToken }) => {
         if (!latestComment || (post.postDate && new Date(post.postDate) > new Date(latestComment.postDate))) {
             latestComment = post;
         }
-        post.comments.forEach(comment => {
+        (post.comments || []).forEach(comment => {
             if (!latestComment || new Date(comment.postDate) > new Date(latestComment.postDate)) {
                 latestComment = comment;
             }
@@ -64,8 +64,8 @@ const ForumPage = ({ jwtToken }) => {
 
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = topic.forumPosts && topic.forumPosts.slice(indexOfFirstPost, indexOfLastPost);
-    const totalPages = topic.forumPosts ? Math.ceil(topic.forumPosts.length / postsPerPage) : 0;
+    const currentPosts = topic?.forumPosts?.slice(indexOfFirstPost, indexOfLastPost);
+    const totalPages = topic?.forumPosts ? Math.ceil(topic.forumPosts.length / postsPerPage) : 0;
 
     const renderPagination = (totalPages, currentPage, setCurrentPage, postsPerPage, postsLength) => {
         const indexOfLastPost = currentPage * postsPerPage;

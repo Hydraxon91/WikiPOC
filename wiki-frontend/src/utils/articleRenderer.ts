@@ -103,7 +103,6 @@ export function processArticleContent(
 
   let content = replaceImageRefs(htmlContent, images);
   content = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-  content = renderThumbnails(content, styles?.bodyColor, styles?.articleRightColor, styles?.articleRightInnerColor, images);
   content = addHeadingIds(content);
 
   return content;

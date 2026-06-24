@@ -13,6 +13,18 @@ import { CookiesProvider, useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
 import { useNotification } from './Components/NotificationProvider';
 import { UserContextProvider } from "./Components/contexts/UserContextProvider";
+
+const decodeToken = (token: string) => {
+  try {
+    const decoded: any = jwtDecode(token);
+    if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+      return null;
+    }
+    return decoded;
+  } catch {
+    return null;
+  }
+};
 import RegisterPageComponent from "./Pages/LoginLogoutPages/RegisterPageComponent";
 import UserRequestsPageComponent from "./Pages/UserSubmittedArticle-Update/UserRequestsPageComponent";
 import CompareUpdatePage from "./Pages/UserSubmittedArticle-Update/CompareUpdatePage";
@@ -43,13 +55,13 @@ function App() {
 
   useEffect(() => {
     if (cookies["jwt_token"]) {
-      setDecodedToken(jwtDecode(cookies["jwt_token"]));
+      setDecodedToken(decodeToken(cookies["jwt_token"]));
     }
   }, [cookies["jwt_token"]]); // Trigger the effect when the token changes
 
   useEffect(() => {
     if (cookies["jwt_token"]) {
-      setDecodedToken(jwtDecode(cookies["jwt_token"]));
+      setDecodedToken(decodeToken(cookies["jwt_token"]));
     }
     // Fetch categories
     fetchCategories()

@@ -77,8 +77,13 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
 
 
   const handleConfirm = () => {
-    const htmlContent = `<img src="wiki-thumbnail://${orientation}/${imageUrl}" alt="Thumbnail"/>`;
-    insertCustomHTML(htmlContent);
+    const thumbnailHtml = `<div class="thumbnail ${orientation}" style="border:1px solid #c8ccd1;padding:3px;background-color:${styles.articleRightColor || '#3c5fb8'};font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;">
+      <div class="thumbnail-inner" style="border:1px solid #c8ccd1;padding:3px;background-color:${styles.articleRightInnerColor || '#2b4ea6'};font-size:94%;text-align:center;overflow:hidden;">
+        <img class="paragraphImage" src="${imageData}" alt="Thumbnail" style="max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;"/>
+      </div>
+      <div class="wikipage-content-container" style="white-space:normal;word-wrap:break-word;">${text}</div>
+    </div>`;
+    insertCustomHTML(thumbnailHtml);
     togglePopupVisibility();
   };
 
