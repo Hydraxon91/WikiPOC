@@ -26,15 +26,15 @@ public class ForumTopicRepository : IForumTopicRepository
             .ToListAsync();
     }
     
-    public async Task<ForumTopic> GetForumTopicBySlugAsync(string slug)
+    public async Task<ForumTopic?> GetForumTopicBySlugAsync(string slug)
     {
-        return (await _context.ForumTopics
+        return await _context.ForumTopics
             .Include(topic => topic.ForumPosts)
                 .ThenInclude(fp => fp.Comments)
                     .ThenInclude(comment => comment.UserProfile)
             .Include(topic => topic.ForumPosts)
                 .ThenInclude(fp => fp.User)
-            .FirstOrDefaultAsync(topic => topic.Slug == slug))!;
+            .FirstOrDefaultAsync(topic => topic.Slug == slug);
     }
 
     public async Task AddForumTopicAsync(ForumTopic topic)

@@ -126,7 +126,7 @@ public class WikiPagesController : ControllerBase
             Approved = false,
             CategoryId = wikiPageWithImagesInputModel.CategoryId,
             SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy!,
-            PostDate = DateTime.Now
+            PostDate = DateTime.UtcNow
         };
         
         var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
@@ -220,7 +220,7 @@ public class WikiPagesController : ControllerBase
         }
         
         updatedWikiPage.Id = Guid.NewGuid();
-        updatedWikiPage.PostDate = DateTime.Now;
+        updatedWikiPage.PostDate = DateTime.UtcNow;
         var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         await _wikiPageRepository.UserSubmittedUpdateAsync(updatedWikiPage, images);
 
@@ -276,7 +276,7 @@ public class WikiPagesController : ControllerBase
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpGet("GetSubmittedPageTitles")]
-    public async Task<ActionResult<IEnumerable<Tuple<string, int>>>> GetSubmittedPages()
+    public async Task<ActionResult<IEnumerable<WikiPageTitleEntry>>> GetSubmittedPages()
     {
         var titles = await _wikiPageRepository.GetSubmittedPageTitlesAndIdAsync();
 

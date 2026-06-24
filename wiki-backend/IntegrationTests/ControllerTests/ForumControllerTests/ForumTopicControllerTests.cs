@@ -88,7 +88,8 @@ public class ForumTopicControllerTests : IntegrationTestBase
         Assert.That(result, Is.Not.Null);
         Assert.That(result.StatusCode, Is.EqualTo(204));
         var updatedForumTopic = await _forumTopicRepository.GetForumTopicBySlugAsync(forumTopic.Slug);
-        Assert.That(updatedForumTopic.Title, Is.EqualTo("Updated Topic"));
+        Assert.That(updatedForumTopic, Is.Not.Null);
+        Assert.That(updatedForumTopic!.Title, Is.EqualTo("Updated Topic"));
     }
 
     [Test]

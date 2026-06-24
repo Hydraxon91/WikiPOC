@@ -9,15 +9,17 @@ namespace wiki_backend.Services.Database;
 public class DbInitializer : IHostedService
 {
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IConfiguration _configuration;
 
-    public DbInitializer(IServiceScopeFactory scopeFactory)
+    public DbInitializer(IServiceScopeFactory scopeFactory, IConfiguration configuration)
     {
         _scopeFactory = scopeFactory;
+        _configuration = configuration;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        if (Environment.GetEnvironmentVariable("Environment") == "Testing")
+        if (_configuration["ASPNETCORE_ENVIRONMENT"] == "Testing")
             return;
 
         using (var scope = _scopeFactory.CreateScope())
@@ -58,7 +60,7 @@ public class DbInitializer : IHostedService
         var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
         if (adminInDb == null)
         {
-            var adminName = Environment.GetEnvironmentVariable("ADMINUSER_USERNAME")!;
+            var adminName = _configuration["ADMINUSER_USERNAME"]!;
             
             var adminProfile = new UserProfile()
             {
@@ -72,11 +74,11 @@ public class DbInitializer : IHostedService
             var admin = new ApplicationUser
             {
                 UserName = adminName,
-                Email = Environment.GetEnvironmentVariable("ADMINUSER_EMAIL")!,
-                ProfileId = adminProfile.Id
-            };
-            
-            var adminCreated = await userManager.CreateAsync(admin, Environment.GetEnvironmentVariable("ADMINUSER_PASSWORD")!);
+            Email = _configuration["ADMINUSER_EMAIL"]!,
+            ProfileId = adminProfile.Id
+        };
+        
+        var adminCreated = await userManager.CreateAsync(admin, _configuration["ADMINUSER_PASSWORD"]!);
 
             if (adminCreated.Succeeded)
             {
@@ -93,10 +95,10 @@ public class DbInitializer : IHostedService
         using var scope = _scopeFactory.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
-        var userInDb = await userManager.FindByEmailAsync(Environment.GetEnvironmentVariable("TESTUSER_EMAIL")!);
-        if (userInDb == null)
-        {
-            var testUsername = Environment.GetEnvironmentVariable("TESTUSER_USERNAME")!;
+        var userInDb = await userManager.FindByEmailAsync(_configuration["TESTUSER_EMAIL"]!);
+    if (userInDb == null)
+    {
+        var testUsername = _configuration["TESTUSER_USERNAME"]!;
             
             var testUserProfile = new UserProfile()
             {
@@ -110,11 +112,11 @@ public class DbInitializer : IHostedService
             var testUser = new ApplicationUser
             {
                 UserName = testUsername,
-                Email = Environment.GetEnvironmentVariable("TESTUSER_EMAIL")!,
+                Email = _configuration["TESTUSER_EMAIL"]!,
                 ProfileId = testUserProfile.Id
             };
             
-            var userCreated = await userManager.CreateAsync(testUser, Environment.GetEnvironmentVariable("TESTUSER_PASSWORD")!);
+            var userCreated = await userManager.CreateAsync(testUser, _configuration["TESTUSER_PASSWORD"]!);
 
             if (userCreated.Succeeded)
             {
@@ -150,7 +152,7 @@ public class DbInitializer : IHostedService
                         UserProfile = adminUser.Profile,
                         Content = "Test comment from Admin",
                         WikiPageId = wikiPage.Id,
-                        PostDate = DateTime.Now,
+                        PostDate = DateTime.UtcNow,
                         IsEdited = false
                     },
                     new UserComment
@@ -159,7 +161,7 @@ public class DbInitializer : IHostedService
                         UserProfile = testUser.Profile,
                         Content = "Test comment from Tester",
                         WikiPageId = wikiPage.Id,
-                        PostDate = DateTime.Now,
+                        PostDate = DateTime.UtcNow,
                         IsEdited = false
                     },
                     new UserComment
@@ -168,7 +170,7 @@ public class DbInitializer : IHostedService
                         UserProfile = testUser.Profile,
                         Content = "Test comment 2 from Tester",
                         WikiPageId = wikiPage.Id,
-                        PostDate = DateTime.Now,
+                        PostDate = DateTime.UtcNow,
                         IsEdited = true
                     }
                 };

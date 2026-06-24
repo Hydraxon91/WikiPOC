@@ -26,13 +26,13 @@ public class ForumPostRepository : IForumPostRepository
         return (await _context.ForumPosts.FindAsync(id))!;
     }
     
-    public async Task<ForumPost> GetForumPostBySlugAsync(string slug)
+    public async Task<ForumPost?> GetForumPostBySlugAsync(string slug)
     {
-        return (await _context.ForumPosts
+        return await _context.ForumPosts
             .Include(post => post.Comments)
                 .ThenInclude(comment => comment.UserProfile)
             .Include(post => post.User)
-            .FirstOrDefaultAsync(post => post.Slug == slug))!;
+            .FirstOrDefaultAsync(post => post.Slug == slug);
     }
 
     public async Task AddForumPostAsync(ForumPost post)

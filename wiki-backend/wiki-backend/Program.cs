@@ -64,6 +64,8 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
+builder.Services.AddHealthChecks();
+
 builder.Services.AddHostedService<DbInitializer>();
 
 var app = builder.Build();
@@ -100,6 +102,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
 

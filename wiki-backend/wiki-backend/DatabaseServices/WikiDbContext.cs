@@ -40,7 +40,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        var isTesting = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Testing";
+        var isTesting = _configuration?["ASPNETCORE_ENVIRONMENT"] == "Testing";
         if (isTesting) return;
         var faker = new Faker();
 
@@ -187,7 +187,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             SiteSub = "Example SiteSub 1",
             RoleNote = "Example RoleNote 1",
             LegacyWikiPage = true,
-            PostDate = DateTime.Now,
+            PostDate = DateTime.UtcNow,
             CategoryId = category1Id,
             // Paragraphs = paragraphs1
         };
@@ -199,7 +199,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             SiteSub = "Example SiteSub 2",
             RoleNote = "Example RoleNote 2",
             LegacyWikiPage = true,
-            PostDate = DateTime.Now,
+            PostDate = DateTime.UtcNow,
             CategoryId = category2Id,
             // Paragraphs = paragraphs2
         };
@@ -218,7 +218,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             SubmittedBy = "tester",
             LegacyWikiPage = true,
             IsNewPage = true,
-            PostDate = DateTime.Now,
+            PostDate = DateTime.UtcNow,
             CategoryId = category3Id,
         };
         var uswp2 = new UserSubmittedWikiPage
@@ -231,7 +231,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             SubmittedBy = "tester",
             LegacyWikiPage = true,
             IsNewPage = false,
-            PostDate = DateTime.Now,
+            PostDate = DateTime.UtcNow,
             CategoryId = category4Id,
         };
         modelBuilder.Entity<UserSubmittedWikiPage>().HasData(
