@@ -59,6 +59,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
+
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -216,7 +223,7 @@ void ConfigureSwagger()
 {
     builder.Services.AddSwaggerGen(option =>
     {
-        option.SwaggerDoc("v1", new() { Title = "Demo API", Version = "v1" });
+        option.SwaggerDoc("v1", new() { Title = "WikiPOC API", Version = "v1" });
 
         option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {

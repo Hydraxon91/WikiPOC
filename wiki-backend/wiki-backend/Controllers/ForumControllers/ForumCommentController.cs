@@ -10,6 +10,7 @@ using wiki_backend.Services;
 namespace wiki_backend.Controllers.ForumControllers;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("api/[controller]")]
 public class ForumCommentController : ControllerBase
 {

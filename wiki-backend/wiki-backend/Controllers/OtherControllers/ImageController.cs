@@ -5,6 +5,7 @@ using wiki_backend.Services.Settings;
 namespace wiki_backend.Controllers;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("api/[controller]")]
 public class ImageController : ControllerBase
 {

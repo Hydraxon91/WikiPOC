@@ -11,6 +11,7 @@ namespace wiki_backend.Controllers.ForumControllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class ForumPostController : ControllerBase
 {
     private readonly IForumPostRepository _forumPostRepository;
