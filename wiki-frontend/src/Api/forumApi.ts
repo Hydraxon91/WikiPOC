@@ -1,203 +1,45 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
+import { get, post, put, del, postForm } from './apiClient';
 
-//Forum Topic methods
-export const getForumTopics = async () => {
-    const response = await fetch(`${BASE_URL}/api/ForumTopic`);
-    if (!response.ok) {
-      throw new Error(`Failed to get ForumTopics. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  };
+export const getForumTopics = async () => get('/api/ForumTopic');
 
-  export const getForumTopicBySlug = async (slug) => {
-    const response = await fetch(`${BASE_URL}/api/ForumTopic/${slug}`);
-    if (!response.ok) {
-      throw new Error(`Failed to get ForumTopic. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  };
+export const getForumTopicBySlug = async (slug: string) => get(`/api/ForumTopic/${slug}`);
 
+export const createForumTopic = async (forumTopic: any, token: string) =>
+  post('/api/ForumTopic', forumTopic, token);
 
-  export const createForumTopic = async (forumTopic, token) => {
-    const response = await fetch(`${BASE_URL}/api/ForumTopic`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(forumTopic),
-    });
-  
-    if (!response.ok) {
-      throw new Error(`Failed to create ForumTopic. Status: ${response.status}`);
-    }
-  
-    return await response.json();
-  };
+export const updateForumTopic = async (forumTopic: any, token: string) =>
+  put(`/api/ForumTopic/${forumTopic.id}`, forumTopic, token);
 
-  export const updateForumTopic = async (forumTopic, token) => {
-    const response = await fetch(`${BASE_URL}/api/ForumTopic/${forumTopic.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(forumTopic),
-    });
-  
-    if (!response.ok) {
-      throw new Error(`Failed to update ForumTopic. Status: ${response.status}`);
-    }
-  
-    return await response.json();
-  };
+export const deleteForumTopic = async (forumTopic: any, token: string) =>
+  del(`/api/ForumTopic/${forumTopic.id}`, token);
 
-  export const deleteForumTopic = async (forumTopic, token) => {
-   
-    const response = await fetch(`${BASE_URL}/api/ForumTopic/${forumTopic.id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-  
-    if (!response.ok) {
-      throw new Error(`Failed to delete ForumTopic. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  };
+export const getForumPostTitles = async () => get('/api/ForumPost');
 
-//Forum Post methods
-export const getForumPostTitles = async () => {
-    const response = await fetch(`${BASE_URL}/api/ForumPost`);
-    if (!response.ok) {
-      throw new Error(`Failed to get forumPost titles. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  };
+export const getForumPostById = async (id: string) => get(`/api/ForumPost/${id}`);
 
-  export const getForumPostById = async (id) => {
-    const response = await fetch(`${BASE_URL}/api/ForumPost/${id}`);
-    if (!response.ok) {
-      throw new Error(`Failed to get forumPost. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  };
+export const getForumPostBySlug = async (slug: string) => get(`/api/ForumPost/${slug}`);
 
-  export const getForumPostBySlug = async (slug) => {
-    const response = await fetch(`${BASE_URL}/api/ForumPost/${slug}`, {
-      method: 'GET'
-    });
-    if (!response.ok) {
-        throw new Error(`Failed to get ForumPost. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
+export const createForumPost = async (forumPost: any, token: string) => {
+  const formData = new FormData();
+  formData.append('forumPostForm.PostTitle', forumPost.postTitle);
+  formData.append('forumPostForm.Content', forumPost.content);
+  formData.append('forumPostForm.ForumTopicId', forumPost.forumTopicId.toString());
+  formData.append('forumPostForm.UserId', forumPost.userId.toString());
+  formData.append('forumPostForm.UserName', forumPost.userName);
+  return postForm('/api/ForumPost/postTopic', formData, token);
 };
 
-  export const createForumPost = async (forumPost, token) => {
-    const forumTopicId = forumPost.forumTopicId.toString();
-    const userId = forumPost.userId.toString();
+export const updateForumPost = async (forumPost: any, token: string) =>
+  put(`/api/ForumPost/${forumPost.id}`, forumPost, token);
 
-    const formData = new FormData();
-    formData.append('forumPostForm.PostTitle', forumPost.postTitle);
-    formData.append('forumPostForm.Content', forumPost.content);
-    formData.append('forumPostForm.ForumTopicId', forumTopicId);
-    formData.append('forumPostForm.UserId', userId);
-    formData.append('forumPostForm.UserName', forumPost.userName);
+export const deleteForumPost = async (forumPost: any, token: string) =>
+  del(`/api/ForumPost/${forumPost.id}`, token);
 
-    const response = await fetch(`${BASE_URL}/api/ForumPost/postTopic`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-    });
-  
-    if (!response.ok) {
-      throw new Error(`Failed to create forumPost. Status: ${response.status}`);
-    }
-  
-    return await response.json();
-  };
+export const postForumComment = async (comment: any, token: string) => {
+  const { wikiPageId, ...updatedComment } = comment;
+  updatedComment.forumPostId = wikiPageId;
+  return post('/api/ForumComment/comment/', updatedComment, token);
+};
 
-  export const updateForumPost = async (forumPost, token) => {
-    const response = await fetch(`${BASE_URL}/api/ForumPost/${forumPost.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(forumPost),
-    });
-  
-    if (!response.ok) {
-      throw new Error(`Failed to update forumPost. Status: ${response.status}`);
-    }
-  
-    return await response.json();
-  };
-
-  export const deleteForumPost = async (forumPost, token) => {
-   
-    const response = await fetch(`${BASE_URL}/api/ForumPost/${forumPost.id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-  
-    if (!response.ok) {
-      throw new Error(`Failed to delete forumPost. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  };
-
-
-  //Forum comment methods
-  export const postForumComment = async (comment, token) => {
-    const { wikiPageId, ...updatedComment } = comment;
-    updatedComment.forumPostId = wikiPageId;
-    console.log(updatedComment);
-    const response = await fetch(`${BASE_URL}/api/ForumComment/comment/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedComment),
-      });
-
-      if (!response.ok) {
-        // Handle the error, you can throw an exception or return an error object
-        throw new Error(`Failed to delete WikiPage. Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-  };
-
-  export const postEditedForumComment = async (commentId, editedComment, token) => {
-    const response = await fetch(`${BASE_URL}/api/ForumComment/comment/${commentId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(editedComment),
-      });
-
-      if (!response.ok) {
-        // Handle the error, you can throw an exception or return an error object
-        throw new Error(`Failed to update comment. Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-  };
+export const postEditedForumComment = async (commentId: string, editedComment: string, token: string) =>
+  put(`/api/ForumComment/comment/${commentId}`, editedComment, token);

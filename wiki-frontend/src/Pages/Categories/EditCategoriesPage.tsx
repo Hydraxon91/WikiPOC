@@ -45,18 +45,13 @@ const EditCategoriesPage = ({ setAppCategories, cookies }) => {
     const handleDeleteCategory = async (category) => {
         try {
             const categoryId = category.id; 
-            const status = await deleteCategory(categoryId, cookies);
-            // Check the status and handle success or failure accordingly
-            if (status === 204) {
-              console.log(`Category ${category.name} deleted successfully.`);
+            await deleteCategory(categoryId, cookies);
+            console.log(`Category ${category.name} deleted successfully.`);
 
-              const updatedCategories = categories.filter(cat => cat.id !== categoryId);
-              const updatedCategorieNames = updatedCategories.map(category => category.categoryName);
-              setCategories(updatedCategories);
-              setAppCategories(updatedCategorieNames);
-            } else {
-              console.error(`Failed to delete category ${category.name}. Status: ${status}`);
-            }
+            const updatedCategories = categories.filter(cat => cat.id !== categoryId);
+            const updatedCategorieNames = updatedCategories.map(category => category.categoryName);
+            setCategories(updatedCategories);
+            setAppCategories(updatedCategorieNames);
           } catch (error) {
             console.error('Error deleting category:', error.message);
           }

@@ -1,49 +1,25 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
+import { get, post, put, del, postForm, putForm, patch } from './apiClient';
 
 export const getWikiPages = async () => {
-  const response = await fetch(`${BASE_URL}/api/WikiPages`);
-  if (!response.ok) {
-    throw new Error(`Failed to get WikiPages. Status: ${response.status}`);
-  }
-  const data = await response.json();
-  return data;
+  return get('/api/WikiPages');
 };
 
 export const getWikiPageTitles = async () => {
-    const response = await fetch(`${BASE_URL}/api/WikiPages/GetTitles`, {
-      method: 'GET',
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to get WikiPage Titles. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    // console.log(data);
-    return data;
+    return get('/api/WikiPages/GetTitles');
   };
 
 export const getWikiPageById = async (id) => {
-    const response = await fetch(`${BASE_URL}/api/WikiPages/GetById/${id}`);
-    if (!response.ok) {
-      throw new Error(`Failed to get WikiPage. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
+    return get(`/api/WikiPages/GetById/${id}`);
   };
 
   export const getWikiPageByTitle = async (title) => {
-    const response = await fetch(`${BASE_URL}/api/WikiPages/GetByTitle/${title}`);
-    if (!response.ok) {
-      throw new Error(`Failed to get WikiPage. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
+    return get(`/api/WikiPages/GetByTitle/${title}`);
   };
 
 export const createWikiPage = async (newPage, token, decodedToken, images) => {
-  console.log(newPage);
   var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
   var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-  var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin` : `${BASE_URL}/api/WikiPages/user`;
+  var url = role==="Admin"? `/api/WikiPages/admin` : `/api/WikiPages/user`;
 
   const formData = new FormData();
   if (role !== "Admin") {
@@ -58,49 +34,22 @@ export const createWikiPage = async (newPage, token, decodedToken, images) => {
   formData.append(`wikiPageWithImagesInputModel.RoleNote`, newPage.roleNote);
   formData.append(`wikiPageWithImagesInputModel.Content`, newPage.content);
   formData.append(`model.Paragraphs`, newPage.paragraphs);
-  // formData.append(`model.Images`, images);
 
-  // Append images to the FormData object
   images.forEach((image, index) => {
-    console.log(typeof image);
-    console.log(image);
     formData.append(`wikiPageWithImagesInputModel.Images[${index}].FileName`, image.name);
     formData.append(`wikiPageWithImagesInputModel.Images[${index}].DataURL`, image.dataURL);
   });
-  // for (let index = 0; index < images.length; index++) {
-  //   formData.append(`wikiPageWithImagesInputModel.Images`, images[index])    
-  // }
 
-  console.log(newPage);
-  for (const value of formData) {
-    console.log(value);
-  }
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-    body: formData,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to create WikiPage. Status: ${response.status}`);
-  }
-  const data = await response.json();
-  return data;
+  return postForm(url, formData, token);
 };
 
 
 export const updateWikiPage = async (updatedPage, token, decodedToken, images) => {
-  console.log(updatedPage);
     var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
     var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-    var url = role==="Admin"? `${BASE_URL}/api/WikiPages/admin/${updatedPage.id}` : `${BASE_URL}/api/WikiPages/userUpdate/${updatedPage.id}`;
-    console.log(url);
+    var url = role==="Admin"? `/api/WikiPages/admin/${updatedPage.id}` : `/api/WikiPages/userUpdate/${updatedPage.id}`;
     const formData = new FormData();
     if (role !== "Admin") {
-      console.log("notadmin");
       formData.append('wikiPageWithImagesInputModel.WikiPageId', updatedPage.id)
       formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
     }
@@ -110,56 +59,19 @@ export const updateWikiPage = async (updatedPage, token, decodedToken, images) =
     formData.append(`wikiPageWithImagesInputModel.RoleNote`, updatedPage.roleNote);
     formData.append(`wikiPageWithImagesInputModel.Content`, updatedPage.content);
     formData.append(`model.Paragraphs`, updatedPage.paragraphs);
-    // Append images to the FormData object
     images && images.forEach((image, index) => {
       formData.append(`wikiPageWithImagesInputModel.Images[${index}].FileName`, image.name);
       formData.append(`wikiPageWithImagesInputModel.Images[${index}].DataURL`, image.dataURL);
     });
-    // console.log(`calling ${url} ${token}`);
-    const response = await fetch(url, {
-      method: "PUT",
-      headers: {
-        // 'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: formData,
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to update WikiPage. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
+    return putForm(url, formData, token);
   };
 
 export const deleteWikiPage = async (id, token) =>{
-    const response = await fetch(`${BASE_URL}/api/WikiPages/admin/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        // Handle the error, you can throw an exception or return an error object
-        throw new Error(`Failed to delete WikiPage. Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
+    return del(`/api/WikiPages/admin/${id}`, token);
 };
 
-export const fetchCurrentStyles = async (setStyles) => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/Style`); // Replace with your actual endpoint
-    if (!response.ok) {
-      throw new Error(`Failed to fetch default styles. Status: ${response.status}`);
-    }
-    const data = await response.json();
-    setStyles(data);
-  } catch (error) {
-    console.error('Error fetching default styles:', error);
-  }
+export const fetchCurrentStyles = async () => {
+  return get('/api/Style');
 };
 
 export const updateStyles = async (newStyles, logoPictureFile, token) => {
@@ -174,37 +86,19 @@ export const updateStyles = async (newStyles, logoPictureFile, token) => {
   formData.append('styleUpdateForm.StyleModel.FontFamily', newStyles.fontFamily);
   formData.append('styleUpdateForm.LogoPictureFile', logoPictureFile);
 
-  try {
-    const response = await fetch(`${BASE_URL}/api/Style`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to update styles. Status: ${response.status}`);
-    }
-
-    const updatedData = await response.json();
-    // setStyles(updatedData);
-  } catch (error) {
-    console.error('Error updating styles:', error);
-  }
+  return putForm('/api/Style', formData, token);
 };
 
 export const getLogo = async(pictureString) => {
   try {
     if (pictureString.startsWith('blob:')) {
-      return pictureString; // Return the Blob URL directly
+      return pictureString;
     }
-    const response = await fetch(`${BASE_URL}/api/Image/${pictureString}`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/Image/${pictureString}`);
     if (!response.ok) {
         throw new Error(`Failed to get Logo Picture ${pictureString}. Status: ${response.status}`);
     }
 
-    // Assuming the response is the URL of the image
     const imageUrl = await response.blob();
 
     return imageUrl;
@@ -214,180 +108,44 @@ export const getLogo = async(pictureString) => {
 };
 
 export const getNewPageTitles = async (token) => {
-  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedPageTitles`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`Failed to get Submitted Article Titles. Status: ${response.status}`);
-  }
-  const data = await response.json();
-  return data;
+  return get('/api/WikiPages/GetSubmittedPageTitles', token);
 };
 
 
 export const getNewPageById = async (id, token) => {
-  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedPageById/${id}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`Failed to get WikiPage. Status: ${response.status}`);
-  }
-  const data = await response.json();
-  // console.log(data);
-  return data;
+  return get(`/api/WikiPages/GetSubmittedPageById/${id}`, token);
 };
 
 export const getUpdatePageTitles = async (token) => {
-  // console.log(token);
-  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedUpdates`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`Failed to get WikiPage Titles. Status: ${response.status}`);
-  }
-  const data = await response.json();
-  return data;
+  return get('/api/WikiPages/GetSubmittedUpdates', token);
 };
 
 
 export const getUpdatePageById = async (id, token) => {
-  const response = await fetch(`${BASE_URL}/api/WikiPages/GetSubmittedUpdateById/${id}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`Failed to get WikiPage. Status: ${response.status}`);
-  }
-  const data = await response.json();
-  // console.log(data);
-  return data;
+  return get(`/api/WikiPages/GetSubmittedUpdateById/${id}`, token);
 };
 
 export const acceptUserSubmittedUpdate = async (id, token) => {
-  try {
-
-    console.log('Request Data:', id);
-    
-    const response = await fetch(`${BASE_URL}/api/WikiPages/AdminAccept/${id}`, {
-      method: "PATCH",
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json(); // Attempt to read error details from the response body
-      throw new Error(`Failed to Update WikiPage. Status: ${response.status}. Details: ${JSON.stringify(errorData)}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error in acceptUserSubmittedUpdate:', error);
-    // You can choose to handle the error here or rethrow it
-    throw error;
-  }
+  return patch(`/api/WikiPages/AdminAccept/${id}`, undefined, token);
 };
 
 export const acceptUserSubmittedPage = async (updatedPage, token) => {
-  console.log("Acceptusersubmittedpage");
-  console.log(updatedPage.userSubmittedWikiPage.id);
-  const response = await fetch(`${BASE_URL}/api/WikiPages/AdminAccept`, {
-    method: "POST",
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify(updatedPage.userSubmittedWikiPage.id),
-  });
-  if (!response.ok) {
-    throw new Error(`Failed to Accept WikiPage. Status: ${response.status}`);
-  }
-  const data = await response.json();
-  return data;
+  return post('/api/WikiPages/AdminAccept', updatedPage.userSubmittedWikiPage.id, token);
 };
 
 export const declineUserSubmittedWikiPage = async (id, token) =>{
-  // console.log(id);
-  const response = await fetch(`${BASE_URL}/api/WikiPages/AdminDecline/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      // Handle the error, you can throw an exception or return an error object
-      throw new Error(`Failed to delete WikiPage. Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+  return del(`/api/WikiPages/AdminDecline/${id}`, token);
 };
 
 export const fetchCategories = async () => {
-  const response = await fetch(`${BASE_URL}/api/Category`, {
-    method: 'GET',
-  });
-  if (!response.ok) {
-    throw new Error(`Failed to get Categories. Status: ${response.status}`);
-  }
-  const data = await response.json();
-  // console.log(data);
-  // const categoryNames = data.map(category => ({ id: category.id, categoryName: category.categoryName }));
-  // console.log(categoryNames);
-  // categoryNames.push("Uncategorized");
-  return data;
+  return get('/api/Category');
 };
 
 
 export const addCategory = async (categoryName, token) => {
-  const response = await fetch(`${BASE_URL}/api/Category`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify(categoryName)
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to add category. Status: ${response.status}`);
-  }
-
-  const data = await response.json();
-  // console.log(data);
-  return data;
+  return post('/api/Category', categoryName, token);
 };
 
 export const deleteCategory = async (categoryId, token) => {
-  const response = await fetch(`${BASE_URL}/api/Category/${categoryId}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to delete category. Status: ${response.status}`);
-  }
-
-  return response.status; // Returns the HTTP status code (204 for success, 404 for not found)
+  return del(`/api/Category/${categoryId}`, token);
 };

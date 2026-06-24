@@ -1,35 +1,25 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
+import { post } from './apiClient';
 
-export const handleLoginSubmit = async (email, password) => {
-    const data = {
-        email: email,
-        password: password,
+export const handleLoginSubmit = async (email: string, password: string) => {
+  try {
+    return await post<any>('/api/Auth/Login', { email, password });
+  } catch (error: any) {
+    try {
+      return JSON.parse(error.message);
+    } catch {
+      throw error;
     }
-    const response = await fetch(`${BASE_URL}/api/Auth/Login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        });
-    const responseData = await response.json();
-    return responseData;
+  }
 };
 
-export const handleRegisterSubmit = async (email, username, password, role) => {
-    const data = {
-        email: email,
-        username: username,
-        password: password,
-        role: role
+export const handleRegisterSubmit = async (email: string, username: string, password: string, role: string) => {
+  try {
+    return await post<any>('/api/Auth/Register', { email, username, password, role });
+  } catch (error: any) {
+    try {
+      return JSON.parse(error.message);
+    } catch {
+      throw error;
     }
-    const response = await fetch(`${BASE_URL}/api/Auth/Register`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        });
-    const responseData = await response.json();
-    return responseData;
+  }
 };

@@ -18,7 +18,7 @@ export const StyleProvider = ({ children }) => {
 
 
   useEffect(() => {
-    fetchCurrentStyles(setStyles);
+    fetchCurrentStyles().then(data => setStyles(data));
   }, []);
 
   return (
