@@ -1,5 +1,4 @@
 name: Backend Tests
-
 on:
   push:
     branches: ['**']
@@ -13,27 +12,29 @@ jobs:
     env:
       DOTNET_NOLOGO: true
       ASPNETCORE_ENVIRONMENT: Testing
-      INTEGRATIONTEST_CONNECTIONSTRING: Server=localhost;Database=master;User=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=True
+      # CI-only throwaway password — this DB only exists for the duration of
+      # this job and is never reachable outside the runner, so a fixed
+      # non-secret password here is fine. Must match MSSQL_SA_PASSWORD below.
+      CI_SA_PASSWORD: CI_OnlyP@ssw0rd!
+      INTEGRATIONTEST_CONNECTIONSTRING: Server=localhost;Database=master;User=sa;Password=CI_OnlyP@ssw0rd!;TrustServerCertificate=True
       PICTURES_PATH_CONTAINER: /tmp/pictures
       JWT_ISSUER_SIGNING_KEY: ${{ secrets.JWT_ISSUER_SIGNING_KEY }}
       JWT_VALID_AUDIENCE: ${{ secrets.JWT_VALID_AUDIENCE }}
       JWT_VALID_ISSUER: ${{ secrets.JWT_VALID_ISSUER }}
       JWT_TOKEN_TIME: ${{ secrets.JWT_TOKEN_TIME }}
-
     services:
       sql-server:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
           ACCEPT_EULA: Y
-          MSSQL_SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MSSQL_SA_PASSWORD: CI_OnlyP@ssw0rd!
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '${{ secrets.DB_PASSWORD }}' -C -Q 'SELECT 1'"
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'CI_OnlyP@ssw0rd!' -C -Q 'SELECT 1'"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
-
     steps:
       - uses: actions/checkout@v4
 
