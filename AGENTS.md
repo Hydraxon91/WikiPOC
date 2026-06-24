@@ -64,10 +64,20 @@
 
 ## Project Overview
 
-WikiPOC is a Wikipedia-like platform with:
+WikiPOC is a **customizable, Wikipedia-style wiki platform**. The core
+feature is backend-driven theming: the wiki owner can customize colors,
+fonts, logo, and layout through an admin interface (`/edit-wiki`), saved
+to the database as a `StyleModel` and served via `StyleContext`.
+
+**This means inline `style={{...}}` props throughout the frontend are
+intentional** — they reflect dynamic values from the backend, not sloppy
+code. Only hardcoded static values (e.g. `marginLeft: "0.5rem"` repeated
+7 times) should be extracted to CSS classes.
+
+Tech stack:
 - **.NET 10 ASP.NET Core backend** (wiki-backend/)
-- **React 18 frontend** (wiki-frontend/)
-- **SQL Server database**
+- **React 19 + Vite + TypeScript frontend** (wiki-frontend/)
+- **SQL Server** database
 - **Docker Compose** orchestration
 
 ## Architecture
@@ -78,7 +88,7 @@ WikiPOC/
 │   ├── wiki-backend/         # Main ASP.NET Core app
 │   ├── UnitTests/            # NUnit unit tests
 │   └── IntegrationTests/     # NUnit integration tests
-├── wiki-frontend/            # React SPA (Create React App)
+├── wiki-frontend/            # React SPA (Vite + TypeScript)
 └── docker-compose.yml        # Orchestrates backend, frontend, SQL Server
 ```
 
