@@ -116,7 +116,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
 
                 reader.onload = (e) => {
                     const img = new Image();
-                    img.src = e.target.result;
+                    img.src = e.target.result as string;
 
                     img.onload = () => {
                         const aspectRatio = img.width / img.height;

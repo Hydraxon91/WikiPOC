@@ -75,14 +75,14 @@ const LegacyWikiPageComponent = ({page, setDecodedTitle, activeTab}) => {
           {page.roleNote && <p className="roleNote">{`${page.roleNote}`}</p>}
 
           {page.paragraphs && page.paragraphs.map((paragraph, index) => (
-            <div key={`paragraph-${index}`} ref={(el) => (targetRefs.current[index] = el)} className={page.approved === false ? 'update-paragraph' : ''}>
+            <div key={`paragraph-${index}`} ref={(el: HTMLDivElement | null) => { targetRefs.current[index] = el!; }} className={page.approved === false ? 'update-paragraph' : ''}>
               {index!==0 && <h2>{paragraph.title}</h2>}
               {paragraph.paragraphImage && paragraph.paragraphImage !== "" && (
                 <div className="articleRight" style={{ backgroundColor: styles.articleRightColor }}>
                   <div className="articleRightInner" style={{ backgroundColor: styles.articleRightInnerColor }}>
                     <img className='paragraphImage' src={paragraph.paragraphImage} alt="logo" />
                   </div>
-                  {renderParagraphs(paragraph.paragraphImageText)}
+                  {renderParagraphs(paragraph.paragraphImageText, false)}
                   
                 </div>
               )}

@@ -26,7 +26,7 @@ const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit,
         try {
             await postComment(newComment, cookies, user);
             setCommentText('');
-            newComment.userProfile = user;
+            (newComment as any).userProfile = user;
             handleCommentSubmit(newComment);
             alert('Successfully submitted comment');
             togglePopupVisibility();

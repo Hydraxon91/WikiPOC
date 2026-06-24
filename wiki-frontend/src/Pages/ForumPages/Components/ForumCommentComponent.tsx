@@ -118,7 +118,7 @@ const ForumCommentComponent = ({ post, cookies, isPopupVisible, togglePopupVisib
                             </div>
                         </div>
                     ))}
-                    {renderPagination(totalPages, currentPage, setCurrentPage)}
+                    {renderPagination(totalPages, currentPage, setCurrentPage, commentsPerPage, currPost.comments.length)}
                     {isPopupVisible && user && <ForumSubmitCommentComponent user={user} page={currPost} cookies={cookies}
                         handleCommentSubmit={handleCommentSubmit} postComment={postForumComment}
                         togglePopupVisibility={togglePopupVisibility} quotedPostId={quotedPostId}

@@ -8,7 +8,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
   const { styles }  = useStyleContext();
   const { title } = useParams();
   const decodedTitle = decodeURIComponent(title);
-  const [pTitles, setPTitles] = useState([]);
+  const [pTitles, setPTitles] = useState<{mainParagraphs: any[]; subparagraphs: any[]}>({mainParagraphs: [], subparagraphs: []});
   const [isContentsVisible, setIsContentsVisible] = useState(true);
 
   useEffect(() => {

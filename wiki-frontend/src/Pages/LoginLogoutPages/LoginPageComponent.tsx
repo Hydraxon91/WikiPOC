@@ -16,8 +16,8 @@ export default function LoginPageComponent({handleLogin}){
     
     const login = (jwt_token) => {
         const decoded = jwtDecode(jwt_token);
-        const expirationTimestamp = parseInt(decoded.exp, 10);
-        const expirationDate = new Date(expirationTimestamp * 1000)
+        const expirationTimestamp = Number(decoded.exp);
+        const expirationDate = new Date(Number(expirationTimestamp) * 1000)
         handleLogin(jwt_token, expirationDate);
     }
 

@@ -66,7 +66,7 @@ const EditPage = ({ page, handleEdit, handleCreate }: any) => {
     const usedImagesArray = images && images.filter(image => hrefValues.some(href => href.includes(image.name)));
     // console.log(usedImagesArray);
     setUsedImages(usedImagesArray); 
-    updateTemporaryPage(title, siteSub, roleNote, value);
+    updateTemporaryPage('content', value);
 };
 
 
@@ -148,7 +148,7 @@ const EditPage = ({ page, handleEdit, handleCreate }: any) => {
         <div className='articleeditor-container'>
           <ArticleEditor 
             title={title} siteSub={siteSub} 
-            roleNote={roleNote} content={content} emptyFields={emptyFields} 
+            roleNote={roleNote} content={content}
             handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
             images={images} setImages={setImages} category={category}
           />

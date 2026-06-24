@@ -24,8 +24,8 @@ const CompareUpdatePage = () => {
 
     useEffect(()=>{
         // console.log(updatePage);
-        if (updatePage && updatePage.userSubmittedWikiPage.wikiPageId) {
-            fetchOriginalPage(updatePage.userSubmittedWikiPage.wikiPageId);
+        if (updatePage && (updatePage as any).userSubmittedWikiPage?.wikiPageId) {
+            fetchOriginalPage((updatePage as any).userSubmittedWikiPage.wikiPageId);
         }
     },[updatePage])
 
@@ -52,7 +52,7 @@ const CompareUpdatePage = () => {
       const handleAccept = () => {
         // console.log(updatePage);
         // console.log(originalPage);
-        acceptUserSubmittedUpdate(updatePage.userSubmittedWikiPage.id, cookies["jwt_token"])
+        acceptUserSubmittedUpdate((updatePage as any).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             alert("Succesfully updated page");
@@ -65,7 +65,7 @@ const CompareUpdatePage = () => {
 
       const handleDecline = () => {
         // console.log(updatePage.userSubmittedWikiPage.id);
-        declineUserSubmittedWikiPage(updatePage.userSubmittedWikiPage.id, cookies["jwt_token"])
+        declineUserSubmittedWikiPage((updatePage as any).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             alert("Declined Change");
@@ -85,9 +85,9 @@ const CompareUpdatePage = () => {
             <div className='compare-updates-container'>
             {
                   <>
-                    <NewCompareUpdatePage page={originalPage} disableNavbar={true}></NewCompareUpdatePage>
+                    <NewCompareUpdatePage page={originalPage} setDecodedTitle={undefined}></NewCompareUpdatePage>
                     <div style={{ borderRight: '1px solid #ccc', margin: '0 10px' }}></div>
-                    <NewCompareUpdatePage page={updatePage} disableNavbar={true}></NewCompareUpdatePage>
+                    <NewCompareUpdatePage page={updatePage} setDecodedTitle={undefined}></NewCompareUpdatePage>
                   </> 
             }
             </div>

@@ -12,8 +12,8 @@ import Breadcrumbs from './Components/Breadcrumbs';
 const CreateForumTopic = ({ cookies }) => {
     const {decodedTokenContext} = useUserContext();
     const { slug } = useParams();
-    const [forumTopic, setForumTopic] = useState(null);
-    const [user, setUser] = useState();
+    const [forumTopic, setForumTopic] = useState<any>(null);
+    const [user, setUser] = useState<any>();
     const [postTitle, setPostTitle] = useState('');
     const [content, setContent] = useState('');
     const [error, setError] = useState(null);
@@ -69,8 +69,8 @@ const CreateForumTopic = ({ cookies }) => {
             content,
             forumTopic,
             forumTopicId: forumTopic.id,
-            userId: user.id,
-            userName: user.userName,
+            userId: user!.id,
+            userName: user!.userName,
             user: user,
             slug: ''
         };

@@ -24,7 +24,7 @@ const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubm
             console.log(newComment);
             await postComment(newComment, cookies, user);
             setCommentText('');
-            newComment.userProfile = user;
+            (newComment as any).userProfile = user;
             handleCommentSubmit(newComment);
             alert('Successfully submitted comment');
         } catch (error) {
@@ -40,7 +40,7 @@ const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubm
                 </div>
                 <div className="comment-write-textarea">
                     <textarea
-                        maxLength="1500"
+                        maxLength={1500}
                         name="comment"
                         value={commentText}
                         onChange={handleCommentChange}

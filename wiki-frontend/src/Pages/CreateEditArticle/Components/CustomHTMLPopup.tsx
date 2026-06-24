@@ -61,7 +61,7 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
       // If input is a File object, convert it to data URI
       fileToDataUri(input)
         .then(dataUri => {
-          setImageUrl(dataUri);
+          setImageUrl(dataUri as string);
         });
     }
     

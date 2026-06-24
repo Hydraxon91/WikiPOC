@@ -9,7 +9,7 @@ import Breadcrumbs from './Components/Breadcrumbs';
 import './Styles/forumlandingpage.css';
 
 const ForumPage = ({ cookies }) => {
-    const [topic, setTopic] = useState([]);
+    const [topic, setTopic] = useState<any>(null);
     const { slug } = useParams();
     const { styles } = useStyleContext();
     const [currentPage, setCurrentPage] = useState(1);
@@ -46,7 +46,7 @@ const ForumPage = ({ cookies }) => {
         }
 
         const utcDate = new Date(latestComment.postDate + 'Z');
-        const diffInMinutes = Math.floor((new Date() - utcDate) / (1000 * 60));
+        const diffInMinutes = Math.floor((Number(new Date()) - Number(utcDate)) / (1000 * 60));
         const formattedDate = diffInMinutes < 60 ? `${diffInMinutes} minutes ago` : format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
 
         return (

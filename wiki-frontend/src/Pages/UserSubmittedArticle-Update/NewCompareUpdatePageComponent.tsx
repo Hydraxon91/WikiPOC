@@ -28,7 +28,6 @@ const NewCompareUpdatePage = ({page: wikipage, setDecodedTitle}) => {
                         page={page}
                         setDecodedTitle={setDecodedTitle}
                         activeTab={activeTab}
-                        className={activeTab === 'wiki' ? 'wikipage-visible' : 'wikipage-hidden'}
                         images={images}
                     />
                 ) : (
@@ -36,7 +35,6 @@ const NewCompareUpdatePage = ({page: wikipage, setDecodedTitle}) => {
                         page={page}
                         setDecodedTitle={setDecodedTitle}
                         activeTab={activeTab}
-                        className={activeTab === 'wiki' ? 'wikipage-visible' : 'wikipage-hidden'}
                     />
                 )}
             </div>

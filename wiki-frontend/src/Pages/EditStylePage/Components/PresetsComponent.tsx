@@ -36,7 +36,6 @@ const PresetsComponent = ({handleChange, logo}) =>{
             articleRightInnerColor: "rgb(98, 167, 79)", // Green Grass
             footerListTextColor: "rgb(94, 60, 42)", // Darker Dirt Brown
             footerListLinkTextColor: "rgb(74, 44, 28)", // Darkest Dirt Brown
-            footerListLinkTextColor: "rgb(98, 167, 79)", // Green Grass
             fontFamily: "Times New Roman"
         },
         {

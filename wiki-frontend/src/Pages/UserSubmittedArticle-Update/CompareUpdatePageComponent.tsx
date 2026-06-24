@@ -21,7 +21,7 @@ const CompareUpdatePageComponent = ({page, originalPage}) => {
     setIsContentsVisible(!isContentsVisible);
   };
 
-  const scrollToParagraph = () => {
+  const scrollToParagraph = (index?: number) => {
     if (targetRef.current) {
       targetRef.current.scrollIntoView({ behavior: 'smooth' });
     }

@@ -57,7 +57,6 @@ const WikiPage = ({page: wikipage, setDecodedTitle, cookies, disableNavbar = fal
                         page={page}
                         setDecodedTitle={setDecodedTitle}
                         activeTab={activeTab}
-                        className={activeTab === 'wiki' ? 'wikipage-visible' : 'wikipage-hidden'}
                         images={images}
                     />
                 ) : (
@@ -65,7 +64,6 @@ const WikiPage = ({page: wikipage, setDecodedTitle, cookies, disableNavbar = fal
                         page={page}
                         setDecodedTitle={setDecodedTitle}
                         activeTab={activeTab}
-                        className={activeTab === 'wiki' ? 'wikipage-visible' : 'wikipage-hidden'}
                     />
                 )}
                 

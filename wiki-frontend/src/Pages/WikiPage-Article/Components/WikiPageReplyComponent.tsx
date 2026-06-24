@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import '../Style/commentreply.css'
 
-const WikiPageReplyComponent = ({ user, page, cookies, handleCommentSubmit, postComment, replyTo, showReplyBoxRemoveIndex, index }) => {
+const WikiPageReplyComponent = ({ user, page, cookies, handleCommentSubmit, postComment, replyTo, showReplyBoxRemoveIndex, index }: { user: any; page: any; cookies: any; handleCommentSubmit: any; postComment: any; replyTo: any; showReplyBoxRemoveIndex?: any; index?: any }) => {
     const [commentText, setCommentText] = useState('');
 
     const handleCommentChange = (event) => {
@@ -23,7 +23,7 @@ const WikiPageReplyComponent = ({ user, page, cookies, handleCommentSubmit, post
         try {
             await postComment(newComment, cookies, user);
             setCommentText('');
-            newComment.userProfile = user;
+            (newComment as any).userProfile = user;
             handleCommentSubmit(newComment);
             // Ensure replyTo.replies is initialized
             if (!replyTo.replies) {
@@ -47,7 +47,7 @@ const WikiPageReplyComponent = ({ user, page, cookies, handleCommentSubmit, post
                 <div className="reply-comment-write-textarea">
                     <textarea
                         placeholder="Add a reply..."
-                        maxLength="1500"
+                        maxLength={1500}
                         name="comment"
                         value={commentText}
                         onChange={handleCommentChange}
