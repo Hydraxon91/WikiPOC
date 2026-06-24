@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactQuill from 'react-quill';
+import ReactQuill from 'react-quill-new';
 import UserImagesContainer from './UserImagesContainer';
 import '../Style/articleeditor.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css'

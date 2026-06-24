@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactQuill from 'react-quill';
+import ReactQuill from 'react-quill-new';
 import { useNotification } from '../../../Components/NotificationProvider';
 import "../Styles/forumsubmintcommentcomponent.css"
 

@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-import ReactQuill from 'react-quill';
+import ReactQuill from 'react-quill-new';
 import CustomHTMLPopup from './CustomHTMLPopup';
 import UserImagesContainer from './UserImagesContainer';
 import { fetchCategories } from '../../../Api/wikiApi';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { useNotification } from '../../../Components/NotificationProvider';
-import 'react-quill/dist/quill.snow.css';
+import 'react-quill-new/dist/quill.snow.css';
 
 
 const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave, images, setImages, category }) => {
