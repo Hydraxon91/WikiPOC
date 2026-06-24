@@ -275,7 +275,7 @@ async Task CreateUserIfNotExists()
     using var scope = app.Services.CreateScope();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
-    var userInDb = await userManager.FindByEmailAsync(Environment.GetEnvironmentVariable("TESTUSER_EMAIL"));
+    var userInDb = await userManager.FindByEmailAsync(Environment.GetEnvironmentVariable("TESTUSER_EMAIL")!);
     if (userInDb == null)
     {
         var testUsername = Environment.GetEnvironmentVariable("TESTUSER_USERNAME")!;
@@ -439,11 +439,11 @@ async Task SeedForumPostsAsync()
                 PostTitle = "Welcome to the Main Forum!",
                 Content = "Feel free to start discussions about anything!",
                 PostDate = DateTime.Now,
-                ForumTopic = topics.FirstOrDefault(t => t.Slug == "main-forum"),
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "main-forum")!,
                 Slug = "welcome-to-the-main-forum",
-                UserId = adminUser.ProfileId,
-                UserName = adminUser.UserName,
-                User = adminUser.Profile
+                UserId = adminUser!.ProfileId,
+                UserName = adminUser.UserName!,
+                User = adminUser.Profile!
             },
             new ForumPost
             {
@@ -451,11 +451,11 @@ async Task SeedForumPostsAsync()
                 PostTitle = "Rules of the Off Topic Forum",
                 Content = "This is a place for non-related discussions. Please keep it friendly and respectful.",
                 PostDate = DateTime.Now,
-                ForumTopic = topics.FirstOrDefault(t => t.Slug == "off-topic"),
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "off-topic")!,
                 Slug = "rules-of-the-off-topic-forum",
-                UserId = adminUser.ProfileId,
-                UserName = adminUser.UserName,
-                User = adminUser.Profile
+                UserId = adminUser!.ProfileId,
+                UserName = adminUser.UserName!,
+                User = adminUser.Profile!
             },
             new ForumPost
             {
@@ -463,11 +463,11 @@ async Task SeedForumPostsAsync()
                 PostTitle = "Discussion in French",
                 Content = "Bonjour! Let's discuss various topics in French in this forum.",
                 PostDate = DateTime.Now,
-                ForumTopic = topics.FirstOrDefault(t => t.Slug == "foreign-languages-forum"),
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "foreign-languages-forum")!,
                 Slug = "discussion-in-french",
-                UserId = adminUser.ProfileId,
-                UserName = adminUser.UserName,
-                User = adminUser.Profile
+                UserId = adminUser!.ProfileId,
+                UserName = adminUser.UserName!,
+                User = adminUser.Profile!
             },
             new ForumPost
             {
@@ -475,11 +475,11 @@ async Task SeedForumPostsAsync()
                 PostTitle = "Archived Topic: Previous Discussion",
                 Content = "This is an archived discussion. It's here for reference purposes.",
                 PostDate = DateTime.Now,
-                ForumTopic = topics.FirstOrDefault(t => t.Slug == "archive"),
+                ForumTopic = topics.FirstOrDefault(t => t.Slug == "archive")!,
                 Slug = "archived-topic-previous-discussion",
                 UserId = adminUser.ProfileId,
-                UserName = adminUser.UserName,
-                User = adminUser.Profile
+                UserName = adminUser!.UserName!,
+                User = adminUser!.Profile!
             }
         };
 

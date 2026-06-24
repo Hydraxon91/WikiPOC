@@ -14,7 +14,7 @@ public class StyleRepository : IStyleRepository
 
     public async Task<StyleModel> GetStylesAsync()
     {
-        return await _dbContext.Styles.SingleOrDefaultAsync()!;
+        return (await _dbContext.Styles.SingleOrDefaultAsync())!;
     }
 
     public async Task UpdateStylesAsync(StyleModel updatedStyles, IFormFile? logoPictureFile)

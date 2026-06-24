@@ -21,6 +21,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
     public WikiDbContext(DbContextOptions<WikiDbContext> options)
         : base(options)
     {
+        _configuration = null!;
         if (Database.IsRelational()) Database.Migrate();
     }
     

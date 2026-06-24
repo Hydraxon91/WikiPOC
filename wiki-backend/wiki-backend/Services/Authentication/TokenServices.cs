@@ -43,8 +43,8 @@ public class TokenServices : ITokenServices
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer),
                 new(ClaimTypes.NameIdentifier, user.Id),
-                new(ClaimTypes.Name, user.UserName),
-                new(ClaimTypes.Email, user.Email),
+                new(ClaimTypes.Name, user.UserName!),
+                new(ClaimTypes.Email, user.Email!),
             };
 
             if (role != null)
@@ -52,7 +52,7 @@ public class TokenServices : ITokenServices
 
             return claims;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             throw;
         }
@@ -62,7 +62,7 @@ public class TokenServices : ITokenServices
     {
         return new SigningCredentials(
             new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY"))
+                Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY")!)
             ),
             SecurityAlgorithms.HmacSha256
         );

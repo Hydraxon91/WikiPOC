@@ -23,7 +23,7 @@ public class AuthService : IAuthService
         // Check if any of the required parameters are null or empty
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            return new AuthResult(false, email, username, null)
+            return new AuthResult(false, email, username, null!)
             {
                 ErrorMessages = { { "Bad request", "Invalid input data" } }
             };
@@ -31,7 +31,7 @@ public class AuthService : IAuthService
         
         if (!IsValidEmail(email))
         {
-            return new AuthResult(false, email, username, null)
+            return new AuthResult(false, email, username, null!)
             {
                 ErrorMessages = { { "Invalid email", "Email is not in a valid format" } }
             };
@@ -41,7 +41,7 @@ public class AuthService : IAuthService
         var existingUserWithEmail = await _userManager.FindByEmailAsync(email);
         if (existingUserWithEmail != null)
         {
-            return new AuthResult(false, email, username, null)
+            return new AuthResult(false, email, username, null!)
             {
                 ErrorMessages = { { "Duplicate email", "Email is already taken" } }
             };
@@ -75,7 +75,7 @@ public class AuthService : IAuthService
     {
         var isEmail = IsEmail(usernameOrEmail);
         
-        ApplicationUser managedUser = isEmail
+        ApplicationUser? managedUser = isEmail
             ? await _userManager.FindByEmailAsync(usernameOrEmail)
             : await _userManager.FindByNameAsync(usernameOrEmail);
         if (managedUser == null)
@@ -84,12 +84,12 @@ public class AuthService : IAuthService
         var isPasswordValid = await _userManager.CheckPasswordAsync(managedUser, password);
 
         if (!isPasswordValid)
-            return InvalidPassword(managedUser.Email, managedUser.UserName);
-        
+return InvalidPassword(managedUser.Email!, managedUser.UserName!);
+
         var roles = await _userManager.GetRolesAsync(managedUser);
         var accessToken = _tokenService.CreateToken(managedUser, roles[0]);
-        
-        return new AuthResult(true, managedUser.Email, managedUser.UserName, accessToken);
+
+        return new AuthResult(true, managedUser.Email!, managedUser.UserName!, accessToken);
     }
     
     private static bool IsEmail(string input)

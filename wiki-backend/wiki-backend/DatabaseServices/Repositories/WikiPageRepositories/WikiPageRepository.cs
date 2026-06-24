@@ -24,7 +24,7 @@ public class WikiPageRepository : IWikiPageRepository
             .Select(page => new TitleAndCategory
             {
                 Title = page.Title ?? "Untitled",
-                Category = page.Category.CategoryName ?? "Uncategorized"
+                Category = page.Category!.CategoryName ?? "Uncategorized"
             })
             .ToListAsync();
 
@@ -373,7 +373,7 @@ public class WikiPageRepository : IWikiPageRepository
             {
                 // Rename the old folder to the new ID if new ID is not null
                 var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, "articles", id.ToString());
-                var newFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, "articles", newId.ToString());
+                var newFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, "articles", newId.ToString()!);
                 if (Directory.Exists(oldFolderPath))
                 {
                     Directory.Move(oldFolderPath, newFolderPath);
@@ -397,7 +397,7 @@ public class WikiPageRepository : IWikiPageRepository
     
     public async Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedPageTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage && !page.Approved).Select(page => new Tuple<string, Guid>(page.Title, page.Id)).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage && !page.Approved).Select(page => new Tuple<string, Guid>(page.Title!, page.Id)).ToListAsync();
     }
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedPageByIdAsync(Guid id)
@@ -449,7 +449,7 @@ public class WikiPageRepository : IWikiPageRepository
     
     public async Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedUpdateTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false && !page.Approved).Select(page => new Tuple<string, Guid>(page.Title, page.Id)).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false && !page.Approved).Select(page => new Tuple<string, Guid>(page.Title!, page.Id)).ToListAsync();
     }
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedUpdateByIdAsync(Guid id)

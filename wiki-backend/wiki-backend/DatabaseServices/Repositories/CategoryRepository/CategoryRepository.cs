@@ -21,12 +21,12 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<Category> GetCategoryByNameAsync(string categoryName)
     {
-        return await _context.Categories.Include(category => category.WikiPages).FirstOrDefaultAsync(c => c.CategoryName == categoryName)!;
+        return (await _context.Categories.Include(category => category.WikiPages).FirstOrDefaultAsync(c => c.CategoryName == categoryName))!;
     }
 
     public async Task<Category> GetCategoryByIdAsync(Guid categoryId)
     {
-        return await _context.Categories.Include(category => category.WikiPages).FirstOrDefaultAsync(c => c.Id == categoryId)!;
+        return (await _context.Categories.Include(category => category.WikiPages).FirstOrDefaultAsync(c => c.Id == categoryId))!;
     }
 
     public async Task<Category> AddCategoryAsync(string categoryName)

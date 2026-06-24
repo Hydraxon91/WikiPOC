@@ -23,16 +23,16 @@ public class ForumPostRepository : IForumPostRepository
 
     public async Task<ForumPost> GetForumPostByIdAsync(Guid id)
     {
-        return await _context.ForumPosts.FindAsync(id)!;
+        return (await _context.ForumPosts.FindAsync(id))!;
     }
     
     public async Task<ForumPost> GetForumPostBySlugAsync(string slug)
     {
-        return await _context.ForumPosts
+        return (await _context.ForumPosts
             .Include(post => post.Comments)
                 .ThenInclude(comment => comment.UserProfile)
             .Include(post => post.User)
-            .FirstOrDefaultAsync(post => post.Slug == slug)!;
+            .FirstOrDefaultAsync(post => post.Slug == slug))!;
     }
 
     public async Task AddForumPostAsync(ForumPost post)

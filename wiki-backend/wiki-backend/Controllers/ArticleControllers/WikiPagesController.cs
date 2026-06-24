@@ -66,7 +66,7 @@ public class WikiPagesController : ControllerBase
             return NotFound();
 
         // Check if Paragraphs is null, and return an empty list if it is
-        var paragraphs = wikiPageOutputModel.WikiPage.Paragraphs ?? new List<Paragraph>();
+        var paragraphs = wikiPageOutputModel.WikiPage!.Paragraphs ?? new List<Paragraph>();
 
         return Ok(paragraphs);
     }
