@@ -24,7 +24,7 @@ const ForumLandingPage = () => {
     
     const getCommentsLength = (topic) =>{
         var counter = 0;
-        topic.forumPosts.forEach(post => {
+        (topic.forumPosts || []).forEach(post => {
             counter += post.comments.length;
         });
         return counter;
@@ -32,7 +32,7 @@ const ForumLandingPage = () => {
 
     const getLatestComment = (topic) => {
         let latestComment = null;
-        topic.forumPosts.forEach(post => {
+        (topic.forumPosts || []).forEach(post => {
             // Check if the forum post itself is the latest
             if (!latestComment || (post.postDate && new Date(post.postDate) > new Date(latestComment.postDate))) {
                 latestComment = post;
@@ -106,8 +106,8 @@ const ForumLandingPage = () => {
                         <Link to={`/forum/${topic.slug}`}><div className='topicTitle'>{topic.title}</div></Link>
                         <div>{topic.description}</div>
                     </div>
-                    <div className="grid-cell">{topic.forumPosts.length}</div>
-                    <div className="grid-cell">{topic.forumPosts.length + getCommentsLength(topic)}</div>
+                    <div className="grid-cell">{(topic.forumPosts || []).length}</div>
+                    <div className="grid-cell">{(topic.forumPosts || []).length + getCommentsLength(topic)}</div>
                     <div className="grid-cell">{getLatestComment(topic)}</div>
                 </div>
             ))}

@@ -63,9 +63,9 @@ export function renderThumbnails(
 ): string {
   if (!htmlContent) return htmlContent;
 
-  const thumbRegex = /<div\s+data-thumb\s+data-orientation="([^"]*)"\s+data-image="([^"]*)"[^>]*>([\s\S]*?)<\/div>/g;
+  const thumbRegex = /<img\s+src="wiki-thumbnail:\/\/([^\/]+)\/([^"]*)"[^>]*\/?>/g;
 
-  return htmlContent.replace(thumbRegex, (match, orientation, imageRef, innerHtml) => {
+  return htmlContent.replace(thumbRegex, (match, orientation, imageRef) => {
     const image = images?.find(i => i.name === imageRef || i.fileName === imageRef);
     if (!image?.dataURL) return match;
 
@@ -73,7 +73,7 @@ export function renderThumbnails(
       <div class="thumbnail-inner" style="background-color: ${articleRightInnerColor || '#2b4ea6'};">
         <img class="paragraphImage" src="${image.dataURL}" alt="Thumbnail"/>
       </div>
-      <div class="wikipage-content-container">${innerHtml}</div>
+      <div class="wikipage-content-container"></div>
     </div>`;
   });
 }

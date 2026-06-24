@@ -17,12 +17,20 @@ const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = fa
 
 
     useEffect(()=>{
+        console.log('WikiPage: wikipage prop', wikipage ? 'has data' : 'null');
         if (wikipage && (wikipage.wikiPage || wikipage.userSubmittedWikiPage))  {
             setActiveTab('wiki');
             setPage(wikipage.wikiPage ?? wikipage.userSubmittedWikiPage);
             setImages(wikipage.images)
         }
     },[wikipage])
+
+    useEffect(() => {
+        console.log('WikiPage: decodedTitle', decodedTitle, 'setDecodedTitle:', !!setDecodedTitle);
+        if (setDecodedTitle && decodedTitle) {
+            setDecodedTitle(decodedTitle);
+        }
+    }, [decodedTitle]);
 
     const handleTabClick = (tab) =>{
         setActiveTab(tab);

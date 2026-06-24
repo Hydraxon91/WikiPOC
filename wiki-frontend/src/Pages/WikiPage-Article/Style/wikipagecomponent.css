@@ -43,10 +43,13 @@
 }
 
 .paragraph-image{
-    max-width: 11em;
+    max-width: 100%;
     max-height: 11em;
     width: auto;
     height: auto;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
 }
 
 .article-preview {

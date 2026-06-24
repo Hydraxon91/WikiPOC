@@ -77,7 +77,7 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
 
 
   const handleConfirm = () => {
-    const htmlContent = `<div data-thumb data-orientation="${orientation}" data-image="${imageUrl}">${text}</div>`;
+    const htmlContent = `<img src="wiki-thumbnail://${orientation}/${imageUrl}" alt="Thumbnail"/>`;
     insertCustomHTML(htmlContent);
     togglePopupVisibility();
   };
