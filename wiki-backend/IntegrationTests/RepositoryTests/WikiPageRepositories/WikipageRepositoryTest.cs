@@ -13,7 +13,8 @@ namespace IntegrationTests.Repositories
         public void SetUp()
         {
             ResetDatabase();
-            _repository = new WikiPageRepository(DbContext);
+            var categoryRepository = new CategoryRepository(DbContext);
+            _repository = new WikiPageRepository(DbContext, categoryRepository);
         }
 
         [Test]

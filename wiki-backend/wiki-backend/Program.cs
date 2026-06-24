@@ -1,7 +1,10 @@
 using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -36,13 +39,23 @@ AddIdentity();
 ConfigureSwagger();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddFixedWindowLimiter("LoginPolicy", opt =>
+    {
+        opt.PermitLimit = 10;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+});
+
 var app = builder.Build();
 
-app.UseCors();
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
 // {
@@ -52,8 +65,9 @@ app.UseCors();
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowLocalhost");
 app.UseCors();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -78,17 +92,10 @@ void AddCors()
 {
     builder.Services.AddCors(options =>
     {
-        options.AddDefaultPolicy(
-            policy =>
-            {
-                policy.WithOrigins("*")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
-        options.AddPolicy("AllowLocalhost", policy =>
+        options.AddDefaultPolicy(policy =>
         {
             policy
-                .WithOrigins("http://localhost:3000", "http://localhost:3001") // Allow requests from your client's origin
+                .WithOrigins("http://localhost:3000", "http://localhost:3001")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -100,8 +107,11 @@ void AddDbContext()
     builder.Services.AddDbContext<WikiDbContext>(options =>
     {
         options.UseSqlServer(Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING")!);
-        options.EnableSensitiveDataLogging(); // Enable logging for debugging
-        options.EnableDetailedErrors();       // Enable detailed errors for debugging
+        if (builder.Environment.IsDevelopment())
+        {
+            options.EnableSensitiveDataLogging();
+            options.EnableDetailedErrors();
+        }
     });
 }
 
@@ -110,17 +120,17 @@ void AddServices()
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
 
-    builder.Services.AddTransient<IWikiPageRepository, WikiPageRepository>();
-    builder.Services.AddTransient<IParagraphRepository, ParagraphRepository>();
-    builder.Services.AddTransient<IStyleRepository, StyleRepository>();
-    builder.Services.AddTransient<IUserProfileRepository, UserProfileRepository>();
-    builder.Services.AddTransient<IUserCommentRepository, UserCommentRepository>();
-    builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
-    builder.Services.AddTransient<IForumPostRepository, ForumPostRepository>();
-    builder.Services.AddTransient<IForumTopicRepository, ForumTopicRepository>();
-    builder.Services.AddTransient<IForumCommentRepository, ForumCommentRepository>();
+    builder.Services.AddScoped<IWikiPageRepository, WikiPageRepository>();
+    builder.Services.AddScoped<IParagraphRepository, ParagraphRepository>();
+    builder.Services.AddScoped<IStyleRepository, StyleRepository>();
+    builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+    builder.Services.AddScoped<IUserCommentRepository, UserCommentRepository>();
+    builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+    builder.Services.AddScoped<IForumPostRepository, ForumPostRepository>();
+    builder.Services.AddScoped<IForumTopicRepository, ForumTopicRepository>();
+    builder.Services.AddScoped<IForumCommentRepository, ForumCommentRepository>();
     builder.Services.AddScoped<IAuthService, AuthService>();
-    builder.Services.AddScoped<ITokenServices, TokenServices>();
+    builder.Services.AddSingleton<ITokenServices, TokenServices>();
     builder.Services.AddSingleton(new ProfileImageSettings(picturesPath));
 }
 

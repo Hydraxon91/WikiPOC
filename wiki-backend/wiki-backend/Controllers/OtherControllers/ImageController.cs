@@ -17,7 +17,8 @@ public class ImageController : ControllerBase
     [HttpGet("profile/{imageName}")]
     public IActionResult GetImage(string imageName)
     {
-        var imagePath = Path.Combine( _profileImageSettings.ProfileImagesPath,"profile_pictures/", imageName);
+        var safeName = Path.GetFileName(imageName);
+        var imagePath = Path.Combine(_profileImageSettings.ProfileImagesPath, "profile_pictures/", safeName);
         if (!System.IO.File.Exists(imagePath))
         {
             return NotFound(imagePath);
@@ -29,7 +30,8 @@ public class ImageController : ControllerBase
     [HttpGet("logo/{imageName}")]
     public IActionResult GetLogo(string imageName)
     {
-        var imagePath = Path.Combine(_profileImageSettings.ProfileImagesPath,"logo/", imageName);
+        var safeName = Path.GetFileName(imageName);
+        var imagePath = Path.Combine(_profileImageSettings.ProfileImagesPath, "logo/", safeName);
         if (!System.IO.File.Exists(imagePath))
         {
             return NotFound(imagePath);

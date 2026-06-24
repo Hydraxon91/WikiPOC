@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -42,10 +41,10 @@ public class ForumPostController : ControllerBase
     }
     
     [HttpPost("postTopic")]
-    [Authorize(Roles = "Admin, User")]
+    [Authorize]
     public async Task<ActionResult<ForumPost>> AddForumPost([FromForm] ForumPostForm forumPostForm)
     {
-        var forumPostId = new Guid();
+        var forumPostId = Guid.NewGuid();
         
         var forumPost = new ForumPost
         {
@@ -53,7 +52,7 @@ public class ForumPostController : ControllerBase
             PostTitle = forumPostForm.PostTitle,
             PostDate = forumPostForm.PostDate,
             Content = forumPostForm.Content,
-            ForumTopicId = Guid.Parse(forumPostForm.ForumTopicId), // Convert string to Guid
+            ForumTopicId = Guid.Parse(forumPostForm.ForumTopicId),
             UserId = Guid.Parse(forumPostForm.UserId), 
             UserName = forumPostForm.UserName,
         };
@@ -61,10 +60,11 @@ public class ForumPostController : ControllerBase
         return CreatedAtAction(nameof(GetForumPostBySlug), new { slug = forumPost.Slug }, forumPost);
     }
     
+    [Authorize]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateForumPost(Guid id, [FromBody] ForumPost forumPost)
     {
-        var userId = GetUserIdFromRequest();
+        var userName = User.FindFirstValue(ClaimTypes.Name);
         if (id != forumPost.Id)
         {
             return BadRequest();
@@ -76,7 +76,7 @@ public class ForumPostController : ControllerBase
             return NotFound();
         }
 
-        if (await IsAuthorizedToModifyPost(userId, existingPost))
+        if (await IsAuthorizedToModifyPost(userName, existingPost))
         {
             await _forumPostRepository.UpdateForumPostAsync(existingPost, forumPost);
             return Ok(new { Message = "Forum Post edited successfully" });
@@ -85,17 +85,18 @@ public class ForumPostController : ControllerBase
         return Unauthorized(new { Message = "Unauthorized to update this post" });
     }
     
+    [Authorize]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteForumPost(Guid id)
     {
-        var userId = GetUserIdFromRequest();
+        var userName = User.FindFirstValue(ClaimTypes.Name);
         var existingPost = await _forumPostRepository.GetForumPostByIdAsync(id);
         if (existingPost == null)
         {
             return NotFound();
         }
 
-        if (await IsAuthorizedToModifyPost(userId, existingPost))
+        if (await IsAuthorizedToModifyPost(userName, existingPost))
         {
             await _forumPostRepository.DeleteForumPostAsync(id);
             return Ok(new { Message = "Forum Post deleted successfully" });
@@ -104,34 +105,16 @@ public class ForumPostController : ControllerBase
         return Unauthorized(new { Message = "Unauthorized to delete this post" });
     }
     
-    private string GetUserIdFromRequest()
+    private async Task<bool> IsAuthorizedToModifyPost(string? userName, ForumPost post)
     {
-        var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-        var handler = new JwtSecurityTokenHandler();
-        var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
-        var nameClaim = jsonToken!.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
-        
-        if (nameClaim != null)
-        {
-            return nameClaim.Value;
-        }
-        
-        // If the user ID is not found in claims, handle it accordingly (throw an exception, return null, etc.)
-        // This depends on how your application handles authentication errors
-        throw new InvalidOperationException("User ID not found in claims.");
-    }
-    private async Task<bool> IsAuthorizedToModifyPost(string userId, ForumPost post)
-    {
-        return userId == post.UserName|| await IsUserAdmin(userId);
+        return userName == post.UserName || await IsUserAdmin(userName);
     }
     
-    private async Task<bool> IsUserAdmin(string userId)
+    private async Task<bool> IsUserAdmin(string? userName)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
+        if (string.IsNullOrEmpty(userName))
             return false;
-        }
-        return await _userManager.IsInRoleAsync(user, "Admin");
+        var user = await _userManager.FindByNameAsync(userName);
+        return user != null && await _userManager.IsInRoleAsync(user, "Admin");
     }
 }

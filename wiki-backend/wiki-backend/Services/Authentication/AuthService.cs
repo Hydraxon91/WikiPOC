@@ -117,21 +117,21 @@ return InvalidPassword(managedUser.Email!, managedUser.UserName!);
     private static AuthResult InvalidEmail(string email)
     {
         var result = new AuthResult(false, email, "", "");
-        result.ErrorMessages.Add("Bad credentials", "Invalid email");
+        result.ErrorMessages.Add("Bad credentials", "Invalid credentials");
         return result;
     }
     
     private static AuthResult InvalidUserName(string username)
     {
         var result = new AuthResult(false, "", username, "");
-        result.ErrorMessages.Add("Bad credentials", "Invalid Username");
+        result.ErrorMessages.Add("Bad credentials", "Invalid credentials");
         return result;
     }
 
     private static AuthResult InvalidPassword(string email, string userName)
     {
         var result = new AuthResult(false, email, userName, "");
-        result.ErrorMessages.Add("Bad credentials", "Invalid password");
+        result.ErrorMessages.Add("Bad credentials", "Invalid credentials");
         return result;
     }
     private bool IsValidEmail(string email)

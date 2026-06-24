@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using wiki_backend.Contracts;
 using wiki_backend.Services.Authentication;
 
@@ -16,6 +17,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("Register")]
+    [EnableRateLimiting("LoginPolicy")]
     public async Task<ActionResult<RegistrationResponse>> Register(RegistrationRequest request)
     {
         if (!ModelState.IsValid)
@@ -32,6 +34,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("Login")]
+    [EnableRateLimiting("LoginPolicy")]
     public async Task<ActionResult<AuthResponse>> Authenticate([FromBody] AuthRequest request)
     {
         if (!ModelState.IsValid)

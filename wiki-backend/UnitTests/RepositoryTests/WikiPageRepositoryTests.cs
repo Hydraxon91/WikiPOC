@@ -30,7 +30,8 @@ public class WikiPageRepositoryTests
         _wikiDbContext = new WikiDbContext(options, configuration: null!); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
-        _wikiPageRepository = new WikiPageRepository(_wikiDbContext);
+        var categoryRepository = new CategoryRepository(_wikiDbContext);
+        _wikiPageRepository = new WikiPageRepository(_wikiDbContext, categoryRepository);
     }
     
     [TearDown]
@@ -79,7 +80,8 @@ public class WikiPageRepositoryTests
         _wikiDbContext.WikiPages.Add(testData);
         await _wikiDbContext.SaveChangesAsync();
 
-        var repository = new WikiPageRepository(_wikiDbContext);
+        var categoryRepository = new CategoryRepository(_wikiDbContext);
+        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository);
 
         // Act
         var result = await repository.GetByIdAsync(articleId1);
@@ -147,7 +149,8 @@ public class WikiPageRepositoryTests
         _wikiDbContext.WikiPages.Add(expectedWikiPage);
         await _wikiDbContext.SaveChangesAsync();
 
-        var repository = new WikiPageRepository(_wikiDbContext);
+        var categoryRepository = new CategoryRepository(_wikiDbContext);
+        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository);
 
         // Act
         var result = await repository.GetByTitleAsync(expectedTitle);

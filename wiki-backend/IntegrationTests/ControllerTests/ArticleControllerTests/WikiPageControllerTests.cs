@@ -30,8 +30,8 @@ public class WikiPageControllerTests : IntegrationTestBase
         Env.TraversePath().Load();
         var signingKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
         
-        _wikiPageRepository = new WikiPageRepository(DbContext);
         var categoryRepository = new CategoryRepository(DbContext);
+        _wikiPageRepository = new WikiPageRepository(DbContext, categoryRepository);
         _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         _controller = new WikiPagesController(_wikiPageRepository, categoryRepository);
         ResetDatabase();

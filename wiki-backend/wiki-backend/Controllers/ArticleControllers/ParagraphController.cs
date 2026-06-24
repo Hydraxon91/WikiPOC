@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories;
+using wiki_backend.Identity;
 using wiki_backend.Models;
 
 namespace wiki_backend.Controllers
@@ -28,6 +30,7 @@ namespace wiki_backend.Controllers
             return paragraph;
         }
 
+        [Authorize(Policy = IdentityData.AdminUserPolicyName)]
         [HttpPost]
         public async Task<ActionResult<Paragraph>> CreateParagraph(Paragraph paragraph)
         {
@@ -36,6 +39,7 @@ namespace wiki_backend.Controllers
             return CreatedAtAction(nameof(GetParagraph), new { id = paragraph.Id }, paragraph);
         }
         
+        [Authorize(Policy = IdentityData.AdminUserPolicyName)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParagraph(Guid id)
         {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.DatabaseServices;
+using wiki_backend.Identity;
 using wiki_backend.Models;
 
 namespace wiki_backend.Controllers;
@@ -21,6 +22,7 @@ public class UsersController : ControllerBase
         _context = context;
     }
     
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetUsers()
     {
@@ -28,6 +30,7 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpGet("GetUserById")]
     public async Task<IActionResult> GetUserById(string id)
     {
@@ -39,7 +42,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost("CreateUser")]
     public async Task<IActionResult> CreateUser([FromBody] ApplicationUser model)
     {
@@ -54,7 +57,7 @@ public class UsersController : ControllerBase
         return Ok(model);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut("UpdateUser")]
     public async Task<IActionResult> UpdateUser(string id, [FromBody] ApplicationUser model)
     {
@@ -63,7 +66,6 @@ public class UsersController : ControllerBase
         if (user == null)
             return NotFound();
 
-        // Update user properties here
         user.UserName = model.UserName;
         user.Email = model.Email;
 
@@ -75,7 +77,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpDelete("DeleteUser")]
     public async Task<IActionResult> DeleteUser(string id)
     {
@@ -84,7 +86,6 @@ public class UsersController : ControllerBase
         if (user == null)
             return NotFound();
         
-        //Getting the associated UserProfile & deleting if it's not null
         var userProfile = await _context.UserProfiles.SingleOrDefaultAsync(up => up.UserId == id);
         if (userProfile != null)
             _context.UserProfiles.Remove(userProfile);
@@ -93,7 +94,7 @@ public class UsersController : ControllerBase
 
         if (!result.Succeeded)
             return BadRequest(result.Errors);
-        //Saving the deletion of UserProfile
+
         await _context.SaveChangesAsync();
 
         return Ok("User deleted successfully");

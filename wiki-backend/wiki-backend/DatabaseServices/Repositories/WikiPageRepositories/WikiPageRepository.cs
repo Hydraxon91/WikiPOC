@@ -10,10 +10,10 @@ public class WikiPageRepository : IWikiPageRepository
     private readonly WikiDbContext _context;
     private readonly ICategoryRepository _categoryRepository;
 
-    public WikiPageRepository(WikiDbContext context)
+    public WikiPageRepository(WikiDbContext context, ICategoryRepository categoryRepository)
     {
         _context = context;
-        _categoryRepository = new CategoryRepository(_context);
+        _categoryRepository = categoryRepository;
     }
 
     public async Task<List<TitleAndCategory>> GetAllTitlesAndCategoriesAsync()
@@ -157,12 +157,11 @@ public class WikiPageRepository : IWikiPageRepository
 
         foreach (var paragraph in wikiPage.Paragraphs)
         {
-            paragraph.Id = new Guid();
+            paragraph.Id = Guid.NewGuid();
             paragraph.WikiPage = wikiPage;
             paragraph.WikiPageId = wikiPage.Id;
         }
 
-        // Add the article to the category
         await _categoryRepository.AddArticleToCategoryAsync(wikiPage.CategoryId!.Value, wikiPage);
 
         await _context.SaveChangesAsync();
@@ -188,7 +187,7 @@ public class WikiPageRepository : IWikiPageRepository
 
         foreach (var paragraph in wikiPage.Paragraphs)
         {
-            paragraph.Id = new Guid();
+            paragraph.Id = Guid.NewGuid();
             paragraph.WikiPage = wikiPage;
             paragraph.WikiPageId = wikiPage.Id;
         }
@@ -299,7 +298,7 @@ public class WikiPageRepository : IWikiPageRepository
     {
         foreach (var paragraph in updatedWikiPage.Paragraphs)
         {
-            paragraph.Id = new Guid();
+            paragraph.Id = Guid.NewGuid();
             paragraph.WikiPage = updatedWikiPage;
             paragraph.WikiPageId = updatedWikiPage.Id;
         }
