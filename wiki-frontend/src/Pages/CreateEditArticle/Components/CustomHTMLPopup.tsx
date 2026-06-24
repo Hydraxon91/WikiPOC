@@ -77,7 +77,7 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
 
 
   const handleConfirm = () => {
-    const htmlContent = `||${orientation}//<a href="${imageUrl}" rel="noopener noreferrer" target="_blank">ImageRef</a>##${text}||`;
+    const htmlContent = `<div data-thumb data-orientation="${orientation}" data-image="${imageUrl}">${text}</div>`;
     insertCustomHTML(htmlContent);
     togglePopupVisibility();
   };
