@@ -3,5 +3,5 @@
 namespace wiki_backend.Contracts;
 
 public record AuthRequest(
-    [Required][EmailAddress] string Email,
+    [Required] string Email,
     [Required] string Password);

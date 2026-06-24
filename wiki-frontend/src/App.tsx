@@ -7,7 +7,7 @@ import EditStylePage from "./Pages/EditStylePage/EditStylePage";
 import MainPage from "./Pages/MainPage/MainPage";
 import HomeComponent from "./Pages/MainPage/Components/HomeComponent";
 import { StyleProvider  } from "./Components/contexts/StyleContext";
-import { getWikiPageByTitle, fetchCategories } from "./Api/wikiApi";
+import { createWikiPage, updateWikiPage, getWikiPageByTitle, fetchCategories } from "./Api/wikiApi";
 import LoginPageComponent from "./Pages/LoginLogoutPages/LoginPageComponent";
 import { CookiesProvider, useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
