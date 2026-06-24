@@ -82,9 +82,9 @@ namespace IntegrationTests
         
         protected void ResetDatabase()
         {
+            DbContext.ChangeTracker.Clear();
             DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();
-            // Task.Run(async () => await EnsureRolesAsync()).Wait(); 
         }
 
         public void Dispose()

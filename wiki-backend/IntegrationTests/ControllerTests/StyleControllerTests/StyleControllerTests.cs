@@ -32,7 +32,6 @@ public class StyleControllerTests : IntegrationTestBase
         {
             DbContext.Styles.Add(new StyleModel
             {
-                Id = 1,
                 Logo = "logo/logo_pfp.png",
                 WikiName = "Your Wiki",
                 BodyColor = "#507ced",
