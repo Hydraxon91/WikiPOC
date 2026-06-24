@@ -7,7 +7,7 @@ import LegacyWikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPa
 import LegacyEditPageComponent from './Components/LegacyEditPageComponent';
 import './Style/articleeditor.css';
 
-const EditPage = ({ page, handleEdit, handleCreate }) => {
+const EditPage = ({ page, handleEdit, handleCreate }: any) => {
   const navigate = useNavigate();
   const [temporaryPage, setTemporaryPage] = useState(null);
   const [title, setTitle] = useState('');
@@ -147,14 +147,14 @@ const EditPage = ({ page, handleEdit, handleCreate }) => {
       <div className='editor-container'>
         <div className='articleeditor-container'>
           <ArticleEditor 
-            newPage={newPage} title={title} siteSub={siteSub} 
+            title={title} siteSub={siteSub} 
             roleNote={roleNote} content={content} emptyFields={emptyFields} 
             handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
             images={images} setImages={setImages} category={category}
           />
         </div>
         <div className='preview-container'>
-          <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images}/>
+          <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images} setDecodedTitle={undefined}/>
         </div>
       </div>
     )}

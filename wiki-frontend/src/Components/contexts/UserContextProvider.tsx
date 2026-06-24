@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
+import { UserContextType } from '../../types/contexts';
 
-const UserContext = createContext(null);
+const UserContext = createContext<UserContextType>({} as UserContextType);
 
 export const UserContextProvider = ({ children }) => {
   const [decodedTokenContext, setDecodedTokenContext] = useState(null);

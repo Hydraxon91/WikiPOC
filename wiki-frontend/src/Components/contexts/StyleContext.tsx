@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { fetchCurrentStyles, updateStyles } from '../../Api/wikiApi';
-const StyleContext = createContext();
+import { StyleContextType } from '../../types/contexts';
+const StyleContext = createContext<StyleContextType>({} as StyleContextType);
 
 export const StyleProvider = ({ children }) => {
   const [styles, setStyles] = useState({

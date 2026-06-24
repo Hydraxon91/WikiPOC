@@ -47,8 +47,8 @@ export const createWikiPage = async (newPage, token, decodedToken, images) => {
 
   const formData = new FormData();
   if (role !== "Admin") {
-    formData.append('wikiPageWithImagesInputModel.IsNewPage', true)
-    formData.append('wikiPageWithImagesInputModel.Approved', false)
+    formData.append('wikiPageWithImagesInputModel.IsNewPage', 'true')
+    formData.append('wikiPageWithImagesInputModel.Approved', 'false')
     formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
   }
 

@@ -72,7 +72,7 @@ function App() {
 
   useEffect(() => {
     if (decodedTitle) {
-      fetchPage(decodedTitle);
+      fetchPage();
     }
   }, [decodedTitle]);
 
@@ -139,24 +139,24 @@ function App() {
                 <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} cookies={cookies["jwt_token"]} />}/>
                 <Route path="/page/:title/edit" 
                   element={
-                  <ProtectedRoute>
-                    <EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>
+                  <ProtectedRoute roles={['User', 'Admin']}>
+                    <EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} />
                   </ProtectedRoute>
                   } 
                 />
                 <Route path="/page/:title/legacyedit" element={
-                  <ProtectedRoute>
-                    <LegacyEditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>
+                  <ProtectedRoute roles={['User', 'Admin']}>
+                    <LegacyEditPage page={currentWikiPage} />
                   </ProtectedRoute>
                 } />
                 <Route path="/legacycreate" element={
-                  <ProtectedRoute>
-                    <LegacyEditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>
+                  <ProtectedRoute roles={['User', 'Admin']}>
+                    <LegacyEditPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/create" element={
-                  <ProtectedRoute>
-                    <EditPage handleEdit={handleEdit} handleCreate={handleCreate} setCurrentWikiPage={setCurrentWikiPage}/>
+                  <ProtectedRoute roles={['User', 'Admin']}>
+                    <EditPage handleEdit={handleEdit} handleCreate={handleCreate} />
                   </ProtectedRoute>
                 } />
                 <Route path="/edit-wiki" element={
@@ -195,9 +195,9 @@ function App() {
                     <CompareUpdatePage/>
                   </ProtectedRoute>
                 } />
-                <Route path="/profile/:username" element={<ProfilePage loggedInUser={decodedToken?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]}/>} />
+                <Route path="/profile/:username" element={<ProfilePage />} />
                 <Route path="/profile/edit/:username" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute roles={['User', 'Admin']}>
                     <EditProfilePage cookies={cookies["jwt_token"]}/>
                   </ProtectedRoute>
                 } />

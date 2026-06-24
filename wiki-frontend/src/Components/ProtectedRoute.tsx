@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUserContext } from './contexts/UserContextProvider';
 
-const ProtectedRoute = ({ roles, children }) => {
+const ProtectedRoute: React.FC<{ roles: string[]; children: React.ReactNode }> = ({ children, roles }) => {
     const { decodedTokenContext } = useUserContext();
     const userRoles = decodedTokenContext?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
     const isAuthorized = () => {

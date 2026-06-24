@@ -5,7 +5,7 @@ import EditPageComponent from './Components/LegacyEditPageComponent';
 import LegacyWikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
 
 
-const LegacyEditPage = ({ page, handleFieldChange, handleSave, category, setCategory }) => {
+const LegacyEditPage = ({ page, handleFieldChange, handleSave, category, setCategory }: any) => {
   const {styles} = useStyleContext();
   const [temporaryPage, setTemporaryPage] = useState(null);
   const [title, setTitle] = useState('');
@@ -79,7 +79,7 @@ const LegacyEditPage = ({ page, handleFieldChange, handleSave, category, setCate
   return (
     <div style={{backgroundColor: styles.articleColor, display: 'flex'}} className="article">
       <EditPageComponent newPage={newPage} title={title} handleFieldChange={handleFieldChange} siteSub={siteSub} roleNote={roleNote} paragraphs={paragraphs} emptyFields={emptyFields} handleParagraphChange={handleParagraphChange} handleRemoveParagraph={handleRemoveParagraph} handleAddParagraph={handleAddParagraph} handleSave={handleSave} category={category} />
-      <LegacyWikiPageComponent page={temporaryPage} activeTab={"wiki"}/>
+      <LegacyWikiPageComponent page={temporaryPage} activeTab={"wiki"} setDecodedTitle={undefined}/>
     </div>
   );
 };
