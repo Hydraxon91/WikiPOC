@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import { getProfilePicture } from '../../../Api/wikiUserApi';
 import "../../../Styles/profilepage.css";
 
-function DisplayProfileImageElement({profilePicture, classNameProp}: {profilePicture: any; classNameProp?: any}) {
+function DisplayProfileImageElement({profilePicture, classNameProp}: {profilePicture?: string; classNameProp?: string}) {
     const defaultImageUrl = 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Default-avatar.jpg'; 
     const [imageSrc, setImageSrc] = useState(defaultImageUrl);
     const blobUrlRef = useRef(null);

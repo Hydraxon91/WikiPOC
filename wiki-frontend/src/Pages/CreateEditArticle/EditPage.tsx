@@ -8,7 +8,7 @@ import LegacyEditPageComponent from './Components/LegacyEditPageComponent';
 import { useNotification } from '../../Components/NotificationProvider';
 import './Style/articleeditor.css';
 
-const EditPage = ({ page, handleEdit, handleCreate }: any) => {
+const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?: any; handleCreate?: any }) => {
   const navigate = useNavigate();
   const [temporaryPage, setTemporaryPage] = useState(null);
   const [title, setTitle] = useState('');

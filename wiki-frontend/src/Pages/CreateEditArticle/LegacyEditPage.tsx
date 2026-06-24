@@ -5,7 +5,7 @@ import EditPageComponent from './Components/LegacyEditPageComponent';
 import LegacyWikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
 
 
-const LegacyEditPage = ({ page, handleFieldChange, handleSave, category, setCategory }: any) => {
+const LegacyEditPage = ({ page, handleFieldChange, handleSave, category, setCategory }: { page?: any; handleFieldChange?: any; handleSave?: any; category?: any; setCategory?: any }) => {
   const {styles} = useStyleContext();
   const [temporaryPage, setTemporaryPage] = useState(null);
   const [title, setTitle] = useState('');

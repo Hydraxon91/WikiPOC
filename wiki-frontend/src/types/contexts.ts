@@ -15,7 +15,7 @@ export interface StyleModel {
 export interface StyleContextType {
   styles: StyleModel;
   setStyles: Dispatch<SetStateAction<StyleModel>>;
-  updateStyles: (styles: StyleModel, logo?: any, cookies?: any) => void;
+  updateStyles: (styles: StyleModel, logo?: File | null, jwtToken?: string) => void;
 }
 
 export interface DecodedToken {

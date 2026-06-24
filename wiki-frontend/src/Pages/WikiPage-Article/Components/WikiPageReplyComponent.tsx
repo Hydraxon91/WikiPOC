@@ -3,7 +3,7 @@ import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProf
 import { useNotification } from '../../../Components/NotificationProvider';
 import '../Style/commentreply.css'
 
-const WikiPageReplyComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, replyTo, showReplyBoxRemoveIndex, index }: { user: any; page: any; jwtToken: any; handleCommentSubmit: any; postComment: any; replyTo: any; showReplyBoxRemoveIndex?: any; index?: any }) => {
+const WikiPageReplyComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, replyTo, showReplyBoxRemoveIndex, index }: { user?: any; page?: any; jwtToken?: any; handleCommentSubmit?: any; postComment?: any; replyTo?: any; showReplyBoxRemoveIndex?: any; index?: any }) => {
     const [commentText, setCommentText] = useState('');
     const { showNotification } = useNotification();
 
