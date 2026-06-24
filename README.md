@@ -26,10 +26,14 @@ WikiPOC was created to address the need for a flexible and scalable platform for
 ## Features
 
 - User-friendly interface for content creation and editing
-- Customizable styling and theming options
-- Support for multimedia content including images and videos (**W.I.P**)
-- Community-driven moderation and quality control (**W.I.P**)
-- Integration with popular authentication systems for user management (**W.I.P**)
+- Customizable styling and theming options (colors, fonts, logo)
+- Forum with topics, posts, and comments
+- User comment system on articles
+- User profile pages with editable display names and profile pictures
+- User-submitted content workflow with admin approval
+- JWT-based authentication with Admin and User roles
+- Image upload and serving
+- Responsive Wikipedia-style design
 
 ## Installation
 
@@ -51,8 +55,8 @@ To install WikiPOC, follow these steps:
    - `JWT_TOKEN_TIME`: Expiry time for JWT tokens
    - `PICTURES_PATH`: Path for pictures
    - `PICTURES_PATH_CONTAINER`: Container path for pictures
-   - `DB_PASSWORD`: Password for the database
-   - `REACT_APP_API_URL`: URL for the API endpoint
+    - `DB_PASSWORD`: Password for the database
+    - `VITE_API_URL`: URL for the API endpoint
 4. Start the services using Docker Compose: `docker-compose up`
 
 
@@ -70,7 +74,7 @@ To use WikiPOC, follow these guidelines:
 - Customize your user profile by updating your personal information and preferences.
 - Leave comments on pages to engage in discussions and provide feedback.
 
-Note: As this project is still a work in progress and I'm a beginner, I haven't tried deploying it yet to any services.
+Note: This project is actively developed and has not been deployed to a production environment yet.
 
 
 
