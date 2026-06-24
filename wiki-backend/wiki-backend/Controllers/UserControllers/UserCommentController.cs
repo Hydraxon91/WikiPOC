@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Identity;
 using wiki_backend.Models;
+using wiki_backend.Services;
 
 namespace wiki_backend.Controllers;
 
@@ -13,12 +14,12 @@ namespace wiki_backend.Controllers;
 public class UserCommentController : ControllerBase
 {
     private readonly IUserCommentRepository _commentRepository;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserAuthorizationService _authorizationService;
 
-    public UserCommentController(IUserCommentRepository commentRepository, UserManager<ApplicationUser> userManager)
+    public UserCommentController(IUserCommentRepository commentRepository, IUserAuthorizationService authorizationService)
     {
         _commentRepository = commentRepository;
-        _userManager = userManager;
+        _authorizationService = authorizationService;
     }
 
     [HttpGet("GetById/{id:guid}")]
@@ -88,14 +89,6 @@ public class UserCommentController : ControllerBase
     
     private async Task<bool> IsAuthorizedToModifyComment(string? userName, UserComment comment)
     {
-        return userName == comment.UserProfile?.UserName || await IsUserAdmin(userName);
-    }
-    
-    private async Task<bool> IsUserAdmin(string? userName)
-    {
-        if (string.IsNullOrEmpty(userName))
-            return false;
-        var user = await _userManager.FindByNameAsync(userName);
-        return user != null && await _userManager.IsInRoleAsync(user, "Admin");
+        return userName == comment.UserProfile?.UserName || await _authorizationService.IsUserAdmin(userName);
     }
 }

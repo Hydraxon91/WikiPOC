@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services;
 
 namespace IntegrationTests.ControllerTests.AuthFailureTests;
 
@@ -38,8 +39,9 @@ public class AuthFailureTests : IntegrationTestBase
         };
         DbContext.UserComments.Add(comment);
         await DbContext.SaveChangesAsync();
+        var authService = new UserAuthorizationService(userManager);
+        var controller = new UserCommentController(commentRepo, authService);
 
-        var controller = new UserCommentController(commentRepo, userManager);
         controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
         var result = await controller.DeleteComment(comment.Id);
@@ -74,7 +76,8 @@ public class AuthFailureTests : IntegrationTestBase
         DbContext.UserComments.Add(comment);
         await DbContext.SaveChangesAsync();
 
-        var controller = new UserCommentController(commentRepo, userManager);
+        var authService = new UserAuthorizationService(userManager);
+        var controller = new UserCommentController(commentRepo, authService);
         controller.ControllerContext.HttpContext = new DefaultHttpContext
         {
             User = new ClaimsPrincipal(new ClaimsIdentity(new[]

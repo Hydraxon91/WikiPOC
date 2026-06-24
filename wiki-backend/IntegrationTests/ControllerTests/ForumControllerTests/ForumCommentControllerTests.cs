@@ -12,6 +12,7 @@ using wiki_backend.Controllers.ForumControllers;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Models;
 using wiki_backend.Models.ForumModels;
+using wiki_backend.Services;
 
 namespace IntegrationTests.ControllerTests.ForumControllerTests;
 
@@ -35,7 +36,7 @@ public class ForumCommentControllerTests : IntegrationTestBase
         
         _commentRepository = new ForumCommentRepository(DbContext);
         _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        _controller = new ForumCommentController(_commentRepository, _userManager);
+        _controller = new ForumCommentController(_commentRepository, new UserAuthorizationService(_userManager));
         ResetDatabase();
         await EnsureUserRoleExistsAsync();
         _userName = $"{GetRandomizedString("testuser")}";

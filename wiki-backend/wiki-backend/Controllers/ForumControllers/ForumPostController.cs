@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Models;
 using wiki_backend.Models.ForumModels;
+using wiki_backend.Services;
 
 namespace wiki_backend.Controllers.ForumControllers;
 
@@ -13,12 +14,12 @@ namespace wiki_backend.Controllers.ForumControllers;
 public class ForumPostController : ControllerBase
 {
     private readonly IForumPostRepository _forumPostRepository;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserAuthorizationService _authorizationService;
 
-    public ForumPostController(IForumPostRepository forumPostRepository, UserManager<ApplicationUser> userManager)
+    public ForumPostController(IForumPostRepository forumPostRepository, IUserAuthorizationService authorizationService)
     {
         _forumPostRepository = forumPostRepository;
-        _userManager = userManager;
+        _authorizationService = authorizationService;
     }
     
     [HttpGet]
@@ -107,14 +108,6 @@ public class ForumPostController : ControllerBase
     
     private async Task<bool> IsAuthorizedToModifyPost(string? userName, ForumPost post)
     {
-        return userName == post.UserName || await IsUserAdmin(userName);
-    }
-    
-    private async Task<bool> IsUserAdmin(string? userName)
-    {
-        if (string.IsNullOrEmpty(userName))
-            return false;
-        var user = await _userManager.FindByNameAsync(userName);
-        return user != null && await _userManager.IsInRoleAsync(user, "Admin");
+        return userName == post.UserName || await _authorizationService.IsUserAdmin(userName);
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using wiki_backend.Models;
+﻿using wiki_backend.Models;
 
 namespace wiki_backend.DatabaseServices.Repositories;
 

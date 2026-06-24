@@ -10,6 +10,7 @@ using wiki_backend.Contracts;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services;
 using wiki_backend.Services.Authentication;
 
 namespace IntegrationTests.ControllerTests.UserControllers;
@@ -46,7 +47,7 @@ public class UserCommentControllerTests : IntegrationTestBase
     {
         var userCommentRepository = new UserCommentRepository(DbContext);
         var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        return new UserCommentController(userCommentRepository, userManager);
+        return new UserCommentController(userCommentRepository, new UserAuthorizationService(userManager));
     }
     
 

@@ -13,12 +13,19 @@ using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Identity;
 using wiki_backend.Models;
+using wiki_backend.Services;
 using wiki_backend.Services.Authentication;
 using wiki_backend.Services.Settings;
+using Serilog;
 using wiki_backend.Services.Database;
 using wiki_backend.Services.Storage;
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 // Register strongly-typed settings from environment variables
 builder.Services.Configure<StorageSettings>(options =>
@@ -76,6 +83,11 @@ var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
 // }
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
 
 app.UseHttpsRedirection();
 
@@ -148,6 +160,7 @@ void AddServices()
     builder.Services.AddScoped<IForumTopicRepository, ForumTopicRepository>();
     builder.Services.AddScoped<IForumCommentRepository, ForumCommentRepository>();
     builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
+    builder.Services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddSingleton<ITokenServices, TokenServices>();
 }

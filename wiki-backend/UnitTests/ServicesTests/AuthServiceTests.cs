@@ -21,7 +21,7 @@ public class AuthServiceTests
     public void Setup()
     {
         var store = new Mock<IUserStore<ApplicationUser>>();
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null, null, null, null, null, null, null, null);
+        _userManagerMock = new Mock<UserManager<ApplicationUser>>(store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
         _tokenServiceMock = new Mock<ITokenServices>();
 
         var options = new DbContextOptionsBuilder<WikiDbContext>()

@@ -10,6 +10,7 @@ using wiki_backend.Controllers.ForumControllers;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Models;
 using wiki_backend.Models.ForumModels;
+using wiki_backend.Services;
 
 namespace IntegrationTests.ControllerTests.ForumControllerTests;
 
@@ -33,7 +34,7 @@ public class ForumPostControllerTests : IntegrationTestBase
             
             _forumPostRepository = new ForumPostRepository(DbContext);
             _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            _controller = new ForumPostController(_forumPostRepository, _userManager);
+            _controller = new ForumPostController(_forumPostRepository, new UserAuthorizationService(_userManager));
             ResetDatabase();
             await EnsureUserRoleExistsAsync();
             _userName = $"{GetRandomizedString("testuser")}";
