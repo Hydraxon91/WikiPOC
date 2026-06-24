@@ -1,34 +1,22 @@
-﻿# Use the official Node.js image as the base image
-FROM node:16
+﻿FROM node:22
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+RUN npm install --legacy-peer-deps
 
-# Copy the rest of the application code to the working directory
 COPY . .
 
-# 💡 CRITICAL: Catch the argument passed by docker-compose
 ARG VITE_API_URL
-# 💡 CRITICAL: Turn it into an environment variable for the build process
 ENV VITE_API_URL=$VITE_API_URL
 
-# Build the React app
 RUN npm run build
 
-# Use the official Nginx image to serve the app
 FROM nginx:alpine
 
-# Copy the build output to the Nginx HTML directory
-COPY --from=0 /app/build /usr/share/nginx/html
+COPY --from=0 /app/dist /usr/share/nginx/html
 
-# Expose port 80
 EXPOSE 80
 
-# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

@@ -40,6 +40,6 @@
       context: ./wiki-frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_URL: ${REACT_APP_API_URL}
+        VITE_API_URL: ${VITE_API_URL}
     ports:
       - "3000:80"
