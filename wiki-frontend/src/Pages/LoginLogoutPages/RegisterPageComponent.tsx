@@ -20,7 +20,8 @@ export default function RegisterPageComponent(){
     const navigate = useNavigate();
     
 
-    const HandleSubmit = () => {
+    const HandleSubmit = (e) => {
+        e.preventDefault();
         handleRegisterSubmit(email, username, password, "User")
             .then(response => {
                 // Handle the response here
@@ -70,7 +71,7 @@ export default function RegisterPageComponent(){
                 </>
             )}
             <div>
-                <form>
+                <form onSubmit={HandleSubmit}>
                     <h2 className="register-text">Register</h2>
                     <div className="inputboxholder">
                         <div className={emailInputClass}>
@@ -90,7 +91,7 @@ export default function RegisterPageComponent(){
                         </div>
                     
                     </div>
-                    <button type="button" className="register-button" onClick={HandleSubmit}>Register</button>
+                    <button type="submit" className="register-button">Register</button>
                     <div className="login">
                         <p>
                             Already have an account? 

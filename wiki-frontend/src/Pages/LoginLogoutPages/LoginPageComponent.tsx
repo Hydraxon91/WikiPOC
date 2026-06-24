@@ -21,7 +21,8 @@ export default function LoginPageComponent({handleLogin}){
         handleLogin(jwt_token, expirationDate);
     }
 
-    const HandleSubmit = () => {
+    const HandleSubmit = (e) => {
+        e.preventDefault();
         handleLoginSubmit(email, password)
             .then(response => {
                 setResponse(response);
@@ -61,7 +62,7 @@ export default function LoginPageComponent({handleLogin}){
                 </>
             )}
             <div>
-                <form>
+                <form onSubmit={HandleSubmit}>
                     <h2 className="login-text">Login</h2>
                     <div className="login-inputboxholder">
                         <div className={emailInputClass}>
@@ -78,7 +79,7 @@ export default function LoginPageComponent({handleLogin}){
                     <div className="forget">
                             <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"> Forgot Password?</a>
                     </div>
-                    <button type="button" className="login-button" onClick={HandleSubmit}>Login</button>
+                    <button type="submit" className="login-button">Login</button>
                     <div className="register">
                         <p>
                             Don't have an account? 

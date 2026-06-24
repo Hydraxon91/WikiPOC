@@ -46,7 +46,7 @@ const ProfileEditorElement = ({user, cookies}) => {
       },[user])
 
     return (
-        <form className="profile-container">
+        <form className="profile-container" onSubmit={handleSubmit}>
             <div className="profilepage-profilepic">
                 <DisplayProfileImageElement profilePicture={profilePicture} />
              </div>
@@ -59,13 +59,13 @@ const ProfileEditorElement = ({user, cookies}) => {
                   onChange={handleProfilePictureFileChange}
                 />
              </div>
-             
+              
              <div className="user-info"><p>Username: {user?.userName}</p></div>
              <div className="user-info"> 
                 <p>Display name: </p>
                 <input className="edit-displayname" type="text" value={displayName} onChange={handleDisplayNameChange}></input>
               </div>
-             <button className="edit-profile-button" onClick={handleSubmit}>Submit Changes</button>
+             <button type="submit" className="edit-profile-button">Submit Changes</button>
         </form>
     );
 }
