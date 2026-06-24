@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Push Images
 
 on:
   push:
@@ -43,31 +43,3 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/wiki-frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-24.04
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Copy docker-compose to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: docker-compose.yml
-          target: ~/wikipoc
-
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.1.0
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            cd ~/wikipoc
-            docker compose pull
-            docker compose up -d --remove-orphans
-            docker image prune -f
