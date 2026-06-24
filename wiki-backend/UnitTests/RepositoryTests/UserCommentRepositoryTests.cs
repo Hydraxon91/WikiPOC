@@ -21,7 +21,7 @@ public class UserCommentRepositoryTests
             .Options;
 
         // Use AddDbContext to configure the WikiDbContext
-        _wikiDbContext = new WikiDbContext(options, configuration: null); 
+        _wikiDbContext = new WikiDbContext(options, configuration: null!); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
         _userCommentRepository = new UserCommentRepository(_wikiDbContext);
@@ -57,6 +57,7 @@ public class UserCommentRepositoryTests
 
         // Assert
         Assert.That(result, Is.Not.Null);
+        Assert.That(result.UserProfile, Is.Not.Null);
         Assert.That(result.Id, Is.EqualTo(testUserComment.Id));
         Assert.That(result.Content, Is.EqualTo(testUserComment.Content));
         Assert.That(result.UserProfileId, Is.EqualTo(testUserComment.UserProfileId));

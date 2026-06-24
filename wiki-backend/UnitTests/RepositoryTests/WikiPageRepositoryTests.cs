@@ -27,7 +27,7 @@ public class WikiPageRepositoryTests
             .Options;
 
         // Use AddDbContext to configure the WikiDbContext
-        _wikiDbContext = new WikiDbContext(options, configuration: null); 
+        _wikiDbContext = new WikiDbContext(options, configuration: null!); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
         _wikiPageRepository = new WikiPageRepository(_wikiDbContext);
@@ -86,6 +86,7 @@ public class WikiPageRepositoryTests
 
         // Assert
         Assert.That(result, Is.Not.Null);
+        Assert.That(result.WikiPage, Is.Not.Null);
         Assert.That(result.WikiPage.Id, Is.EqualTo(testData.Id));
         Assert.That(result.WikiPage.Title, Is.EqualTo(testData.Title));
         Assert.That(result.WikiPage.RoleNote, Is.EqualTo(testData.RoleNote));
@@ -153,6 +154,7 @@ public class WikiPageRepositoryTests
 
         // Assert
         Assert.That(result, Is.Not.Null);
+        Assert.That(result.WikiPage, Is.Not.Null);
         Assert.That(result.WikiPage.Id, Is.EqualTo(expectedWikiPage.Id));
         Assert.That(result.WikiPage.Title, Is.EqualTo(expectedWikiPage.Title));
     }
@@ -508,7 +510,7 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
         var result = await _wikiPageRepository.GetSubmittedPageTitlesAndIdAsync();
 
         // Assert
-        var expected = submittedPages.Where(page => page.IsNewPage).Select(page => new Tuple<string, Guid>(page.Title, page.Id));
+        var expected = submittedPages.Where(page => page.IsNewPage).Select(page => new Tuple<string, Guid>(page.Title!, page.Id));
         Assert.That(result, Is.EquivalentTo(expected));
     }
     
@@ -550,6 +552,7 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
 
         // Assert
         Assert.That(result, Is.Not.Null);
+        Assert.That(result.UserSubmittedWikiPage, Is.Not.Null);
         Assert.That(result.UserSubmittedWikiPage.Id, Is.EqualTo(userSubmittedPage.Id));
         Assert.That(result.UserSubmittedWikiPage.Title, Is.EqualTo(userSubmittedPage.Title));
         Assert.That(result.UserSubmittedWikiPage.Paragraphs, Is.EqualTo(userSubmittedPage.Paragraphs));
@@ -574,7 +577,7 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
         var result = await _wikiPageRepository.GetSubmittedUpdateTitlesAndIdAsync();
 
         // Assert
-        var expected = submittedUpdatePages.Where(page => !page.IsNewPage).Select(page => new Tuple<string, Guid>(page.Title, page.Id));
+        var expected = submittedUpdatePages.Where(page => !page.IsNewPage).Select(page => new Tuple<string, Guid>(page.Title!, page.Id));
         Assert.That(result, Is.EquivalentTo(expected));
     }
     
@@ -605,6 +608,7 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
 
         // Assert
         Assert.That(result, Is.Not.Null);
+        Assert.That(result.UserSubmittedWikiPage, Is.Not.Null);
         Assert.That(result.UserSubmittedWikiPage.Id, Is.EqualTo(userSubmittedUpdatePage.Id));
         Assert.That(result.UserSubmittedWikiPage.Title, Is.EqualTo(userSubmittedUpdatePage.Title));
         Assert.That(result.UserSubmittedWikiPage.Paragraphs, Is.EqualTo(userSubmittedUpdatePage.Paragraphs));

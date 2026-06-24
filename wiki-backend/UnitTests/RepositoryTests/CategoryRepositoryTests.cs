@@ -19,7 +19,7 @@ public class CategoryRepositoryTests
             .UseInMemoryDatabase(databaseName: databaseName)
             .Options;
 
-        _wikiDbContext = new WikiDbContext(options, configuration: null);
+        _wikiDbContext = new WikiDbContext(options, configuration: null!);
         _wikiDbContext.Database.EnsureCreated();
         _wikiDbContext.Database.EnsureDeleted();
         _categoryRepository = new CategoryRepository(_wikiDbContext);

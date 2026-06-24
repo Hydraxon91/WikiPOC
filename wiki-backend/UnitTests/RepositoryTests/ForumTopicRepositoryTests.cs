@@ -22,7 +22,7 @@ namespace UnitTests.RepositoryTests
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            _wikiDbContext = new WikiDbContext(options, configuration: null);
+            _wikiDbContext = new WikiDbContext(options, configuration: null!);
             _wikiDbContext.Database.EnsureCreated();
             _wikiDbContext.Database.EnsureDeleted();
             _forumTopicRepository = new ForumTopicRepository(_wikiDbContext);

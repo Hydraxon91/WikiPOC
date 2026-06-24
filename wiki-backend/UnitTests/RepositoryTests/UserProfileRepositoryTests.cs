@@ -22,7 +22,7 @@ public class UserProfileRepositoryTests
             .Options;
 
         // Use AddDbContext to configure the WikiDbContext
-        _wikiDbContext = new WikiDbContext(options, configuration: null); 
+        _wikiDbContext = new WikiDbContext(options, configuration: null!); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
         _userProfileRepository = new UserProfileRepository(_wikiDbContext);

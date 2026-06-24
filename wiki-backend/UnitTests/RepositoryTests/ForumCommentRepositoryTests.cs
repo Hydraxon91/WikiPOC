@@ -23,7 +23,7 @@ namespace UnitTests.RepositoryTests
                 .UseInMemoryDatabase(databaseName: databaseName)
                 .Options;
 
-            _wikiDbContext = new WikiDbContext(options, configuration: null);
+            _wikiDbContext = new WikiDbContext(options, configuration: null!);
             _wikiDbContext.Database.EnsureCreated();
             _wikiDbContext.Database.EnsureDeleted();
             _forumCommentRepository = new ForumCommentRepository(_wikiDbContext);
