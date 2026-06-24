@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Bogus.DataSets;
 
 namespace wiki_backend.Models;
 
@@ -30,6 +29,6 @@ public class WikiPageWithImagesInputModel
     
     public override string ToString()
     {
-        return $"Title: {Title}, SiteSub: {SiteSub}, RoleNote: {RoleNote}, Content: {Content}, Category: {CategoryId}, PostDate: {PostDate}, LastUpdateDate: {LastUpdateDate}, LegacyWikiPage: {LegacyWikiPage}, WikiPageId: {WikiPageId}, SubmittedBy: {SubmittedBy}, Approved: {Approved}, IsNewPage: {IsNewPage}, Images: {Images?.Count ?? 0} Images Type: {typeof(Images)}";
+        return $"Title: {Title}, SiteSub: {SiteSub}, RoleNote: {RoleNote}, Content: {Content}, Category: {CategoryId}, PostDate: {PostDate}, LastUpdateDate: {LastUpdateDate}, LegacyWikiPage: {LegacyWikiPage}, WikiPageId: {WikiPageId}, SubmittedBy: {SubmittedBy}, Approved: {Approved}, IsNewPage: {IsNewPage}, Images: {Images?.Count ?? 0}";
     }
 }
