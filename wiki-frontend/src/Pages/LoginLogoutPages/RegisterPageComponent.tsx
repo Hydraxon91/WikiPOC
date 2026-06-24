@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import SuccessfullElement from "./SuccessfullElement";
 import { handleRegisterSubmit } from "../../Api/wikiAuthApi";
 import { useStyleContext } from '../../Components/contexts/StyleContext';
+import { useNotification } from '../../Components/NotificationProvider';
 
 export default function RegisterPageComponent(){
     const { styles } = useStyleContext();
