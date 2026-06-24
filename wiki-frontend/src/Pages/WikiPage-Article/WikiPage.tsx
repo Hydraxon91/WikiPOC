@@ -6,7 +6,7 @@ import WikiPageCommentsComponent from './Components/WikiPageCommentsComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import '../../Styles/wikipage.css';
 
-const WikiPage = ({page: wikipage, setDecodedTitle, cookies, disableNavbar = false }) => {
+const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = false }) => {
     const { styles } = useStyleContext();
     const { title } = useParams();
     const decodedTitle = decodeURIComponent(title);
@@ -69,7 +69,7 @@ const WikiPage = ({page: wikipage, setDecodedTitle, cookies, disableNavbar = fal
                 
                 <WikiPageCommentsComponent
                     page={page}
-                    cookies={cookies}
+                    jwtToken={jwtToken}
                     activeTab={activeTab}
                 />
             </div>

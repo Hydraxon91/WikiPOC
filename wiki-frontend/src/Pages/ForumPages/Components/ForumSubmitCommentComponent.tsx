@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import "../Styles/forumsubmintcommentcomponent.css"
 
-const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit, postComment, togglePopupVisibility, quotedPostId  }) => {
+const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, togglePopupVisibility, quotedPostId  }) => {
     const [commentText, setCommentText] = useState('');
 
     const handleCommentChange = (event) => {
@@ -22,7 +22,7 @@ const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit,
             isEdited: false,
         };
         try {
-            await postComment(newComment, cookies, user);
+            await postComment(newComment, jwtToken, user);
             setCommentText('');
             (newComment as any).userProfile = user;
             handleCommentSubmit(newComment);

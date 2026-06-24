@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import WikiPageReplyComponent from './WikiPageReplyComponent';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 
-const UserCommentComponent = ({ comment, user, cookies, handleCommentSubmit, postComment, page, index, showRepliesIndex, toggleRepliesIndex }) => {
+const UserCommentComponent = ({ comment, user, jwtToken, handleCommentSubmit, postComment, page, index, showRepliesIndex, toggleRepliesIndex }) => {
     const [editingCommentIndex, setEditingCommentIndex] = useState(null);
     const [editedComment, setEditedComment] = useState("");
     const [showReplyBox, setShowReplyBox] = useState(false);
@@ -55,7 +55,7 @@ const UserCommentComponent = ({ comment, user, cookies, handleCommentSubmit, pos
                     <a href="#" onClick={() => setShowReplyBox(!showReplyBox)}> Reply</a>
                 </div>)}
                 {showReplyBox && (
-                    <WikiPageReplyComponent user={user} page={page} cookies={cookies} handleCommentSubmit={handleCommentSubmit} postComment={postComment} replyTo={comment} />
+                    <WikiPageReplyComponent user={user} page={page} jwtToken={jwtToken} handleCommentSubmit={handleCommentSubmit} postComment={postComment} replyTo={comment} />
                 )}
                 {comment.replies && comment.replies.length > 0 &&
                     <a href="#" onClick={() => toggleRepliesIndex(index)}>{showRepliesIndex[index] ? "Hide Replies" : "Show Replies"}</a>

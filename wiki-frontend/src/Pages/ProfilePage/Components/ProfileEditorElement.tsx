@@ -4,7 +4,7 @@ import DisplayProfileImageElement from "./DisplayProfileImageElement"
 import "../../../Styles/profilepage.css";
 import { postProfileEdit } from "../../../Api/wikiUserApi";
 
-const ProfileEditorElement = ({user, cookies}) => {
+const ProfileEditorElement = ({user, jwtToken}) => {
     const[profilePicture, setProfilePicture] = useState(null);
     const[displayName, setDisplayName] = useState(null);
     const [profilePictureFile, setProfilePictureFile] = useState(null);
@@ -28,7 +28,7 @@ const ProfileEditorElement = ({user, cookies}) => {
       }
 
       try {
-        await postProfileEdit(newProfile, profilePictureFile, cookies);
+        await postProfileEdit(newProfile, profilePictureFile, jwtToken);
         alert('Successfully submitted profile update');
         navigate(`/profile/${newProfile.userName}`)
     } catch (error) {

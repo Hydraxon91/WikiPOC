@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 
-const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit, postComment }) => {
+const WikiPageSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment }) => {
     const [commentText, setCommentText] = useState('');
 
     const handleCommentChange = (event) => {
@@ -21,7 +21,7 @@ const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubm
         };
 
         try {
-            await postComment(newComment, cookies, user);
+            await postComment(newComment, jwtToken, user);
             setCommentText('');
             (newComment as any).userProfile = user;
             handleCommentSubmit(newComment);

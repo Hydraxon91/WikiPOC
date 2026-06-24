@@ -8,7 +8,7 @@ import { useStyleContext } from '../../Components/contexts/StyleContext';
 import Breadcrumbs from './Components/Breadcrumbs';
 import './Styles/forumlandingpage.css';
 
-const ForumPage = ({ cookies }) => {
+const ForumPage = ({ jwtToken }) => {
     const [topic, setTopic] = useState<any>(null);
     const { slug } = useParams();
     const { styles } = useStyleContext();
@@ -89,7 +89,7 @@ const ForumPage = ({ cookies }) => {
     return (
         <div className='forum-mainsection'>
             <Breadcrumbs />
-            <ForumPostButton buttonTitle="New Topic" linkTo={`/forum/${slug}/create-topic`} cookies={cookies} />
+            <ForumPostButton buttonTitle="New Topic" linkTo={`/forum/${slug}/create-topic`} jwtToken={jwtToken} />
             <div className="forum-grid article" style={{ backgroundColor: styles.articleColor }}>
                 <div className="grid-header">
                     <div className="header-cell">Topics</div>

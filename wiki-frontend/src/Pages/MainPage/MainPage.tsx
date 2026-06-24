@@ -7,7 +7,7 @@ import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { getWikiPageTitles } from '../../Api/wikiApi';
 
-const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, categories }) => {
+const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, categories }) => {
   const location = useLocation();
   const { styles }  = useStyleContext();
   const { updateUser } = useUserContext();
@@ -45,7 +45,7 @@ const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, cate
       <div>
         <HeaderComponent userName={userName} userRole={userRole}/>
         {/* <Breadcrumbs/> */}
-        <WikiList handleLogout={handleLogout} cookies={cookies} categories={categories}/>
+        <WikiList handleLogout={handleLogout} jwtToken={jwtToken} categories={categories}/>
         <div className="mainsection">
           {/* <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div> */}
           <div>

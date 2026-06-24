@@ -127,9 +127,9 @@ function App() {
         <Router>
           <StyleProvider>
             <Routes>
-              <Route path="/" element={<MainPage decodedToken={decodedToken} handleLogout={handleLogout} cookies={cookies} setWikiPageTitles={setWikiPageTitles} categories={categories} />}>
+              <Route path="/" element={<MainPage decodedToken={decodedToken} handleLogout={handleLogout} jwtToken={cookies} setWikiPageTitles={setWikiPageTitles} categories={categories} />}>
                 <Route path="/" element={<HomeComponent pages={wikiPageTitles} categories={categories} />} />
-                <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} cookies={cookies["jwt_token"]} />}/>
+                <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} jwtToken={cookies["jwt_token"]} />}/>
                 <Route path="/page/:title/edit" 
                   element={
                   <ProtectedRoute roles={['User', 'Admin']}>
@@ -154,7 +154,7 @@ function App() {
                 } />
                 <Route path="/edit-wiki" element={
                   <ProtectedRoute roles={['Admin']} >
-                    <EditStylePage cookies={cookies["jwt_token"]}/>
+                    <EditStylePage jwtToken={cookies["jwt_token"]}/>
                   </ProtectedRoute>
                 } />
                 <Route path="/login" element={
@@ -191,23 +191,28 @@ function App() {
                 <Route path="/profile/:username" element={<ProfilePage />} />
                 <Route path="/profile/edit/:username" element={
                   <ProtectedRoute roles={['User', 'Admin']}>
-                    <EditProfilePage cookies={cookies["jwt_token"]}/>
+                    <EditProfilePage jwtToken={cookies["jwt_token"]}
+/>
                   </ProtectedRoute>
                 } />
                 <Route path="/categories/edit" element={
                   <ProtectedRoute  roles={['Admin']} >
-                    <EditCategoriesPage setAppCategories={setCategories} cookies={cookies["jwt_token"]}/>
+                    <EditCategoriesPage setAppCategories={setCategories} jwtToken={cookies["jwt_token"]}
+/>
                   </ProtectedRoute>
                 }/>
                 <Route path="/categories/:category" element={<CategoryPageComponent pages={wikiPageTitles} categories={categories} />} />
                 <Route path="/forum" element={<ForumLandingPage />} />
-                <Route path="/forum/:slug" element={<ForumPage cookies={cookies["jwt_token"]} />} />
+                <Route path="/forum/:slug" element={<ForumPage jwtToken={cookies["jwt_token"]}
+ />} />
                 <Route path="/forum/:slug/create-topic" element={
                   <ProtectedRoute  roles={['Admin']}>
-                    <CreateForumTopic cookies={cookies["jwt_token"]}/>
+                    <CreateForumTopic jwtToken={cookies["jwt_token"]}
+/>
                   </ProtectedRoute>
                 }/>
-                <Route path="/forum/:slug/:postSlug" element={<ForumPost cookies={cookies["jwt_token"]} />} />
+                <Route path="/forum/:slug/:postSlug" element={<ForumPost jwtToken={cookies["jwt_token"]}
+ />} />
               </Route>
             </Routes>
           </StyleProvider>

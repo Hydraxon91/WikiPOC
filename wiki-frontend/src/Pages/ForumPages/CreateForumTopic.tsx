@@ -9,7 +9,7 @@ import { useStyleContext } from '../../Components/contexts/StyleContext';
 import "./Styles/createforumtopic.css"
 import Breadcrumbs from './Components/Breadcrumbs';
 
-const CreateForumTopic = ({ cookies }) => {
+const CreateForumTopic = ({ jwtToken }) => {
     const {decodedTokenContext} = useUserContext();
     const { slug } = useParams();
     const [forumTopic, setForumTopic] = useState<any>(null);
@@ -76,7 +76,7 @@ const CreateForumTopic = ({ cookies }) => {
         };
 
         try {
-            await createForumPost(forumPost, cookies);
+            await createForumPost(forumPost, jwtToken);
             navigate(`/forum/${slug}`); // Redirect to forum page after successful creation
         } catch (err) {
             setError(err.message);

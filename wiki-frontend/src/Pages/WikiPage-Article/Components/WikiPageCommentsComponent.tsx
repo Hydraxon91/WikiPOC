@@ -4,7 +4,7 @@ import { getUserProfileByUsername, postEditedComment, postComment } from '../../
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
 import UserCommentComponent from './UserCommentComponent';
 
-const WikiPageCommentsComponent = ({ page, cookies, activeTab }) => {
+const WikiPageCommentsComponent = ({ page, jwtToken, activeTab }) => {
     const { decodedTokenContext } = useUserContext();
     const [user, setUser] = useState();
     const [currPage, setCurrPage] = useState(page);
@@ -41,13 +41,13 @@ const WikiPageCommentsComponent = ({ page, cookies, activeTab }) => {
             {currPage && (
                 <div>
                     <h3>Comments</h3>
-                    {user && <WikiPageSubmitCommentComponent user={user} page={currPage} cookies={cookies} handleCommentSubmit={handleCommentSubmit} postComment={postComment} />}
+                    {user && <WikiPageSubmitCommentComponent user={user} page={currPage} jwtToken={jwtToken} handleCommentSubmit={handleCommentSubmit} postComment={postComment} />}
                     {currPage.comments.map((comment, index) => (
                         !comment.replyToCommentId && <UserCommentComponent
                             key={comment.id}
                             comment={comment}
                             user={user}
-                            cookies={cookies}
+                            jwtToken={jwtToken}
                             handleCommentSubmit={handleCommentSubmit}
                             postComment={postComment}
                             page={page}

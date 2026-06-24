@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStyleContext } from "../../Components/contexts/StyleContext";
 
-const EditStylePage = ({cookies}) =>{
+const EditStylePage = ({jwtToken}) =>{
     const navigate = useNavigate();
     const { styles, updateStyles, setStyles } = useStyleContext();
 
@@ -39,7 +39,7 @@ const EditStylePage = ({cookies}) =>{
       };
 
     const handleUpdate = () => {
-        updateStyles(newStyles, logoPicture, cookies);
+        updateStyles(newStyles, logoPicture, jwtToken);
         setStyles(newStyles);
         setBackupStyles(prevStyles => ({ ...prevStyles, ...newStyles }));
         setLeave(true);

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getNewPageTitles, getUpdatePageTitles } from "../../../Api/wikiApi";
 
-const WikiList = ({ handleLogout, cookies, categories}) => {
+const WikiList = ({ handleLogout, jwtToken, categories}) => {
   const {decodedTokenContext, updateUser} = useUserContext();
   const [role, setRole] = useState(null);
   const [pagesWaitingForApproval, setPagesWaitingForApproval] = useState();
@@ -15,8 +15,8 @@ const WikiList = ({ handleLogout, cookies, categories}) => {
       var role = decodedTokenContext["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
       setRole(role);
       if (role === "Admin") {
-        fetchNewPageTitles(cookies["jwt_token"]);
-        fetchUpdatePageTitles(cookies["jwt_token"]);
+        fetchNewPageTitles(jwtToken["jwt_token"]);
+        fetchUpdatePageTitles(jwtToken["jwt_token"]);
       }
     }
   }, [decodedTokenContext]);

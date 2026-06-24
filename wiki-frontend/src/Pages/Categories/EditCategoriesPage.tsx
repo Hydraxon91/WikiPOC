@@ -3,7 +3,7 @@ import { addCategory, deleteCategory, fetchCategories } from '../../Api/wikiApi'
 import './Style/categorypagestyle.css';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 
-const EditCategoriesPage = ({ setAppCategories, cookies }) => {
+const EditCategoriesPage = ({ setAppCategories, jwtToken }) => {
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState('');
     const {styles} = useStyleContext();
@@ -25,7 +25,7 @@ const EditCategoriesPage = ({ setAppCategories, cookies }) => {
   
     const handleAddCategory = async () => {
         try{
-            const addedCategory = await addCategory(newCategory, cookies);
+            const addedCategory = await addCategory(newCategory, jwtToken);
             if (addedCategory) {
 
                 const updatedCategories = [...categories, addedCategory];
@@ -43,7 +43,7 @@ const EditCategoriesPage = ({ setAppCategories, cookies }) => {
     const handleDeleteCategory = async (category) => {
         try {
             const categoryId = category.id; 
-            await deleteCategory(categoryId, cookies);
+            await deleteCategory(categoryId, jwtToken);
 
             const updatedCategories = categories.filter(cat => cat.id !== categoryId);
             const updatedCategorieNames = updatedCategories.map(category => category.categoryName);

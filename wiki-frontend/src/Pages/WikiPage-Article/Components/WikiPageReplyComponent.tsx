@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import '../Style/commentreply.css'
 
-const WikiPageReplyComponent = ({ user, page, cookies, handleCommentSubmit, postComment, replyTo, showReplyBoxRemoveIndex, index }: { user: any; page: any; cookies: any; handleCommentSubmit: any; postComment: any; replyTo: any; showReplyBoxRemoveIndex?: any; index?: any }) => {
+const WikiPageReplyComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, replyTo, showReplyBoxRemoveIndex, index }: { user: any; page: any; jwtToken: any; handleCommentSubmit: any; postComment: any; replyTo: any; showReplyBoxRemoveIndex?: any; index?: any }) => {
     const [commentText, setCommentText] = useState('');
 
     const handleCommentChange = (event) => {
@@ -21,7 +21,7 @@ const WikiPageReplyComponent = ({ user, page, cookies, handleCommentSubmit, post
         };
 
         try {
-            await postComment(newComment, cookies, user);
+            await postComment(newComment, jwtToken, user);
             setCommentText('');
             (newComment as any).userProfile = user;
             handleCommentSubmit(newComment);

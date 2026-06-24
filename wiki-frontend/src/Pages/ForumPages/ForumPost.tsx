@@ -9,7 +9,7 @@ import Breadcrumbs from './Components/Breadcrumbs';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import "./Styles/forumpost.css"
 
-const ForumPost = ({cookies}) => {
+const ForumPost = ({jwtToken}) => {
     const [post, setPost] = useState(null);
     const { postSlug } = useParams();
     const {styles} = useStyleContext();
@@ -30,7 +30,7 @@ const ForumPost = ({cookies}) => {
     }, [postSlug]);
 
     const togglePopupVisibility = () => {
-        if (!cookies) {
+        if (!jwtToken) {
             alert('You need to log in to post a reply.');
         } else {
             setIsPopupVisible(!isPopupVisible);
@@ -38,7 +38,7 @@ const ForumPost = ({cookies}) => {
     };
 
     const setQuotedPostMethod = (comment) => {
-        if (!cookies) {
+        if (!jwtToken) {
             alert('You need to log in to post a reply.');
         } else {
             setQuotedPostId(comment.id);
@@ -56,7 +56,7 @@ const ForumPost = ({cookies}) => {
             <button className="modular-button" style={{backgroundColor: styles.articleColor}} onClick={togglePopupVisibility}>
                 Post Reply
             </button>
-            <ForumCommentComponent post={post} cookies={cookies} isPopupVisible={isPopupVisible} 
+            <ForumCommentComponent post={post} jwtToken={jwtToken} isPopupVisible={isPopupVisible} 
                 togglePopupVisibility={togglePopupVisibility} quotedPostId={quotedPostId} setQuotedPostMethod={setQuotedPostMethod}
             />
         </div>
