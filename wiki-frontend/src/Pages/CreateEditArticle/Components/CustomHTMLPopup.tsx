@@ -77,9 +77,7 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
 
 
   const handleConfirm = () => {
-    // Create the HTML content string with placeholders
-    const htmlContent = `||${orientation}//<a href="${imageUrl}" rel="noopener noreferrer" target="_blank">ImageRef</a>##<a href='${text}' rel="noopener noreferrer" target="_blank">TextRef</a>||`;
-    // Insert the processed HTML content
+    const htmlContent = `||${orientation}//<a href="${imageUrl}" rel="noopener noreferrer" target="_blank">ImageRef</a>##${text}||`;
     insertCustomHTML(htmlContent);
     togglePopupVisibility();
   };

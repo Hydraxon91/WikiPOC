@@ -46,13 +46,13 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
         <HeaderComponent userName={userName} userRole={userRole}/>
         {/* <Breadcrumbs/> */}
         <WikiList handleLogout={handleLogout} jwtToken={jwtToken} categories={categories}/>
-        <div className="mainsection">
+        <div className="mainsection" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 120px)' }}>
           {/* <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div> */}
-          <div>
+          <div style={{ flex: 1 }}>
             {/* Render children, which will be the specific WikiPage component */}
             <Outlet />
           </div>
-          <div className="pagefooter" style={{color: styles.footerListTextColor}}>
+          <div className="pagefooter" style={{color: styles.footerListTextColor, marginTop: 'auto'}}>
             This is a footer | Template by <a href="http://html5-templates.com/" target="_blank" rel="nofollow" style={{color: styles.footerListLinkTextColor}}>HTML5 Templates</a>
             <div className="footerlinks" >
               <a href="#" style={{color: styles.footerListLinkTextColor}}>Privacy policy</a> 
