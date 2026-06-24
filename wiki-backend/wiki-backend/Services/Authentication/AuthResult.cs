@@ -6,5 +6,5 @@ public record AuthResult(
     string UserName,
     string Token)
 {
-    public readonly Dictionary<string, string> ErrorMessages = new();
+    public Dictionary<string, string> ErrorMessages { get; init; } = new();
 }

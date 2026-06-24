@@ -528,7 +528,7 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
         Assert.That(okResult, Is.Not.Null);
-        var titlesAndIds = okResult.Value as IEnumerable<Tuple<string, Guid>>;
+        var titlesAndIds = okResult.Value as IEnumerable<WikiPageTitleEntry>;
         Assert.That(titlesAndIds, Is.Not.Null);
         // Assert.IsTrue(titlesAndIds.Value.Any());
     }
@@ -554,7 +554,7 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
         Assert.That(okResult, Is.Not.Null);
-        var titlesAndIds = okResult.Value as IEnumerable<Tuple<string, Guid>>;
+        var titlesAndIds = okResult.Value as IEnumerable<WikiPageTitleEntry>;
         Assert.That(titlesAndIds, Is.Not.Null);
         Assert.That(titlesAndIds.Count(), Is.EqualTo(0));
         // Assert.IsTrue(titlesAndIds.Value.Any());

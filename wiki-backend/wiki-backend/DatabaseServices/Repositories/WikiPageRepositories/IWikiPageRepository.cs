@@ -16,8 +16,8 @@ public interface IWikiPageRepository
     Task UserSubmittedUpdateAsync(UserSubmittedWikiPage updatedWikiPage, ICollection<ImageFormModel> images);
     Task<bool> DeleteAsync(Guid id);
     Task<bool> DeleteUserSubmittedAsync(Guid id, Guid? newId);
-    Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedPageTitlesAndIdAsync();
+    Task<IEnumerable<WikiPageTitleEntry>> GetSubmittedPageTitlesAndIdAsync();
     Task<WPWithImagesOutputModel?> GetSubmittedPageByIdAsync(Guid id);
-    Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedUpdateTitlesAndIdAsync();
+    Task<IEnumerable<WikiPageTitleEntry>> GetSubmittedUpdateTitlesAndIdAsync();
     Task<WPWithImagesOutputModel?> GetSubmittedUpdateByIdAsync(Guid id);
 }

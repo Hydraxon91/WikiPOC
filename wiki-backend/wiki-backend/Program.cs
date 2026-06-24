@@ -26,11 +26,17 @@ builder.Services.Configure<StorageSettings>(options =>
     options.PicturesPath = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER") ?? string.Empty;
 });
 
+var jwtSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
+if (string.IsNullOrEmpty(jwtSigningKey) || Encoding.UTF8.GetByteCount(jwtSigningKey) < 32)
+{
+    throw new InvalidOperationException("JWT_ISSUER_SIGNING_KEY must be at least 32 characters long for HMAC-SHA256.");
+}
+
 builder.Services.Configure<JwtSettings>(options =>
 {
     options.ValidIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER") ?? string.Empty;
     options.ValidAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE") ?? string.Empty;
-    options.IssuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY") ?? string.Empty;
+    options.IssuerSigningKey = jwtSigningKey ?? string.Empty;
     options.TokenTime = int.TryParse(Environment.GetEnvironmentVariable("JWT_TOKEN_TIME"), out var time) ? time : 30;
 });
 
@@ -77,8 +83,6 @@ app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseStaticFiles();
 
 app.MapControllers();
 

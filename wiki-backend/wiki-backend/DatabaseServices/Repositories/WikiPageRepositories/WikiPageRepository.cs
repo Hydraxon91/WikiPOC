@@ -270,15 +270,15 @@ public class WikiPageRepository : IWikiPageRepository
         return false;
     }
     
-    public async Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedPageTitlesAndIdAsync()
+    public async Task<IEnumerable<WikiPageTitleEntry>> GetSubmittedPageTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage && !page.Approved).Select(page => new Tuple<string, Guid>(page.Title!, page.Id)).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage && !page.Approved).Select(page => new WikiPageTitleEntry(page.Title!, page.Id)).ToListAsync();
     }
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedPageByIdAsync(Guid id)
     {
         var wikiPage = await _context.UserSubmittedWikiPages
-            .Where((page => page.IsNewPage==true))
+            .Where(page => page.IsNewPage)
             .Include(p => p.Paragraphs)
             .Include(wp => wp.Comments)
             .ThenInclude(uc => uc.UserProfile)
@@ -297,15 +297,15 @@ public class WikiPageRepository : IWikiPageRepository
         return null;
     }
     
-    public async Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedUpdateTitlesAndIdAsync()
+    public async Task<IEnumerable<WikiPageTitleEntry>> GetSubmittedUpdateTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false && !page.Approved).Select(page => new Tuple<string, Guid>(page.Title!, page.Id)).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => !page.IsNewPage && !page.Approved).Select(page => new WikiPageTitleEntry(page.Title!, page.Id)).ToListAsync();
     }
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedUpdateByIdAsync(Guid id)
     {
         var wikiPage = await _context.UserSubmittedWikiPages
-            .Where((page => page.IsNewPage==false))
+            .Where(page => !page.IsNewPage)
             .Include(p => p.Paragraphs)
             .Include(wp => wp.Comments)
             .ThenInclude(uc => uc.UserProfile)

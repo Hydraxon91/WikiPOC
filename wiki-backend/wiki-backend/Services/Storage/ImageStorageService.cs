@@ -8,6 +8,16 @@ public class ImageStorageService : IImageStorageService
 {
     private readonly string _picturesPath;
 
+    private static readonly HashSet<string> AllowedMimeTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/png", "image/jpeg", "image/gif", "image/webp"
+    };
+
+    private static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".png", ".jpg", ".jpeg", ".gif", ".webp"
+    };
+
     public ImageStorageService(IOptions<StorageSettings> storageSettings)
     {
         _picturesPath = storageSettings.Value.PicturesPath;
@@ -41,6 +51,9 @@ public class ImageStorageService : IImageStorageService
 
         foreach (var image in images)
         {
+            if (!IsValidImage(image))
+                throw new InvalidOperationException($"Invalid image type: {image.FileName}");
+
             var filePath = Path.Combine(directoryPath, image.FileName);
             var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
             await using var fileStream = new FileStream(filePath, FileMode.Create);
@@ -62,5 +75,21 @@ public class ImageStorageService : IImageStorageService
 
         var newDirectoryPath = Path.Combine(_picturesPath, "articles", newId.ToString());
         Directory.Move(oldDirectoryPath, newDirectoryPath);
+    }
+
+    public static bool IsValidFileType(string fileName)
+    {
+        var ext = Path.GetExtension(fileName);
+        return AllowedExtensions.Contains(ext);
+    }
+
+    private static bool IsValidImage(ImageFormModel image)
+    {
+        if (!AllowedExtensions.Contains(Path.GetExtension(image.FileName)))
+            return false;
+
+        var dataUrlPrefix = image.DataURL.Split(',')[0];
+        var mimeType = dataUrlPrefix.Split(';')[0].Split(':')[1];
+        return AllowedMimeTypes.Contains(mimeType);
     }
 }

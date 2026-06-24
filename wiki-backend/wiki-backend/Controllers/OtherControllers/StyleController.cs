@@ -26,6 +26,7 @@ public class StyleController : ControllerBase
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut]
+    [RequestSizeLimit(10 * 1024 * 1024)]
     public async Task<IActionResult> UpdateStyles([FromForm] StyleUpdateForm styleUpdateForm)
     {
         if (styleUpdateForm.StyleModel == null)

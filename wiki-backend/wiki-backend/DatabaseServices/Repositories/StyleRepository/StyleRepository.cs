@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using wiki_backend.Models;
 using wiki_backend.Services.Settings;
+using wiki_backend.Services.Storage;
 
 namespace wiki_backend.DatabaseServices.Repositories;
 
@@ -26,6 +27,9 @@ public class StyleRepository : IStyleRepository
         var existingStyles = await _dbContext.Styles.SingleOrDefaultAsync();
         if (logoPictureFile != null)
         {
+            if (!ImageStorageService.IsValidFileType(logoPictureFile.FileName))
+                throw new InvalidOperationException("Invalid logo file type. Allowed: png, jpg, jpeg, gif, webp.");
+
             var fileName = $"logo/logo{Path.GetExtension(logoPictureFile.FileName)}";
             var filePath = Path.Combine(_picturesPath, fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))

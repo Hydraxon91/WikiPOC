@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using wiki_backend.Models;
 using wiki_backend.Services.Settings;
+using wiki_backend.Services.Storage;
 
 namespace wiki_backend.DatabaseServices.Repositories;
 
@@ -55,6 +56,9 @@ public class UserProfileRepository : IUserProfileRepository
         
         if (profilePictureFile != null)
         {
+            if (!ImageStorageService.IsValidFileType(profilePictureFile.FileName))
+                throw new InvalidOperationException("Invalid profile picture file type. Allowed: png, jpg, jpeg, gif, webp.");
+
             var fileName = $"profile_pictures/{existingProfile.UserName}_pfp{Path.GetExtension(profilePictureFile.FileName)}";
             var filePath = Path.Combine(_picturesPath, fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))

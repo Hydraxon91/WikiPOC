@@ -520,7 +520,7 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
         var result = await _wikiPageRepository.GetSubmittedPageTitlesAndIdAsync();
 
         // Assert
-        var expected = submittedPages.Where(page => page.IsNewPage).Select(page => new Tuple<string, Guid>(page.Title!, page.Id));
+        var expected = submittedPages.Where(page => page.IsNewPage).Select(page => new WikiPageTitleEntry(page.Title!, page.Id));
         Assert.That(result, Is.EquivalentTo(expected));
     }
     
@@ -587,7 +587,7 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
         var result = await _wikiPageRepository.GetSubmittedUpdateTitlesAndIdAsync();
 
         // Assert
-        var expected = submittedUpdatePages.Where(page => !page.IsNewPage).Select(page => new Tuple<string, Guid>(page.Title!, page.Id));
+        var expected = submittedUpdatePages.Where(page => !page.IsNewPage).Select(page => new WikiPageTitleEntry(page.Title!, page.Id));
         Assert.That(result, Is.EquivalentTo(expected));
     }
     
