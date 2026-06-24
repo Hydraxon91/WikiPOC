@@ -46,9 +46,9 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var savedWikiPage = await DbContext.WikiPages.Include(wp => wp.Paragraphs).FirstOrDefaultAsync(wp => wp.Id == wikiPage.Id);
-            Assert.IsNotNull(savedWikiPage);
-            Assert.AreEqual("Test Wiki Page", savedWikiPage.Title);
-            Assert.AreEqual(1, savedWikiPage.Paragraphs.Count);
+            Assert.That(savedWikiPage, Is.Not.Null);
+            Assert.That(savedWikiPage.Title, Is.EqualTo("Test Wiki Page"));
+            Assert.That(savedWikiPage.Paragraphs.Count, Is.EqualTo(1));
         }
 
         [Test]
@@ -70,9 +70,9 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetAllTitlesAndCategoriesAsync();
 
             // Assert
-            Assert.IsNotEmpty(result);
-            Assert.AreEqual("Test Wiki Page", result.First().Title);
-            Assert.AreEqual("TestCategory", result.First().Category);
+            Assert.That(result, Is.Not.Empty);
+            Assert.That(result.First().Title, Is.EqualTo("Test Wiki Page"));
+            Assert.That(result.First().Category, Is.EqualTo("TestCategory"));
         }
         
         [Test]
@@ -97,9 +97,9 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByIdAsync(wikiPage.Id);
 
             // Assert
-            Assert.AreEqual(wikiPage.Title, result.WikiPage.Title);
-            Assert.AreEqual(wikiPage.Id, result.WikiPage.Id);
-            Assert.AreEqual(wikiPage.Category, result.WikiPage.Category);
+            Assert.That(result.WikiPage.Title, Is.EqualTo(wikiPage.Title));
+            Assert.That(result.WikiPage.Id, Is.EqualTo(wikiPage.Id));
+            Assert.That(result.WikiPage.Category, Is.EqualTo(wikiPage.Category));
         }
         
         [Test]
@@ -134,9 +134,9 @@ namespace IntegrationTests.Repositories
             await _repository.UpdateAsync(wikiPage, updatedWikiPage, new List<ImageFormModel>());
             // Assert
             var result = await DbContext.WikiPages.FindAsync(wikiPage.Id);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(updatedWikiPage.Title, result.Title);
-            Assert.AreEqual(updatedWikiPage.CategoryId, result.CategoryId);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Title, Is.EqualTo(updatedWikiPage.Title));
+            Assert.That(result.CategoryId, Is.EqualTo(updatedWikiPage.CategoryId));
         }
         
         [Test]
@@ -161,8 +161,8 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetAllAsync();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count(), Is.EqualTo(2));
         }
         
         [Test]
@@ -182,7 +182,7 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var deletedWikiPage = await DbContext.WikiPages.FindAsync(wikiPage.Id);
-            Assert.IsNull(deletedWikiPage);
+            Assert.That(deletedWikiPage, Is.Null);
         }
         
         [Test]
@@ -214,9 +214,9 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var savedUserSubmittedPage = await DbContext.UserSubmittedWikiPages.Include(wp => wp.Paragraphs).FirstOrDefaultAsync(wp => wp.Id == userSubmittedWikiPage.Id);
-            Assert.IsNotNull(savedUserSubmittedPage);
-            Assert.AreEqual("User Submitted Wiki Page", savedUserSubmittedPage.Title);
-            Assert.AreEqual(1, savedUserSubmittedPage.Paragraphs.Count);
+            Assert.That(savedUserSubmittedPage, Is.Not.Null);
+            Assert.That(savedUserSubmittedPage.Title, Is.EqualTo("User Submitted Wiki Page"));
+            Assert.That(savedUserSubmittedPage.Paragraphs.Count, Is.EqualTo(1));
         }
         
         [Test]
@@ -241,7 +241,7 @@ namespace IntegrationTests.Repositories
             // Assert
 
             var approvedUserSubmittedPage = await DbContext.UserSubmittedWikiPages.FindAsync(userSubmittedWikiPage.Id);
-            Assert.IsTrue(approvedUserSubmittedPage.Approved);
+            Assert.That(approvedUserSubmittedPage.Approved, Is.True);
         }
         
         [Test]
@@ -265,7 +265,7 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var deletedUserSubmittedPage = await DbContext.UserSubmittedWikiPages.FindAsync(userSubmittedWikiPage.Id);
-            Assert.IsNull(deletedUserSubmittedPage);
+            Assert.That(deletedUserSubmittedPage, Is.Null);
         }
     }
 }

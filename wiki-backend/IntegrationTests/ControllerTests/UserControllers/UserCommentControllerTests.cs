@@ -89,8 +89,8 @@ public class UserCommentControllerTests : IntegrationTestBase
         if (result.Result is OkObjectResult okResult)
         {
             var comment = okResult.Value as UserComment;
-            Assert.IsNotNull(comment);
-            Assert.AreEqual(testComment.Id, comment.Id);
+            Assert.That(comment, Is.Not.Null);
+            Assert.That(comment.Id, Is.EqualTo(testComment.Id));
         }
         else
         {
@@ -108,7 +108,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         var result = await _controller.GetComment(nonExistingId);
 
         // Assert
-        Assert.IsInstanceOf<NotFoundObjectResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
     }
 
     [Test]
@@ -127,7 +127,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         var result = await _controller.PostComment(comment);
 
         // Assert
-        Assert.IsInstanceOf<CreatedAtActionResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<CreatedAtActionResult>());
     }
 
     [Test]
@@ -154,7 +154,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         var result = await _controller.EditComment(testComment.Id, updatedContent);
 
         // Assert
-        Assert.IsInstanceOf<OkObjectResult>(result);
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
     }
 
 
@@ -172,6 +172,6 @@ public class UserCommentControllerTests : IntegrationTestBase
         var result = await _controller.DeleteComment(testComment.Id);
 
         // Assert
-        Assert.IsInstanceOf<OkObjectResult>(result);
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
     }
 }

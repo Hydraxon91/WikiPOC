@@ -35,12 +35,12 @@ public class StyleControllerTests : IntegrationTestBase
         var result = await _controller.GetStyles();
 
         // Assert
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
         var returnedStyle = okResult.Value;
         
-        Assert.IsNotNull(returnedStyle);
-        Assert.AreEqual(style, returnedStyle);
+        Assert.That(returnedStyle, Is.Not.Null);
+        Assert.That(returnedStyle, Is.EqualTo(style));
     }
 
     [Test]
@@ -78,10 +78,10 @@ public class StyleControllerTests : IntegrationTestBase
         var result = await _controller.UpdateStyles(styleUpdateForm);
 
         // Assert
-        Assert.IsInstanceOf<OkObjectResult>(result);
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
         var updatedStyleInDb = await DbContext.Styles.FindAsync(style.Id);
         
-        Assert.AreEqual("NewStyle", updatedStyleInDb.WikiName);
-        Assert.AreEqual("#000000", updatedStyleInDb.BodyColor);
+        Assert.That(updatedStyleInDb.WikiName, Is.EqualTo("NewStyle"));
+        Assert.That(updatedStyleInDb.BodyColor, Is.EqualTo("#000000"));
     }
 }

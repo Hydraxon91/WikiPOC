@@ -37,9 +37,9 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByIdAsync(paragraph.Id);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(paragraph.Title, result.Title);
-            Assert.AreEqual(paragraph.Content, result.Content);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Title, Is.EqualTo(paragraph.Title));
+            Assert.That(result.Content, Is.EqualTo(paragraph.Content));
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByIdAsync(Guid.NewGuid());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -70,14 +70,14 @@ namespace IntegrationTests.Repositories
             var result = await _repository.CreateAsync(paragraph);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(paragraph.Title, result.Title);
-            Assert.AreEqual(paragraph.Content, result.Content);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Title, Is.EqualTo(paragraph.Title));
+            Assert.That(result.Content, Is.EqualTo(paragraph.Content));
 
             var wikiPageFromDb = await DbContext.WikiPages.Include(wp => wp.Paragraphs).FirstOrDefaultAsync(wp => wp.Id == wikiPage.Id);
-            Assert.IsNotNull(wikiPageFromDb);
-            Assert.AreEqual(1, wikiPageFromDb.Paragraphs.Count);
-            Assert.AreEqual(paragraph.Title, wikiPageFromDb.Paragraphs.First().Title);
+            Assert.That(wikiPageFromDb, Is.Not.Null);
+            Assert.That(wikiPageFromDb.Paragraphs.Count, Is.EqualTo(1));
+            Assert.That(wikiPageFromDb.Paragraphs.First().Title, Is.EqualTo(paragraph.Title));
         }
 
         [Test]
@@ -111,7 +111,7 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var result = await _repository.GetByIdAsync(paragraph.Id);
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -146,9 +146,9 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var updatedParagraph = await _repository.GetByIdAsync(paragraph.Id);
-            Assert.IsNotNull(updatedParagraph);
-            Assert.AreEqual("New Title", updatedParagraph.Title);
-            Assert.AreEqual("New Content", updatedParagraph.Content);
+            Assert.That(updatedParagraph, Is.Not.Null);
+            Assert.That(updatedParagraph.Title, Is.EqualTo("New Title"));
+            Assert.That(updatedParagraph.Content, Is.EqualTo("New Content"));
         }
         
         [Test]

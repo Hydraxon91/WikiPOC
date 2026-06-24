@@ -44,9 +44,9 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetStylesAsync();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(existingStyles.ArticleColor, result.ArticleColor);
-            Assert.AreEqual(existingStyles.BodyColor, result.BodyColor);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ArticleColor, Is.EqualTo(existingStyles.ArticleColor));
+            Assert.That(result.BodyColor, Is.EqualTo(existingStyles.BodyColor));
             // Add more assertions for other properties
         }
 
@@ -91,9 +91,9 @@ namespace IntegrationTests.Repositories
             
             // Assert
             var result = await DbContext.Styles.FirstOrDefaultAsync();
-            Assert.IsNotNull(result);
-            Assert.AreEqual(updatedStyles.ArticleColor, result.ArticleColor);
-            Assert.AreEqual(updatedStyles.BodyColor, result.BodyColor);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ArticleColor, Is.EqualTo(updatedStyles.ArticleColor));
+            Assert.That(result.BodyColor, Is.EqualTo(updatedStyles.BodyColor));
         }
         
     }

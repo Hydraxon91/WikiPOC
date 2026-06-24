@@ -34,10 +34,10 @@ public class AuthControllerTests : IntegrationTestBase
         var result = await _controller.Register(request);
         // Assert
         var createdAtActionResult = result.Result as CreatedAtActionResult; // Access the Result property of ActionResult
-        Assert.IsNotNull(createdAtActionResult, "CreatedAtActionResult should not be null");
-        Assert.AreEqual(201, createdAtActionResult.StatusCode);
+        Assert.That(createdAtActionResult, Is.Not.Null, "CreatedAtActionResult should not be null");
+        Assert.That(createdAtActionResult.StatusCode, Is.EqualTo(201));
         var responseData = createdAtActionResult.Value as RegistrationResponse;
-        Assert.IsNotNull(responseData);
+        Assert.That(responseData, Is.Not.Null);
     }
 
     [Test]
@@ -50,8 +50,8 @@ public class AuthControllerTests : IntegrationTestBase
         var result = await _controller.Register(invalidRequest);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<BadRequestObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
     }
     
     [Test]
@@ -64,10 +64,10 @@ public class AuthControllerTests : IntegrationTestBase
         var result = await _controller.Authenticate(request);
         // Assert
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual(200, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo(200));
         var responseData = okResult.Value as AuthResponse;
-        Assert.IsNotNull(responseData);
+        Assert.That(responseData, Is.Not.Null);
     }
     
     [Test]
@@ -80,8 +80,8 @@ public class AuthControllerTests : IntegrationTestBase
         var result = await _controller.Authenticate(invalidRequest);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<BadRequestObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
     }
     [Test]
     public async Task Register_ExistingEmail_ShouldReturnBadRequest()
@@ -94,14 +94,14 @@ public class AuthControllerTests : IntegrationTestBase
         var result = await _controller.Register(request);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<BadRequestObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestResult = (BadRequestObjectResult)result.Result;
         // Extract the error messages from the SerializableError object
         var errors = (SerializableError)badRequestResult.Value;
-        Assert.IsTrue(errors.ContainsKey("Duplicate email"));
+        Assert.That(errors, Does.ContainKey("Duplicate email"));
         var errorMessages = (string[])errors["Duplicate email"];
-        Assert.IsTrue(errorMessages.Contains("Email is already taken"));
+        Assert.That(errorMessages, Does.Contain("Email is already taken"));
     }
 
     [Test]
@@ -115,14 +115,14 @@ public class AuthControllerTests : IntegrationTestBase
         var result = await _controller.Register(request);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<BadRequestObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestResult = (BadRequestObjectResult)result.Result;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        Assert.That(badRequestResult.StatusCode, Is.EqualTo(400));
         var errors = (SerializableError)badRequestResult.Value;
-        Assert.IsTrue(errors.ContainsKey("DuplicateUserName"));
+        Assert.That(errors, Does.ContainKey("DuplicateUserName"));
         var errorMessages = (string[])errors["DuplicateUserName"];
-        Assert.IsTrue(errorMessages.Contains($"Username '{existingUsername}' is already taken."));
+        Assert.That(errorMessages, Does.Contain($"Username '{existingUsername}' is already taken."));
     }
 
     [Test]
@@ -135,10 +135,10 @@ public class AuthControllerTests : IntegrationTestBase
         var result = await _controller.Authenticate(request);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<BadRequestObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestResult = (BadRequestObjectResult)result.Result;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        Assert.That(badRequestResult.StatusCode, Is.EqualTo(400));
     }
 
     [Test]
@@ -151,9 +151,9 @@ public class AuthControllerTests : IntegrationTestBase
         var result = await _controller.Authenticate(request);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<BadRequestObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestResult = (BadRequestObjectResult)result.Result;
-        Assert.AreEqual(400, badRequestResult.StatusCode);
+        Assert.That(badRequestResult.StatusCode, Is.EqualTo(400));
     }
 }

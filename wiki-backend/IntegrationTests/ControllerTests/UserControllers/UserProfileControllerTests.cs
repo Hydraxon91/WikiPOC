@@ -35,12 +35,12 @@ public class UserProfileControllerTests : IntegrationTestBase
 
         // Assert
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var profile = okResult.Value as UserProfile;
-        Assert.IsNotNull(profile);
-        Assert.AreEqual(testProfile.Id, profile.Id);
+        Assert.That(profile, Is.Not.Null);
+        Assert.That(profile.Id, Is.EqualTo(testProfile.Id));
     }
     
     [Test]
@@ -53,7 +53,7 @@ public class UserProfileControllerTests : IntegrationTestBase
         var result = await _controller.GetProfileById(nonExistingId);
 
         // Assert
-        Assert.IsInstanceOf<NotFoundResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<NotFoundResult>());
     }
     
     [Test]
@@ -69,12 +69,12 @@ public class UserProfileControllerTests : IntegrationTestBase
 
         // Assert
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var userProfile = okResult.Value as UserProfile;
-        Assert.IsNotNull(userProfile);
-        Assert.AreEqual(testUserProfile.UserName, userProfile.UserName);
+        Assert.That(userProfile, Is.Not.Null);
+        Assert.That(userProfile.UserName, Is.EqualTo(testUserProfile.UserName));
     }
     
     [Test]
@@ -87,7 +87,7 @@ public class UserProfileControllerTests : IntegrationTestBase
         var result = await _controller.GetProfileByName(nonExistingUsername);
 
         // Assert
-        Assert.IsInstanceOf<NotFoundResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<NotFoundResult>());
     }
     
     [Test]
@@ -112,18 +112,18 @@ public class UserProfileControllerTests : IntegrationTestBase
 
         // Assert
         var okResult = result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
     
         var messageObject = okResult.Value as dynamic;
-        Assert.IsNotNull(messageObject);
-        // Assert.AreEqual("UserProfile updated successfully", messageObject.Message);
+        Assert.That(messageObject, Is.Not.Null);
+        // Assert.That(messageObject.Message, Is.EqualTo("UserProfile updated successfully"));
 
         // Check if the user profile is updated in the database
         var userProfileInDb = await DbContext.UserProfiles.FindAsync(profileId);
-        Assert.IsNotNull(userProfileInDb);
-        Assert.AreEqual(testUserProfile.UserName, userProfileInDb.UserName); // Username should remain unchanged
-        Assert.AreEqual(updatedUserProfile.DisplayName, userProfileInDb.DisplayName);
+        Assert.That(userProfileInDb, Is.Not.Null);
+        Assert.That(userProfileInDb.UserName, Is.EqualTo(testUserProfile.UserName)); // Username should remain unchanged
+        Assert.That(userProfileInDb.DisplayName, Is.EqualTo(updatedUserProfile.DisplayName));
     }
 
     
@@ -134,7 +134,7 @@ public class UserProfileControllerTests : IntegrationTestBase
         var result = await _controller.UpdateUserProfile(Guid.NewGuid(), new UserUpdateForm());
 
         // Assert
-        Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
     }
     
     [Test]
@@ -150,16 +150,16 @@ public class UserProfileControllerTests : IntegrationTestBase
 
         // Assert
         var okResult = result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var message = okResult.Value as string;
-        Assert.IsNotNull(message);
-        Assert.AreEqual("UserProfile deleted successfully", message);
+        Assert.That(message, Is.Not.Null);
+        Assert.That(message, Is.EqualTo("UserProfile deleted successfully"));
 
         // Check if the user profile is deleted from the database
         var userProfileInDb = await DbContext.UserProfiles.FindAsync(profileId);
-        Assert.IsNull(userProfileInDb);
+        Assert.That(userProfileInDb, Is.Null);
     }
 
     [Test]
@@ -169,7 +169,7 @@ public class UserProfileControllerTests : IntegrationTestBase
         var result = await _controller.DeleteUserProfile(Guid.NewGuid());
 
         // Assert
-        Assert.IsInstanceOf<NotFoundResult>(result);
+        Assert.That(result, Is.InstanceOf<NotFoundResult>());
     }
 
     private async Task AddTestUser(string userName)

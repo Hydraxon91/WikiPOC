@@ -44,7 +44,7 @@ namespace IntegrationTests.Services
             var result = await _authService.RegisterAsync(email, username, password, role);
 
             // Assert
-            Assert.IsTrue(result.Success);
+            Assert.That(result.Success, Is.True);
         }
         
         [Test]
@@ -60,10 +60,10 @@ namespace IntegrationTests.Services
             var result = await _authService.RegisterAsync(email, username, password, role);
 
             // Assert
-            Assert.IsFalse(result.Success);
-            Assert.IsTrue(result.ErrorMessages.ContainsKey("PasswordRequiresNonAlphanumeric"), "Expected error message for missing non-alphanumeric characters.");
-            Assert.IsTrue(result.ErrorMessages.ContainsKey("PasswordRequiresDigit"), "Expected error message for missing digits.");
-            Assert.IsTrue(result.ErrorMessages.ContainsKey("PasswordRequiresUpper"), "Expected error message for missing uppercase letters.");
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.ErrorMessages, Does.ContainKey("PasswordRequiresNonAlphanumeric"), "Expected error message for missing non-alphanumeric characters.");
+            Assert.That(result.ErrorMessages, Does.ContainKey("PasswordRequiresDigit"), "Expected error message for missing digits.");
+            Assert.That(result.ErrorMessages, Does.ContainKey("PasswordRequiresUpper"), "Expected error message for missing uppercase letters.");
         }
         
         [Test]
@@ -76,9 +76,9 @@ namespace IntegrationTests.Services
             var result = await _authService.RegisterAsync(null, null, null, role);
 
             // Assert
-            Assert.IsFalse(result.Success);
-            Assert.AreEqual("Bad request", result.ErrorMessages.Keys.First());
-            Assert.AreEqual("Invalid input data", result.ErrorMessages.Values.First());
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.ErrorMessages.Keys.First(), Is.EqualTo("Bad request"));
+            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Invalid input data"));
         }
         
         [Test]
@@ -97,9 +97,9 @@ namespace IntegrationTests.Services
             var result = await _authService.RegisterAsync($"{GetRandomizedString("test56")}@example.com", username, password, role);
 
             // Assert
-            Assert.IsFalse(result.Success);
-            Assert.AreEqual("DuplicateUserName", result.ErrorMessages.Keys.First());
-            Assert.AreEqual("Username 'testuser' is already taken.", result.ErrorMessages.Values.First());
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.ErrorMessages.Keys.First(), Is.EqualTo("DuplicateUserName"));
+            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Username 'testuser' is already taken."));
         }
 
         [Test]
@@ -118,9 +118,9 @@ namespace IntegrationTests.Services
             var result = await _authService.RegisterAsync(email, GetRandomizedString("newuser"), password, role);
 
             // Assert
-            Assert.IsFalse(result.Success);
-            Assert.AreEqual("Duplicate email", result.ErrorMessages.Keys.First());
-            Assert.AreEqual("Email is already taken", result.ErrorMessages.Values.First());
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.ErrorMessages.Keys.First(), Is.EqualTo("Duplicate email"));
+            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Email is already taken"));
         }
         
         [Test]
@@ -136,9 +136,9 @@ namespace IntegrationTests.Services
             var result = await _authService.RegisterAsync(email, username, password, role);
 
             // Assert
-            Assert.IsFalse(result.Success);
-            Assert.AreEqual("Invalid email", result.ErrorMessages.Keys.First());
-            Assert.AreEqual("Email is not in a valid format", result.ErrorMessages.Values.First());
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.ErrorMessages.Keys.First(), Is.EqualTo("Invalid email"));
+            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Email is not in a valid format"));
         }
         
         [Test]
@@ -160,8 +160,8 @@ namespace IntegrationTests.Services
             var result = await _authService.LoginAsync(email, password);
 
             // Assert
-            Assert.IsTrue(result.Success);
-            Assert.AreEqual("mocked_token", result.Token); // Check if the mocked token is returned
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Token, Is.EqualTo("mocked_token")); // Check if the mocked token is returned
         }
         
         [Test]
@@ -179,9 +179,9 @@ namespace IntegrationTests.Services
             var result = await _authService.LoginAsync(email, "invalidpassword");
 
             // Assert
-            Assert.IsFalse(result.Success);
-            Assert.AreEqual("Bad credentials", result.ErrorMessages.Keys.First());
-            Assert.AreEqual("Invalid password", result.ErrorMessages.Values.First());
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.ErrorMessages.Keys.First(), Is.EqualTo("Bad credentials"));
+            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Invalid password"));
         }
         
         [Test]
@@ -195,9 +195,9 @@ namespace IntegrationTests.Services
             var result = await _authService.LoginAsync(email, password);
 
             // Assert
-            Assert.IsFalse(result.Success);
-            Assert.AreEqual("Bad credentials", result.ErrorMessages.Keys.First());
-            Assert.AreEqual("Invalid email", result.ErrorMessages.Values.First());
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.ErrorMessages.Keys.First(), Is.EqualTo("Bad credentials"));
+            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Invalid email"));
         }
         
         [Test]
@@ -210,9 +210,9 @@ namespace IntegrationTests.Services
             // Act
             var result = await _authService.LoginAsync(username, password);
             // Assert
-            Assert.IsFalse(result.Success);
-            Assert.AreEqual("Bad credentials", result.ErrorMessages.Keys.First());
-            Assert.AreEqual("Invalid Username", result.ErrorMessages.Values.First());
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.ErrorMessages.Keys.First(), Is.EqualTo("Bad credentials"));
+            Assert.That(result.ErrorMessages.Values.First(), Is.EqualTo("Invalid Username"));
         }
     }
 }

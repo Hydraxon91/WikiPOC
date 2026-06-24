@@ -45,6 +45,7 @@ namespace IntegrationTests
             services.AddDbContext<WikiDbContext>(options =>
             {
                 options.UseSqlServer(completeConnectionString);
+                options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
             });
 
             services.AddIdentity<ApplicationUser, IdentityRole>()

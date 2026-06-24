@@ -28,9 +28,9 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var result = await _repository.GetAllForumPostTitlesAsync();
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(expectedPostTitles.Count, result.Count());
-        CollectionAssert.AreEquivalent(expectedPostTitles, result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Count(), Is.EqualTo(expectedPostTitles.Count));
+        Assert.That(result, Is.EquivalentTo(expectedPostTitles));
     }
 
     [Test]
@@ -49,10 +49,10 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var result = await _repository.GetForumPostByIdAsync(postId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(postId, result.Id);
-        Assert.AreEqual(post.PostTitle, result.PostTitle);
-        Assert.AreEqual(post.Content, result.Content);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Id, Is.EqualTo(postId));
+        Assert.That(result.PostTitle, Is.EqualTo(post.PostTitle));
+        Assert.That(result.Content, Is.EqualTo(post.Content));
     }
 
     [Test]
@@ -71,8 +71,8 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var result = await _repository.GetForumPostBySlugAsync(postSlug);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(postSlug, result.Slug);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Slug, Is.EqualTo(postSlug));
     }
 
     [Test]
@@ -89,9 +89,9 @@ public class ForumPostRepositoryTests : IntegrationTestBase
 
         // Assert
         var addedPost = await DbContext.ForumPosts.FirstOrDefaultAsync(p => p.PostTitle == "New Post");
-        Assert.IsNotNull(addedPost);
-        Assert.AreEqual("new-post", addedPost.Slug); // Ensure slug is generated correctly
-        Assert.AreEqual(post.Content, addedPost.Content);
+        Assert.That(addedPost, Is.Not.Null);
+        Assert.That(addedPost.Slug, Is.EqualTo("new-post")); // Ensure slug is generated correctly
+        Assert.That(addedPost.Content, Is.EqualTo(post.Content));
     }
 
     [Test]
@@ -113,9 +113,9 @@ public class ForumPostRepositoryTests : IntegrationTestBase
 
         // Assert
         var updatedPost = await DbContext.ForumPosts.FirstOrDefaultAsync(p => p.PostTitle == "Updated Title");
-        Assert.IsNotNull(updatedPost);
-        Assert.AreEqual("updated-title", updatedPost.Slug); // Ensure slug is updated correctly
-        Assert.AreEqual("Updated Content", updatedPost.Content);
+        Assert.That(updatedPost, Is.Not.Null);
+        Assert.That(updatedPost.Slug, Is.EqualTo("updated-title")); // Ensure slug is updated correctly
+        Assert.That(updatedPost.Content, Is.EqualTo("Updated Content"));
     }
 
     [Test]
@@ -134,7 +134,7 @@ public class ForumPostRepositoryTests : IntegrationTestBase
 
         // Assert
         var deletedPost = await DbContext.ForumPosts.FindAsync(existingPost.Id);
-        Assert.IsNull(deletedPost);
+        Assert.That(deletedPost, Is.Null);
     }
 
     private async Task AddSampleForumPostsToDatabase()

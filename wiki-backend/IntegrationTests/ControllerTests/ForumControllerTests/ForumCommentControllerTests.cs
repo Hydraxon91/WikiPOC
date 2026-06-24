@@ -55,11 +55,11 @@ public class ForumCommentControllerTests : IntegrationTestBase
         
         // Assert
         var okResult = result.Result as OkObjectResult;
-        Assert.NotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var returnComment = okResult.Value as ForumComment;
-        Assert.AreEqual(comment.Content, returnComment.Content);
+        Assert.That(returnComment.Content, Is.EqualTo(comment.Content));
     }
 
     [Test]
@@ -89,8 +89,8 @@ public class ForumCommentControllerTests : IntegrationTestBase
         // Assert
         var comment = await DbContext.ForumComments.FirstOrDefaultAsync(fc => fc.Id == postCommentId);
 
-        Assert.NotNull(comment);
-        Assert.AreEqual(comment, postComment);
+        Assert.That(comment, Is.Not.Null);
+        Assert.That(postComment, Is.EqualTo(comment));
     }
     
     [Test]
@@ -112,11 +112,11 @@ public class ForumCommentControllerTests : IntegrationTestBase
         
         // Assert
         var okResult = result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var editedComment = await DbContext.ForumComments.FirstOrDefaultAsync(fc => fc.Id == comment.Id);
-        Assert.AreEqual(editedComment.Content, updatedContent);
+        Assert.That(updatedContent, Is.EqualTo(editedComment.Content));
     }
     
     [Test]
@@ -137,11 +137,11 @@ public class ForumCommentControllerTests : IntegrationTestBase
         
         // Assert
         var okResult = result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var deletedComment = await DbContext.ForumComments.FirstOrDefaultAsync(fc => fc.Id == comment.Id);
-        Assert.IsNull(deletedComment);
+        Assert.That(deletedComment, Is.Null);
     }
 
     private async Task<Guid> AddUserProfile()

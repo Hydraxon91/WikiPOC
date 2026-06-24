@@ -27,8 +27,8 @@ namespace IntegrationTests.ForumRepositoriesTests
             var result = await _repository.GetAllForumTopicsAsync();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(expectedTopicCount, result.Count());
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count(), Is.EqualTo(expectedTopicCount));
         }
 
         [Test]
@@ -42,8 +42,8 @@ namespace IntegrationTests.ForumRepositoriesTests
             var result = await _repository.GetForumTopicBySlugAsync(slug);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(slug, result.Slug);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Slug, Is.EqualTo(slug));
         }
 
         [Test]
@@ -61,9 +61,9 @@ namespace IntegrationTests.ForumRepositoriesTests
 
             // Assert
             var addedTopic = await DbContext.ForumTopics.FirstOrDefaultAsync(t => t.Title == "New Topic");
-            Assert.IsNotNull(addedTopic);
-            Assert.AreEqual("new-topic", addedTopic.Slug);
-            Assert.AreEqual(topic.Description, addedTopic.Description);
+            Assert.That(addedTopic, Is.Not.Null);
+            Assert.That(addedTopic.Slug, Is.EqualTo("new-topic"));
+            Assert.That(addedTopic.Description, Is.EqualTo(topic.Description));
         }
 
         [Test]
@@ -87,9 +87,9 @@ namespace IntegrationTests.ForumRepositoriesTests
 
             // Assert
             var updatedTopic = await DbContext.ForumTopics.FirstOrDefaultAsync(t => t.Title == "Updated Title");
-            Assert.IsNotNull(updatedTopic);
-            Assert.AreEqual("updated-title", updatedTopic.Slug); 
-            Assert.AreEqual("Updated Description", updatedTopic.Description); 
+            Assert.That(updatedTopic, Is.Not.Null);
+            Assert.That(updatedTopic.Slug, Is.EqualTo("updated-title")); 
+            Assert.That(updatedTopic.Description, Is.EqualTo("Updated Description")); 
         }
 
         [Test]
@@ -110,7 +110,7 @@ namespace IntegrationTests.ForumRepositoriesTests
 
             // Assert
             var deletedTopic = await DbContext.ForumTopics.FindAsync(existingTopic.Id);
-            Assert.IsNull(deletedTopic);
+            Assert.That(deletedTopic, Is.Null);
         }
         
         [Test]
@@ -165,8 +165,8 @@ namespace IntegrationTests.ForumRepositoriesTests
 
             // Assert
             var addedTopic = await DbContext.ForumTopics.FirstOrDefaultAsync(t => t.Description == "Description for New Topic");
-            Assert.IsNotNull(addedTopic);
-            Assert.AreNotEqual(existingTopic.Slug, addedTopic.Slug);
+            Assert.That(addedTopic, Is.Not.Null);
+            Assert.That(addedTopic.Slug, Is.Not.EqualTo(existingTopic.Slug));
         }
         
         private async Task AddSampleForumTopicsToDatabase()

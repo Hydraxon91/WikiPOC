@@ -51,12 +51,12 @@ public class ForumPostControllerTests : IntegrationTestBase
             var result = await _controller.GetForumPostTitles();
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result.Result);
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
             var okResult = result.Result as OkObjectResult;
             var titles = okResult.Value as IEnumerable<string>;
 
-            Assert.IsNotNull(titles);
-            Assert.Contains("test", titles.ToList());
+            Assert.That(titles, Is.Not.Null);
+            Assert.That(titles.ToList(), Does.Contain("test"));
         }
 
         [Test]
@@ -72,12 +72,12 @@ public class ForumPostControllerTests : IntegrationTestBase
             var result = await _controller.GetForumPostBySlug(forumPost.Slug);
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result.Result);
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
             var okResult = result.Result as OkObjectResult;
             var returnedPost = okResult.Value as ForumPost;
 
-            Assert.IsNotNull(returnedPost);
-            Assert.AreEqual(forumPost.Slug, returnedPost.Slug);
+            Assert.That(returnedPost, Is.Not.Null);
+            Assert.That(returnedPost.Slug, Is.EqualTo(forumPost.Slug));
         }
 
         [Test]
@@ -106,12 +106,12 @@ public class ForumPostControllerTests : IntegrationTestBase
             var result = await _controller.AddForumPost(forumPostForm);
 
             // Assert
-            Assert.IsInstanceOf<CreatedAtActionResult>(result.Result);
+            Assert.That(result.Result, Is.InstanceOf<CreatedAtActionResult>());
             var createdResult = result.Result as CreatedAtActionResult;
             var createdPost = createdResult.Value as ForumPost;
 
-            Assert.IsNotNull(createdPost);
-            Assert.AreEqual(forumPostForm.PostTitle, createdPost.PostTitle);
+            Assert.That(createdPost, Is.Not.Null);
+            Assert.That(createdPost.PostTitle, Is.EqualTo(forumPostForm.PostTitle));
         }
 
         [Test]
@@ -144,9 +144,9 @@ public class ForumPostControllerTests : IntegrationTestBase
             var result = await _controller.UpdateForumPost(post.Id, updatedPost);
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.That(result, Is.InstanceOf<OkObjectResult>());
             var updatedPostInDb = await DbContext.ForumPosts.FindAsync(post.Id);
-            Assert.AreEqual("Updated Post", updatedPostInDb.PostTitle);
+            Assert.That(updatedPostInDb.PostTitle, Is.EqualTo("Updated Post"));
         }
 
         [Test]
@@ -165,9 +165,9 @@ public class ForumPostControllerTests : IntegrationTestBase
             var result = await _controller.DeleteForumPost(forumPostId);
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.That(result, Is.InstanceOf<OkObjectResult>());
             var deletedPostInDb = await DbContext.ForumPosts.FindAsync(forumPostId);
-            Assert.IsNull(deletedPostInDb);
+            Assert.That(deletedPostInDb, Is.Null);
         }
 
         private async Task<Guid> AddUserProfile()

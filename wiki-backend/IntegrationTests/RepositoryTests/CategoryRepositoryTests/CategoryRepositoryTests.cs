@@ -26,8 +26,8 @@ public class CategoryRepositoryTests : IntegrationTestBase
         var result = await _repository.GetAllCategoriesAsync();
 
         // Assert
-        Assert.IsNotNull(result);
-        CollectionAssert.AreEquivalent(expectedCategories, result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.EquivalentTo(expectedCategories));
     }
 
     [Test]
@@ -42,8 +42,8 @@ public class CategoryRepositoryTests : IntegrationTestBase
         var result = await _repository.GetCategoryByNameAsync(categoryName);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(expectedCategory, result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.EqualTo(expectedCategory));
     }
 
     [Test]
@@ -57,8 +57,8 @@ public class CategoryRepositoryTests : IntegrationTestBase
 
         // Assert
         var addedCategory = await DbContext.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);
-        Assert.IsNotNull(addedCategory);
-        Assert.AreEqual(categoryName, addedCategory.CategoryName);
+        Assert.That(addedCategory, Is.Not.Null);
+        Assert.That(addedCategory.CategoryName, Is.EqualTo(categoryName));
     }
     
     
@@ -73,9 +73,9 @@ public class CategoryRepositoryTests : IntegrationTestBase
         var result = await _repository.DeleteCategoryAsync(categoryToDelete.Id);
 
         // Assert
-        Assert.IsTrue(result);
+        Assert.That(result, Is.True);
         var deletedCategory = await DbContext.Categories.FindAsync(categoryToDelete.Id);
-        Assert.IsNull(deletedCategory);
+        Assert.That(deletedCategory, Is.Null);
     }
     
     [Test]
@@ -88,7 +88,7 @@ public class CategoryRepositoryTests : IntegrationTestBase
         var result = await _repository.DeleteCategoryAsync(categoryId);
 
         // Assert
-        Assert.IsFalse(result);
+        Assert.That(result, Is.False);
     }
 
     [Test]
@@ -103,8 +103,8 @@ public class CategoryRepositoryTests : IntegrationTestBase
 
         // Assert
         var updatedCategory = await DbContext.Categories.Include(c => c.WikiPages).FirstOrDefaultAsync(c => c.Id == category.Id);
-        Assert.IsNotNull(updatedCategory);
-        Assert.IsTrue(updatedCategory.WikiPages.Contains(wikiPage));
+        Assert.That(updatedCategory, Is.Not.Null);
+        Assert.That(updatedCategory.WikiPages, Does.Contain(wikiPage));
     }
 
     [Test]
@@ -120,8 +120,8 @@ public class CategoryRepositoryTests : IntegrationTestBase
 
         // Assert
         var updatedCategory = await DbContext.Categories.Include(c => c.WikiPages).FirstOrDefaultAsync(c => c.Id == category.Id);
-        Assert.IsNotNull(updatedCategory);
-        Assert.IsFalse(updatedCategory.WikiPages.Contains(wikiPage));
+        Assert.That(updatedCategory, Is.Not.Null);
+        Assert.That(updatedCategory.WikiPages, Does.Not.Contain(wikiPage));
     }
 
     private async Task<Category> AddSampleCategoryToDatabase()

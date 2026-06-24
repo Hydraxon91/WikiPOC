@@ -30,8 +30,8 @@ public class ParagraphControllerTests : IntegrationTestBase
         var result = await _controller.GetParagraph(nonExistingId) as ActionResult<Paragraph>;
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<NotFoundResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<NotFoundResult>());
     }
 
     [Test]
@@ -44,17 +44,17 @@ public class ParagraphControllerTests : IntegrationTestBase
         var result = await _controller.CreateParagraph(newParagraph) as ActionResult<Paragraph>;
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<CreatedAtActionResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<CreatedAtActionResult>());
 
         var createdAtResult = result.Result as CreatedAtActionResult;
-        Assert.IsNotNull(createdAtResult);
-        Assert.AreEqual(nameof(_controller.GetParagraph), createdAtResult.ActionName);
+        Assert.That(createdAtResult, Is.Not.Null);
+        Assert.That(createdAtResult.ActionName, Is.EqualTo(nameof(_controller.GetParagraph)));
 
         var returnedParagraph = createdAtResult.Value as Paragraph;
-        Assert.IsNotNull(returnedParagraph);
-        Assert.AreEqual(newParagraph.Title, returnedParagraph.Title);
-        Assert.AreEqual(newParagraph.Content, returnedParagraph.Content);
+        Assert.That(returnedParagraph, Is.Not.Null);
+        Assert.That(returnedParagraph.Title, Is.EqualTo(newParagraph.Title));
+        Assert.That(returnedParagraph.Content, Is.EqualTo(newParagraph.Content));
         // Assert other properties here
     }
 }

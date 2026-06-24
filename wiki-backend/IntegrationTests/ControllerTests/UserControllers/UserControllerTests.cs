@@ -33,12 +33,12 @@ public class UserControllerTests : IntegrationTestBase
 
             // Assert
             var okResult = result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
             var users = okResult.Value as List<ApplicationUser>;
-            Assert.IsNotNull(users);
-            Assert.IsTrue(users.Count > 0);
+            Assert.That(users, Is.Not.Null);
+            Assert.That(users.Count > 0, Is.True);
         }
         
         [Test]
@@ -66,19 +66,19 @@ public class UserControllerTests : IntegrationTestBase
 
             // Assert
             var createdResult = result as OkObjectResult;
-            Assert.IsNotNull(createdResult);
-            Assert.AreEqual((int)HttpStatusCode.OK, createdResult.StatusCode);
+            Assert.That(createdResult, Is.Not.Null);
+            Assert.That(createdResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
             var createdUser = createdResult.Value as ApplicationUser;
-            Assert.IsNotNull(createdUser);
-            Assert.AreEqual(newUser.UserName, createdUser.UserName);
-            Assert.AreEqual(newUser.Email, createdUser.Email);
+            Assert.That(createdUser, Is.Not.Null);
+            Assert.That(createdUser.UserName, Is.EqualTo(newUser.UserName));
+            Assert.That(createdUser.Email, Is.EqualTo(newUser.Email));
 
             // Check if the user is created in the database
             var userInDb = await DbContext.Users.FirstOrDefaultAsync(u => u.Id == createdUser.Id);
-            Assert.IsNotNull(userInDb);
-            Assert.AreEqual(newUser.UserName, userInDb.UserName);
-            Assert.AreEqual(newUser.Email, userInDb.Email);
+            Assert.That(userInDb, Is.Not.Null);
+            Assert.That(userInDb.UserName, Is.EqualTo(newUser.UserName));
+            Assert.That(userInDb.Email, Is.EqualTo(newUser.Email));
         }
         
         [Test]
@@ -99,19 +99,19 @@ public class UserControllerTests : IntegrationTestBase
 
             // Assert
             var okResult = result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
             var updatedResult = okResult.Value as ApplicationUser;
-            Assert.IsNotNull(updatedResult);
-            Assert.AreEqual(updatedUser.UserName, updatedResult.UserName);
-            Assert.AreEqual(updatedUser.Email, updatedResult.Email);
+            Assert.That(updatedResult, Is.Not.Null);
+            Assert.That(updatedResult.UserName, Is.EqualTo(updatedUser.UserName));
+            Assert.That(updatedResult.Email, Is.EqualTo(updatedUser.Email));
 
             // Check if the user is updated in the database
             var userInDb = await DbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            Assert.IsNotNull(userInDb);
-            Assert.AreEqual(updatedUser.UserName, userInDb.UserName);
-            Assert.AreEqual(updatedUser.Email, userInDb.Email);
+            Assert.That(userInDb, Is.Not.Null);
+            Assert.That(userInDb.UserName, Is.EqualTo(updatedUser.UserName));
+            Assert.That(userInDb.Email, Is.EqualTo(updatedUser.Email));
         }
         
         [Test]
@@ -126,16 +126,16 @@ public class UserControllerTests : IntegrationTestBase
 
             // Assert
             var okResult = result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
             var message = okResult.Value as string;
-            Assert.IsNotNull(message);
-            Assert.AreEqual("User deleted successfully", message);
+            Assert.That(message, Is.Not.Null);
+            Assert.That(message, Is.EqualTo("User deleted successfully"));
 
             // Check if the user is deleted from the database
             var userInDb = await DbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            Assert.IsNull(userInDb);
+            Assert.That(userInDb, Is.Null);
         }
         
         [Test]
@@ -145,7 +145,7 @@ public class UserControllerTests : IntegrationTestBase
             var result = await _controller.CreateUser(null);
 
             // Assert
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
         
         [Test]
@@ -158,7 +158,7 @@ public class UserControllerTests : IntegrationTestBase
             var result = await _controller.CreateUser(invalidUser);
 
             // Assert
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
         
         [Test]
@@ -173,12 +173,12 @@ public class UserControllerTests : IntegrationTestBase
 
             // Assert
             var okResult = result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
             var user = okResult.Value as ApplicationUser;
-            Assert.IsNotNull(user);
-            Assert.AreEqual(testUser.Id, user.Id);
+            Assert.That(user, Is.Not.Null);
+            Assert.That(user.Id, Is.EqualTo(testUser.Id));
         }
         
         [Test]
@@ -191,7 +191,7 @@ public class UserControllerTests : IntegrationTestBase
             var result = await _controller.GetUserById(nonExistingId);
 
             // Assert
-            Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.That(result, Is.InstanceOf<NotFoundResult>());
         }
         
         [Test]
@@ -205,7 +205,7 @@ public class UserControllerTests : IntegrationTestBase
             var result = await _controller.UpdateUser(nonExistingId, updatedUserData);
 
             // Assert
-            Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.That(result, Is.InstanceOf<NotFoundResult>());
         }
         
         [Test]
@@ -218,7 +218,7 @@ public class UserControllerTests : IntegrationTestBase
             var result = await _controller.DeleteUser(nonExistingId);
 
             // Assert
-            Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.That(result, Is.InstanceOf<NotFoundResult>());
         }
     }
 }
