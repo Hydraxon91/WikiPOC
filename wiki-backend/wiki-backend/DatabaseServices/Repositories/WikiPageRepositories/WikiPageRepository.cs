@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using wiki_backend.Models;
-using wiki_backend.Services.Settings;
+using wiki_backend.Services.Storage;
 
 namespace wiki_backend.DatabaseServices.Repositories;
 
@@ -9,13 +8,13 @@ public class WikiPageRepository : IWikiPageRepository
 {
     private readonly WikiDbContext _context;
     private readonly ICategoryRepository _categoryRepository;
-    private readonly string _picturesPath;
+    private readonly IImageStorageService _imageStorage;
 
-    public WikiPageRepository(WikiDbContext context, ICategoryRepository categoryRepository, IOptions<StorageSettings> storageSettings)
+    public WikiPageRepository(WikiDbContext context, ICategoryRepository categoryRepository, IImageStorageService imageStorage)
     {
         _context = context;
         _categoryRepository = categoryRepository;
-        _picturesPath = storageSettings.Value.PicturesPath;
+        _imageStorage = imageStorage;
     }
 
     public async Task<List<TitleAndCategory>> GetAllTitlesAndCategoriesAsync()
@@ -52,38 +51,12 @@ public class WikiPageRepository : IWikiPageRepository
 
         if (wikiPage != null)
         {
-            var directoryPath = Path.Combine(_picturesPath, "articles",
-                wikiPage.Id.ToString());
-            if (Directory.Exists(directoryPath))
+            var images = _imageStorage.ReadImages(wikiPage.Id);
+            return new WPWithImagesOutputModel
             {
-                var imageFiles = Directory.GetFiles(directoryPath);
-                var images = imageFiles.Select(file =>
-                {
-                    var fileName = Path.GetFileName(file);
-                    var imageData = File.ReadAllBytes(file);
-                    var dataURL =
-                        $"data:image/{Path.GetExtension(fileName).TrimStart('.')};base64,{Convert.ToBase64String(imageData)}";
-                    return new ImageFormModel
-                    {
-                        FileName = fileName,
-                        DataURL = dataURL
-                    };
-                }).ToList();
-
-                return new WPWithImagesOutputModel
-                {
-                    WikiPage = wikiPage,
-                    Images = images
-                };
-            }
-            else
-            {
-                return new WPWithImagesOutputModel
-                {
-                    WikiPage = wikiPage,
-                    Images = null
-                };
-            }
+                WikiPage = wikiPage,
+                Images = images.Count > 0 ? images : null
+            };
         }
 
         return null;
@@ -102,38 +75,12 @@ public class WikiPageRepository : IWikiPageRepository
 
         if (wikiPage != null)
         {
-            var directoryPath = Path.Combine(_picturesPath, "articles",
-                wikiPage.Id.ToString());
-            if (Directory.Exists(directoryPath))
+            var images = _imageStorage.ReadImages(wikiPage.Id);
+            return new WPWithImagesOutputModel
             {
-                var imageFiles = Directory.GetFiles(directoryPath);
-                var images = imageFiles.Select(file =>
-                {
-                    var fileName = Path.GetFileName(file);
-                    var imageData = File.ReadAllBytes(file);
-                    var dataURL =
-                        $"data:image/{Path.GetExtension(fileName).TrimStart('.')};base64,{Convert.ToBase64String(imageData)}";
-                    return new ImageFormModel
-                    {
-                        FileName = fileName,
-                        DataURL = dataURL
-                    };
-                }).ToList();
-
-                return new WPWithImagesOutputModel
-                {
-                    WikiPage = wikiPage,
-                    Images = images
-                };
-            }
-            else
-            {
-                return new WPWithImagesOutputModel
-                {
-                    WikiPage = wikiPage,
-                    Images = null
-                };
-            }
+                WikiPage = wikiPage,
+                Images = images.Count > 0 ? images : null
+            };
         }
 
         return null;
@@ -141,21 +88,7 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images)
     {
-        if (images.Count > 0)
-        {
-            foreach (var image in images)
-            {
-                var directoryPath = Path.Combine(_picturesPath,
-                    "articles", wikiPage.Id.ToString());
-                Directory.CreateDirectory(directoryPath);
-                var filePath = Path.Combine(directoryPath, image.FileName);
-                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
-                }
-            }
-        }
+        await _imageStorage.SaveImagesAsync(wikiPage.Id, images);
 
         foreach (var paragraph in wikiPage.Paragraphs)
         {
@@ -171,21 +104,7 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task AddUserSubmittedPageAsync(UserSubmittedWikiPage wikiPage, ICollection<ImageFormModel> images)
     {
-        if (images.Count > 0)
-        {
-            foreach (var image in images)
-            {
-                var directoryPath = Path.Combine(_picturesPath,
-                    "articles", wikiPage.Id.ToString());
-                Directory.CreateDirectory(directoryPath);
-                var filePath = Path.Combine(directoryPath, image.FileName);
-                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
-                }
-            }
-        }
+        await _imageStorage.SaveImagesAsync(wikiPage.Id, images);
 
         foreach (var paragraph in wikiPage.Paragraphs)
         {
@@ -265,21 +184,7 @@ public class WikiPageRepository : IWikiPageRepository
             }
         }
 
-        if (images.Count > 0)
-        {
-            foreach (var image in images)
-            {
-                var directoryPath = Path.Combine(_picturesPath,
-                    "articles", existingWikiPage.Id.ToString());
-                Directory.CreateDirectory(directoryPath);
-                var filePath = Path.Combine(directoryPath, image.FileName);
-                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
-                }
-            }
-        }
+        await _imageStorage.SaveImagesAsync(existingWikiPage.Id, images);
 
         await _context.SaveChangesAsync();
     }
@@ -305,21 +210,7 @@ public class WikiPageRepository : IWikiPageRepository
             paragraph.WikiPageId = updatedWikiPage.Id;
         }
 
-        if (images.Count > 0)
-        {
-            foreach (var image in images)
-            {
-                var directoryPath = Path.Combine(_picturesPath,
-                    "articles", updatedWikiPage.Id.ToString());
-                Directory.CreateDirectory(directoryPath);
-                var filePath = Path.Combine(directoryPath, image.FileName);
-                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
-                }
-            }
-        }
+        await _imageStorage.SaveImagesAsync(updatedWikiPage.Id, images);
 
         _context.UserSubmittedWikiPages.Add(updatedWikiPage);
         await _context.SaveChangesAsync();
@@ -334,14 +225,8 @@ public class WikiPageRepository : IWikiPageRepository
 
         if (wikiPage != null)
         {
-            // Remove the associated folder
-            var folderPath = Path.Combine(_picturesPath, "articles", wikiPage.Id.ToString());
-            if (Directory.Exists(folderPath))
-            {
-                Directory.Delete(folderPath, true);
-            }
-            
-                    
+            _imageStorage.DeleteImageDirectory(wikiPage.Id);
+
             // Remove the old article from the category
             if (wikiPage.CategoryId.HasValue)
             {
@@ -372,22 +257,11 @@ public class WikiPageRepository : IWikiPageRepository
             
             if (newId != null)
             {
-                // Rename the old folder to the new ID if new ID is not null
-                var oldFolderPath = Path.Combine(_picturesPath, "articles", id.ToString());
-                var newFolderPath = Path.Combine(_picturesPath, "articles", newId.ToString()!);
-                if (Directory.Exists(oldFolderPath))
-                {
-                    Directory.Move(oldFolderPath, newFolderPath);
-                }
+                _imageStorage.MoveImageDirectory(id, newId.Value);
             }
             else
             {
-                // Delete the old folder if new ID is null
-                var oldFolderPath = Path.Combine(_picturesPath, "articles", id.ToString());
-                if (Directory.Exists(oldFolderPath))
-                {
-                    Directory.Delete(oldFolderPath, true);
-                }
+                _imageStorage.DeleteImageDirectory(id);
             }
 
             return true;
@@ -412,37 +286,12 @@ public class WikiPageRepository : IWikiPageRepository
         
         if (wikiPage!=null)
         {
-            var directoryPath = Path.Combine(_picturesPath,"articles", wikiPage.Id.ToString());
-            if (Directory.Exists(directoryPath))
+            var images = _imageStorage.ReadImages(wikiPage.Id);
+            return new WPWithImagesOutputModel
             {
-                var imageFiles = Directory.GetFiles(directoryPath);
-                var images = imageFiles.Select(file =>
-                {
-                    var fileName = Path.GetFileName(file);
-                    var imageData = File.ReadAllBytes(file);
-                    var dataURL =
-                        $"data:image/{Path.GetExtension(fileName).TrimStart('.')};base64,{Convert.ToBase64String(imageData)}";
-                    return new ImageFormModel
-                    {
-                        FileName = fileName,
-                        DataURL = dataURL
-                    };
-                }).ToList();
-
-                return new WPWithImagesOutputModel
-                {
-                    UserSubmittedWikiPage = wikiPage,
-                    Images = images
-                };
-            }
-            else
-            {
-                return new WPWithImagesOutputModel
-                {
-                    UserSubmittedWikiPage = wikiPage,
-                    Images = null
-                };
-            }
+                UserSubmittedWikiPage = wikiPage,
+                Images = images.Count > 0 ? images : null
+            };
         }
 
         return null;
@@ -464,37 +313,12 @@ public class WikiPageRepository : IWikiPageRepository
         
         if (wikiPage!=null)
         {
-            var directoryPath = Path.Combine(_picturesPath,"articles", wikiPage.Id.ToString());
-            if (Directory.Exists(directoryPath))
+            var images = _imageStorage.ReadImages(wikiPage.Id);
+            return new WPWithImagesOutputModel
             {
-                var imageFiles = Directory.GetFiles(directoryPath);
-                var images = imageFiles.Select(file =>
-                {
-                    var fileName = Path.GetFileName(file);
-                    var imageData = File.ReadAllBytes(file);
-                    var dataURL =
-                        $"data:image/{Path.GetExtension(fileName).TrimStart('.')};base64,{Convert.ToBase64String(imageData)}";
-                    return new ImageFormModel
-                    {
-                        FileName = fileName,
-                        DataURL = dataURL
-                    };
-                }).ToList();
-
-                return new WPWithImagesOutputModel
-                {
-                    UserSubmittedWikiPage = wikiPage,
-                    Images = images
-                };
-            }
-            else
-            {
-                return new WPWithImagesOutputModel
-                {
-                    UserSubmittedWikiPage = wikiPage,
-                    Images = null
-                };
-            }
+                UserSubmittedWikiPage = wikiPage,
+                Images = images.Count > 0 ? images : null
+            };
         }
 
         return null;

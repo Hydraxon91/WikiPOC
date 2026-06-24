@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
 using wiki_backend.Services.Settings;
+using wiki_backend.Services.Storage;
 
 namespace IntegrationTests.Repositories
 {
@@ -17,7 +18,8 @@ namespace IntegrationTests.Repositories
             ResetDatabase();
             var categoryRepository = new CategoryRepository(DbContext);
             var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
-            _repository = new WikiPageRepository(DbContext, categoryRepository, storageSettings);
+            var imageStorage = new ImageStorageService(storageSettings);
+            _repository = new WikiPageRepository(DbContext, categoryRepository, imageStorage);
         }
 
         [Test]

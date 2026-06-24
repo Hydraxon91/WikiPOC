@@ -9,6 +9,7 @@ using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
 using wiki_backend.Services.Settings;
+using wiki_backend.Services.Storage;
 
 namespace IntegrationTests.ControllerTests.ArticleControllerTests;
 
@@ -34,7 +35,8 @@ public class WikiPageControllerTests : IntegrationTestBase
         
         var categoryRepository = new CategoryRepository(DbContext);
         var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
-        _wikiPageRepository = new WikiPageRepository(DbContext, categoryRepository, storageSettings);
+        var imageStorage = new ImageStorageService(storageSettings);
+        _wikiPageRepository = new WikiPageRepository(DbContext, categoryRepository, imageStorage);
         _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         _controller = new WikiPagesController(_wikiPageRepository, categoryRepository);
         ResetDatabase();

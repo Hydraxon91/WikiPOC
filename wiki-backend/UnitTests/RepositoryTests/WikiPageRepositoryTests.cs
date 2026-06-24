@@ -4,11 +4,10 @@ using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
 using wiki_backend.DatabaseServices.Repositories;
-using wiki_backend.Services.Settings;
+using wiki_backend.Services.Storage;
 
 namespace UnitTests.RepositoryTests;
 [TestFixture]
@@ -33,8 +32,9 @@ public class WikiPageRepositoryTests
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
         var categoryRepository = new CategoryRepository(_wikiDbContext);
-        var storageSettings = Options.Create(new StorageSettings { PicturesPath = "test_path" });
-        _wikiPageRepository = new WikiPageRepository(_wikiDbContext, categoryRepository, storageSettings);
+        var mockImageStorage = new Mock<IImageStorageService>();
+        mockImageStorage.Setup(s => s.ReadImages(It.IsAny<Guid>())).Returns(new List<ImageFormModel>());
+        _wikiPageRepository = new WikiPageRepository(_wikiDbContext, categoryRepository, mockImageStorage.Object);
     }
     
     [TearDown]
@@ -84,8 +84,9 @@ public class WikiPageRepositoryTests
         await _wikiDbContext.SaveChangesAsync();
 
         var categoryRepository = new CategoryRepository(_wikiDbContext);
-        var storageSettings = Options.Create(new StorageSettings { PicturesPath = "test_path" });
-        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository, storageSettings);
+        var mockImageStorage = new Mock<IImageStorageService>();
+        mockImageStorage.Setup(s => s.ReadImages(It.IsAny<Guid>())).Returns(new List<ImageFormModel>());
+        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository, mockImageStorage.Object);
 
         // Act
         var result = await repository.GetByIdAsync(articleId1);
@@ -154,8 +155,9 @@ public class WikiPageRepositoryTests
         await _wikiDbContext.SaveChangesAsync();
 
         var categoryRepository = new CategoryRepository(_wikiDbContext);
-        var storageSettings = Options.Create(new StorageSettings { PicturesPath = "test_path" });
-        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository, storageSettings);
+        var mockImageStorage = new Mock<IImageStorageService>();
+        mockImageStorage.Setup(s => s.ReadImages(It.IsAny<Guid>())).Returns(new List<ImageFormModel>());
+        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository, mockImageStorage.Object);
 
         // Act
         var result = await repository.GetByTitleAsync(expectedTitle);
