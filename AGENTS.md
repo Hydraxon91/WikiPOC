@@ -97,7 +97,7 @@ WikiPOC/
 ### Prerequisites
 - Docker & Docker Compose
 - .NET 10 SDK (for local backend dev)
-- Node.js 16+ (for local frontend dev)
+- Node.js 20+ (for local frontend dev)
 
 ### Run with Docker (Recommended)
 ```bash
@@ -114,7 +114,7 @@ docker-compose up --build
 dotnet restore && dotnet run
 
 # Frontend (wiki-frontend/)
-npm install && npm start
+npm install && npm run dev
 ```
 
 ## Environment Variables (.env)
@@ -125,7 +125,6 @@ Required in root `.env` file:
 # Database
 ASPNETCORE_CONNECTIONSTRING=Server=sql-server;Database=WikiDb;User=sa;Password=<DB_PASSWORD>
 DB_PASSWORD=YourStrongPassword123!
-INTEGRATIONTEST_CONNECTIONSTRING=Server=localhost;Database=master;User=sa;Password=<DB_PASSWORD>
 
 # Admin User
 ADMINUSER_EMAIL=admin@admin.com
@@ -146,10 +145,9 @@ JWT_TOKEN_TIME=60
 # File Paths
 PICTURES_PATH=/path/to/local/pictures
 PICTURES_PATH_CONTAINER=/pictures
-PROFILE_PICTURES_PATH=/path/to/profile/pictures
 
 # Frontend API URL
-REACT_APP_API_URL=http://localhost:5050
+VITE_API_URL=http://localhost:5050
 ```
 
 ## Authentication & Authorization
@@ -194,15 +192,15 @@ dotnet test wiki-backend/IntegrationTests/IntegrationTests.csproj
 
 # Migrations (run from wiki-backend/wiki-backend/)
 dotnet ef migrations add MigrationName
-dotnet ef database update
+dotnet ef database update -- --environment Development
 ```
 
 ### Frontend
 ```bash
 cd wiki-frontend
 
-# Dev server
-npm start
+# Dev server (Vite)
+npm run dev
 
 # Build production
 npm run build
@@ -249,6 +247,8 @@ docker-compose logs -f
 **Services:**
 - `IAuthService` / `AuthService` - Authentication logic
 - `ITokenServices` / `TokenServices` - JWT token generation
+- `IImageStorageService` / `ImageStorageService` - Image file I/O
+- `IUserAuthorizationService` / `UserAuthorizationService` - Role checks
 
 ### Frontend (wiki-frontend/src/)
 
@@ -257,10 +257,11 @@ docker-compose logs -f
 - `UserContextProvider` - Current user state
 
 **API Layer (src/Api/):**
-- `wikiApi.js` - Wiki pages, categories, styles
-- `wikiAuthApi.js` - Login/register
-- `wikiUserApi.js` - User profiles
-- `forumApi.js` - Forum operations
+- `wikiApi.ts` - Wiki pages, categories, styles
+- `wikiAuthApi.ts` - Login/register
+- `wikiUserApi.ts` - User profiles
+- `forumApi.ts` - Forum operations
+- `apiClient.ts` - Centralized HTTP client (handles auth, JSON, errors)
 
 **Key Pages:**
 - `MainPage/` - Home with article list
@@ -294,7 +295,7 @@ docker-compose logs -f
 
 ### Integration Tests
 - Use real SQL Server (separate test DB per run)
-- Require `INTEGRATIONTEST_CONNECTIONSTRING` in .env
+- Require `INTEGRATIONTEST_CONNECTIONSTRING` env var (set in `wiki-backend/IntegrationTests/.env`)
 - Auto-create unique test databases, clean up on dispose
 - Run with: `dotnet test wiki-backend/IntegrationTests/`
 
@@ -302,13 +303,13 @@ docker-compose logs -f
 
 1. **Docker startup race**: Backend may start before SQL Server is ready. If you see connection errors, the `wait-for-it.sh` script in docker-compose handles this (uncomment entrypoint if needed).
 
-2. **Frontend build**: `REACT_APP_API_URL` must be passed as build arg to Docker. The frontend Dockerfile captures this correctly.
+2. **Frontend build**: `VITE_API_URL` must be passed as build arg to Docker. The frontend Dockerfile captures this correctly.
 
 3. **JWT expiration**: Default 60 minutes (`JWT_TOKEN_TIME`). Adjust in .env.
 
 4. **Database migrations**: Backend auto-migrates on startup. For manual migrations, run from `wiki-backend/wiki-backend/` directory.
 
-5. **CORS**: Configured for `http://localhost:3000` and `http://localhost:3001`. Update `Program.cs:AddCors()` if using different ports.
+5. **CORS**: Configured for `http://localhost:3000` and `http://localhost:3001`. Override via `AllowedOrigins` env var (semicolon-separated). Update `Program.cs:AddCors()` if using different ports.
 
 6. **Profile pictures path**: Ensure `PICTURES_PATH` directory exists on host machine before starting Docker.
 
@@ -316,6 +317,7 @@ docker-compose logs -f
 
 - `wiki-backend/wiki-backend/Program.cs` - Main entry point, DI setup, seeding
 - `wiki-backend/wiki-backend/Identity/IdentityData.cs` - Role/policy constants
-- `wiki-frontend/src/App.js` - React router, protected routes
-- `wiki-frontend/src/Api/wikiApi.js` - API client for wiki operations
+- `wiki-frontend/src/App.tsx` - React router, protected routes
+- `wiki-frontend/src/Api/wikiApi.ts` - API client for wiki operations
+- `wiki-frontend/src/Api/apiClient.ts` - Centralized HTTP client
 - `docker-compose.yml` - Service orchestration
