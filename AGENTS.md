@@ -24,6 +24,20 @@
   (see confirmation rule above), not for routine refactors or migrations with
   a clear precedent already in this codebase.
 
+  ## Commit Discipline
+
+- **Keep commits atomic.** Each commit should represent one logical change —
+  not a grab-bag of everything done in a session. If a task naturally splits
+  into unrelated parts (e.g. "migrate assertions" + "fix unrelated .env typo"
+  + "suppress a migration warning"), commit them separately, even if they
+  happened back-to-back in the same session.
+- **Commit message should describe the one thing, not summarize everything.**
+  If you're struggling to write a single clear sentence for what changed,
+  that's a sign the commit should be split.
+- **Don't bundle unrelated fixes "while you're in there."** If you notice an
+  unrelated issue while working on something else, mention it and ask, or
+  commit it separately — don't fold it into the current commit.
+
 ### Test Output Handling
 
 - **Save test output to a file once; don't re-run the suite to retry a filter.**
