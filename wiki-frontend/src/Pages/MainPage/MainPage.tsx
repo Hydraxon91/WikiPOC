@@ -15,7 +15,6 @@ const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, cate
   const [userRole, setUserRole] = useState(null);
 
   useEffect(()=>{
-    // console.log(decodedToken);
     if (decodedToken) {
       updateUser(decodedToken);
       setUserName(decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
@@ -35,7 +34,6 @@ const MainPage = ({ decodedToken, handleLogout, cookies, setWikiPageTitles, cate
   const fetchWikiPageTitles = async () => {
     try {
       const pages = await getWikiPageTitles();
-      // console.log(pages);
       setWikiPageTitles(pages);
     } catch (error) {
       console.error("Error fetching WikiPages:", error);

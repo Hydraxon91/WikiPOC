@@ -23,7 +23,6 @@ const EditStylePage = ({cookies}) =>{
     },[newStyles, backUpStyles, setStyles]);
 
     useEffect(()=>{
-        console.log(manualEdit);
     },[manualEdit])
 
     useEffect(()=>{
@@ -40,7 +39,6 @@ const EditStylePage = ({cookies}) =>{
       };
 
     const handleUpdate = () => {
-        console.log("Handle Update clicked");
         updateStyles(newStyles, logoPicture, cookies);
         setStyles(newStyles);
         setBackupStyles(prevStyles => ({ ...prevStyles, ...newStyles }));

@@ -15,7 +15,6 @@ const ForumLandingPage = () => {
     }, []);
 
     // useEffect(() => {
-    //     console.log(topics);
     // }, [topics]);
     
     const getCommentsLength = (topic) =>{

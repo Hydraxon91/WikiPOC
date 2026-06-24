@@ -15,15 +15,12 @@ const CompareUpdatePage = () => {
     const [updatePage, setUpdatePage] = useState();
 
     useEffect(() => {
-        // console.log(location.pathname);
         const match = location.pathname.match(/\/([a-f\d-]+)$/i);
-        // console.log(match);
         const numberAtEnd = match ? match[1] : null;
         fetchUpdatePage(numberAtEnd);
     }, [location.pathname]);
 
     useEffect(()=>{
-        // console.log(updatePage);
         if (updatePage && (updatePage as any).userSubmittedWikiPage?.wikiPageId) {
             fetchOriginalPage((updatePage as any).userSubmittedWikiPage.wikiPageId);
         }
@@ -32,7 +29,6 @@ const CompareUpdatePage = () => {
     const fetchUpdatePage = async (id) => {
         try {
             const data = await getUpdatePageById(id, cookies['jwt_token'])
-            console.log(data);
             setUpdatePage(data)
         } catch (error) {
           console.error('Error fetching page:', error);
@@ -42,7 +38,6 @@ const CompareUpdatePage = () => {
       const fetchOriginalPage = async (title) => {
         try {
             const data = await getWikiPageById(title)
-            // console.log(data);
             setOriginalPage(data)
         } catch (error) {
           console.error('Error fetching page:', error);
@@ -50,8 +45,6 @@ const CompareUpdatePage = () => {
       };
 
       const handleAccept = () => {
-        // console.log(updatePage);
-        // console.log(originalPage);
         acceptUserSubmittedUpdate((updatePage as any).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
@@ -64,7 +57,6 @@ const CompareUpdatePage = () => {
       };
 
       const handleDecline = () => {
-        // console.log(updatePage.userSubmittedWikiPage.id);
         declineUserSubmittedWikiPage((updatePage as any).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));

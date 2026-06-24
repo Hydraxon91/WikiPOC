@@ -30,7 +30,6 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
   const trimText = (text) => {
     const textRegex = /<p>(.*?)<\/p>/g;
     const textMatch = Array.from(text.matchAll(textRegex)).map(match => match[1]);
-    // console.log(textMatch);
     if (textMatch) {
       const trimmedText = textMatch.map(match => `<p>${match.trim()}</p>`).join('\n');
       return <div dangerouslySetInnerHTML={{ __html: trimmedText }} />

@@ -41,7 +41,6 @@ export default function RegisterPageComponent(){
     }
     
     useEffect(()=>{
-        console.log(response);
         if (response?.DuplicateEmail || response?.errors?.Email) {
             setEmailInputClass("register-inputbox wrong-credential")
         }

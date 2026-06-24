@@ -15,7 +15,6 @@ const LegacyEditPageComponent = ({newPage, title, handleFieldChange, siteSub, ro
   const getCategories = async () => {
     try {
       const fetchedCategories = await fetchCategories();
-      console.log(fetchedCategories);
       // const categoryNames = fetchedCategories.map(category => (category.categoryName));
       setCategories(fetchedCategories);
     } catch (error) {

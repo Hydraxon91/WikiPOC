@@ -9,7 +9,6 @@ const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit,
         setCommentText(event);
     };
 
-    useEffect(()=>{console.log(quotedPostId);},[])
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -22,7 +21,6 @@ const ForumSubmitCommentComponent = ({ user, page, cookies, handleCommentSubmit,
             replyToCommentId: quotedPostId,
             isEdited: false,
         };
-        console.log(newComment);
         try {
             await postComment(newComment, cookies, user);
             setCommentText('');

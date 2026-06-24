@@ -16,7 +16,6 @@ const LegacyEditPage = ({ page, handleFieldChange, handleSave, category, setCate
   const [emptyFields, setEmptyFields] = useState([]);
 
   useEffect(() => {
-    console.log(page);
     if (page) {
       setTemporaryPage(page);
       setTitle(page.title);

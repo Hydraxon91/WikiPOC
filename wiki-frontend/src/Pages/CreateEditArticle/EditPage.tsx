@@ -23,7 +23,6 @@ const EditPage = ({ page, handleEdit, handleCreate }: any) => {
   const [legacyPage, setLegacyPage] = useState(false);
 
   useEffect(() => {
-    console.log(page);
     if (page) {
       setTemporaryPage(page.wikiPage || page.userSubmittedWikiPage);
       setTitle(page.wikiPage.title || page.userSubmittedWikiPage.title);
@@ -34,7 +33,6 @@ const EditPage = ({ page, handleEdit, handleCreate }: any) => {
       setCategory(page.wikiPage.categoryId || page.userSubmittedWikiPage.categoryId);
       page.wikiPage.paragraphs && setParagraphs([...page.wikiPage.paragraphs]);
       const renamedImages = page.images ? page.images.map(image => ({ ...image, name: image.fileName })) : [];
-      console.log("asdasd");
       setImages(renamedImages);
       setUsedImages(renamedImages);
       page.wikiPage && setLegacyPage(page.wikiPage.legacyWikiPage);
@@ -59,12 +57,9 @@ const EditPage = ({ page, handleEdit, handleCreate }: any) => {
 
   const handleContentChange = (value) => {
     // setContent(value);
-    // console.log(images);
     const hrefValues = extractHrefValues(value);
-    // console.log(hrefValues);
     handleFieldChange('content', value);
     const usedImagesArray = images && images.filter(image => hrefValues.some(href => href.includes(image.name)));
-    // console.log(usedImagesArray);
     setUsedImages(usedImagesArray); 
     updateTemporaryPage('content', value);
 };
@@ -127,11 +122,9 @@ const EditPage = ({ page, handleEdit, handleCreate }: any) => {
       : 
       handleEdit(temporaryPage, usedImages);
       // : handleEdit(temporaryPage, usedImages);
-    console.log(savePromise);
 
     savePromise
       .then((data) => {
-        // console.log(data);
         // setCurrentWikiPage(temporaryPage);
         alert('Successfully submitted page!')
         navigate(`/`);

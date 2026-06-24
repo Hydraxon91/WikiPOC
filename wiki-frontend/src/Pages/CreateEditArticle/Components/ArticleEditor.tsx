@@ -37,7 +37,6 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
           timeoutId = setTimeout(() => {
             const selection = editor.getSelection();
             if (selection !== null) {
-              // console.log(selection);
               setLastSelection(selection);
             }
           }, 100); // Adjust the delay as needed
@@ -148,7 +147,6 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
 const getCategories = async () => {
   try {
     const fetchedCategories = await fetchCategories();
-    console.log(fetchedCategories);
     // const categoryNames = fetchedCategories.map(category => (category.categoryName));
     setCategories(fetchedCategories);
   } catch (error) {

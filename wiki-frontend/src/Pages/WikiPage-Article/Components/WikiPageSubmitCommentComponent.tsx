@@ -21,7 +21,6 @@ const WikiPageSubmitCommentComponent = ({ user, page, cookies, handleCommentSubm
         };
 
         try {
-            console.log(newComment);
             await postComment(newComment, cookies, user);
             setCommentText('');
             (newComment as any).userProfile = user;

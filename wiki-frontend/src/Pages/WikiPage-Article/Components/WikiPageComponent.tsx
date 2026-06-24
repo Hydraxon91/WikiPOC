@@ -13,10 +13,8 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
 
   useEffect(() => {
     if (page) {
-      // console.log(page);
       const extractedTitles = extractParagraphTitles(page.content);
       setPTitles(extractedTitles);
-      // console.log(extractedTitles);
     }
   }, [page]);
 
@@ -94,7 +92,6 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
           const imageRegex = /<a\s+href="([^"]+)"[^>]*>ImageRef<\/a>##/;
           const textRegex = /<p>(.*?)<\/p>/g;
 
-          // console.log("Part:", part); // Log the part content
           // Match each part of the paragraph
           const classMatch = part.match(classRegex);
           const imageMatch = part.match(imageRegex);
@@ -125,7 +122,6 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
 
   const imageRefRegex = (htmlContent) =>{
     const imageRefRegex = /src="([^"]+)"/g;
-    // console.log(htmlContent);
 
     if (htmlContent) {
       // Replace image references with actual image data URLs
@@ -141,7 +137,6 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
   }
 
   const createHTMLElement = (className, imageRef, text) =>{
-    // console.log(images);
     const image = images && images.find(image => image.name === imageRef || image.fileName === imageRef);
     if (image) {
       const constructedParts = `<div class="thumbnail ${className}" style="background-color: ${styles.articleRightColor};">

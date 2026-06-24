@@ -38,7 +38,6 @@ const ProfileEditorElement = ({user, cookies}) => {
     };
 
       useEffect(()=>{
-        // console.log(user);
         if (user?.displayName) {
           setProfilePicture(user.profilePicture);
           setDisplayName(user.displayName);

@@ -94,7 +94,6 @@ const ForumCommentComponent = ({ post, cookies, isPopupVisible, togglePopupVisib
                 <div>
                     {currentComments.map((comment, index) => (
                         <div key={index}>
-                            {/* {console.log(comment)} */}
                             <div className="fp-grid">
                                 <div className="fp-grid-row">
                                     <div className="fp-grid-cell"><Link to={`/profile/${comment.userProfile.userName}`}>{comment.userProfile.displayName}</Link></div>

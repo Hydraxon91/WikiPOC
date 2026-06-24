@@ -10,9 +10,7 @@ const CheckUserSubmittedPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // console.log(location.pathname);
         const match = location.pathname.match(/\/([a-f\d-]+)$/i);
-        // console.log(match);
         const numberAtEnd = match ? match[1] : null;
         fetchSubmittedPage(numberAtEnd);
     }, [location.pathname]);
@@ -21,7 +19,6 @@ const CheckUserSubmittedPage = () => {
     const fetchSubmittedPage = async (id) => {
         try {
             const data = await getNewPageById(id, cookies['jwt_token'])
-            console.log(data);
             setPage(data);
         } catch (error) {
           console.error('Error fetching page:', error);

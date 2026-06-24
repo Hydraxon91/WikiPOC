@@ -64,7 +64,6 @@ function App() {
     try {
       const data = await getWikiPageByTitle(decodedTitle);
       setCurrentWikiPage(data);
-      // console.log(data);
     } catch (error) {
       console.error('Error fetching page:', error);
     }
@@ -78,10 +77,8 @@ function App() {
 
 
   const handleCreate = (newPage, images) => {
-    console.log('Inside handleCreate');
     return createWikiPage(newPage, cookies["jwt_token"], decodedToken, images)
       .then((createdPage) => {
-        console.log('createWikiPage resolved:', createdPage);
         setWikiPageTitles([...wikiPageTitles, [createdPage.Title, createdPage.Category]]);
         return createdPage; // Ensure you're returning a value
       })
@@ -101,12 +98,8 @@ function App() {
   };
   
   const handleEdit = (updatedPage, images) => {
-    console.log(updatedPage);
-    console.log('Inside handleEdit');
-    console.log(images);
     return updateWikiPage(updatedPage, cookies["jwt_token"], decodedToken, images)
       .then((updatedWikiPage) => {
-        console.log('updateWikiPage resolved:', updatedWikiPage);
         setWikiPageTitles((prevPages) =>
           prevPages.map((page) => (page === updatedWikiPage.Title ? updatedWikiPage.Title : page))
         );
