@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using wiki_backend.Contracts;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests.ControllerTests.StyleControllerTests;
 
@@ -20,7 +22,8 @@ public class StyleControllerTests : IntegrationTestBase
     [SetUp]
     public async Task SetUp()
     {
-        _styleRepository = new StyleRepository(DbContext);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+        _styleRepository = new StyleRepository(DbContext, storageSettings);
         _controller = new StyleController(_styleRepository);
         ResetDatabase();
         await EnsureUserRoleExistsAsync();

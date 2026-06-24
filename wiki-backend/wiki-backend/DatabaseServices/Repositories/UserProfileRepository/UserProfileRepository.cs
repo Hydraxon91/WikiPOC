@@ -1,15 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace wiki_backend.DatabaseServices.Repositories;
 
 public class UserProfileRepository : IUserProfileRepository
 {
     private readonly WikiDbContext _context;
+    private readonly string _picturesPath;
 
-    public UserProfileRepository(WikiDbContext context)
+    public UserProfileRepository(WikiDbContext context, IOptions<StorageSettings> storageSettings)
     {
         _context = context;
+        _picturesPath = storageSettings.Value.PicturesPath;
     }
     
     public async Task<UserProfile?> GetByIdAsync(Guid id)
@@ -52,7 +56,7 @@ public class UserProfileRepository : IUserProfileRepository
         if (profilePictureFile != null)
         {
             var fileName = $"profile_pictures/{existingProfile.UserName}_pfp{Path.GetExtension(profilePictureFile.FileName)}";
-            var filePath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, fileName);
+            var filePath = Path.Combine(_picturesPath, fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await profilePictureFile.CopyToAsync(fileStream);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
 using DotNetEnv;
@@ -9,6 +10,7 @@ using wiki_backend.Contracts;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Services.Authentication;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests
 {
@@ -100,7 +102,14 @@ namespace IntegrationTests
         
         protected AuthController CreateAuthController()
         {
-            var tokenService = new TokenServices();
+            var jwtSettings = Options.Create(new JwtSettings
+            {
+                ValidIssuer = JwtValidIssuer,
+                ValidAudience = JwtValidAudience,
+                IssuerSigningKey = JwtIssuerSigningKey,
+                TokenTime = int.TryParse(JwtTokenTime, out var time) ? time : 30
+            });
+            var tokenService = new TokenServices(jwtSettings);
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             return new AuthController(new AuthService(userManager, tokenService));
         }
@@ -113,7 +122,8 @@ namespace IntegrationTests
         
         protected UserProfileController CreateUserProfileController()
         {
-            var userProfileRepository = new UserProfileRepository(DbContext);
+            var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+            var userProfileRepository = new UserProfileRepository(DbContext, storageSettings);
             return new UserProfileController(userProfileRepository);
         }
         

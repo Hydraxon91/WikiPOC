@@ -4,11 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NUnit.Framework;
 using wiki_backend.Identity;
 using wiki_backend.Models;
 using wiki_backend.Services.Authentication;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests.Services
 {
@@ -20,13 +22,15 @@ namespace IntegrationTests.Services
         [SetUp]
         public void Setup()
         {
-            // Mock environment variables
-            Environment.SetEnvironmentVariable("JWT_TOKEN_TIME", JwtTokenTime);
-            Environment.SetEnvironmentVariable("JWT_VALID_ISSUER", JwtValidIssuer);
-            Environment.SetEnvironmentVariable("JWT_VALID_AUDIENCE", JwtValidAudience);
-            Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", JwtIssuerSigningKey);
+            var jwtSettings = Options.Create(new JwtSettings
+            {
+                ValidIssuer = JwtValidIssuer,
+                ValidAudience = JwtValidAudience,
+                IssuerSigningKey = JwtIssuerSigningKey,
+                TokenTime = int.TryParse(JwtTokenTime, out var time) ? time : 30
+            });
 
-            _tokenServices = new TokenServices();
+            _tokenServices = new TokenServices(jwtSettings);
         }
 
         [Test]

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using wiki_backend.Services.Profile;
+using Microsoft.Extensions.Options;
+using wiki_backend.Services.Settings;
 
 namespace wiki_backend.Controllers;
 
@@ -7,18 +8,18 @@ namespace wiki_backend.Controllers;
 [Route("api/[controller]")]
 public class ImageController : ControllerBase
 {
-    private readonly ProfileImageSettings _profileImageSettings;
+    private readonly string _picturesPath;
 
-    public ImageController(ProfileImageSettings profileImageSettings)
+    public ImageController(IOptions<StorageSettings> storageSettings)
     {
-        _profileImageSettings = profileImageSettings;
+        _picturesPath = storageSettings.Value.PicturesPath;
     }
 
     [HttpGet("profile/{imageName}")]
     public IActionResult GetImage(string imageName)
     {
         var safeName = Path.GetFileName(imageName);
-        var imagePath = Path.Combine(_profileImageSettings.ProfileImagesPath, "profile_pictures/", safeName);
+        var imagePath = Path.Combine(_picturesPath, "profile_pictures/", safeName);
         if (!System.IO.File.Exists(imagePath))
         {
             return NotFound(imagePath);
@@ -31,7 +32,7 @@ public class ImageController : ControllerBase
     public IActionResult GetLogo(string imageName)
     {
         var safeName = Path.GetFileName(imageName);
-        var imagePath = Path.Combine(_profileImageSettings.ProfileImagesPath, "logo/", safeName);
+        var imagePath = Path.Combine(_picturesPath, "logo/", safeName);
         if (!System.IO.File.Exists(imagePath))
         {
             return NotFound(imagePath);

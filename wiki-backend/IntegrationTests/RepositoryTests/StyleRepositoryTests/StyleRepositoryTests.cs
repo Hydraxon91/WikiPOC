@@ -2,9 +2,11 @@
 using IntegrationTests.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Moq;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests.Repositories
 {
@@ -17,7 +19,8 @@ namespace IntegrationTests.Repositories
         public void SetUp()
         {
             ResetDatabase();
-            _repository = new StyleRepository(DbContext);
+            var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+            _repository = new StyleRepository(DbContext, storageSettings);
         }
 
         [Test]

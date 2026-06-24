@@ -1,15 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace wiki_backend.DatabaseServices.Repositories;
 
 public class StyleRepository : IStyleRepository
 {
     private readonly WikiDbContext _dbContext;
+    private readonly string _picturesPath;
 
-    public StyleRepository(WikiDbContext dbContext) 
+    public StyleRepository(WikiDbContext dbContext, IOptions<StorageSettings> storageSettings) 
     {
         _dbContext = dbContext;
+        _picturesPath = storageSettings.Value.PicturesPath;
     }
 
     public async Task<StyleModel> GetStylesAsync()
@@ -23,7 +27,7 @@ public class StyleRepository : IStyleRepository
         if (logoPictureFile != null)
         {
             var fileName = $"logo/logo{Path.GetExtension(logoPictureFile.FileName)}";
-            var filePath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, fileName);
+            var filePath = Path.Combine(_picturesPath, fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await logoPictureFile.CopyToAsync(fileStream);

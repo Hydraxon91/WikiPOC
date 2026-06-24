@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests.Repositories
 {
@@ -14,7 +16,8 @@ namespace IntegrationTests.Repositories
         {
             ResetDatabase();
             var categoryRepository = new CategoryRepository(DbContext);
-            _repository = new WikiPageRepository(DbContext, categoryRepository);
+            var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+            _repository = new WikiPageRepository(DbContext, categoryRepository, storageSettings);
         }
 
         [Test]

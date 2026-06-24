@@ -1,20 +1,25 @@
-﻿using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace wiki_backend.Services.Authentication;
 
 public class TokenServices : ITokenServices
 {
+    private readonly JwtSettings _jwtSettings;
+
+    public TokenServices(IOptions<JwtSettings> jwtSettings)
+    {
+        _jwtSettings = jwtSettings.Value;
+    }
     
     public string CreateToken(ApplicationUser user, string role)
     {
-        var expirationMinutes = int.TryParse(Environment.GetEnvironmentVariable("JWT_TOKEN_TIME"), out int expirationFromEnv) ? expirationFromEnv : 30;
-        var expiration = DateTime.UtcNow.AddMinutes(expirationMinutes);
+        var expiration = DateTime.UtcNow.AddMinutes(_jwtSettings.TokenTime);
         var token = CreateJwtToken(
             CreateClaims(user, role),
             CreateSigningCredentials(),
@@ -26,43 +31,36 @@ public class TokenServices : ITokenServices
     
     private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, DateTime expiration) =>
         new JwtSecurityToken(
-            Environment.GetEnvironmentVariable("JWT_VALID_ISSUER"),
-            Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE"),
+            _jwtSettings.ValidIssuer,
+            _jwtSettings.ValidAudience,
             claims,
             expires: expiration,
             signingCredentials: credentials
         );
 
-    private List<Claim> CreateClaims(ApplicationUser user, string? role)
+    private static List<Claim> CreateClaims(ApplicationUser user, string? role)
     {
-        try
+        var claims = new List<Claim>
         {
-            var claims = new List<Claim>
-            {
-                new(JwtRegisteredClaimNames.Sub, "TokenForTheApiWithAuth"),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer),
-                new(ClaimTypes.NameIdentifier, user.Id),
-                new(ClaimTypes.Name, user.UserName!),
-                new(ClaimTypes.Email, user.Email!),
-            };
+            new(JwtRegisteredClaimNames.Sub, "TokenForTheApiWithAuth"),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer),
+            new(ClaimTypes.NameIdentifier, user.Id),
+            new(ClaimTypes.Name, user.UserName!),
+            new(ClaimTypes.Email, user.Email!),
+        };
 
-            if (role != null)
-                claims.Add(new Claim(ClaimTypes.Role, role));
+        if (role != null)
+            claims.Add(new Claim(ClaimTypes.Role, role));
 
-            return claims;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        return claims;
     }
     
     private SigningCredentials CreateSigningCredentials()
     {
         return new SigningCredentials(
             new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY")!)
+                Encoding.UTF8.GetBytes(_jwtSettings.IssuerSigningKey)
             ),
             SecurityAlgorithms.HmacSha256
         );

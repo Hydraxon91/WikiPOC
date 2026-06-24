@@ -1,7 +1,7 @@
-﻿using Azure;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.Models;
-using System;
+using wiki_backend.Services.Settings;
 
 namespace wiki_backend.DatabaseServices.Repositories;
 
@@ -9,11 +9,13 @@ public class WikiPageRepository : IWikiPageRepository
 {
     private readonly WikiDbContext _context;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly string _picturesPath;
 
-    public WikiPageRepository(WikiDbContext context, ICategoryRepository categoryRepository)
+    public WikiPageRepository(WikiDbContext context, ICategoryRepository categoryRepository, IOptions<StorageSettings> storageSettings)
     {
         _context = context;
         _categoryRepository = categoryRepository;
+        _picturesPath = storageSettings.Value.PicturesPath;
     }
 
     public async Task<List<TitleAndCategory>> GetAllTitlesAndCategoriesAsync()
@@ -50,7 +52,7 @@ public class WikiPageRepository : IWikiPageRepository
 
         if (wikiPage != null)
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, "articles",
+            var directoryPath = Path.Combine(_picturesPath, "articles",
                 wikiPage.Id.ToString());
             if (Directory.Exists(directoryPath))
             {
@@ -100,7 +102,7 @@ public class WikiPageRepository : IWikiPageRepository
 
         if (wikiPage != null)
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, "articles",
+            var directoryPath = Path.Combine(_picturesPath, "articles",
                 wikiPage.Id.ToString());
             if (Directory.Exists(directoryPath))
             {
@@ -143,7 +145,7 @@ public class WikiPageRepository : IWikiPageRepository
         {
             foreach (var image in images)
             {
-                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!,
+                var directoryPath = Path.Combine(_picturesPath,
                     "articles", wikiPage.Id.ToString());
                 Directory.CreateDirectory(directoryPath);
                 var filePath = Path.Combine(directoryPath, image.FileName);
@@ -173,7 +175,7 @@ public class WikiPageRepository : IWikiPageRepository
         {
             foreach (var image in images)
             {
-                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!,
+                var directoryPath = Path.Combine(_picturesPath,
                     "articles", wikiPage.Id.ToString());
                 Directory.CreateDirectory(directoryPath);
                 var filePath = Path.Combine(directoryPath, image.FileName);
@@ -267,7 +269,7 @@ public class WikiPageRepository : IWikiPageRepository
         {
             foreach (var image in images)
             {
-                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!,
+                var directoryPath = Path.Combine(_picturesPath,
                     "articles", existingWikiPage.Id.ToString());
                 Directory.CreateDirectory(directoryPath);
                 var filePath = Path.Combine(directoryPath, image.FileName);
@@ -307,7 +309,7 @@ public class WikiPageRepository : IWikiPageRepository
         {
             foreach (var image in images)
             {
-                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!,
+                var directoryPath = Path.Combine(_picturesPath,
                     "articles", updatedWikiPage.Id.ToString());
                 Directory.CreateDirectory(directoryPath);
                 var filePath = Path.Combine(directoryPath, image.FileName);
@@ -333,7 +335,7 @@ public class WikiPageRepository : IWikiPageRepository
         if (wikiPage != null)
         {
             // Remove the associated folder
-            var folderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, "articles", wikiPage.Id.ToString());
+            var folderPath = Path.Combine(_picturesPath, "articles", wikiPage.Id.ToString());
             if (Directory.Exists(folderPath))
             {
                 Directory.Delete(folderPath, true);
@@ -371,8 +373,8 @@ public class WikiPageRepository : IWikiPageRepository
             if (newId != null)
             {
                 // Rename the old folder to the new ID if new ID is not null
-                var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, "articles", id.ToString());
-                var newFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, "articles", newId.ToString()!);
+                var oldFolderPath = Path.Combine(_picturesPath, "articles", id.ToString());
+                var newFolderPath = Path.Combine(_picturesPath, "articles", newId.ToString()!);
                 if (Directory.Exists(oldFolderPath))
                 {
                     Directory.Move(oldFolderPath, newFolderPath);
@@ -381,7 +383,7 @@ public class WikiPageRepository : IWikiPageRepository
             else
             {
                 // Delete the old folder if new ID is null
-                var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, "articles", id.ToString());
+                var oldFolderPath = Path.Combine(_picturesPath, "articles", id.ToString());
                 if (Directory.Exists(oldFolderPath))
                 {
                     Directory.Delete(oldFolderPath, true);
@@ -410,7 +412,7 @@ public class WikiPageRepository : IWikiPageRepository
         
         if (wikiPage!=null)
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!,"articles", wikiPage.Id.ToString());
+            var directoryPath = Path.Combine(_picturesPath,"articles", wikiPage.Id.ToString());
             if (Directory.Exists(directoryPath))
             {
                 var imageFiles = Directory.GetFiles(directoryPath);
@@ -462,7 +464,7 @@ public class WikiPageRepository : IWikiPageRepository
         
         if (wikiPage!=null)
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!,"articles", wikiPage.Id.ToString());
+            var directoryPath = Path.Combine(_picturesPath,"articles", wikiPage.Id.ToString());
             if (Directory.Exists(directoryPath))
             {
                 var imageFiles = Directory.GetFiles(directoryPath);

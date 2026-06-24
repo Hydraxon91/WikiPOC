@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests.ControllerTests.ArticleControllerTests;
 
@@ -31,7 +33,8 @@ public class WikiPageControllerTests : IntegrationTestBase
         var signingKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
         
         var categoryRepository = new CategoryRepository(DbContext);
-        _wikiPageRepository = new WikiPageRepository(DbContext, categoryRepository);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+        _wikiPageRepository = new WikiPageRepository(DbContext, categoryRepository, storageSettings);
         _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         _controller = new WikiPagesController(_wikiPageRepository, categoryRepository);
         ResetDatabase();

@@ -4,9 +4,11 @@ using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
 using wiki_backend.DatabaseServices.Repositories;
+using wiki_backend.Services.Settings;
 
 namespace UnitTests.RepositoryTests;
 [TestFixture]
@@ -31,7 +33,8 @@ public class WikiPageRepositoryTests
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
         var categoryRepository = new CategoryRepository(_wikiDbContext);
-        _wikiPageRepository = new WikiPageRepository(_wikiDbContext, categoryRepository);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = "test_path" });
+        _wikiPageRepository = new WikiPageRepository(_wikiDbContext, categoryRepository, storageSettings);
     }
     
     [TearDown]
@@ -81,7 +84,8 @@ public class WikiPageRepositoryTests
         await _wikiDbContext.SaveChangesAsync();
 
         var categoryRepository = new CategoryRepository(_wikiDbContext);
-        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = "test_path" });
+        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository, storageSettings);
 
         // Act
         var result = await repository.GetByIdAsync(articleId1);
@@ -150,7 +154,8 @@ public class WikiPageRepositoryTests
         await _wikiDbContext.SaveChangesAsync();
 
         var categoryRepository = new CategoryRepository(_wikiDbContext);
-        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = "test_path" });
+        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository, storageSettings);
 
         // Act
         var result = await repository.GetByTitleAsync(expectedTitle);

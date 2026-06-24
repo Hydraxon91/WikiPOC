@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace UnitTests.RepositoryTests;
 
@@ -25,7 +27,8 @@ public class UserProfileRepositoryTests
         _wikiDbContext = new WikiDbContext(options, configuration: null!); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
-        _userProfileRepository = new UserProfileRepository(_wikiDbContext);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = "test_path" });
+        _userProfileRepository = new UserProfileRepository(_wikiDbContext, storageSettings);
     }
     
     [TearDown]

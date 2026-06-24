@@ -15,20 +15,23 @@ using wiki_backend.Identity;
 using wiki_backend.Models;
 using wiki_backend.Models.ForumModels;
 using wiki_backend.Services.Authentication;
-using wiki_backend.Services.Profile;
+using wiki_backend.Services.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Get the path for storing profile images from environment variables
-// var profilePicturesPath = Environment.GetEnvironmentVariable("PROFILE_PICTURES_PATH");
-var picturesPath = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER") ?? string.Empty;
+// Register strongly-typed settings from environment variables
+builder.Services.Configure<StorageSettings>(options =>
+{
+    options.PicturesPath = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER") ?? string.Empty;
+});
 
-// Ensure the path is not null or empty //Comment these lines when running migrations
-// if (string.IsNullOrEmpty(picturesPath))
-// {
-//     throw new Exception($"PROFILE_PICTURES_PATH environment variable is not set. {picturesPath}");
-// }
-
+builder.Services.Configure<JwtSettings>(options =>
+{
+    options.ValidIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER") ?? string.Empty;
+    options.ValidAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE") ?? string.Empty;
+    options.IssuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY") ?? string.Empty;
+    options.TokenTime = int.TryParse(Environment.GetEnvironmentVariable("JWT_TOKEN_TIME"), out var time) ? time : 30;
+});
 
 // Add services to the container.
 AddCors();
@@ -131,7 +134,6 @@ void AddServices()
     builder.Services.AddScoped<IForumCommentRepository, ForumCommentRepository>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddSingleton<ITokenServices, TokenServices>();
-    builder.Services.AddSingleton(new ProfileImageSettings(picturesPath));
 }
 
 void AddAuthentication()

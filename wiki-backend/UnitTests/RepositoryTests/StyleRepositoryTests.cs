@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace UnitTests.RepositoryTests;
 [TestFixture]
@@ -26,7 +28,8 @@ public class StyleRepositoryTests
         _wikiDbContext.Database.EnsureDeleted();
         _wikiDbContext.SaveChanges();
         
-        _styleRepository = new StyleRepository(_wikiDbContext);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = "test_path" });
+        _styleRepository = new StyleRepository(_wikiDbContext, storageSettings);
     }
     
     [TearDown]
