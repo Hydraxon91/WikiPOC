@@ -10,32 +10,28 @@ public class CategoryRepositoryTests
 {
     private CategoryRepository _categoryRepository;
     private WikiDbContext _wikiDbContext;
-    
+
     [SetUp]
     public void Setup()
     {
-        // Generate a unique database name based on the test name
         var databaseName = $"TestDatabase_{TestContext.CurrentContext.Test.Name}";
-        // Use an in-memory database for testing
         var options = new DbContextOptionsBuilder<WikiDbContext>()
             .UseInMemoryDatabase(databaseName: databaseName)
             .Options;
 
-        // Use AddDbContext to configure the WikiDbContext
-        _wikiDbContext = new WikiDbContext(options, configuration: null); 
-        _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
+        _wikiDbContext = new WikiDbContext(options, configuration: null);
+        _wikiDbContext.Database.EnsureCreated();
         _wikiDbContext.Database.EnsureDeleted();
         _categoryRepository = new CategoryRepository(_wikiDbContext);
     }
-    
+
     [TearDown]
     public void TearDown()
     {
-        // Dispose the context to release the in-memory database
         _wikiDbContext.Database.EnsureDeleted();
         _wikiDbContext.Dispose();
     }
-    
+
     [Test]
     public async Task AddCategoryAsync_ShouldAddCategory()
     {
@@ -45,22 +41,19 @@ public class CategoryRepositoryTests
 
         var categoryInDb = await _wikiDbContext.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);
 
-        Assert.NotNull(categoryInDb);
-        Assert.AreEqual(categoryName, categoryInDb.CategoryName);
+        Assert.That(categoryInDb, Is.Not.Null);
+        Assert.That(categoryInDb.CategoryName, Is.EqualTo(categoryName));
     }
-    
+
     [Test]
     public void AddCategoryAsync_ShouldThrowArgumentException_WhenCategoryExists()
     {
         var categoryName = "Existing Category";
 
-        // Add initial category
         Assert.DoesNotThrowAsync(async () => await _categoryRepository.AddCategoryAsync(categoryName));
-
-        // Try adding the same category again
         Assert.ThrowsAsync<ArgumentException>(async () => await _categoryRepository.AddCategoryAsync(categoryName));
     }
-    
+
     [Test]
     public async Task GetCategoryByNameAsync_ShouldReturnCategory()
     {
@@ -69,8 +62,8 @@ public class CategoryRepositoryTests
 
         var category = await _categoryRepository.GetCategoryByNameAsync(categoryName);
 
-        Assert.NotNull(category);
-        Assert.AreEqual(categoryName, category.CategoryName);
+        Assert.That(category, Is.Not.Null);
+        Assert.That(category.CategoryName, Is.EqualTo(categoryName));
     }
 
     [Test]
@@ -83,7 +76,7 @@ public class CategoryRepositoryTests
 
         var categories = await _categoryRepository.GetAllCategoriesAsync();
 
-        Assert.AreEqual(2, categories.Count());
+        Assert.That(categories.Count(), Is.EqualTo(2));
     }
 
     [Test]
@@ -96,8 +89,8 @@ public class CategoryRepositoryTests
 
         var categoryInDb = await _wikiDbContext.Categories.FindAsync(category.Id);
 
-        Assert.IsTrue(result);
-        Assert.Null(categoryInDb);
+        Assert.That(result, Is.True);
+        Assert.That(categoryInDb, Is.Null);
     }
 
     [Test]
@@ -105,7 +98,7 @@ public class CategoryRepositoryTests
     {
         var result = await _categoryRepository.DeleteCategoryAsync(Guid.NewGuid());
 
-        Assert.IsFalse(result);
+        Assert.That(result, Is.False);
     }
 
     [Test]
@@ -126,9 +119,9 @@ public class CategoryRepositoryTests
             .Include(c => c.WikiPages)
             .FirstOrDefaultAsync(c => c.Id == category.Id);
 
-        Assert.NotNull(categoryInDb);
-        Assert.AreEqual(1, categoryInDb.WikiPages.Count);
-        Assert.AreEqual("New Article", categoryInDb.WikiPages.First().Title);
+        Assert.That(categoryInDb, Is.Not.Null);
+        Assert.That(categoryInDb.WikiPages.Count, Is.EqualTo(1));
+        Assert.That(categoryInDb.WikiPages.First().Title, Is.EqualTo("New Article"));
     }
 
     [Test]
@@ -151,7 +144,7 @@ public class CategoryRepositoryTests
             .Include(c => c.WikiPages)
             .FirstOrDefaultAsync(c => c.Id == category.Id);
 
-        Assert.NotNull(categoryInDb);
-        Assert.AreEqual(0, categoryInDb.WikiPages.Count);
+        Assert.That(categoryInDb, Is.Not.Null);
+        Assert.That(categoryInDb.WikiPages.Count, Is.EqualTo(0));
     }
 }

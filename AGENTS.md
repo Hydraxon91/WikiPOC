@@ -7,6 +7,19 @@
 2. Explain your reasoning
 3. Wait for the user's 'y' confirmation before executing
 
+## Agent Behavior Guidelines
+
+- **Avoid over-deliberation.** Plan once, then act. Do not re-plan or second-guess
+  a chosen approach more than once before executing, unless new information
+  (e.g. a build error) genuinely changes the picture.
+- **Bias toward incremental action over exhaustive upfront analysis.** For
+  non-destructive changes (reading code, running tests, small edits), just do it
+  — don't ask for confirmation or produce a lengthy plan first.
+- **Reserve deep reasoning for genuinely ambiguous or destructive decisions**
+  (see confirmation rule above), not for routine refactors or migrations with
+  a clear precedent already in this codebase.
+
+
 ## Project Overview
 
 WikiPOC is a Wikipedia-like platform with:

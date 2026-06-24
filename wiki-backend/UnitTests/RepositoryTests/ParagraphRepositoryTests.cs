@@ -56,9 +56,9 @@ public class ParagraphRepositoryTests
         var result = await repository.GetByIdAsync(testId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(testData.Id, result.Id);
-        Assert.AreEqual(testData.Title, result.Title);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Id, Is.EqualTo(testData.Id));
+        Assert.That(result.Title, Is.EqualTo(testData.Title));
     }
 
     [Test]
@@ -83,7 +83,7 @@ public class ParagraphRepositoryTests
         await _wikiDbContext.SaveChangesAsync();
     
         // Assert
-        CollectionAssert.Contains(_wikiDbContext.Paragraphs.ToList(), testData);
+        Assert.That(_wikiDbContext.Paragraphs.ToList(), Does.Contain(testData));
     }
     
     [Test]
@@ -125,10 +125,10 @@ public class ParagraphRepositoryTests
 
         // Assert
         var deletedParagraph = await _wikiDbContext.Paragraphs.FindAsync(testParagraph.Id);
-        Assert.IsNull(deletedParagraph);
+        Assert.That(deletedParagraph, Is.Null);
         var updatedWikiPage = await _wikiDbContext.WikiPages.Include(wp => wp.Paragraphs).FirstOrDefaultAsync(w => w.Id == testWikiPage.Id);
-        Assert.IsNotNull(updatedWikiPage);
-        CollectionAssert.DoesNotContain(updatedWikiPage.Paragraphs, testParagraph);
+        Assert.That(updatedWikiPage, Is.Not.Null);
+        Assert.That(updatedWikiPage.Paragraphs, Does.Not.Contain(testParagraph));
        
     }
 }

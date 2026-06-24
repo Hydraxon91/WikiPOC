@@ -52,9 +52,9 @@ namespace UnitTests.RepositoryTests
 
             var postInDb = await _wikiDbContext.ForumPosts.FirstOrDefaultAsync(p => p.Id == forumPost.Id);
 
-            Assert.NotNull(postInDb);
-            Assert.AreEqual("Test Post", postInDb.PostTitle);
-            Assert.AreEqual("test-post", postInDb.Slug);
+            Assert.That(postInDb, Is.Not.Null);
+            Assert.That(postInDb.PostTitle, Is.EqualTo("Test Post"));
+            Assert.That(postInDb.Slug, Is.EqualTo("test-post"));
         }
 
         [Test]
@@ -68,9 +68,9 @@ namespace UnitTests.RepositoryTests
 
             var titles = await _forumPostRepository.GetAllForumPostTitlesAsync();
 
-            Assert.AreEqual(2, titles.Count());
-            Assert.Contains("Post 1", titles.ToList());
-            Assert.Contains("Post 2", titles.ToList());
+            Assert.That(titles.Count(), Is.EqualTo(2));
+            Assert.That(titles.ToList(), Does.Contain("Post 1"));
+            Assert.That(titles.ToList(), Does.Contain("Post 2"));
         }
 
         [Test]
@@ -90,8 +90,8 @@ namespace UnitTests.RepositoryTests
 
             var postInDb = await _forumPostRepository.GetForumPostByIdAsync(forumPost.Id);
 
-            Assert.NotNull(postInDb);
-            Assert.AreEqual("Unique Post", postInDb.PostTitle);
+            Assert.That(postInDb, Is.Not.Null);
+            Assert.That(postInDb.PostTitle, Is.EqualTo("Unique Post"));
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace UnitTests.RepositoryTests
                 PostTitle = "Unique Slug Post",
                 Content = "Content for slug post",
                 ForumTopicId = Guid.NewGuid(),
-                UserId = userProfile.Id,  // Reference the seeded user profile
+                UserId = userProfile.Id,
                 UserName = "SlugUser"
             };
 
@@ -120,11 +120,11 @@ namespace UnitTests.RepositoryTests
             var postInDb = await _forumPostRepository.GetForumPostBySlugAsync("unique-slug-post");
 
             // Assertions
-            Assert.NotNull(postInDb);
-            Assert.AreEqual("Unique Slug Post", postInDb.PostTitle);
-            Assert.AreEqual("Content for slug post", postInDb.Content);
-            Assert.AreEqual(userProfile.Id, postInDb.UserId);  // Verify the user ID
-            Assert.AreEqual("SlugUser", postInDb.UserName);    // Verify the user name
+            Assert.That(postInDb, Is.Not.Null);
+            Assert.That(postInDb.PostTitle, Is.EqualTo("Unique Slug Post"));
+            Assert.That(postInDb.Content, Is.EqualTo("Content for slug post"));
+            Assert.That(postInDb.UserId, Is.EqualTo(userProfile.Id));
+            Assert.That(postInDb.UserName, Is.EqualTo("SlugUser"));
         }
 
 
@@ -150,9 +150,9 @@ namespace UnitTests.RepositoryTests
 
             var postInDb = await _wikiDbContext.ForumPosts.FirstOrDefaultAsync(p => p.Id == forumPost.Id);
 
-            Assert.NotNull(postInDb);
-            Assert.AreEqual("Updated Post", postInDb.PostTitle);
-            Assert.AreEqual("updated-post", postInDb.Slug);
+            Assert.That(postInDb, Is.Not.Null);
+            Assert.That(postInDb.PostTitle, Is.EqualTo("Updated Post"));
+            Assert.That(postInDb.Slug, Is.EqualTo("updated-post"));
         }
 
         [Test]
@@ -188,8 +188,8 @@ namespace UnitTests.RepositoryTests
             var postInDb = await _wikiDbContext.ForumPosts.FirstOrDefaultAsync(p => p.Id == forumPostId);
             var commentInDb = await _wikiDbContext.ForumComments.FirstOrDefaultAsync(c => c.ForumPostId == forumPostId);
 
-            Assert.Null(postInDb);
-            Assert.Null(commentInDb);
+            Assert.That(postInDb, Is.Null);
+            Assert.That(commentInDb, Is.Null);
         }
 
 
@@ -231,20 +231,20 @@ namespace UnitTests.RepositoryTests
 
             // Verify both posts were added
             var allPosts = await _wikiDbContext.ForumPosts.ToListAsync();
-            Assert.AreEqual(2, allPosts.Count);
+            Assert.That(allPosts.Count, Is.EqualTo(2));
 
             // Fetching posts by slug
             var postInDb1 = await _forumPostRepository.GetForumPostBySlugAsync("duplicate-title");
             var postInDb2 = await _forumPostRepository.GetForumPostBySlugAsync("duplicate-title-1");
 
             // Assertions
-            Assert.NotNull(postInDb1);
-            Assert.AreEqual("Duplicate Title", postInDb1.PostTitle);
-            Assert.AreEqual("Content 1", postInDb1.Content);
+            Assert.That(postInDb1, Is.Not.Null);
+            Assert.That(postInDb1.PostTitle, Is.EqualTo("Duplicate Title"));
+            Assert.That(postInDb1.Content, Is.EqualTo("Content 1"));
 
-            Assert.NotNull(postInDb2);
-            Assert.AreEqual("Duplicate Title", postInDb2.PostTitle);
-            Assert.AreEqual("Content 2", postInDb2.Content);
+            Assert.That(postInDb2, Is.Not.Null);
+            Assert.That(postInDb2.PostTitle, Is.EqualTo("Duplicate Title"));
+            Assert.That(postInDb2.Content, Is.EqualTo("Content 2"));
         }
     }
 }

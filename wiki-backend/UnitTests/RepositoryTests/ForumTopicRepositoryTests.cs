@@ -49,10 +49,10 @@ namespace UnitTests.RepositoryTests
 
             var topicInDb = await _wikiDbContext.ForumTopics.FirstOrDefaultAsync(t => t.Id == forumTopic.Id);
 
-            Assert.NotNull(topicInDb);
-            Assert.AreEqual("Test Topic", topicInDb.Title);
-            Assert.AreEqual("test-topic", topicInDb.Slug);
-            Assert.AreEqual(1, topicInDb.Order);
+            Assert.That(topicInDb, Is.Not.Null);
+            Assert.That(topicInDb.Title, Is.EqualTo("Test Topic"));
+            Assert.That(topicInDb.Slug, Is.EqualTo("test-topic"));
+            Assert.That(topicInDb.Order, Is.EqualTo(1));
         }
 
         [Test]
@@ -66,9 +66,9 @@ namespace UnitTests.RepositoryTests
 
             var topics = await _forumTopicRepository.GetAllForumTopicsAsync();
 
-            Assert.AreEqual(2, topics.Count());
-            Assert.AreEqual("Topic 1", topics.First().Title);
-            Assert.AreEqual("Topic 2", topics.Last().Title);
+            Assert.That(topics.Count(), Is.EqualTo(2));
+            Assert.That(topics.First().Title, Is.EqualTo("Topic 1"));
+            Assert.That(topics.Last().Title, Is.EqualTo("Topic 2"));
         }
 
         [Test]
@@ -85,8 +85,8 @@ namespace UnitTests.RepositoryTests
 
             var topicInDb = await _forumTopicRepository.GetForumTopicBySlugAsync("unique-topic");
 
-            Assert.NotNull(topicInDb);
-            Assert.AreEqual("Unique Topic", topicInDb.Title);
+            Assert.That(topicInDb, Is.Not.Null);
+            Assert.That(topicInDb.Title, Is.EqualTo("Unique Topic"));
         }
 
         [Test]
@@ -107,9 +107,9 @@ namespace UnitTests.RepositoryTests
 
             var topicInDb = await _wikiDbContext.ForumTopics.FirstOrDefaultAsync(t => t.Id == forumTopic.Id);
 
-            Assert.NotNull(topicInDb);
-            Assert.AreEqual("Updated Title", topicInDb.Title);
-            Assert.AreEqual("updated-title", topicInDb.Slug);
+            Assert.That(topicInDb, Is.Not.Null);
+            Assert.That(topicInDb.Title, Is.EqualTo("Updated Title"));
+            Assert.That(topicInDb.Slug, Is.EqualTo("updated-title"));
         }
 
         [Test]
@@ -128,13 +128,13 @@ namespace UnitTests.RepositoryTests
 
             var topicInDb = await _wikiDbContext.ForumTopics.FirstOrDefaultAsync(t => t.Id == forumTopic.Id);
 
-            Assert.Null(topicInDb);
+            Assert.That(topicInDb, Is.Null);
         }
 
         [Test]
         public async Task GenerateSlug_ShouldCreateUniqueSlug()
         {
-            var forumTopic1 = new ForumTopic { Id = Guid.NewGuid(), Title = "Duplicate Title" ,Description = "Test Description"};
+            var forumTopic1 = new ForumTopic { Id = Guid.NewGuid(), Title = "Duplicate Title", Description = "Test Description" };
             var forumTopic2 = new ForumTopic { Id = Guid.NewGuid(), Title = "Duplicate Title", Description = "Test Description" };
 
             await _forumTopicRepository.AddForumTopicAsync(forumTopic1);
@@ -142,9 +142,9 @@ namespace UnitTests.RepositoryTests
 
             var topics = await _forumTopicRepository.GetAllForumTopicsAsync();
 
-            Assert.AreEqual(2, topics.Count());
-            Assert.AreEqual("duplicate-title", topics.First().Slug);
-            Assert.AreEqual("duplicate-title-1", topics.Last().Slug);
+            Assert.That(topics.Count(), Is.EqualTo(2));
+            Assert.That(topics.First().Slug, Is.EqualTo("duplicate-title"));
+            Assert.That(topics.Last().Slug, Is.EqualTo("duplicate-title-1"));
         }
     }
 }
