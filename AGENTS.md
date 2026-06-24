@@ -12,6 +12,11 @@
 - **Avoid over-deliberation.** Plan once, then act. Do not re-plan or second-guess
   a chosen approach more than once before executing, unless new information
   (e.g. a build error) genuinely changes the picture.
+- **Stop after completing the requested task.** Summarize what you did and
+  what you found, then wait for the next instruction. Do not move on to a
+  new task — commits, cleanup, further refactors, starting the next item on
+  a todo list — unless explicitly asked, even if it seems like the obvious
+  next step.
 - **Bias toward incremental action over exhaustive upfront analysis.** For
   non-destructive changes (reading code, running tests, small edits), just do it
   — don't ask for confirmation or produce a lengthy plan first.
@@ -19,6 +24,23 @@
   (see confirmation rule above), not for routine refactors or migrations with
   a clear precedent already in this codebase.
 
+### Test Output Handling
+
+- **Save test output to a file once; don't re-run the suite to retry a filter.**
+  Integration tests hit a real SQL Server and are slow — re-running them just to
+  try a different `grep` pattern wastes time and (on free-tier hosted models)
+  rate limit. Redirect once: `dotnet test ... --no-build > test-output.log 2>&1`,
+  then grep/read that file as many times as needed.
+- **Stop running tests once you have a clear lead, even if you don't have a
+  full pass/fail summary.** A test name plus its error message is usually
+  enough to start debugging. Example: if several JWT-related tests fail with
+  the same underlying exception (e.g. a Base64Url decode error), that's a
+  single root cause to go investigate in the token-generation code — not a
+  reason to re-run the suite for a "final summary" first.
+- **Look for a shared root cause before treating failures as independent.**
+  When multiple failing tests share an exception type or message, fix the
+  shared cause first and re-test once, rather than investigating each test
+  separately.
 
 ## Project Overview
 
