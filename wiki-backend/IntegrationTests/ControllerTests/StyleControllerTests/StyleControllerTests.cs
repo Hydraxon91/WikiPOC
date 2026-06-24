@@ -27,6 +27,23 @@ public class StyleControllerTests : IntegrationTestBase
         _controller = new StyleController(_styleRepository);
         ResetDatabase();
         await EnsureUserRoleExistsAsync();
+        // Seed a default style (was previously provided by HasData in OnModelCreating)
+        if (!await DbContext.Styles.AnyAsync())
+        {
+            DbContext.Styles.Add(new StyleModel
+            {
+                Logo = "logo/logo_pfp.png",
+                WikiName = "Your Wiki",
+                BodyColor = "#507ced",
+                ArticleRightColor = "#3c5fb8",
+                ArticleRightInnerColor = "#2b4ea6",
+                ArticleColor = "#526cad",
+                FooterListLinkTextColor = "#1d305e",
+                FooterListTextColor = "#233a71",
+                FontFamily = "Arial, sans-serif",
+            });
+            await DbContext.SaveChangesAsync();
+        }
     }
 
     [Test]

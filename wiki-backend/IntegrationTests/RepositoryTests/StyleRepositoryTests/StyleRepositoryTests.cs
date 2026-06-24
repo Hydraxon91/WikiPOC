@@ -70,7 +70,7 @@ namespace IntegrationTests.Repositories
                 FontFamily = "Arial, sans-serif",
             };
             
-            // DbContext.Styles.RemoveRange(await DbContext.Styles.ToListAsync());
+            DbContext.Styles.Add(existingStyles);
             await DbContext.SaveChangesAsync();
 
             var updatedStyles = new StyleModel
@@ -89,9 +89,6 @@ namespace IntegrationTests.Repositories
             // Act
             await _repository.UpdateStylesAsync(updatedStyles, null);
 
-            // Detach existingStyles from the context
-            // DbContext.Entry(existingStyles).State = EntityState.Detached;
-            
             // Assert
             var result = await DbContext.Styles.FirstOrDefaultAsync();
             Assert.That(result, Is.Not.Null);
