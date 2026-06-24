@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { Link } from 'react-router-dom';
 import { getForumTopics } from '../../Api/forumApi';

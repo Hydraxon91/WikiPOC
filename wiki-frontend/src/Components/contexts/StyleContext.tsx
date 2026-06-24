@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { fetchCurrentStyles, updateStyles } from '../../Api/wikiApi';
 import { StyleContextType } from '../../types/contexts';
 const StyleContext = createContext<StyleContextType>({} as StyleContextType);

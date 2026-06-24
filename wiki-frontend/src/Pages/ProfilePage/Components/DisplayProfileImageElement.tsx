@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import { getProfilePicture } from '../../../Api/wikiUserApi';
 import "../../../Styles/profilepage.css";
 

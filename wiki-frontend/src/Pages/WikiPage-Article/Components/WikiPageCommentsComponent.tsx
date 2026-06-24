@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getUserProfileByUsername, postEditedComment, postComment } from '../../../Api/wikiUserApi';
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';

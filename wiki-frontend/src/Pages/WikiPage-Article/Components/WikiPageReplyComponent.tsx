@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import { useNotification } from '../../../Components/NotificationProvider';
 import '../Style/commentreply.css'

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using wiki_backend.Models;
+﻿using wiki_backend.Models;
 
 namespace wiki_backend.Services.Authentication;
 

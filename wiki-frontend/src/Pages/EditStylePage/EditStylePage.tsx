@@ -1,7 +1,7 @@
 import ManualEditStylesComponent from "./Components/ManualEditStylesComponent";
 import PresetsComponent from "./Components/PresetsComponent";
 import "../../Styles/stylepage.css";
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStyleContext } from "../../Components/contexts/StyleContext";
 

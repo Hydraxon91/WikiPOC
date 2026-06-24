@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { formatDate } from '../../../utils/formatDate';
 import WikiPageReplyComponent from './WikiPageReplyComponent';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';

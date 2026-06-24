@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Models;

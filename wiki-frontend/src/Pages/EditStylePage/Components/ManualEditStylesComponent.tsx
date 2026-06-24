@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 const ManualEditStylesComponent = ({handleChange, newStyles, handleLogoPictureChange}) => {
   const fontOptions = [

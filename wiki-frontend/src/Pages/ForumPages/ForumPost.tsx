@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { getForumPostBySlug } from '../../Api/forumApi';
 import ForumCommentComponent from './Components/ForumCommentComponent';
-import DisplayProfileImageElement from '../ProfilePage/Components/DisplayProfileImageElement';
-import { format } from 'date-fns';
 import Breadcrumbs from './Components/Breadcrumbs';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useNotification } from '../../Components/NotificationProvider';

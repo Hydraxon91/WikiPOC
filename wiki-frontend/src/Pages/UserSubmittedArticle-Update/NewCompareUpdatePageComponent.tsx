@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import LegacyWikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
 import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';

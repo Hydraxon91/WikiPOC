@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import {useState, useEffect} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LegacyEditPage from "./Pages/CreateEditArticle/LegacyEditPage";
@@ -35,6 +35,7 @@ function App() {
   const [currentWikiPage, setCurrentWikiPage] = useState(null);
   const [categories, setCategories] = useState([]);
   const [decodedTitle, setDecodedTitle] = useState(null);
+  const [pageError, setPageError] = useState(false);
 
   const [cookies, setCookie, removeCookie] = useCookies(["jwt_token"]);
   const [decodedToken, setDecodedToken] = useState(null);
@@ -65,10 +66,16 @@ function App() {
 
   const fetchPage = async () => {
     try {
+      setPageError(false);
       const data = await getWikiPageByTitle(decodedTitle);
+      if (!data) {
+        setPageError(true);
+        return;
+      }
       setCurrentWikiPage(data);
     } catch (error) {
       console.error('Error fetching page:', error);
+      setPageError(true);
       showNotification('Failed to load page.');
     }
   };

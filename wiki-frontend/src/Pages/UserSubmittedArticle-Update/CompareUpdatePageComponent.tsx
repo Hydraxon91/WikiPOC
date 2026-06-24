@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useLocation} from 'react-router-dom';
 import '../../Styles/style.css';
 import { useStyleContext } from '../../Components/contexts/StyleContext';

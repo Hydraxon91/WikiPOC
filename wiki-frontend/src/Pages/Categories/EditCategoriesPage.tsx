@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { addCategory, deleteCategory, fetchCategories } from '../../Api/wikiApi';
 import './Style/categorypagestyle.css';
 import { useStyleContext } from '../../Components/contexts/StyleContext';

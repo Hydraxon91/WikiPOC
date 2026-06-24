@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import WikiList from './Components/WikiList';
 import Breadcrumbs from '../ForumPages/Components/Breadcrumbs';
