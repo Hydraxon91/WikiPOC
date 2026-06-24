@@ -94,9 +94,7 @@ export default function RegisterPageComponent(){
                     <div className="login">
                         <p>
                             Already have an account? 
-                            <Link to="/login">
-                                <a> Login here!</a>
-                            </Link>
+                            <Link to="/login"> Login here!</Link>
                         </p>
                     </div>
                 </form>
