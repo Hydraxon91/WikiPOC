@@ -2,7 +2,7 @@ import { get, post, put, putForm } from './apiClient';
 import type { UserProfile, UserComment } from '../types/models';
 
 export const getUserProfileByUsername = async (username: string, setUser: (user: UserProfile) => void) => {
-  const data = await get<UserProfile>(`/api/UserProfile/GetByUserName/${username}`);
+  const data = await get<UserProfile>(`/api/UserProfile/GetByUserName/${encodeURIComponent(username)}`);
   setUser(data);
 };
 
