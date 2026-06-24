@@ -67,7 +67,9 @@ function App() {
   const fetchPage = async () => {
     try {
       setPageError(false);
+      console.log('Fetching page:', decodedTitle);
       const data = await getWikiPageByTitle(decodedTitle);
+      console.log('Page data received:', data ? 'found' : 'null');
       if (!data) {
         setPageError(true);
         return;
@@ -133,7 +135,7 @@ function App() {
             <Routes>
               <Route path="/" element={<MainPage decodedToken={decodedToken} handleLogout={handleLogout} jwtToken={cookies} setWikiPageTitles={setWikiPageTitles} categories={categories} />}>
                 <Route path="/" element={<HomeComponent pages={wikiPageTitles} categories={categories} />} />
-                <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} jwtToken={cookies["jwt_token"]} />}/>
+                <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} jwtToken={cookies["jwt_token"]} pageError={pageError} />}/>
                 <Route path="/page/:title/edit" 
                   element={
                   <ProtectedRoute roles={['User', 'Admin']}>

@@ -7,7 +7,7 @@ import { useStyleContext } from '../../Components/contexts/StyleContext';
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import '../../Styles/wikipage.css';
 
-const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = false }) => {
+const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = false, pageError = false }) => {
     const { styles } = useStyleContext();
     const { title } = useParams();
     const decodedTitle = decodeURIComponent(title);
@@ -28,6 +28,7 @@ const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = fa
         setActiveTab(tab);
     }
 
+    if (pageError) return <div style={{ padding: '2rem', textAlign: 'center' }}><h2>Page not found</h2><p>The page you're looking for doesn't exist.</p></div>;
     if (!wikipage) return <LoadingSpinner text="Loading article..." />;
 
     return(

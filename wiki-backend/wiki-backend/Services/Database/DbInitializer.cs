@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
+using wiki_backend.Models.ForumModels;
 
 namespace wiki_backend.Services.Database;
 
@@ -33,6 +34,7 @@ public class DbInitializer : IHostedService
         await SeedCategoriesAsync();
         await SeedWikiPagesAsync();
         await SeedStylesAsync();
+        await SeedForumTopicsAsync();
         await SeedCommentsAsync();
     }
 
@@ -319,6 +321,25 @@ public class DbInitializer : IHostedService
                 dbContext.UserComments.AddRange(comments);
                 await dbContext.SaveChangesAsync();
             }
+        }
+    }
+
+    private async Task SeedForumTopicsAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+
+        if (!await dbContext.ForumTopics.AnyAsync())
+        {
+            var topics = new List<ForumTopic>
+            {
+                new() { Title = "Main Forum", Description = "General discussion forum for all topics.", Slug = "main-forum", Order = 0 },
+                new() { Title = "Off Topic", Description = "Discussion forum for non-related topics.", Slug = "off-topic", Order = 1 },
+                new() { Title = "Foreign Languages Forum", Description = "Forum for discussing topics in different languages.", Slug = "foreign-languages-forum", Order = 2 },
+                new() { Title = "Archive", Description = "Forum for archived topics and discussions.", Slug = "archive", Order = 3 },
+            };
+            dbContext.ForumTopics.AddRange(topics);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

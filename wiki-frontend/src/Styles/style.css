@@ -291,7 +291,7 @@ p.siteSub {
 	font-size: 92%;
 }
 body {
-	background:#507ced;
+	background: transparent;
 }
 ul {
 	list-style-type: none;

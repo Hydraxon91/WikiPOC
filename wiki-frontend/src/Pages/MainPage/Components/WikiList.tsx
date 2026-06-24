@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getNewPageTitles, getUpdatePageTitles } from "../../../Api/wikiApi";
 
 const WikiList = ({ handleLogout, jwtToken, categories}) => {
   const {decodedTokenContext, updateUser} = useUserContext();
+  const location = useLocation();
   const [role, setRole] = useState(null);
   const [pagesWaitingForApproval, setPagesWaitingForApproval] = useState();
   const [updatesWaitingForApproval, setUpdatesWaitingForApproval] = useState();
@@ -19,7 +20,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
         fetchUpdatePageTitles(jwtToken["jwt_token"]);
       }
     }
-  }, [decodedTokenContext]);
+  }, [decodedTokenContext, location]);
 
 
   const fetchNewPageTitles = async (token) => {

@@ -13,7 +13,7 @@ export const getWikiPageById = async (id) => {
   };
 
   export const getWikiPageByTitle = async (title) => {
-    return get(`/api/WikiPages/GetByTitle/${title}`);
+    return get(`/api/WikiPages/GetByTitle/${encodeURIComponent(title)}`);
   };
 
 export const createWikiPage = async (newPage, token, decodedToken, images) => {

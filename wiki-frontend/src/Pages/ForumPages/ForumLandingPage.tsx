@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
+import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { Link } from 'react-router-dom';
 import { getForumTopics } from '../../Api/forumApi';
 import { formatDate } from '../../utils/formatDate';
@@ -11,6 +12,8 @@ const ForumLandingPage = () => {
     const [topics, setTopics] = useState([]);
     const [loading, setLoading] = useState(true);
     const {styles} = useStyleContext();
+    const { decodedTokenContext } = useUserContext();
+    const isAdmin = decodedTokenContext?.role === 'Admin';
 
     useEffect(() => {
         fetchForumTopics();
@@ -83,6 +86,13 @@ const ForumLandingPage = () => {
     return (
         <div className='forum-mainsection'> 
         <Breadcrumbs/>
+        {isAdmin && (
+          <div style={{ textAlign: 'right', marginBottom: '8px' }}>
+            <Link to="/forum/main-forum/create-topic" className="modular-button" style={{ backgroundColor: styles.articleColor, padding: '8px 16px', borderRadius: '4px', color: '#fff', textDecoration: 'none' }}>
+              Create New Topic
+            </Link>
+          </div>
+        )}
         <div className="forum-grid article" style={{backgroundColor: styles.articleColor}}>
             <div className="grid-header">
                 <div className="header-cell">Forum</div>

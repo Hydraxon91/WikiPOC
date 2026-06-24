@@ -27,6 +27,12 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
   }, [decodedToken])
 
   useEffect(() => {
+    if (styles.bodyColor) {
+      document.body.style.background = styles.bodyColor;
+    }
+  }, [styles.bodyColor]);
+
+  useEffect(() => {
     // Fetch WikiPages when the component mounts
     fetchWikiPageTitles();
   }, [location]);
