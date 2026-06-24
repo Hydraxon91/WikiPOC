@@ -134,7 +134,6 @@ public class WikiPageRepository : IWikiPageRepository
         existingWikiPage.Title = updatedWikiPage.Title;
         existingWikiPage.RoleNote = updatedWikiPage.RoleNote;
         existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
-        existingWikiPage.Paragraphs = updatedWikiPage.Paragraphs;
         existingWikiPage.Content = updatedWikiPage.Content;
         existingWikiPage.CategoryId = updatedWikiPage.CategoryId;
         existingWikiPage.LegacyWikiPage = updatedWikiPage.LegacyWikiPage;
@@ -148,7 +147,7 @@ public class WikiPageRepository : IWikiPageRepository
 
         foreach (var paragraphToRemove in paragraphsToRemove)
         {
-            _context.Paragraphs.Remove(paragraphToRemove);
+            _context.Entry(paragraphToRemove).State = EntityState.Deleted;
             existingWikiPage.Paragraphs.Remove(paragraphToRemove);
         }
 

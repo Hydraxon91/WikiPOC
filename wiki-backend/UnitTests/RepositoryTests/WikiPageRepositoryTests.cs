@@ -624,4 +624,79 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
         Assert.That(result.UserSubmittedWikiPage.Paragraphs, Is.EqualTo(userSubmittedUpdatePage.Paragraphs));
     }
     
+    [Test]
+    public async Task UpdateAsync_ShouldUpdatePropertiesAndManageParagraphs()
+    {
+        var dummyCategory = new Category
+        {
+            Id = Guid.NewGuid(),
+            CategoryName = "Dummy Category"
+        };
+        _wikiDbContext.Categories.Add(dummyCategory);
+        await _wikiDbContext.SaveChangesAsync();
+
+        var wikiPageId = Guid.NewGuid();
+        var para1Id = Guid.NewGuid();
+        var para2Id = Guid.NewGuid();
+        var para3Id = Guid.NewGuid();
+
+        var wikiPage = new WikiPage
+        {
+            Id = wikiPageId,
+            Title = "Original Title",
+            SiteSub = "Original SiteSub",
+            RoleNote = "Original RoleNote",
+            Content = "Original Content",
+            CategoryId = dummyCategory.Id,
+            Paragraphs = new List<Paragraph>
+            {
+                new() { Id = para1Id, Title = "Paragraph 1", Content = "Content 1" },
+                new() { Id = para2Id, Title = "Paragraph 2", Content = "Content 2" },
+                new() { Id = para3Id, Title = "Paragraph 3", Content = "Content 3" }
+            }
+        };
+
+        await _wikiPageRepository.AddAsync(wikiPage, new List<ImageFormModel>());
+        await _wikiDbContext.SaveChangesAsync();
+
+        // AddAsync overwrites paragraph IDs — capture the real IDs
+        var savedPage = await _wikiDbContext.WikiPages
+            .Include(wp => wp.Paragraphs)
+            .FirstAsync(wp => wp.Id == wikiPageId);
+        var savedPara1Id = savedPage.Paragraphs.First(p => p.Title == "Paragraph 1").Id;
+        var savedPara2Id = savedPage.Paragraphs.First(p => p.Title == "Paragraph 2").Id;
+
+        var updatedWikiPage = new WikiPage
+        {
+            Title = "Updated Title",
+            SiteSub = "Updated SiteSub",
+            RoleNote = "Updated RoleNote",
+            Content = "Updated Content",
+            CategoryId = dummyCategory.Id,
+            LegacyWikiPage = false,
+            Paragraphs = new List<Paragraph>
+            {
+                new() { Id = savedPara1Id, Title = "Updated Para 1", Content = "Updated Content 1" }
+            }
+        };
+
+        await _wikiPageRepository.UpdateAsync(savedPage, updatedWikiPage, new List<ImageFormModel>());
+        await _wikiDbContext.SaveChangesAsync();
+
+        var result = await _wikiDbContext.WikiPages
+            .Include(wp => wp.Paragraphs)
+            .FirstAsync(wp => wp.Id == wikiPageId);
+
+        Assert.That(result.Title, Is.EqualTo("Updated Title"));
+        Assert.That(result.Paragraphs.Count, Is.EqualTo(1));
+
+        var updatedPara1 = result.Paragraphs.Single();
+        Assert.That(updatedPara1.Title, Is.EqualTo("Updated Para 1"));
+
+        var removedPara2 = await _wikiDbContext.Paragraphs
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(p => p.Id == savedPara2Id);
+        Assert.That(removedPara2, Is.Null);
+    }
+    
 }
