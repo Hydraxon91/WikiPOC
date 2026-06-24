@@ -2,62 +2,65 @@ name: Backend Tests
 
 on:
   push:
+    branches: ['**']
   pull_request:
-    branches:
-      - '**'
-    paths:
-      - '**.cs'
-      - '**.csproj'
+    branches: [main]
+  workflow_call:
 
 jobs:
   tests:
-    runs-on: ubuntu-20.04
-    env: 
-      INTEGRATIONTEST_CONNECTIONSTRING: ${{ secrets.INTEGRATIONTEST_CONNECTIONSTRING }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+    runs-on: ubuntu-24.04
+    env:
+      DOTNET_NOLOGO: true
+      ASPNETCORE_ENVIRONMENT: Testing
+      INTEGRATIONTEST_CONNECTIONSTRING: Server=localhost;Database=master;User=sa;Password=${{ secrets.DB_PASSWORD }};TrustServerCertificate=True
+      PICTURES_PATH_CONTAINER: /tmp/pictures
       JWT_ISSUER_SIGNING_KEY: ${{ secrets.JWT_ISSUER_SIGNING_KEY }}
       JWT_VALID_AUDIENCE: ${{ secrets.JWT_VALID_AUDIENCE }}
       JWT_VALID_ISSUER: ${{ secrets.JWT_VALID_ISSUER }}
       JWT_TOKEN_TIME: ${{ secrets.JWT_TOKEN_TIME }}
-      PROFILE_PICTURES_PATH: ${{ secrets.PROFILE_PICTURES_PATH }}
-      PICTURES_PATH_CONTAINER: ${{ secrets.PICTURES_PATH_CONTAINER }}
+
+    services:
+      sql-server:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '${{ secrets.DB_PASSWORD }}' -C -Q 'SELECT 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '7.0'
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore ./wiki-backend/wiki-backend/wiki-backend.csproj 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
-    - name: Build
-      run: dotnet build ./wiki-backend/wiki-backend/wiki-backend.csproj --configuration Release
+      - name: Restore
+        run: dotnet restore wiki-backend/wiki-backend.sln
 
-    - name: Run unit tests
-      run: dotnet test ./wiki-backend/UnitTests/UnitTests.csproj --configuration Release
+      - name: Build
+        run: dotnet build wiki-backend/wiki-backend.sln --no-restore --configuration Release
 
-    - name: Create test folder
-      run: sudo mkdir ${{ secrets.PICTURES_PATH_CONTAINER }}
+      - name: Create pictures directory
+        run: mkdir -p /tmp/pictures
 
-    - name: Set permissions for test folder
-      run: sudo chmod -R 777 ${{ secrets.PICTURES_PATH_CONTAINER }}
+      - name: Run unit tests
+        run: dotnet test wiki-backend/UnitTests/UnitTests.csproj --no-build --configuration Release --logger trx
 
-    - name: Start SQL Server container
-      run: |
-        docker run -d --name sql-server -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ secrets.DB_PASSWORD }}" -p 1433:1433 mcr.microsoft.com/mssql/server:latest
-
-    - name: Install dockerize
-      run: |
-        wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz
-        tar -xzvf dockerize-linux-amd64-v0.6.1.tar.gz
-        sudo mv dockerize /usr/local/bin
-        rm dockerize-linux-amd64-v0.6.1.tar.gz
-
-    - name: Wait for SQL Server to be ready
-      run: dockerize -wait tcp://localhost:1433 -timeout 1m
-
-    - name: Run integration tests
-      run: dotnet test ./wiki-backend/IntegrationTests/IntegrationTests.csproj --configuration Release
+      - name: Run integration tests
+        run: dotnet test wiki-backend/IntegrationTests/IntegrationTests.csproj --no-build --configuration Release --logger trx
