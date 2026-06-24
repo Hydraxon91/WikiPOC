@@ -3,9 +3,10 @@ import "../../Styles/register.css";
 import { Link, useNavigate } from 'react-router-dom';
 import SuccessfullElement from "./SuccessfullElement";
 import { handleRegisterSubmit } from "../../Api/wikiAuthApi";
-import { useNotification } from '../../Components/NotificationProvider';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
 
 export default function RegisterPageComponent(){
+    const { styles } = useStyleContext();
     const [email, setEmail] = useState(null);
     const [username, setUsername] = useState(null);
     const [password, setPassword] = useState(null);
@@ -63,7 +64,7 @@ export default function RegisterPageComponent(){
     },[response])
 
     return(
-        <div className='register-form'>
+        <div className='register-form' style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '' }}>
             {showSuccessMessage && (
                 <>
                     <SuccessfullElement message={"Successfully registered"}/>

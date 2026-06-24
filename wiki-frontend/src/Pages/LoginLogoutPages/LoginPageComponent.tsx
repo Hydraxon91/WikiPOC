@@ -4,9 +4,10 @@ import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
 import SuccessfullElement from "./SuccessfullElement";
 import { handleLoginSubmit } from "../../Api/wikiAuthApi";
-import { useNotification } from '../../Components/NotificationProvider';
+import { useStyleContext } from '../../Components/contexts/StyleContext';
 
 export default function LoginPageComponent({handleLogin}){
+    const { styles } = useStyleContext();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [response, setResponse] = useState(null);
@@ -55,7 +56,7 @@ export default function LoginPageComponent({handleLogin}){
     },[response])
 
     return(
-        <div className='login-form'>
+        <div className='login-form' style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '' }}>
             {showSuccessMessage && (
                 <>
                     <SuccessfullElement message={"Successfully logged in"}/>
