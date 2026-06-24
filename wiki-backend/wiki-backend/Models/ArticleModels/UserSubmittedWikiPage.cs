@@ -11,7 +11,7 @@ public class UserSubmittedWikiPage : WikiPage
     [JsonIgnore]
     public WikiPage? WikiPage { get; set; }
     
-    public string SubmittedBy { get; set; }
+    public string SubmittedBy { get; set; } = null!;
 
     public bool Approved { get; set; } = false;
     

@@ -2,8 +2,8 @@
 
 public class ImageFormModel
 {
-    public string FileName { get; set; }
-    public string DataURL { get; set; }
+    public string FileName { get; set; } = null!;
+    public string DataURL { get; set; } = null!;
     
     public override string ToString()
     {

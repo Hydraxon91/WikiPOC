@@ -64,7 +64,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         {
             Id = Guid.NewGuid(),
             Content = content,
-            UserProfileId = userProfile.Id,
+            UserProfileId = userProfile!.Id,
             UserProfile = userProfile,
             WikiPageId = wikiPage.Id
         };

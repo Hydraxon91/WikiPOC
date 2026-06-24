@@ -37,7 +37,7 @@ public class StyleControllerTests : IntegrationTestBase
         // Assert
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
-        var returnedStyle = okResult.Value;
+        var returnedStyle = okResult!.Value;
         
         Assert.That(returnedStyle, Is.Not.Null);
         Assert.That(returnedStyle, Is.EqualTo(style));
@@ -79,9 +79,9 @@ public class StyleControllerTests : IntegrationTestBase
 
         // Assert
         Assert.That(result, Is.InstanceOf<OkObjectResult>());
-        var updatedStyleInDb = await DbContext.Styles.FindAsync(style.Id);
+        var updatedStyleInDb = await DbContext.Styles.FindAsync(style!.Id);
         
-        Assert.That(updatedStyleInDb.WikiName, Is.EqualTo("NewStyle"));
-        Assert.That(updatedStyleInDb.BodyColor, Is.EqualTo("#000000"));
+        Assert.That(updatedStyleInDb!.WikiName, Is.EqualTo("NewStyle"));
+        Assert.That(updatedStyleInDb!.BodyColor, Is.EqualTo("#000000"));
     }
 }

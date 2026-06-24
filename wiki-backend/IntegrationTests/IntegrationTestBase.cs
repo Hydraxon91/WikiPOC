@@ -28,11 +28,11 @@ namespace IntegrationTests
         public IntegrationTestBase()
         {
             Env.TraversePath().Load(); // Load environment variables from the .env file
-            DbConnectionString = Environment.GetEnvironmentVariable("INTEGRATIONTEST_CONNECTIONSTRING");
-            JwtTokenTime = Environment.GetEnvironmentVariable("JWT_TOKEN_TIME");
-            JwtValidIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER");
-            JwtValidAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE");
-            JwtIssuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
+            DbConnectionString = Environment.GetEnvironmentVariable("INTEGRATIONTEST_CONNECTIONSTRING")!;
+            JwtTokenTime = Environment.GetEnvironmentVariable("JWT_TOKEN_TIME")!;
+            JwtValidIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER")!;
+            JwtValidAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE")!;
+            JwtIssuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY")!;
             PicturesPathContainer = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER") ?? "default/pictures/path";
 
             _uniqueDatabaseName = $"TestDb_{Guid.NewGuid()}";
@@ -88,7 +88,7 @@ namespace IntegrationTests
         public void Dispose()
         {
             DbContext?.Database.EnsureDeleted();
-            DbContext.Dispose();
+            DbContext?.Dispose();
             ServiceProvider?.Dispose();
         }
         
@@ -211,7 +211,7 @@ namespace IntegrationTests
             }
 
             var authResponse = okResult.Value as AuthResponse;
-            return authResponse?.Token;
+            return authResponse?.Token!;
         }
         
     }

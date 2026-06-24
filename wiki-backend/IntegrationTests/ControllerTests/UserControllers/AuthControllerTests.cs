@@ -98,7 +98,7 @@ public class AuthControllerTests : IntegrationTestBase
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestResult = (BadRequestObjectResult)result.Result;
         // Extract the error messages from the SerializableError object
-        var errors = (SerializableError)badRequestResult.Value;
+        var errors = (SerializableError)badRequestResult.Value!;
         Assert.That(errors, Does.ContainKey("Duplicate email"));
         var errorMessages = (string[])errors["Duplicate email"];
         Assert.That(errorMessages, Does.Contain("Email is already taken"));
@@ -119,7 +119,7 @@ public class AuthControllerTests : IntegrationTestBase
         Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestResult = (BadRequestObjectResult)result.Result;
         Assert.That(badRequestResult.StatusCode, Is.EqualTo(400));
-        var errors = (SerializableError)badRequestResult.Value;
+        var errors = (SerializableError)badRequestResult.Value!;
         Assert.That(errors, Does.ContainKey("DuplicateUserName"));
         var errorMessages = (string[])errors["DuplicateUserName"];
         Assert.That(errorMessages, Does.Contain($"Username '{existingUsername}' is already taken."));

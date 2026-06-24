@@ -123,7 +123,7 @@ public class WikiPagesController : ControllerBase
             IsNewPage = true,
             Approved = false,
             CategoryId = wikiPageWithImagesInputModel.CategoryId,
-            SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy,
+            SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy!,
             PostDate = DateTime.Now
         };
         
@@ -141,7 +141,7 @@ public class WikiPagesController : ControllerBase
         var guid = Guid.Parse(id);
         var userSubmittedWikiPage = await _wikiPageRepository.GetSubmittedPageByIdAsync(guid);
 
-        if (userSubmittedWikiPage is { UserSubmittedWikiPage: null })
+        if (userSubmittedWikiPage?.UserSubmittedWikiPage == null)
         {
             return NotFound(); // Return 404 if the user-submitted page is not found
         }
@@ -184,7 +184,7 @@ public class WikiPagesController : ControllerBase
         };
 
         var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
-        await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage, updatedWikiPage, images);
+        await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage!, updatedWikiPage, images);
 
         return Ok(new { Message = "WikiPage updated successfully" });
     }
@@ -204,7 +204,7 @@ public class WikiPagesController : ControllerBase
             Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
             CategoryId = wikiPageWithImagesInputModel.CategoryId,
             LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage,
-            SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy,
+            SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy!,
             Approved = false,
             IsNewPage = false,
             WikiPageId = wikiPageWithImagesInputModel.WikiPageId
@@ -231,7 +231,7 @@ public class WikiPagesController : ControllerBase
         // WikiPage updatedWikiPage = userSubmittedWikiPage;
 
         var newWikipage = await _wikiPageRepository.GetSubmittedUpdateByIdAsync(id);
-        if ( newWikipage.UserSubmittedWikiPage.WikiPageId == null)
+        if (newWikipage?.UserSubmittedWikiPage == null || newWikipage.UserSubmittedWikiPage.WikiPageId == null)
             return NotFound();
         
         var oldId = newWikipage.UserSubmittedWikiPage.WikiPageId ?? Guid.Empty; // Provide a default value
@@ -241,7 +241,7 @@ public class WikiPagesController : ControllerBase
         
         await _wikiPageRepository.AcceptUserSubmittedUpdateAsync(newWikipage.UserSubmittedWikiPage);
         // await _wikiPageRepository.DeleteUserSubmittedAsync(newWikipage.UserSubmittedWikiPage.Id, existingWikiPage.WikiPage.Id);
-        await _wikiPageRepository.DeleteAsync(existingWikiPage.WikiPage.Id);
+        await _wikiPageRepository.DeleteAsync(existingWikiPage.WikiPage!.Id);
         return Ok(new { Message = "WikiPage updated successfully" });
     }
     

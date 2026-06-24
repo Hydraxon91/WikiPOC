@@ -34,7 +34,7 @@ public class ForumTopicRepository : IForumTopicRepository
                     .ThenInclude(comment => comment.UserProfile)
             .Include(topic => topic.ForumPosts)
                 .ThenInclude(fp => fp.User)
-            .FirstOrDefaultAsync(topic => topic.Slug == slug);
+            .FirstOrDefaultAsync(topic => topic.Slug == slug)!;
     }
 
     public async Task AddForumTopicAsync(ForumTopic topic)

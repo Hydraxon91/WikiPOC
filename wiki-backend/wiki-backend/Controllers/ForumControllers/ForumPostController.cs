@@ -109,7 +109,7 @@ public class ForumPostController : ControllerBase
         var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
         var handler = new JwtSecurityTokenHandler();
         var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
-        var nameClaim = jsonToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
+        var nameClaim = jsonToken!.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
         
         if (nameClaim != null)
         {

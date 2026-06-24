@@ -7,6 +7,6 @@ public class UserUpdateForm
     
     public override string ToString()
     {
-        return $"{UserProfile.DisplayName}";
+        return UserProfile?.DisplayName ?? "";
     }
 }

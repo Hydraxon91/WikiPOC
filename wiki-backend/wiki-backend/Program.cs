@@ -18,7 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Get the path for storing profile images from environment variables
 // var profilePicturesPath = Environment.GetEnvironmentVariable("PROFILE_PICTURES_PATH");
-var picturesPath = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER");
+var picturesPath = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER") ?? string.Empty;
 
 // Ensure the path is not null or empty //Comment these lines when running migrations
 // if (string.IsNullOrEmpty(picturesPath))
@@ -99,7 +99,7 @@ void AddDbContext()
 {
     builder.Services.AddDbContext<WikiDbContext>(options =>
     {
-        options.UseSqlServer(Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING"));
+        options.UseSqlServer(Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING")!);
         options.EnableSensitiveDataLogging(); // Enable logging for debugging
         options.EnableDetailedErrors();       // Enable detailed errors for debugging
     });
@@ -230,7 +230,7 @@ async Task CreateAdminIfNotExists()
     var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
     if (adminInDb == null)
     {
-        var adminName = Environment.GetEnvironmentVariable("ADMINUSER_USERNAME");
+        var adminName = Environment.GetEnvironmentVariable("ADMINUSER_USERNAME")!;
         
         var adminProfile = new UserProfile()
         {
@@ -245,11 +245,11 @@ async Task CreateAdminIfNotExists()
         var admin = new ApplicationUser
         {
             UserName = adminName,
-            Email = Environment.GetEnvironmentVariable("ADMINUSER_EMAIL"),
+            Email = Environment.GetEnvironmentVariable("ADMINUSER_EMAIL")!,
             ProfileId = adminProfile.Id
         };
         
-        var adminCreated = await userManager.CreateAsync(admin, Environment.GetEnvironmentVariable("ADMINUSER_PASSWORD"));
+        var adminCreated = await userManager.CreateAsync(admin, Environment.GetEnvironmentVariable("ADMINUSER_PASSWORD")!);
 
         if (adminCreated.Succeeded)
         {
@@ -278,7 +278,7 @@ async Task CreateUserIfNotExists()
     var userInDb = await userManager.FindByEmailAsync(Environment.GetEnvironmentVariable("TESTUSER_EMAIL"));
     if (userInDb == null)
     {
-        var testUsername = Environment.GetEnvironmentVariable("TESTUSER_USERNAME");
+        var testUsername = Environment.GetEnvironmentVariable("TESTUSER_USERNAME")!;
         
         var testUserProfile = new UserProfile()
         {
@@ -293,11 +293,11 @@ async Task CreateUserIfNotExists()
         var testUser = new ApplicationUser
         {
             UserName = testUsername,
-            Email = Environment.GetEnvironmentVariable("TESTUSER_EMAIL"),
+            Email = Environment.GetEnvironmentVariable("TESTUSER_EMAIL")!,
             ProfileId = testUserProfile.Id
         };
         
-        var userCreated = await userManager.CreateAsync(testUser, Environment.GetEnvironmentVariable("TESTUSER_PASSWORD"));
+        var userCreated = await userManager.CreateAsync(testUser, Environment.GetEnvironmentVariable("TESTUSER_PASSWORD")!);
 
         if (userCreated.Succeeded)
         {
@@ -368,6 +368,7 @@ async Task SeedCommentsAsync()
     }
 }
 
+#pragma warning disable CS8321
 async Task SeedForumTopicsAsync()
 {
     using var scope = app.Services.CreateScope();
@@ -486,3 +487,4 @@ async Task SeedForumPostsAsync()
         await dbContext.SaveChangesAsync();
     }
 }
+#pragma warning restore CS8321

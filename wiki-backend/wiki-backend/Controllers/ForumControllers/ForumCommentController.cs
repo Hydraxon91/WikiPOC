@@ -92,7 +92,7 @@ public class ForumCommentController : ControllerBase
         var handler = new JwtSecurityTokenHandler();
         var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
 
-        var nameClaim = jsonToken.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
+        var nameClaim = jsonToken!.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
         
         if (nameClaim != null)
         {
@@ -106,7 +106,7 @@ public class ForumCommentController : ControllerBase
     private async Task<bool> IsAuthorizedToDeleteComment(string userId, ForumComment comment)
     {
         // Check if the user is the author of the comment or is an admin
-        return userId == comment.UserProfile.UserName || await IsUserAdmin(userId);
+        return userId == comment.UserProfile?.UserName || await IsUserAdmin(userId);
     }
     
     private async Task<bool> IsUserAdmin(string userId)

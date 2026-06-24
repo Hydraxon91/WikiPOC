@@ -14,7 +14,7 @@ public class StyleRepository : IStyleRepository
 
     public async Task<StyleModel> GetStylesAsync()
     {
-        return await _dbContext.Styles.SingleOrDefaultAsync();
+        return await _dbContext.Styles.SingleOrDefaultAsync()!;
     }
 
     public async Task UpdateStylesAsync(StyleModel updatedStyles, IFormFile? logoPictureFile)
@@ -23,7 +23,7 @@ public class StyleRepository : IStyleRepository
         if (logoPictureFile != null)
         {
             var fileName = $"logo/logo{Path.GetExtension(logoPictureFile.FileName)}";
-            var filePath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), fileName);
+            var filePath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER")!, fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await logoPictureFile.CopyToAsync(fileStream);

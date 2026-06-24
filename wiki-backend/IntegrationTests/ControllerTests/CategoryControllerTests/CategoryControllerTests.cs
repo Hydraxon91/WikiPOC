@@ -93,7 +93,7 @@ public class CategoryControllerTests : IntegrationTestBase
         Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         
         var category = okResult.Value as Category;
-        Assert.That(category.Id, Is.EqualTo(catId));
+        Assert.That(category!.Id, Is.EqualTo(catId));
         Assert.That(category.CategoryName, Is.EqualTo(categoryName));
     }
 

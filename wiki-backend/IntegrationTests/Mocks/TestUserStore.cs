@@ -23,19 +23,19 @@ namespace IntegrationTests.Services
             return Task.FromResult(IdentityResult.Success);
         }
 
-        public Task<ApplicationUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
+        public Task<ApplicationUser?> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             return Task.FromResult(_users.FirstOrDefault(u => u.Id == userId));
         }
 
-        public Task<ApplicationUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+        public Task<ApplicationUser?> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
             return Task.FromResult(_users.FirstOrDefault(u => u.UserName == normalizedUserName));
         }
 
-        public Task<string> GetNormalizedUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
+        public Task<string?> GetNormalizedUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.UserName.ToUpperInvariant());
+            return Task.FromResult<string?>(user.UserName?.ToUpperInvariant() ?? "");
         }
 
         public Task<string> GetUserIdAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -43,17 +43,17 @@ namespace IntegrationTests.Services
             return Task.FromResult(user.Id);
         }
 
-        public Task<string> GetUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
+        public Task<string?> GetUserNameAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.UserName);
+            return Task.FromResult<string?>(user.UserName!);
         }
 
-        public Task SetNormalizedUserNameAsync(ApplicationUser user, string normalizedName, CancellationToken cancellationToken)
+        public Task SetNormalizedUserNameAsync(ApplicationUser user, string? normalizedName, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
-        public Task SetUserNameAsync(ApplicationUser user, string userName, CancellationToken cancellationToken)
+        public Task SetUserNameAsync(ApplicationUser user, string? userName, CancellationToken cancellationToken)
         {
             user.UserName = userName;
             return Task.CompletedTask;
@@ -65,16 +65,16 @@ namespace IntegrationTests.Services
             return Task.FromResult(IdentityResult.Success);
         }
 
-        public Task SetPasswordHashAsync(ApplicationUser user, string passwordHash, CancellationToken cancellationToken)
+        public Task SetPasswordHashAsync(ApplicationUser user, string? passwordHash, CancellationToken cancellationToken)
         {
             // For simplicity, we don't implement password hashing in this mock
             return Task.CompletedTask;
         }
 
-        public Task<string> GetPasswordHashAsync(ApplicationUser user, CancellationToken cancellationToken)
+        public Task<string?> GetPasswordHashAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
             // For simplicity, we don't implement password hashing in this mock
-            return Task.FromResult(user.PasswordHash);
+            return Task.FromResult<string?>(user.PasswordHash ?? string.Empty);
         }
 
         public Task<bool> HasPasswordAsync(ApplicationUser user, CancellationToken cancellationToken)

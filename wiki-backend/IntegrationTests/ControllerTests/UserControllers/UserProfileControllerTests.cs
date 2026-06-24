@@ -65,7 +65,7 @@ public class UserProfileControllerTests : IntegrationTestBase
         var username = testUserProfile.UserName;
 
         // Act
-        var result = await _controller.GetProfileByName(username);
+        var result = await _controller.GetProfileByName(username!);
 
         // Assert
         var okResult = result.Result as OkObjectResult;

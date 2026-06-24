@@ -31,8 +31,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var comment = new ForumComment
             {
                 Content = "Test comment",
-                UserProfileId = userProfile.Id,
-                ForumPostId = forumPost.Id,
+                UserProfileId = userProfile!.Id,
+                ForumPostId = forumPost!.Id,
                 PostDate = DateTime.UtcNow
             };
             DbContext.ForumComments.Add(comment);
@@ -68,8 +68,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var comment = new ForumComment
             {
                 Content = "Test comment",
-                UserProfileId = userProfile.Id,
-                ForumPostId = forumPost.Id,
+                UserProfileId = userProfile!.Id,
+                ForumPostId = forumPost!.Id,
                 PostDate = DateTime.UtcNow
             };
 
@@ -92,8 +92,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var comment = new ForumComment
             {
                 Content = null, // Setting content to null
-                UserProfileId = userProfile.Id,
-                ForumPostId = forumPost.Id,
+                UserProfileId = userProfile!.Id,
+                ForumPostId = forumPost!.Id,
                 PostDate = DateTime.UtcNow
             };
 
@@ -111,8 +111,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var comment = new ForumComment
             {
                 Content = "Test comment",
-                UserProfileId = userProfile.Id,
-                ForumPostId = forumPost.Id,
+                UserProfileId = userProfile!.Id,
+                ForumPostId = forumPost!.Id,
                 PostDate = DateTime.UtcNow
             };
             DbContext.ForumComments.Add(comment);
@@ -144,8 +144,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var comment = new ForumComment
             {
                 Content = "Test comment",
-                UserProfileId = userProfile.Id,
-                ForumPostId = forumPost.Id,
+                UserProfileId = userProfile!.Id,
+                ForumPostId = forumPost!.Id,
                 PostDate = DateTime.UtcNow
             };
             DbContext.ForumComments.Add(comment);
@@ -206,9 +206,9 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             // Add sample ForumPost objects to the database
             var posts = new List<ForumPost>
             {
-                new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0].UserName, ForumTopicId = forumTopic.Id },
-                new ForumPost { PostTitle = "Post 2", Content = "Content for Post 2", Slug = "post-2", UserId = userProfiles[1].Id, UserName = userProfiles[1].UserName, ForumTopicId = forumTopic.Id },
-                new ForumPost { PostTitle = "Post 3", Content = "Content for Post 3", Slug = "post-3", UserId = userProfiles[2].Id, UserName = userProfiles[2].UserName, ForumTopicId = forumTopic.Id }
+                new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0].UserName!, ForumTopicId = forumTopic.Id },
+                new ForumPost { PostTitle = "Post 2", Content = "Content for Post 2", Slug = "post-2", UserId = userProfiles[1].Id, UserName = userProfiles[1].UserName!, ForumTopicId = forumTopic.Id },
+                new ForumPost { PostTitle = "Post 3", Content = "Content for Post 3", Slug = "post-3", UserId = userProfiles[2].Id, UserName = userProfiles[2].UserName!, ForumTopicId = forumTopic.Id }
             };
             await DbContext.ForumPosts.AddRangeAsync(posts);
             await DbContext.SaveChangesAsync();

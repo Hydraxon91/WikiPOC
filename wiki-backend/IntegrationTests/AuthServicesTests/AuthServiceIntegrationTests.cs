@@ -73,7 +73,7 @@ namespace IntegrationTests.Services
             var role = "User";
 
             // Act
-            var result = await _authService.RegisterAsync(null, null, null, role);
+            var result = await _authService.RegisterAsync(null!, null!, null!, role);
 
             // Assert
             Assert.That(result.Success, Is.False);

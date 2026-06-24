@@ -53,7 +53,7 @@ public class ForumPostControllerTests : IntegrationTestBase
             // Assert
             Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
             var okResult = result.Result as OkObjectResult;
-            var titles = okResult.Value as IEnumerable<string>;
+            var titles = okResult!.Value as IEnumerable<string>;
 
             Assert.That(titles, Is.Not.Null);
             Assert.That(titles.ToList(), Does.Contain("test"));
@@ -69,12 +69,12 @@ public class ForumPostControllerTests : IntegrationTestBase
             var forumPost = await DbContext.ForumPosts.FindAsync(forumPostId);
 
             // Act
-            var result = await _controller.GetForumPostBySlug(forumPost.Slug);
+            var result = await _controller.GetForumPostBySlug(forumPost!.Slug);
 
             // Assert
             Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
             var okResult = result.Result as OkObjectResult;
-            var returnedPost = okResult.Value as ForumPost;
+            var returnedPost = okResult!.Value as ForumPost;
 
             Assert.That(returnedPost, Is.Not.Null);
             Assert.That(returnedPost.Slug, Is.EqualTo(forumPost.Slug));
@@ -99,7 +99,7 @@ public class ForumPostControllerTests : IntegrationTestBase
                 PostDate = DateTime.UtcNow,
                 ForumTopicId = forumTopicId.ToString(),
                 UserId = userProfileId.ToString(),
-                UserName = _userName
+                UserName = _userName!
             };
 
             // Act
@@ -108,7 +108,7 @@ public class ForumPostControllerTests : IntegrationTestBase
             // Assert
             Assert.That(result.Result, Is.InstanceOf<CreatedAtActionResult>());
             var createdResult = result.Result as CreatedAtActionResult;
-            var createdPost = createdResult.Value as ForumPost;
+            var createdPost = createdResult!.Value as ForumPost;
 
             Assert.That(createdPost, Is.Not.Null);
             Assert.That(createdPost.PostTitle, Is.EqualTo(forumPostForm.PostTitle));
@@ -130,13 +130,13 @@ public class ForumPostControllerTests : IntegrationTestBase
 
             var updatedPost = new ForumPost
             {
-                Id = post.Id,
+                Id = post!.Id,
                 PostTitle = "Updated Post",
                 Content = "This is an updated post",
                 PostDate = post.PostDate,
                 ForumTopicId = post.ForumTopicId,
                 UserId = post.UserId,
-                UserName = post.UserName,
+                UserName = post.UserName!,
                 Slug = post.Slug
             };
 
@@ -146,7 +146,7 @@ public class ForumPostControllerTests : IntegrationTestBase
             // Assert
             Assert.That(result, Is.InstanceOf<OkObjectResult>());
             var updatedPostInDb = await DbContext.ForumPosts.FindAsync(post.Id);
-            Assert.That(updatedPostInDb.PostTitle, Is.EqualTo("Updated Post"));
+            Assert.That(updatedPostInDb!.PostTitle, Is.EqualTo("Updated Post"));
         }
 
         [Test]
@@ -176,7 +176,7 @@ public class ForumPostControllerTests : IntegrationTestBase
             var userProfile = new UserProfile
             {
                 Id = userProfileId,
-                UserName = _userName
+                UserName = _userName!
             };
             await DbContext.UserProfiles.AddAsync(userProfile);
             await DbContext.SaveChangesAsync();
@@ -212,7 +212,7 @@ public class ForumPostControllerTests : IntegrationTestBase
                 Content = "test",
                 PostTitle = "test",
                 Slug = "test",
-                UserName = _userName,
+                UserName = _userName!,
                 ForumTopicId = forumTopicId,
             };
             await DbContext.ForumPosts.AddAsync(forumPost);

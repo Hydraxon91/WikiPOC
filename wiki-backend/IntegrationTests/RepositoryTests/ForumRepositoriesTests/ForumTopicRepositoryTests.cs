@@ -148,7 +148,7 @@ namespace IntegrationTests.ForumRepositoriesTests
         public async Task UpdateForumTopicAsync_ShouldThrowException_WhenTopicIsNull()
         {
             // Act & Assert
-            Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.UpdateForumTopicAsync(null));
+            Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.UpdateForumTopicAsync(null!));
         }
         
         [Test]

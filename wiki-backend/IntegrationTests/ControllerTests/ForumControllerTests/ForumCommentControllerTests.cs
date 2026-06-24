@@ -59,7 +59,7 @@ public class ForumCommentControllerTests : IntegrationTestBase
         Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var returnComment = okResult.Value as ForumComment;
-        Assert.That(returnComment.Content, Is.EqualTo(comment.Content));
+        Assert.That(returnComment!.Content, Is.EqualTo(comment.Content));
     }
 
     [Test]
@@ -116,7 +116,7 @@ public class ForumCommentControllerTests : IntegrationTestBase
         Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var editedComment = await DbContext.ForumComments.FirstOrDefaultAsync(fc => fc.Id == comment.Id);
-        Assert.That(updatedContent, Is.EqualTo(editedComment.Content));
+        Assert.That(updatedContent, Is.EqualTo(editedComment!.Content));
     }
     
     [Test]
@@ -198,7 +198,7 @@ public class ForumCommentControllerTests : IntegrationTestBase
             Id = commentId,
             Content = "Test comment",
             PostDate = DateTime.Now,
-            UserProfileId = userProfile.Id,
+            UserProfileId = userProfile!.Id,
             ForumPostId = forumPostId
         };
         await DbContext.ForumComments.AddAsync(comment);

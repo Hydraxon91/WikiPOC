@@ -73,7 +73,7 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
-        var pages = okResult.Value as IEnumerable<WikiPage>;
+        var pages = okResult!.Value as IEnumerable<WikiPage>;
         Assert.That(pages, Is.Not.Null);
         Assert.That(pages, Does.Contain(page1));
         Assert.That(pages, Does.Contain(page2));
@@ -95,9 +95,9 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
-        var returnedPage = okResult.Value as WPWithImagesOutputModel;
+        var returnedPage = okResult!.Value as WPWithImagesOutputModel;
         Assert.That(returnedPage, Is.Not.Null);
-        Assert.That(returnedPage.WikiPage.Id, Is.EqualTo(page.Id));
+        Assert.That(returnedPage.WikiPage!.Id, Is.EqualTo(page.Id));
     }
     
     [Test]
@@ -180,7 +180,7 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
         var objectResult = result.Result as ObjectResult;
-        Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+        Assert.That(objectResult!.StatusCode, Is.EqualTo(500));
     }
     
     [Test]
@@ -269,7 +269,7 @@ public class WikiPageControllerTests : IntegrationTestBase
         var badRequestResult = result as BadRequestObjectResult;
         
         // Ensure the Value is not null
-        Assert.That(badRequestResult.Value, Is.Not.Null);
+        Assert.That(badRequestResult!.Value, Is.Not.Null);
 
         // Cast Value to dynamic
         dynamic value = badRequestResult.Value;
@@ -451,7 +451,7 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.That(okResult, Is.Not.Null);
         var returnedPage = okResult.Value as WPWithImagesOutputModel;
         Assert.That(returnedPage, Is.Not.Null);
-        Assert.That(returnedPage.UserSubmittedWikiPage.Id, Is.EqualTo(pageId));
+        Assert.That(returnedPage.UserSubmittedWikiPage!.Id, Is.EqualTo(pageId));
     }
 
     [Test]
@@ -478,7 +478,7 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.That(okResult, Is.Not.Null);
         var returnedPage = okResult.Value as WPWithImagesOutputModel;
         Assert.That(returnedPage, Is.Not.Null);
-        Assert.That(returnedPage.UserSubmittedWikiPage.Id, Is.EqualTo(updateId));
+        Assert.That(returnedPage.UserSubmittedWikiPage!.Id, Is.EqualTo(updateId));
     }
     
     [Test]

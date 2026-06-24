@@ -8,7 +8,6 @@ namespace IntegrationTests.Repositories
     public class WikiPageRepositoryTests : IntegrationTestBase
     {
         private WikiPageRepository _repository;
-        private CategoryRepository _categoryRepository;
 
         [SetUp]
         public void SetUp()
@@ -98,7 +97,7 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByIdAsync(wikiPage.Id);
 
             // Assert
-            Assert.That(result.WikiPage.Title, Is.EqualTo(wikiPage.Title));
+            Assert.That(result!.WikiPage!.Title, Is.EqualTo(wikiPage.Title));
             Assert.That(result.WikiPage.Id, Is.EqualTo(wikiPage.Id));
             Assert.That(result.WikiPage.Category, Is.EqualTo(wikiPage.Category));
         }
@@ -243,7 +242,7 @@ namespace IntegrationTests.Repositories
             // Assert
 
             var approvedUserSubmittedPage = await DbContext.UserSubmittedWikiPages.FindAsync(userSubmittedWikiPage.Id);
-            Assert.That(approvedUserSubmittedPage.Approved, Is.True);
+            Assert.That(approvedUserSubmittedPage!.Approved, Is.True);
         }
         
         [Test]

@@ -131,7 +131,7 @@ namespace IntegrationTests.Services
             };
 
             // Act
-            var token = _tokenServices.CreateToken(user, null);
+            var token = _tokenServices.CreateToken(user, null!);
 
             // Assert
             Assert.That(token, Is.Not.Null);

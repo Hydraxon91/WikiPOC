@@ -142,7 +142,7 @@ public class UserControllerTests : IntegrationTestBase
         public async Task CreateUser_NullModel_ShouldReturnBadRequest()
         {
             // Act
-            var result = await _controller.CreateUser(null);
+            var result = await _controller.CreateUser(null!);
 
             // Assert
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
