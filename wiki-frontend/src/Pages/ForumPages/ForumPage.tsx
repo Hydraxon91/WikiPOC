@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { getForumTopicBySlug } from '../../Api/forumApi';
-import { format } from 'date-fns';
+import { formatDate } from '../../utils/formatDate';
 import ForumPostButton from './Components/ForumPostButton';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import Breadcrumbs from './Components/Breadcrumbs';
@@ -52,7 +52,7 @@ const ForumPage = ({ jwtToken }) => {
 
         const utcDate = new Date(latestComment.postDate + 'Z');
         const diffInMinutes = Math.floor((Number(new Date()) - Number(utcDate)) / (1000 * 60));
-        const formattedDate = diffInMinutes < 60 ? `${diffInMinutes} minutes ago` : format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
+        const formattedDate = diffInMinutes < 60 ? `${diffInMinutes} minutes ago` : formatDate(latestComment.postDate);
 
         return (
             <>

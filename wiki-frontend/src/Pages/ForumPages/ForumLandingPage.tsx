@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { Link } from 'react-router-dom';
 import { getForumTopics } from '../../Api/forumApi';
-import { format } from 'date-fns';
+import { formatDate } from '../../utils/formatDate';
 import Breadcrumbs from './Components/Breadcrumbs';
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import './Styles/forumlandingpage.css';
@@ -55,7 +55,7 @@ const ForumLandingPage = () => {
         // Calculate time difference in minutes
         const diffInMinutes = Math.floor((Number(new Date()) - Number(utcDate)) / (1000 * 60));
         // Format the zoned date
-        const formattedDate = diffInMinutes < 60 ? `${diffInMinutes} minutes ago` : format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
+        const formattedDate = diffInMinutes < 60 ? `${diffInMinutes} minutes ago` : formatDate(latestComment.postDate);
     
         return (
             <>

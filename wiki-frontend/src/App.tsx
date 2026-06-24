@@ -7,7 +7,7 @@ import EditStylePage from "./Pages/EditStylePage/EditStylePage";
 import MainPage from "./Pages/MainPage/MainPage";
 import HomeComponent from "./Pages/MainPage/Components/HomeComponent";
 import { StyleProvider  } from "./Components/contexts/StyleContext";
-import { createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle, fetchCategories } from "./Api/wikiApi";
+import { getWikiPageByTitle, fetchCategories } from "./Api/wikiApi";
 import LoginPageComponent from "./Pages/LoginLogoutPages/LoginPageComponent";
 import { CookiesProvider, useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
@@ -90,15 +90,6 @@ function App() {
         console.error("Error creating WikiPage:", error);
         showNotification('Failed to create page.');
         throw error;
-      });
-  };
-  const handleDelete = (id) => {
-    deleteWikiPage(id, cookies["jwt_token"])
-      .then(() => {
-        setWikiPageTitles(wikiPageTitles.filter((page) => page.Title !== currentWikiPage.Title));
-      })
-      .catch((error) => {
-        console.error("Error deleting WikiPage:", error);
       });
   };
   
@@ -219,6 +210,7 @@ function App() {
                 }/>
                 <Route path="/forum/:slug/:postSlug" element={<ForumPost jwtToken={cookies["jwt_token"]}
  />} />
+                <Route path="*" element={<div style={{ padding: '2rem', textAlign: 'center' }}><h2>Page Not Found</h2></div>} />
               </Route>
             </Routes>
           </StyleProvider>

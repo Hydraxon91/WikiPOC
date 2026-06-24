@@ -3,7 +3,7 @@ import { useUserContext } from '../../../Components/contexts/UserContextProvider
 import { getUserProfileByUsername } from '../../../Api/wikiUserApi';
 import { postForumComment } from '../../../Api/forumApi';
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
+import { formatDate } from '../../../utils/formatDate';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
@@ -36,12 +36,6 @@ const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisi
             ...currPost,
             comments: [...currPost.comments, { ...newComment, postDate }],
         }));
-    };
-
-    const formatDate = (dateString) => {
-        const utcDate = new Date(dateString + 'Z');
-        const formattedDate = format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
-        return formattedDate.replace(/\//g, '-');
     };
 
     const renderQuote = (comment, currentDepth, maxDepth) => {

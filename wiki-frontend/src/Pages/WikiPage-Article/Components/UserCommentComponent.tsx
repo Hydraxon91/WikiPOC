@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { format } from 'date-fns';
+import { formatDate } from '../../../utils/formatDate';
 import WikiPageReplyComponent from './WikiPageReplyComponent';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 
@@ -23,12 +23,6 @@ const UserCommentComponent = ({ comment, user, jwtToken, handleCommentSubmit, po
         setEditingCommentIndex(null);
         setEditedComment("");
     };
-
-    function formatDate(dateString) {
-        const utcDate = new Date(dateString + 'Z');
-        const formattedDate = format(utcDate, 'EEEE, dd MMM yyyy, HH:mm');
-        return formattedDate.replace(/\//g, '-');
-    }
 
     return (
         <div className='wikipage-comment'>
