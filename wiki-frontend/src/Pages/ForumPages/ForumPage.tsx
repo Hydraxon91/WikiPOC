@@ -6,10 +6,12 @@ import { format } from 'date-fns';
 import ForumPostButton from './Components/ForumPostButton';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import Breadcrumbs from './Components/Breadcrumbs';
+import LoadingSpinner from '../../Components/LoadingSpinner';
 import './Styles/forumlandingpage.css';
 
 const ForumPage = ({ jwtToken }) => {
     const [topic, setTopic] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
     const { slug } = useParams();
     const { styles } = useStyleContext();
     const [currentPage, setCurrentPage] = useState(1);
@@ -20,11 +22,14 @@ const ForumPage = ({ jwtToken }) => {
     }, []);
 
     const fetchForumTopic = async () => {
+        setLoading(true);
         try {
             const fetchedTopic = await getForumTopicBySlug(slug);
             setTopic(fetchedTopic);
         } catch (error) {
             console.error("Error fetching Topics:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -85,6 +90,8 @@ const ForumPage = ({ jwtToken }) => {
         );
     };
     
+
+    if (loading) return <LoadingSpinner text="Loading forum topic..." />;
 
     return (
         <div className='forum-mainsection'>

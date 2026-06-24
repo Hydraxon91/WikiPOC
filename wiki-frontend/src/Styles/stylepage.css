@@ -83,3 +83,7 @@
     border-radius: 5px;
     border: 2px solid rgba(118, 118, 118, 0.5);
 }
+
+.form-group input {
+    margin-left: 0.5rem;
+}

@@ -4,10 +4,12 @@ import { Link } from 'react-router-dom';
 import { getForumTopics } from '../../Api/forumApi';
 import { format } from 'date-fns';
 import Breadcrumbs from './Components/Breadcrumbs';
+import LoadingSpinner from '../../Components/LoadingSpinner';
 import './Styles/forumlandingpage.css';
 
 const ForumLandingPage = () => {
     const [topics, setTopics] = useState([]);
+    const [loading, setLoading] = useState(true);
     const {styles} = useStyleContext();
 
     useEffect(() => {
@@ -65,13 +67,18 @@ const ForumLandingPage = () => {
     
 
     const fetchForumTopics = async () =>{
+        setLoading(true);
         try {
             const fetchedTopics = await getForumTopics();
             setTopics(fetchedTopics);
         } catch (error) {
             console.error("Error fetching Topics:", error);
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loading) return <LoadingSpinner text="Loading topics..." />;
 
     return (
         <div className='forum-mainsection'> 

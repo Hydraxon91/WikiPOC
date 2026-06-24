@@ -80,7 +80,7 @@ const CompareUpdatePage = () => {
             {
                   <>
                     <NewCompareUpdatePage page={originalPage} setDecodedTitle={undefined}></NewCompareUpdatePage>
-                    <div style={{ borderRight: '1px solid #ccc', margin: '0 10px' }}></div>
+                    <div className="compare-divider"></div>
                     <NewCompareUpdatePage page={updatePage} setDecodedTitle={undefined}></NewCompareUpdatePage>
                   </> 
             }

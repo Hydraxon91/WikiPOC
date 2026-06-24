@@ -4,6 +4,7 @@ import LegacyWikiPageComponent from './Components/LegacyWikiPageComponent';
 import WikiPageComponent from './Components/WikiPageComponent';
 import WikiPageCommentsComponent from './Components/WikiPageCommentsComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
+import LoadingSpinner from '../../Components/LoadingSpinner';
 import '../../Styles/wikipage.css';
 
 const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = false }) => {
@@ -26,6 +27,8 @@ const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = fa
     const handleTabClick = (tab) =>{
         setActiveTab(tab);
     }
+
+    if (!wikipage) return <LoadingSpinner text="Loading article..." />;
 
     return(
         <div className="article" style={{backgroundColor: styles.articleColor}}>

@@ -45,7 +45,6 @@ const ManualEditStylesComponent = ({handleChange, newStyles, handleLogoPictureCh
         <label className="mb-4">Wiki Name:</label>
         <input type="text" 
           value={newStyles.wikiName}
-          style={{marginLeft: "0.5rem"}} 
           onChange={(e) => handleChange('wikiName', e.target.value)} />
       </div>
 
@@ -53,7 +52,6 @@ const ManualEditStylesComponent = ({handleChange, newStyles, handleLogoPictureCh
         <label className="mb-4">Body Color:</label>
         <input type="color" 
           className="form-control-color align-middle"
-          style={{marginLeft: "0.5rem"}}  
           value={rgbToHex(newStyles.bodyColor)} 
           title="Choose your color"
           onChange={(e) => handleChange('bodyColor', e.target.value)} />
@@ -63,7 +61,6 @@ const ManualEditStylesComponent = ({handleChange, newStyles, handleLogoPictureCh
         <label className="mb-4">Article Color:</label>
         <input type="color" 
           className="form-control-color align-middle"
-          style={{marginLeft: "0.5rem"}}  
           value={rgbToHex(newStyles.articleColor)} 
           title="Choose your color"
           onChange={(e) => handleChange('articleColor', e.target.value)} />
@@ -73,7 +70,6 @@ const ManualEditStylesComponent = ({handleChange, newStyles, handleLogoPictureCh
         <label className="mb-4">Article Right Color:</label>
         <input type="color" 
           className=" form-control-color align-middle"
-          style={{marginLeft: "0.5rem"}} 
           value={rgbToHex(newStyles.articleRightColor)}
           title="Choose your color"
           onChange={(e) => handleChange('articleRightColor', e.target.value)} />
@@ -83,7 +79,6 @@ const ManualEditStylesComponent = ({handleChange, newStyles, handleLogoPictureCh
         <label className="mb-4">Article Right Inner Color:</label>
         <input type="color" 
           className="form-control-color align-middle"
-          style={{marginLeft: "0.5rem"}}  
           value={rgbToHex(newStyles.articleRightInnerColor)}
           title="Choose your color"
           onChange={(e) => handleChange('articleRightInnerColor', e.target.value)} />
@@ -93,7 +88,6 @@ const ManualEditStylesComponent = ({handleChange, newStyles, handleLogoPictureCh
         <label className="mb-4">Sidebar and Footer Text Color:</label>
         <input type="color" 
           className="form-control-color align-middle"
-          style={{marginLeft: "0.5rem"}} 
           value={rgbToHex(newStyles.footerListTextColor)}
           title="Choose your color"
           onChange={(e) => handleChange('footerListTextColor', e.target.value)} />
@@ -103,7 +97,6 @@ const ManualEditStylesComponent = ({handleChange, newStyles, handleLogoPictureCh
         <label className="mb-4">Sidebar and Footer Link Color:</label>
         <input type="color" 
           className="form-control-color align-middle"
-          style={{marginLeft: "0.5rem"}} 
           value={rgbToHex(newStyles.footerListLinkTextColor)} 
           title="Choose your color"
           onChange={(e) => handleChange('footerListLinkTextColor', e.target.value)} />
