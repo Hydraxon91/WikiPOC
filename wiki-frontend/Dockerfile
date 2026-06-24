@@ -14,9 +14,9 @@ RUN npm install
 COPY . .
 
 # 💡 CRITICAL: Catch the argument passed by docker-compose
-ARG REACT_APP_API_URL
+ARG VITE_API_URL
 # 💡 CRITICAL: Turn it into an environment variable for the build process
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 
 # Build the React app
 RUN npm run build

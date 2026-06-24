@@ -315,3 +315,4 @@ wiki-frontend/.env
 /pictures
 .env
 wiki-backend/IntegrationTests/.env
+/wiki-frontend/dist

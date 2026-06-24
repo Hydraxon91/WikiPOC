@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_URL;
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const getUserProfileByUsername = async (username, setUser) => {
     const response = await fetch(`${BASE_URL}/api/UserProfile/GetByUserName/${username}`);
