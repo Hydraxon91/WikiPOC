@@ -38,10 +38,6 @@ export default function RegisterPageComponent(){
         setUserInputClass('register-inputbox');
         setRoleDropdownClass('role-dropdown');
     }
-
-    useEffect(()=>{
-
-    },[emailInputClass, passwordInputClass, userInputClass, roleDropdownClass])
     
     useEffect(()=>{
         console.log(response);
@@ -79,17 +75,17 @@ export default function RegisterPageComponent(){
                     <div className="inputboxholder">
                         <div className={emailInputClass}>
                             <input type="text" required onClick={InputClick} onChange={(e) => setEmail(e.target.value)}></input>
-                            <label for="">Email</label>
+                            <label htmlFor="emailInput">Email</label>
                             <h3 className="invalid-email-text">invalid email or already in use</h3>
                         </div>
                         <div className={userInputClass}>
                             <input type="text" required onClick={InputClick} onChange={(e) => setUsername(e.target.value)}/>
-                            <label for="">Username</label>
+                            <label htmlFor="userInput">Username</label>
                             <h3 className="invalid-username-text">invalid username or already in use</h3>
                         </div>
                         <div className={passwordInputClass}>
                             <input type="password" required onClick={InputClick} onChange={(e) => setPassword(e.target.value)}></input>
-                            <label for="">Password</label>
+                            <label htmlFor="passwordInput">Password</label>
                             <h3 className="invalid-password-text">should be at least 6 characters long</h3>
                         </div>
                     

@@ -6,7 +6,6 @@ import SuccessfullElement from "./SuccessfullElement";
 import { handleLoginSubmit } from "../../Api/wikiAuthApi";
 
 export default function LoginPageComponent({handleLogin}){
-    //console.log(user);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [response, setResponse] = useState(null);
@@ -17,21 +16,17 @@ export default function LoginPageComponent({handleLogin}){
     
     const login = (jwt_token) => {
         const decoded = jwtDecode(jwt_token);
-        // setUser(decoded);
         const expirationTimestamp = parseInt(decoded.exp, 10);
         const expirationDate = new Date(expirationTimestamp * 1000)
-        // cookies.set("jwt_authorization", jwt_token, {expires: expirationDate});
         handleLogin(jwt_token, expirationDate);
     }
 
     const HandleSubmit = () => {
         handleLoginSubmit(email, password)
             .then(response => {
-                // Handle the response here
                 setResponse(response);
             })
             .catch(error => {
-                // Handle errors here
                 console.error(error);
             });
     }
@@ -40,10 +35,6 @@ export default function LoginPageComponent({handleLogin}){
         setEmailInputClass('login-inputbox');
         setPasswordInputClass('login-inputbox');
     }
-
-    useEffect(()=>{
-
-    },[emailInputClass, passwordInputClass])
     
     useEffect(()=>{
         if (response) {
@@ -54,13 +45,8 @@ export default function LoginPageComponent({handleLogin}){
                 navigate('/');
             }
             else{
-                if (response['Bad credentials'][0] === 'Invalid email' || 'Invalid Username') {
-
-                        setEmailInputClass('login-inputbox wrong-credential');
-                }
-                else {
-                    setPasswordInputClass('login-inputbox wrong-credential');
-                }
+                setEmailInputClass('login-inputbox wrong-credential');
+                setPasswordInputClass('login-inputbox wrong-credential');
             }
         }
         
@@ -80,12 +66,12 @@ export default function LoginPageComponent({handleLogin}){
                     <div className="login-inputboxholder">
                         <div className={emailInputClass}>
                             <input type="text" required onClick={InputClick} onChange={(e) => setEmail(e.target.value)}></input>
-                            <label for="emailInput">Email/Username</label>
+                            <label htmlFor="emailInput">Email/Username</label>
                             <h3 className="invalid-email-text">invalid email or username</h3>
                         </div>
                         <div className={passwordInputClass}>
                             <input type="password" required onClick={InputClick} onChange={(e) => setPassword(e.target.value)}></input>
-                            <label for="">Password</label>
+                            <label htmlFor="passwordInput">Password</label>
                             <h3 className="invalid-password-text">invalid password</h3>
                         </div>
                     </div>

@@ -1,18 +1,20 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { getProfilePicture } from '../../../Api/wikiUserApi';
 import "../../../Styles/profilepage.css";
 
 function DisplayProfileImageElement({profilePicture, classNameProp}) {
     const defaultImageUrl = 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Default-avatar.jpg'; 
     const [imageSrc, setImageSrc] = useState(defaultImageUrl);
+    const blobUrlRef = useRef(null);
 
     useEffect(()=>{
         if (profilePicture) {
-            // Fetch profile picture when the component mounts or profilePicture prop changes
             getProfilePicture(profilePicture)
                 .then(data => {
-                    if (data instanceof Blob) { // Check if data is a Blob object
+                    if (data instanceof Blob) {
+                        if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
                         const imageUrl = URL.createObjectURL(data);
+                        blobUrlRef.current = imageUrl;
                         setImageSrc(imageUrl);
                     } else if (typeof data === 'string' && data.startsWith('blob:')) {
                         setImageSrc(data);
@@ -23,12 +25,10 @@ function DisplayProfileImageElement({profilePicture, classNameProp}) {
                 })
                 .catch(error => {
                     console.error('Error fetching profile picture:', error);
-                    // Use default image URL in case of error
                     setImageSrc(defaultImageUrl);
                 });
         }
     },[profilePicture])
-
 
     return (
         <div className={classNameProp}>

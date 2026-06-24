@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from 'react-router-dom';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { getLogo } from "../../../Api/wikiApi";
@@ -7,15 +7,17 @@ const HeaderComponent = ({userName, userRole}) => {
     const { styles }  = useStyleContext();
     const [imageSrc, setImageSrc] = useState("/img/logo.png");
     const [title, setTitle] = useState("Default Title");
+    const blobUrlRef = useRef(null);
 
     useEffect(()=>{
         if (styles && styles.logo) {
-            // Fetch profile picture when the component mounts or profilePicture prop changes
             setTitle(styles.wikiName);
             getLogo(styles.logo)
                 .then(data => {
-                    if (data instanceof Blob) { // Check if data is a Blob object
+                    if (data instanceof Blob) {
+                        if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
                         const imageUrl = URL.createObjectURL(data);
+                        blobUrlRef.current = imageUrl;
                         setImageSrc(imageUrl);
                     } else if (typeof data === 'string' && data.startsWith('blob:')) {
                         setImageSrc(data);
@@ -26,7 +28,6 @@ const HeaderComponent = ({userName, userRole}) => {
                 })
                 .catch(error => {
                     console.error('Error fetching profile picture:', error);
-                    // Use default image URL in case of error
                     setImageSrc("/img/logo.png");
                 });
         }
