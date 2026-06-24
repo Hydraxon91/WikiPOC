@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.Models;
-using Bogus;
 using wiki_backend.Models.ForumModels;
 
 namespace wiki_backend.DatabaseServices;
@@ -40,10 +39,6 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        var isTesting = _configuration?["ASPNETCORE_ENVIRONMENT"] == "Testing";
-        if (isTesting) return;
-        var faker = new Faker();
-
         modelBuilder.Entity<WikiPage>()
             .Property(wp => wp.Id)
             .ValueGeneratedOnAdd()
@@ -61,10 +56,10 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .HasForeignKey(c => c.WikiPageId);
 
         modelBuilder.Entity<WikiPage>()
-            .HasOne(wp => wp.Category) // Navigation property
-            .WithMany(c => c.WikiPages) // Collection navigation property in Category
-            .HasForeignKey(wp => wp.CategoryId) // Foreign key
-            .OnDelete(DeleteBehavior.Restrict); // Set delete behavior as you need
+            .HasOne(wp => wp.Category)
+            .WithMany(c => c.WikiPages)
+            .HasForeignKey(wp => wp.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<UserSubmittedWikiPage>()
             .HasBaseType<WikiPage>()
@@ -85,7 +80,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 
         modelBuilder.Entity<UserComment>()
             .HasOne(uc => uc.UserProfile)
-            .WithMany() // No need to have a navigation property in UserProfile
+            .WithMany()
             .HasForeignKey(uc => uc.UserProfileId);
 
         modelBuilder.Entity<ForumTopic>()
@@ -93,7 +88,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 
         modelBuilder.Entity<ForumPost>()
             .HasOne(fp => fp.ForumTopic)
-            .WithMany(ft => ft.ForumPosts) // Assuming you have a ForumPosts navigation property in ForumTopic
+            .WithMany(ft => ft.ForumPosts)
             .HasForeignKey(fp => fp.ForumTopicId)
             .OnDelete(DeleteBehavior.Restrict);
 
@@ -125,245 +120,5 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .WithMany()
             .HasForeignKey(fc => fc.ReplyToCommentId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        //Generating Article IDs
-        var wikiPage1Id = Guid.NewGuid();
-        var wikiPage2Id = Guid.NewGuid();
-        var wikiPage3Id = Guid.NewGuid();
-        var wikiPage4Id = Guid.NewGuid();
-
-        //Generating Category Ids
-        var category1Id = Guid.NewGuid();
-        var category2Id = Guid.NewGuid();
-        var category3Id = Guid.NewGuid();
-        var category4Id = Guid.NewGuid();
-
-        var paragraphs1 = new List<Paragraph>()
-        {
-            new Paragraph
-            {
-                Id = Guid.NewGuid(),
-                WikiPageId = wikiPage1Id,
-                Title = $"Example Page 1 - Paragraph 1",
-                Content = faker.Lorem.Paragraphs(faker.Random.Number(1,
-                    10)), // Generate bogus lorem ipsum-like content
-                ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
-                ParagraphImageText = "Example ParagraphImageText 1"
-            }
-        };
-        paragraphs1.AddRange(Enumerable.Range(2, 5).Select(index => new Paragraph
-        {
-            Id = Guid.NewGuid(),
-            WikiPageId = wikiPage1Id,
-            Title = $"Example Page 1 - Paragraph {index}",
-            Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)), // Generate bogus lorem ipsum-like content
-        }));
-
-        var paragraphs2 = new List<Paragraph>()
-        {
-            new Paragraph
-            {
-                Id = Guid.NewGuid(),
-                WikiPageId = wikiPage2Id,
-                Title = $"Example Page 2 - Paragraph 1",
-                Content = faker.Lorem.Paragraphs(faker.Random.Number(1,
-                    10)), // Generate bogus lorem ipsum-like content
-                ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg",
-                ParagraphImageText = "Example ParagraphImageText 2"
-            }
-        };
-        paragraphs2.AddRange(Enumerable.Range(2, 5).Select(index => new Paragraph
-        {
-            Id = Guid.NewGuid(),
-            WikiPageId = wikiPage2Id,
-            Title = $"Example Page 2 - Paragraph {index}",
-            Content = faker.Lorem.Paragraphs(faker.Random.Number(1, 10)),
-        }));
-
-        var wp1 = new WikiPage
-        {
-            Id = wikiPage1Id,
-            Title = "Example Page 1",
-            SiteSub = "Example SiteSub 1",
-            RoleNote = "Example RoleNote 1",
-            LegacyWikiPage = true,
-            PostDate = DateTime.UtcNow,
-            CategoryId = category1Id,
-            // Paragraphs = paragraphs1
-        };
-
-        var wp2 = new WikiPage
-        {
-            Id = wikiPage2Id,
-            Title = "Example Page 2",
-            SiteSub = "Example SiteSub 2",
-            RoleNote = "Example RoleNote 2",
-            LegacyWikiPage = true,
-            PostDate = DateTime.UtcNow,
-            CategoryId = category2Id,
-            // Paragraphs = paragraphs2
-        };
-
-        modelBuilder.Entity<WikiPage>().HasData(
-            wp1,
-            wp2
-        );
-
-        var uswp1 = new UserSubmittedWikiPage
-        {
-            Id = wikiPage3Id,
-            Title = "User Submitted Page",
-            SiteSub = "User Submitted SiteSub",
-            RoleNote = "User Submitted RoleNote",
-            SubmittedBy = "tester",
-            LegacyWikiPage = true,
-            IsNewPage = true,
-            PostDate = DateTime.UtcNow,
-            CategoryId = category3Id,
-        };
-        var uswp2 = new UserSubmittedWikiPage
-        {
-            Id = wikiPage4Id,
-            WikiPageId = wikiPage1Id,
-            Title = "Example Page 1",
-            SiteSub = "Example SiteSub 1 Update",
-            RoleNote = "Example RoleNote 1 Update",
-            SubmittedBy = "tester",
-            LegacyWikiPage = true,
-            IsNewPage = false,
-            PostDate = DateTime.UtcNow,
-            CategoryId = category4Id,
-        };
-        modelBuilder.Entity<UserSubmittedWikiPage>().HasData(
-            uswp1,
-            uswp2
-        );
-
-        var paragraphs3 = new List<Paragraph>()
-        {
-            new Paragraph
-            {
-                Id = Guid.NewGuid(),
-                WikiPageId = wikiPage3Id,
-                Title = "User Submitted Paragraph 1",
-                Content = "User Submitted Content 1",
-                ParagraphImage = "https://i.kym-cdn.com/entries/icons/original/000/029/079/hellothere.jpg",
-                ParagraphImageText = "Hello there"
-            },
-            new Paragraph
-            {
-                Id = Guid.NewGuid(),
-                WikiPageId = wikiPage3Id,
-                Title = "User Submitted Paragraph 2",
-                Content = "User Submitted Content 2",
-                ParagraphImage = "https://i.ytimg.com/vi/jAB3mMdS0xE/maxresdefault.jpg",
-                ParagraphImageText = "General Kenobi"
-            },
-            new Paragraph
-            {
-                Id = Guid.NewGuid(),
-                WikiPageId = wikiPage4Id,
-                Title = "New Paragraph 1",
-                Content = "Helldivers never die!",
-                ParagraphImage = "https://i.ytimg.com/vi/nhhICroqfpU/hq720_live.jpg",
-                ParagraphImageText = "Helldivers never die!"
-            },
-            new Paragraph
-            {
-                Id = Guid.NewGuid(),
-                WikiPageId = wikiPage4Id,
-                Title = "Liber-Tea",
-                Content = "Liber-Tea is a funny line haha",
-                ParagraphImage = "https://i.kym-cdn.com/photos/images/original/002/760/001/66d",
-                ParagraphImageText = "Time for a nice cup of Liber-Tea"
-            }
-        };
-
-        modelBuilder.Entity<Paragraph>().HasData(
-            paragraphs1.Concat(paragraphs2).Concat(paragraphs3).ToList()
-        );
-
-        modelBuilder.Entity<Category>().HasData(
-            new List<Category>()
-            {
-                new Category
-                {
-                    Id = category1Id,
-                    CategoryName = "Characters",
-                },
-                new Category
-                {
-                    Id = category2Id,
-                    CategoryName = "Stories",
-                },
-                new Category
-                {
-                    Id = category3Id,
-                    CategoryName = "Locations",
-                },
-                new Category
-                {
-                    Id = category4Id,
-                    CategoryName = "Events",
-                },
-                new Category
-                {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Organizations"
-                },
-                new Category
-                {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Concepts"
-                },
-                new Category
-                {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Technologies"
-                },
-                new Category
-                {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Arts and Entertainment"
-                },
-                new Category
-                {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Sports and Recreation"
-                },
-                new Category
-                {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Science and Technology"
-                },
-                new Category
-                {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "History and Culture"
-                },
-                new Category
-                {
-                    Id = Guid.NewGuid(),
-                    CategoryName = "Food and Drink"
-                }
-            }
-        );
-
-
-        modelBuilder.Entity<StyleModel>().HasData(
-            new StyleModel
-            {
-                Id = 1,
-                Logo = "logo/logo_pfp.png",
-                WikiName = "Your Wiki",
-                BodyColor = "#507ced",
-                ArticleRightColor = "#3c5fb8",
-                ArticleRightInnerColor = "#2b4ea6",
-                ArticleColor = "#526cad",
-                FooterListLinkTextColor = "#1d305e",
-                FooterListTextColor = "#233a71",
-                FontFamily = "Arial, sans-serif",
-            }
-        );
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using wiki_backend.DatabaseServices;
@@ -147,6 +148,7 @@ void AddDbContext()
     builder.Services.AddDbContext<WikiDbContext>(options =>
     {
         options.UseSqlServer(Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING")!);
+        options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
         if (builder.Environment.IsDevelopment())
         {
             options.EnableSensitiveDataLogging();
