@@ -5,6 +5,7 @@ import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent'
 import LegacyEditPage from './LegacyEditPage';
 import LegacyWikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
 import LegacyEditPageComponent from './Components/LegacyEditPageComponent';
+import { useNotification } from '../../Components/NotificationProvider';
 import './Style/articleeditor.css';
 
 const EditPage = ({ page, handleEdit, handleCreate }: any) => {
@@ -21,6 +22,7 @@ const EditPage = ({ page, handleEdit, handleCreate }: any) => {
   const [images, setImages] = useState([]);
   const [usedImages, setUsedImages] = useState([]);
   const [legacyPage, setLegacyPage] = useState(false);
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     if (page) {
@@ -113,7 +115,7 @@ const EditPage = ({ page, handleEdit, handleCreate }: any) => {
 
   const handleSave = () =>{
     if ( !title) {
-      alert('Please make sure to have a title.');
+      showNotification('Please make sure to have a title.');
       return;
     }
 
@@ -126,7 +128,7 @@ const EditPage = ({ page, handleEdit, handleCreate }: any) => {
     savePromise
       .then((data) => {
         // setCurrentWikiPage(temporaryPage);
-        alert('Successfully submitted page!')
+        showNotification('Successfully submitted page!')
         navigate(`/`);
       })
       .catch((error) => {

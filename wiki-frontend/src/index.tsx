@@ -3,12 +3,15 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import ErrorBoundary from './Components/ErrorBoundary';
+import { NotificationProvider } from './Components/NotificationProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
   <React.StrictMode>
     <ErrorBoundary>
-      <App />
+      <NotificationProvider>
+        <App />
+      </NotificationProvider>
     </ErrorBoundary>
   </React.StrictMode>
 );

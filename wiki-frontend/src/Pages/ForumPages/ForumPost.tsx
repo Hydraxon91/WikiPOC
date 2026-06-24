@@ -7,6 +7,7 @@ import DisplayProfileImageElement from '../ProfilePage/Components/DisplayProfile
 import { format } from 'date-fns';
 import Breadcrumbs from './Components/Breadcrumbs';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
+import { useNotification } from '../../Components/NotificationProvider';
 import "./Styles/forumpost.css"
 
 const ForumPost = ({jwtToken}) => {
@@ -15,6 +16,7 @@ const ForumPost = ({jwtToken}) => {
     const {styles} = useStyleContext();
     const [quotedPostId, setQuotedPostId] = useState(null);
     const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         const fetchForumPost = async () => {
@@ -31,7 +33,7 @@ const ForumPost = ({jwtToken}) => {
 
     const togglePopupVisibility = () => {
         if (!jwtToken) {
-            alert('You need to log in to post a reply.');
+            showNotification('You need to log in to post a reply.');
         } else {
             setIsPopupVisible(!isPopupVisible);
         }
@@ -39,7 +41,7 @@ const ForumPost = ({jwtToken}) => {
 
     const setQuotedPostMethod = (comment) => {
         if (!jwtToken) {
-            alert('You need to log in to post a reply.');
+            showNotification('You need to log in to post a reply.');
         } else {
             setQuotedPostId(comment.id);
             setIsPopupVisible(!isPopupVisible);

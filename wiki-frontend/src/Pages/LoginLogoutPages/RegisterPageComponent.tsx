@@ -3,6 +3,7 @@ import "../../Styles/register.css";
 import { Link, useNavigate } from 'react-router-dom';
 import SuccessfullElement from "./SuccessfullElement";
 import { handleRegisterSubmit } from "../../Api/wikiAuthApi";
+import { useNotification } from '../../Components/NotificationProvider';
 
 export default function RegisterPageComponent(){
     const [email, setEmail] = useState(null);
@@ -18,8 +19,8 @@ export default function RegisterPageComponent(){
     
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const navigate = useNavigate();
+    const { showNotification } = useNotification();
     
-
     const HandleSubmit = (e) => {
         e.preventDefault();
         handleRegisterSubmit(email, username, password, "User")
@@ -54,7 +55,7 @@ export default function RegisterPageComponent(){
             setRoleDropdownClass("role-dropdown wrong-credential");
         }
         if (response?.userName) {
-            alert('Succesfully registered!');
+            showNotification('Succesfully registered!');
             navigate('/');
 
         }

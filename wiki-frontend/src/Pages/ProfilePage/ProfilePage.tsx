@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { getUserProfileByUsername } from "../../Api/wikiUserApi";
 import { useStyleContext } from "../../Components/contexts/StyleContext";
+import { useNotification } from '../../Components/NotificationProvider';
 import "../../Styles/profilepage.css";
 
 const ProfilePage = () => {
@@ -13,12 +14,13 @@ const ProfilePage = () => {
     const { username } = useParams();
     const [userProfile, setUserProfile] = useState(null);
     const [isYourProfile, setIsYourProfile] = useState(false);
+    const { showNotification } = useNotification();
 
     useEffect(() => { 
         if (username!==null) {
             getUserProfileByUsername(username, setUserProfile)
             .catch(error => {
-                alert(`Profile for ${username} doesn't exist.`);
+                showNotification(`Profile for ${username} doesn't exist.`);
                 navigate("/");
             });
         }

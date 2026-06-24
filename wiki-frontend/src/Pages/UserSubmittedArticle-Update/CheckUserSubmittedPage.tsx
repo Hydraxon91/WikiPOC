@@ -3,11 +3,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import WikiPage from '../WikiPage-Article/WikiPage';
 import { acceptUserSubmittedPage, declineUserSubmittedWikiPage, getNewPageById } from '../../Api/wikiApi';
+import { useNotification } from '../../Components/NotificationProvider';
 const CheckUserSubmittedPage = () => {
     const [cookies] = useCookies(['jwt_token']);
     const [page, setPage] = useState();
     const location = useLocation();
     const navigate = useNavigate();
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         const match = location.pathname.match(/\/([a-f\d-]+)$/i);
@@ -29,7 +31,7 @@ const CheckUserSubmittedPage = () => {
         acceptUserSubmittedPage(page, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
-            alert("Succesfully Approved Submitted Page");
+            showNotification("Succesfully Approved Submitted Page");
             navigate(`/user-submissions`);
           })
           .catch((error) => {
@@ -41,7 +43,7 @@ const CheckUserSubmittedPage = () => {
         declineUserSubmittedWikiPage((page as any).id, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
-            alert("Declined Submitted Page");
+            showNotification("Declined Submitted Page");
             navigate(`/user-submissions`);
           })
           .catch((error) => {

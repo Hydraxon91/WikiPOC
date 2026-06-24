@@ -4,12 +4,14 @@ import CustomHTMLPopup from './CustomHTMLPopup';
 import UserImagesContainer from './UserImagesContainer';
 import { fetchCategories } from '../../../Api/wikiApi';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
+import { useNotification } from '../../../Components/NotificationProvider';
 import 'react-quill/dist/quill.snow.css';
 
 
 const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave, images, setImages, category }) => {
   const quillRef = useRef(null); // Define quillRef
   const {styles} = useStyleContext();
+  const { showNotification } = useNotification();
   const [lastSelection, setLastSelection] = useState(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -127,7 +129,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
                             setImages([...images, { name: fileName, dataURL: e.target.result }]);
                         } else {
                             // Display an error message or handle the invalid aspect ratio
-                            window.alert(`Image ${fileName} has an invalid aspect ratio.`);
+                            showNotification(`Image ${fileName} has an invalid aspect ratio.`);
                         }
                     };
                 };
@@ -135,11 +137,11 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
                 reader.readAsDataURL(file);
             } else {
                 // Display an error message or handle oversized images
-                window.alert(`Image ${fileName} exceeds the maximum size limit of 10 megabytes.`);
+                showNotification(`Image ${fileName} exceeds the maximum size limit of 10 megabytes.`);
             }
         } else {
             // Display an error message or handle unsupported file types
-            window.alert(`File type not supported: ${file.type}`);
+            showNotification(`File type not supported: ${file.type}`);
         }
     }
 };

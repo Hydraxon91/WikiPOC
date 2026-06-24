@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
 import SuccessfullElement from "./SuccessfullElement";
 import { handleLoginSubmit } from "../../Api/wikiAuthApi";
+import { useNotification } from '../../Components/NotificationProvider';
 
 export default function LoginPageComponent({handleLogin}){
     const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ export default function LoginPageComponent({handleLogin}){
     const [passwordInputClass, setPasswordInputClass] = useState('login-inputbox');
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const navigate = useNavigate();
+    const { showNotification } = useNotification();
     
     const login = (jwt_token) => {
         const decoded = jwtDecode(jwt_token);
@@ -41,7 +43,7 @@ export default function LoginPageComponent({handleLogin}){
         if (response) {
             if (response?.token) {
                 login(response.token);
-                alert('Succesfully logged in!');
+                showNotification('Succesfully logged in!');
                 navigate('/');
             }
             else{

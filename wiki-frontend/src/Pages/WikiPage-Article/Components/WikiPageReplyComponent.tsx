@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
+import { useNotification } from '../../../Components/NotificationProvider';
 import '../Style/commentreply.css'
 
 const WikiPageReplyComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, replyTo, showReplyBoxRemoveIndex, index }: { user: any; page: any; jwtToken: any; handleCommentSubmit: any; postComment: any; replyTo: any; showReplyBoxRemoveIndex?: any; index?: any }) => {
     const [commentText, setCommentText] = useState('');
+    const { showNotification } = useNotification();
 
     const handleCommentChange = (event) => {
         setCommentText(event.target.value);
@@ -32,7 +34,7 @@ const WikiPageReplyComponent = ({ user, page, jwtToken, handleCommentSubmit, pos
 
             // Add newComment to replyTo.replies
             replyTo.replies.push(newComment);
-            alert('Successfully submitted comment');
+            showNotification('Successfully submitted comment');
         } catch (error) {
             console.error('Error posting comment:', error);
         }

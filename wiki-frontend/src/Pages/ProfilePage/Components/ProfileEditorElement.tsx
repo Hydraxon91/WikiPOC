@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import DisplayProfileImageElement from "./DisplayProfileImageElement"
 import "../../../Styles/profilepage.css";
 import { postProfileEdit } from "../../../Api/wikiUserApi";
+import { useNotification } from '../../../Components/NotificationProvider';
 
 const ProfileEditorElement = ({user, jwtToken}) => {
     const[profilePicture, setProfilePicture] = useState(null);
     const[displayName, setDisplayName] = useState(null);
     const [profilePictureFile, setProfilePictureFile] = useState(null);
     const navigate = useNavigate();
+    const { showNotification } = useNotification();
 
     const handleDisplayNameChange = (event) => {
       setDisplayName(event.target.value);
@@ -29,7 +31,7 @@ const ProfileEditorElement = ({user, jwtToken}) => {
 
       try {
         await postProfileEdit(newProfile, profilePictureFile, jwtToken);
-        alert('Successfully submitted profile update');
+        showNotification('Successfully submitted profile update');
         navigate(`/profile/${newProfile.userName}`)
     } catch (error) {
         console.error('Error updating profile:', error);

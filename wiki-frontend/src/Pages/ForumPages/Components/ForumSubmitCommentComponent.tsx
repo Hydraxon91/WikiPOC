@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
+import { useNotification } from '../../../Components/NotificationProvider';
 import "../Styles/forumsubmintcommentcomponent.css"
 
 const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, togglePopupVisibility, quotedPostId  }) => {
     const [commentText, setCommentText] = useState('');
+    const { showNotification } = useNotification();
 
     const handleCommentChange = (event) => {
         setCommentText(event);
@@ -26,7 +28,7 @@ const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit
             setCommentText('');
             (newComment as any).userProfile = user;
             handleCommentSubmit(newComment);
-            alert('Successfully submitted comment');
+            showNotification('Successfully submitted comment');
             togglePopupVisibility();
         } catch (error) {
             console.error('Error posting comment:', error);

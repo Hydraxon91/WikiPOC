@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
+import { useNotification } from '../../../Components/NotificationProvider';
 
 const WikiPageSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment }) => {
     const [commentText, setCommentText] = useState('');
+    const { showNotification } = useNotification();
 
     const handleCommentChange = (event) => {
         setCommentText(event.target.value);
@@ -25,7 +27,7 @@ const WikiPageSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSub
             setCommentText('');
             (newComment as any).userProfile = user;
             handleCommentSubmit(newComment);
-            alert('Successfully submitted comment');
+            showNotification('Successfully submitted comment');
         } catch (error) {
             console.error('Error posting comment:', error);
         }

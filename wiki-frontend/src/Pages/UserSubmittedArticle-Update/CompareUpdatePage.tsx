@@ -4,6 +4,7 @@ import { useCookies } from 'react-cookie';
 import { getUpdatePageById, getWikiPageById, acceptUserSubmittedUpdate, declineUserSubmittedWikiPage } from '../../Api/wikiApi';
 import CompareUpdatePageComponent from './CompareUpdatePageComponent';
 import NewCompareUpdatePage from './NewCompareUpdatePageComponent';
+import { useNotification } from '../../Components/NotificationProvider';
 import './Style/compareupdates.css';
 
 const CompareUpdatePage = () => {
@@ -13,6 +14,7 @@ const CompareUpdatePage = () => {
     const [cookies] = useCookies(['jwt_token']);
     const [originalPage, setOriginalPage] = useState();
     const [updatePage, setUpdatePage] = useState();
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         const match = location.pathname.match(/\/([a-f\d-]+)$/i);
@@ -48,7 +50,7 @@ const CompareUpdatePage = () => {
         acceptUserSubmittedUpdate((updatePage as any).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
-            alert("Succesfully updated page");
+            showNotification("Succesfully updated page");
             navigate(`/user-updates`);
           })
           .catch((error) => {
@@ -60,7 +62,7 @@ const CompareUpdatePage = () => {
         declineUserSubmittedWikiPage((updatePage as any).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
-            alert("Declined Change");
+            showNotification("Declined Change");
             navigate(`/user-updates`);
           })
           .catch((error) => {
