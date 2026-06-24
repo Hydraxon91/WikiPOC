@@ -188,14 +188,3 @@ input:valid ~ label{
 .login p a:hover{
     text-decoration: underline;
 }
-
-.register-successoverlay {
-    position: absolute;
-    margin-top: 0;
-    margin-left: 0;
-    width: 101vw;
-    height: 101vh;
-    background: rgba(0, 0, 0, 0.2);
-    z-index: 999; /* Ensure it's above other content */
-    pointer-events: auto; /* Prevent interactions with content underneath */
-}

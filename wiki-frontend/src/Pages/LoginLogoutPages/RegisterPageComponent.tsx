@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import "../../Styles/register.css";
 import { Link, useNavigate } from 'react-router-dom';
-import SuccessfullElement from "./SuccessfullElement";
 import { handleRegisterSubmit } from "../../Api/wikiAuthApi";
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useNotification } from '../../Components/NotificationProvider';
@@ -19,7 +18,6 @@ export default function RegisterPageComponent(){
     const [userInputClass, setUserInputClass] = useState("register-inputbox");
     const [roleDropdownClass, setRoleDropdownClass] = useState("role-dropdown");
     
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const navigate = useNavigate();
     const { showNotification } = useNotification();
     
@@ -66,12 +64,6 @@ export default function RegisterPageComponent(){
 
     return(
         <div className='register-form' style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '' }}>
-            {showSuccessMessage && (
-                <>
-                    <SuccessfullElement message={"Successfully registered"}/>
-                    <div className="register-successoverlay" />
-                </>
-            )}
             <div>
                 <form onSubmit={HandleSubmit}>
                     <h2 className="register-text">Register</h2>

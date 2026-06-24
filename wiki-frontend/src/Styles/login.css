@@ -131,17 +131,6 @@ input:valid ~ label{
     text-decoration: underline;
 }
 
-.login-successoverlay {
-    position: absolute;
-    margin-top: 0;
-    margin-left: 0;
-    width: 101vw;
-    height: 101vh;
-    background: rgba(0, 0, 0, 0.2);
-    z-index: 999; /* Ensure it's above other content */
-    pointer-events: auto; /* Prevent interactions with content underneath */
-}
-
 @keyframes shake {
     0% { transform: translate(1px, 1px) rotate(0deg); }
     10% { transform: translate(-1px, -2px) rotate(-1deg); }

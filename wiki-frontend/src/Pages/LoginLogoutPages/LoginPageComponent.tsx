@@ -2,7 +2,6 @@ import { useState, useEffect } from "react"
 import "../../Styles/login.css";
 import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
-import SuccessfullElement from "./SuccessfullElement";
 import { handleLoginSubmit } from "../../Api/wikiAuthApi";
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useNotification } from '../../Components/NotificationProvider';
@@ -14,7 +13,6 @@ export default function LoginPageComponent({handleLogin}){
     const [response, setResponse] = useState(null);
     const [emailInputClass, setEmailInputClass] = useState('login-inputbox');
     const [passwordInputClass, setPasswordInputClass] = useState('login-inputbox');
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const navigate = useNavigate();
     const { showNotification } = useNotification();
     
@@ -58,12 +56,6 @@ export default function LoginPageComponent({handleLogin}){
 
     return(
         <div className='login-form' style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '' }}>
-            {showSuccessMessage && (
-                <>
-                    <SuccessfullElement message={"Successfully logged in"}/>
-                    <div className="login-successoverlay" />
-                </>
-            )}
             <div>
                 <form onSubmit={HandleSubmit}>
                     <h2 className="login-text">Login</h2>

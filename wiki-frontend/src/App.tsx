@@ -11,6 +11,7 @@ import { createWikiPage, deleteWikiPage, updateWikiPage, getWikiPageByTitle, fet
 import LoginPageComponent from "./Pages/LoginLogoutPages/LoginPageComponent";
 import { CookiesProvider, useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
+import { useNotification } from './Components/NotificationProvider';
 import { UserContextProvider } from "./Components/contexts/UserContextProvider";
 import RegisterPageComponent from "./Pages/LoginLogoutPages/RegisterPageComponent";
 import UserRequestsPageComponent from "./Pages/UserSubmittedArticle-Update/UserRequestsPageComponent";
@@ -37,6 +38,7 @@ function App() {
 
   const [cookies, setCookie, removeCookie] = useCookies(["jwt_token"]);
   const [decodedToken, setDecodedToken] = useState(null);
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     if (cookies["jwt_token"]) {
@@ -57,6 +59,7 @@ function App() {
       })
       .catch(error => {
         console.error('Error fetching categories:', error);
+        showNotification('Failed to load categories.');
       });
   }, []); // Trigger the effect when just loading
 
@@ -66,6 +69,7 @@ function App() {
       setCurrentWikiPage(data);
     } catch (error) {
       console.error('Error fetching page:', error);
+      showNotification('Failed to load page.');
     }
   };
 
@@ -84,7 +88,8 @@ function App() {
       })
       .catch((error) => {
         console.error("Error creating WikiPage:", error);
-        throw error; // Rethrow the error to propagate it to the next .catch
+        showNotification('Failed to create page.');
+        throw error;
       });
   };
   const handleDelete = (id) => {
@@ -107,7 +112,8 @@ function App() {
       })
       .catch((error) => {
         console.error("Error updating WikiPage:", error);
-        throw error; // Rethrow the error to propagate it to the next .catch
+        showNotification('Failed to update page.');
+        throw error;
       });
   };
 
