@@ -52,11 +52,12 @@ const ForumPost = ({jwtToken}) => {
     return (
         <div className='forum-mainsection'>
             <Breadcrumbs/>
-            <button className="modular-button" style={{backgroundColor: styles.articleColor}} onClick={togglePopupVisibility}>
+            <button className="modular-button" style={{backgroundColor: styles.articleColor}} onClick={() => { setQuotedPostId(null); togglePopupVisibility(); }}>
                 Post Reply
             </button>
             <ForumCommentComponent post={post} jwtToken={jwtToken} isPopupVisible={isPopupVisible} 
                 togglePopupVisibility={togglePopupVisibility} quotedPostId={quotedPostId} setQuotedPostMethod={setQuotedPostMethod}
+                resetQuotedPostId={() => setQuotedPostId(null)}
             />
         </div>
     );

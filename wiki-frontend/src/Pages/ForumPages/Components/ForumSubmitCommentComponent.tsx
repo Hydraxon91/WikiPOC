@@ -3,7 +3,7 @@ import ReactQuill from 'react-quill-new';
 import { useNotification } from '../../../Components/NotificationProvider';
 import "../Styles/forumsubmintcommentcomponent.css"
 
-const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, togglePopupVisibility, quotedPostId  }) => {
+const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, togglePopupVisibility, quotedPostId, resetQuotedPostId }) => {
     const [commentText, setCommentText] = useState('');
     const { showNotification } = useNotification();
 
@@ -28,6 +28,7 @@ const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit
             setCommentText('');
             (newComment as any).userProfile = user;
             handleCommentSubmit(newComment);
+            resetQuotedPostId && resetQuotedPostId();
             showNotification('Successfully submitted comment');
             togglePopupVisibility();
         } catch (error) {

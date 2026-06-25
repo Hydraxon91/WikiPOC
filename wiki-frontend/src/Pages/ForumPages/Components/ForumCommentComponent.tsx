@@ -9,7 +9,7 @@ import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import "../Styles/forumpost.css";
 
-const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisibility, quotedPostId, setQuotedPostMethod }) => {
+const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisibility, quotedPostId, setQuotedPostMethod, resetQuotedPostId }) => {
     const { decodedTokenContext } = useUserContext();
     const [user, setUser] = useState();
     const [currPost, setCurrPost] = useState(post);
@@ -115,6 +115,7 @@ const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisi
                     {isPopupVisible && user && <ForumSubmitCommentComponent user={user} page={currPost} jwtToken={jwtToken}
                         handleCommentSubmit={handleCommentSubmit} postComment={postForumComment}
                         togglePopupVisibility={togglePopupVisibility} quotedPostId={quotedPostId}
+                        resetQuotedPostId={resetQuotedPostId}
                     />}
                 </div>
             )}
