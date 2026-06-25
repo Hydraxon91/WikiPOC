@@ -57,7 +57,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
                 </Link>
               </li>
               <li>
-                <Link key="create-new-page-link" to="/legacycreate">
+                <Link key="create-new-page-link" to="/create">
                   Create New Page
                 </Link>
               </li>
@@ -84,7 +84,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
         <h3 style={{marginBottom:"5px", fontSize:'110%'}}>User Tools</h3>
           <ul>
               <li>
-                <Link key="create-new-page-link" to="/legacycreate">
+                <Link key="create-new-page-link" to="/create">
                   Create New Page
                 </Link>
               </li>

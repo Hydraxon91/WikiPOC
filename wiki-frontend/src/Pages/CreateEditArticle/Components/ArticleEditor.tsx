@@ -198,6 +198,9 @@ const getCategories = async () => {
       </div>
       <div>
         {/* <CustomQuillToolbar togglePopupVisibility={togglePopupVisibility} /> */}
+        <div className="editor-tip" style={{ fontSize: '80%', opacity: 0.7, marginBottom: '0.5rem', padding: '0.3rem 0.5rem', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '3px' }}>
+          Tip: use <b>Heading 2</b> in the toolbar above to create paragraph titles that appear in the table of contents.
+        </div>
         <ReactQuill
             value={content? content : ''} 
             onChange={handleContentChange}
