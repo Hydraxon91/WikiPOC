@@ -113,3 +113,16 @@
     border-radius: 4px;
     object-fit: cover;
 }
+
+.post-content-area img {
+    max-width: 100%;
+    max-height: 80px;
+    cursor: pointer;
+    object-fit: contain;
+    border-radius: 2px;
+    transition: max-height 0.2s ease;
+}
+
+.post-content-area img.fp-expanded {
+    max-height: none;
+}

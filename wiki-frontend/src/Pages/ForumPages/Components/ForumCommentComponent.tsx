@@ -34,6 +34,13 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
         refreshPost && refreshPost();
     };
 
+    const handleContentClick = (e) => {
+        const img = e.target.closest('img');
+        if (img && !img.closest('.forum-profilepic')) {
+            img.classList.toggle('fp-expanded');
+        }
+    };
+
     const renderQuote = (comment, currentDepth, maxDepth) => {
         var replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
         if (!replyComment || currentDepth >= maxDepth) {
@@ -94,7 +101,7 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
                                             <Link to={`/profile/${comment.userProfile.userName}`}>{comment.userProfile.displayName}</Link>
                                         </div>
                                     </div>
-                                    <div className="post-content-area">
+                                    <div className="post-content-area" onClick={handleContentClick}>
                                         <div className="post-meta">
                                             <span className="post-subject">#{postNumber} re: {post.postTitle}</span>
                                             <span className="post-date">Posted: {formatDate(comment.postDate)}</span>
@@ -102,7 +109,7 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
                                         {renderQuote(comment, 0, maxQuoteDepth)}
                                         <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
                                         <div className="post-actions">
-                                            <button className="quote-button" style={{ backgroundColor: styles.articleColor }} onClick={() => setQuotedPostMethod(comment)}>Quote</button>
+                                            <button className="quote-button" style={{ backgroundColor: styles.articleColor }} onClick={(e) => { e.stopPropagation(); setQuotedPostMethod(comment); }}>Quote</button>
                                         </div>
                                     </div>
                                 </div>
