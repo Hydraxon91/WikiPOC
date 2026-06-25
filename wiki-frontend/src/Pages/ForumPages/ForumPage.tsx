@@ -107,7 +107,10 @@ const ForumPage = ({ jwtToken }) => {
                 {currentPosts && currentPosts.map(post => (
                     <div className="grid-row" key={post.id}>
                         <div className="grid-cell title">
-                            <Link to={`/forum/${slug}/${post.slug}`}><div className='topicTitle'>{post.postTitle}</div></Link>
+                            <span className="topic-status"></span>
+                            <div className="topic-content">
+                                <Link to={`/forum/${slug}/${post.slug}`}><div className='topicTitle'>{post.postTitle}</div></Link>
+                            </div>
                         </div>
                         <div className="grid-cell">{post.comments.length}</div>
                         <div className="grid-cell"><Link to={`/profile/${post.user.userName}`}><div>{post.user.displayName}</div></Link></div>

@@ -103,8 +103,11 @@ const ForumLandingPage = () => {
             {topics.map(topic => (
                 <div className="grid-row" key={topic.id}>
                     <div className="grid-cell title">
-                        <Link to={`/forum/${topic.slug}`}><div className='topicTitle'>{topic.title}</div></Link>
-                        <div>{topic.description}</div>
+                        <span className="topic-status"></span>
+                        <div className="topic-content">
+                            <Link to={`/forum/${topic.slug}`}><div className='topicTitle'>{topic.title}</div></Link>
+                            <div className="topic-description">{topic.description}</div>
+                        </div>
                     </div>
                     <div className="grid-cell">{(topic.forumPosts || []).length}</div>
                     <div className="grid-cell">{(topic.forumPosts || []).length + getCommentsLength(topic)}</div>

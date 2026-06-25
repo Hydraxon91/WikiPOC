@@ -86,20 +86,18 @@ const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisi
                         <div key={index}>
                             <div className="fp-grid">
                                 <div className="fp-grid-row">
-                                    <div className="fp-grid-cell"><Link to={`/profile/${comment.userProfile.userName}`}>{comment.userProfile.displayName}</Link></div>
-                                    <div className="fp-grid-cell firstrow">
-                                        <div className='fp-grid-cell-left'>Post Subject: re: {post.postTitle}</div>
-                                        <div className='fp-grid-cell-right'>Posted: {formatDate(comment.postDate)}</div>
-                                        <button className="quote-button" style={{ backgroundColor: styles.articleColor }} onClick={() => setQuotedPostMethod(comment)}>
-                                            Quote
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="fp-grid-row">
-                                    <div className="fp-grid-cell">
+                                    <div className="post-author-sidebar">
                                         <DisplayProfileImageElement profilePicture={comment.userProfile?.profilePicture} classNameProp={'forum-profilepic'} />
+                                        <div className="post-author-name">
+                                            <Link to={`/profile/${comment.userProfile.userName}`}>{comment.userProfile.displayName}</Link>
+                                        </div>
                                     </div>
-                                    <div className="fp-grid-cell">
+                                    <div className="post-content-area">
+                                        <div className="post-meta">
+                                            <span className="post-subject">re: {post.postTitle}</span>
+                                            <span className="post-date">Posted: {formatDate(comment.postDate)}</span>
+                                            <button className="quote-button" style={{ backgroundColor: styles.articleColor }} onClick={() => setQuotedPostMethod(comment)}>Quote</button>
+                                        </div>
                                         {renderQuote(comment, 0, maxQuoteDepth)}
                                         <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
                                     </div>
