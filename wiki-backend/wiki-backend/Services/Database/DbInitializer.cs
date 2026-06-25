@@ -185,7 +185,7 @@ public class DbInitializer : IHostedService
 <p>This is the first paragraph of Example Page 1.</p>
 <div class=""thumbnail left"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
   <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraphImage"" src=""https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg"" alt=""Example ParagraphImageText 1"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+    <img class=""paragraph-image"" src=""https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg"" alt=""Example ParagraphImageText 1"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
   </div>
   <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Example ParagraphImageText 1</div>
 </div>
@@ -207,7 +207,7 @@ public class DbInitializer : IHostedService
 <p>This is the first paragraph of Example Page 2.</p>
 <div class=""thumbnail right"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
   <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraphImage"" src=""https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg"" alt=""Example ParagraphImageText 2"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+    <img class=""paragraph-image"" src=""https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg"" alt=""Example ParagraphImageText 2"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
   </div>
   <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Example ParagraphImageText 2</div>
 </div>
@@ -232,7 +232,7 @@ public class DbInitializer : IHostedService
 <p>User Submitted Content 1</p>
 <div class=""thumbnail left"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
   <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraphImage"" src=""https://i.kym-cdn.com/entries/icons/original/000/029/079/hellothere.jpg"" alt=""Hello there"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+    <img class=""paragraph-image"" src=""https://i.kym-cdn.com/entries/icons/original/000/029/079/hellothere.jpg"" alt=""Hello there"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
   </div>
   <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Hello there</div>
 </div>
@@ -240,7 +240,7 @@ public class DbInitializer : IHostedService
 <p>User Submitted Content 2</p>
 <div class=""thumbnail right"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
   <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraphImage"" src=""https://i.ytimg.com/vi/jAB3mMdS0xE/maxresdefault.jpg"" alt=""General Kenobi"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+    <img class=""paragraph-image"" src=""https://i.ytimg.com/vi/jAB3mMdS0xE/maxresdefault.jpg"" alt=""General Kenobi"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
   </div>
   <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">General Kenobi</div>
 </div>"
@@ -261,7 +261,7 @@ public class DbInitializer : IHostedService
 <p>Helldivers never die!</p>
 <div class=""thumbnail left"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
   <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraphImage"" src=""https://i.ytimg.com/vi/nhhICroqfpU/hq720_live.jpg"" alt=""Helldivers never die!"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+    <img class=""paragraph-image"" src=""https://i.ytimg.com/vi/nhhICroqfpU/hq720_live.jpg"" alt=""Helldivers never die!"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
   </div>
   <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Helldivers never die!</div>
 </div>
@@ -269,7 +269,7 @@ public class DbInitializer : IHostedService
 <p>Liber-Tea is a funny line haha</p>
 <div class=""thumbnail right"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
   <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraphImage"" src=""https://i.kym-cdn.com/photos/images/original/002/760/001/66d"" alt=""Time for a nice cup of Liber-Tea"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+    <img class=""paragraph-image"" src=""https://i.kym-cdn.com/photos/images/original/002/760/001/66d"" alt=""Time for a nice cup of Liber-Tea"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
   </div>
   <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Time for a nice cup of Liber-Tea</div>
 </div>"

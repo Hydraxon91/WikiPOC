@@ -3,6 +3,12 @@ export interface ParagraphTitles {
   subparagraphs: { id: string; mainId: string; text: string }[];
 }
 
+function decodeHtmlEntities(text: string): string {
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = text;
+  return textarea.value;
+}
+
 export function extractParagraphTitles(htmlContent: string): ParagraphTitles {
   const mainRegex = /<h2>(.*?)<\/h2>/g;
   const subRegex = /<h3>(.*?)<\/h3>/g;
@@ -12,7 +18,7 @@ export function extractParagraphTitles(htmlContent: string): ParagraphTitles {
   let mainMatch;
   while ((mainMatch = mainRegex.exec(htmlContent)) !== null) {
     const id = `main-${mainParagraphs.length + 1}`;
-    mainParagraphs.push({ id, text: mainMatch[1] });
+    mainParagraphs.push({ id, text: decodeHtmlEntities(mainMatch[1]) });
   }
 
   let subMatch;
@@ -34,7 +40,7 @@ export function extractParagraphTitles(htmlContent: string): ParagraphTitles {
       subparagraphs.push({
         id: subId,
         mainId: mainParagraphs[nearestMainIndex].id,
-        text: subMatch[1],
+        text: decodeHtmlEntities(subMatch[1]),
       });
     }
   }
