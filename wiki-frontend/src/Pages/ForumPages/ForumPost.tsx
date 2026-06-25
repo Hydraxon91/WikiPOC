@@ -12,7 +12,6 @@ const ForumPost = ({jwtToken}) => {
     const { postSlug } = useParams();
     const {styles} = useStyleContext();
     const [quotedPostId, setQuotedPostId] = useState(null);
-    const [isPopupVisible, setIsPopupVisible] = useState(false);
     const { showNotification } = useNotification();
 
     const fetchForumPost = async () => {
@@ -28,11 +27,13 @@ const ForumPost = ({jwtToken}) => {
         fetchForumPost();
     }, [postSlug]);
 
-    const togglePopupVisibility = () => {
+    const scrollToReplyForm = () => {
         if (!jwtToken) {
             showNotification('You need to log in to post a reply.');
         } else {
-            setIsPopupVisible(!isPopupVisible);
+            setQuotedPostId(null);
+            const formElement = document.getElementById('forum-reply-form');
+            if (formElement) formElement.scrollIntoView({ behavior: 'smooth' });
         }
     };
 
@@ -41,7 +42,10 @@ const ForumPost = ({jwtToken}) => {
             showNotification('You need to log in to post a reply.');
         } else {
             setQuotedPostId(comment.id);
-            setIsPopupVisible(!isPopupVisible);
+            setTimeout(() => {
+                const formElement = document.getElementById('forum-reply-form');
+                if (formElement) formElement.scrollIntoView({ behavior: 'smooth' });
+            }, 0);
         }
     }
 
@@ -52,11 +56,11 @@ const ForumPost = ({jwtToken}) => {
     return (
         <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
             <Breadcrumbs/>
-            <button className="modular-button" style={{backgroundColor: styles.articleColor}} onClick={() => { setQuotedPostId(null); togglePopupVisibility(); }}>
+            <button className="modular-button" style={{backgroundColor: styles.articleColor}} onClick={scrollToReplyForm}>
                 Post Reply
             </button>
-            <ForumCommentComponent post={post} jwtToken={jwtToken} isPopupVisible={isPopupVisible} 
-                togglePopupVisibility={togglePopupVisibility} quotedPostId={quotedPostId} setQuotedPostMethod={setQuotedPostMethod}
+            <ForumCommentComponent post={post} jwtToken={jwtToken}
+                quotedPostId={quotedPostId} setQuotedPostMethod={setQuotedPostMethod}
                 resetQuotedPostId={() => setQuotedPostId(null)} refreshPost={fetchForumPost}
             />
         </div>

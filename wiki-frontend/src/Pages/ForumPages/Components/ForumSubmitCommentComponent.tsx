@@ -1,16 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import { useNotification } from '../../../Components/NotificationProvider';
 import "../Styles/forumsubmintcommentcomponent.css"
 
-const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, togglePopupVisibility, quotedPostId, resetQuotedPostId }) => {
+const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, quotedPostId, resetQuotedPostId, inline }) => {
     const [commentText, setCommentText] = useState('');
     const { showNotification } = useNotification();
 
     const handleCommentChange = (event) => {
         setCommentText(event);
     };
-
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -29,13 +28,11 @@ const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit
             handleCommentSubmit();
             resetQuotedPostId && resetQuotedPostId();
             showNotification('Successfully submitted comment');
-            togglePopupVisibility();
         } catch (error) {
             console.error('Error posting comment:', error);
         }
     };
 
-    // Define custom modules for ReactQuill
     const modules = {
         toolbar: [
             [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
@@ -51,13 +48,40 @@ const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit
         }
     };
 
-    // Define custom styles for ReactQuill
     const formats = [
         'header', 'font', 'size',
         'bold', 'italic', 'underline', 'strike', 'blockquote',
         'list', 'bullet', 'indent',
         'link', 'image'
     ];
+
+    if (inline) {
+        return (
+            <div className="fp-inline-form" id="forum-reply-form">
+                {quotedPostId && (
+                    <div className="fp-inline-quote-notice">
+                        Replying to a quoted comment — <button type="button" className="fp-cancel-quote" onClick={() => resetQuotedPostId && resetQuotedPostId()}>cancel quote reply</button>
+                    </div>
+                )}
+                <form autoComplete="off" method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
+                    <div className="fp-comment-write-container">
+                        <div className="fp-comment-write-textarea">
+                            <ReactQuill
+                                theme="snow"
+                                onChange={handleCommentChange}
+                                value={commentText}
+                                modules={modules}
+                                formats={formats}
+                            />
+                        </div>
+                    </div>
+                    <div className="fp-inline-buttons">
+                        <button className="fp-comment-button" type="submit">Submit Comment</button>
+                    </div>
+                </form>
+            </div>
+        );
+    }
 
     return (
         <div className='fp-custom-popup-overlay'>
@@ -74,10 +98,8 @@ const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit
                             />
                         </div>
                     </div>
-                    <button className="fp-comment-button" type="submit">
-                        Submit Comment
-                    </button>
-                    <button className='fp-comment-button right' onClick={togglePopupVisibility}>Cancel</button>
+                    <button className="fp-comment-button" type="submit">Submit Comment</button>
+                    <button className='fp-comment-button right' onClick={() => resetQuotedPostId && resetQuotedPostId()}>Cancel</button>
                 </form>
             </div>
         </div>

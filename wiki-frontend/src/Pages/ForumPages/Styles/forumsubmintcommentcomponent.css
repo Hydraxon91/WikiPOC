@@ -127,3 +127,44 @@
 .fp-custom-popup .fp-comment-write-textarea .ql-toolbar .ql-picker.ql-expanded .ql-picker-options .ql-picker-item:hover {
     background-color: #f0f0f0;
 }
+
+.fp-inline-form {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.25rem;
+}
+
+.fp-inline-form .fp-comment-write-textarea .ql-editor {
+    min-height: 120px;
+}
+
+.fp-inline-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.75rem;
+    gap: 8px;
+}
+
+.fp-inline-quote-notice {
+    font-size: 85%;
+    margin-bottom: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    background-color: color-mix(in srgb, var(--article-color, #526cad) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--article-color, #526cad) 20%, transparent);
+    border-radius: 3px;
+}
+
+.fp-cancel-quote {
+    background: none;
+    border: none;
+    color: var(--article-color, #007bff);
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: inherit;
+    padding: 0;
+}
+
+.fp-cancel-quote:hover {
+    color: var(--article-right-color, #0056b3);
+}
