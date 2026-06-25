@@ -13,8 +13,7 @@ const ProtectedRoute: React.FC<{ roles: string[]; children: React.ReactNode }> =
             return true;
         }
         if (Array.isArray(userRoles)) {
-            
-            // return roles.some(role => userRoles.includes(role));
+            return roles.some(role => userRoles.includes(role));
         }
         return roles.includes(userRoles);
     };

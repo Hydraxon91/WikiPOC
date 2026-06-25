@@ -224,7 +224,7 @@ function App() {
                 <Route path="/forum/:slug" element={<ForumPage jwtToken={cookies["jwt_token"]}
  />} />
                 <Route path="/forum/:slug/create-topic" element={
-                  <ProtectedRoute  roles={['Admin']}>
+                  <ProtectedRoute  roles={['User', 'Admin']}>
                     <CreateForumTopic jwtToken={cookies["jwt_token"]}
 />
                   </ProtectedRoute>
