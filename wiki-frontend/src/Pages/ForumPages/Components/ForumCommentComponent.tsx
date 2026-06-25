@@ -97,7 +97,7 @@ const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisi
                                 </div>
                                 <div className="fp-grid-row">
                                     <div className="fp-grid-cell">
-                                        {comment.userProfile?.profilePicture && <DisplayProfileImageElement profilePicture={comment.userProfile.profilePicture} />}
+                                        <DisplayProfileImageElement profilePicture={comment.userProfile?.profilePicture} />
                                     </div>
                                     <div className="fp-grid-cell">
                                         {renderQuote(comment, 0, maxQuoteDepth)}
