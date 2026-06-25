@@ -23,6 +23,9 @@
 - **Reserve deep reasoning for genuinely ambiguous or destructive decisions**
   (see confirmation rule above), not for routine refactors or migrations with
   a clear precedent already in this codebase.
+- **When you have multiple plausible approaches (A/B/C) for a feature, ask
+  the user for their preference before building.** Don't pick one yourself
+  and implement it — describe the options concisely and let them decide.
 
 ## Commit Discipline
 
@@ -179,6 +182,14 @@ VITE_API_URL=http://localhost:5050
 - **Admin-only**: `/edit-wiki`, `/user-submissions`, `/user-updates`, `/categories/edit`, `/forum/:slug/create-topic`
 - **Authenticated**: `/create`, `/page/:title/edit`, `/profile/edit/:username`
 - **Public**: `/login`, `/register`
+
+## Docker Workflow
+
+- For frontend-only changes, use `docker-compose up -d --build wiki-frontend`
+  — don't tear down volumes or use `--no-cache` unless explicitly debugging
+  a caching/dependency issue or package.json changed.
+- Full `docker-compose down -v && docker-compose build --no-cache && up -d`
+  is reserved for: dependency changes, Docker config changes, or when asked.
 
 ## Key Commands
 
