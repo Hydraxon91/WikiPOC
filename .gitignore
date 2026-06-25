@@ -316,3 +316,4 @@ wiki-frontend/.env
 .env
 /wiki-frontend/dist
 wiki-backend/IntegrationTests/.env
+/HANDOFF.md

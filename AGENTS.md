@@ -24,8 +24,14 @@
   (see confirmation rule above), not for routine refactors or migrations with
   a clear precedent already in this codebase.
 
-  ## Commit Discipline
+## Commit Discipline
 
+- **Never commit or push housekeeping/non-code files** (session handoffs,
+  notes, logs, scratch files) **without being explicitly asked.**
+- **Code changes that fix a confirmed bug or complete a requested task
+  SHOULD be committed as part of finishing that task**, following the
+  atomic-commit rules above — this is the expected default, not something
+  you need separate permission for each time.
 - **Keep commits atomic.** Each commit should represent one logical change —
   not a grab-bag of everything done in a session. If a task naturally splits
   into unrelated parts (e.g. "migrate assertions" + "fix unrelated .env typo"
