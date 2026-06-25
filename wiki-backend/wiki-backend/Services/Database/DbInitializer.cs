@@ -70,7 +70,8 @@ public class DbInitializer : IHostedService
             {
                 UserName = adminName,
                 DisplayName = "Hydraxon",
-                ProfilePicture = "admin_base.gif"
+                ProfilePicture = "admin_base.gif",
+                JoinDate = DateTime.UtcNow
             };
             await dbContext.UserProfiles.AddAsync(adminProfile);
             await dbContext.SaveChangesAsync();
@@ -108,7 +109,8 @@ public class DbInitializer : IHostedService
             {
                 UserName = testUsername,
                 DisplayName = "Peter Griffin",
-                ProfilePicture = "tester_base.gif"
+                ProfilePicture = "tester_base.gif",
+                JoinDate = DateTime.UtcNow
             };
             await dbContext.UserProfiles.AddAsync(testUserProfile);
             await dbContext.SaveChangesAsync();

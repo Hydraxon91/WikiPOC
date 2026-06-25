@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using wiki_backend.Models;
 using wiki_backend.Models.ForumModels;
 
 namespace wiki_backend.DatabaseServices.Repositories.ForumRepositories;
@@ -14,9 +15,17 @@ public class ForumTopicRepository : IForumTopicRepository
     }
 
 
+    private async Task SetPostCountOnProfile(UserProfile profile)
+    {
+        if (profile == null) return;
+        var forumPostCount = await _context.ForumPosts.CountAsync(fp => fp.UserId == profile.Id);
+        var forumCommentCount = await _context.ForumComments.CountAsync(fc => fc.UserProfileId == profile.Id);
+        profile.PostCount = forumPostCount + forumCommentCount;
+    }
+
     public async Task<IEnumerable<ForumTopic>> GetAllForumTopicsAsync()
     {
-        return await _context.ForumTopics
+        var topics = await _context.ForumTopics
             .Include(topic => topic.ForumPosts)
                 .ThenInclude(fp => fp.Comments)
                     .ThenInclude(comment => comment.UserProfile)
@@ -24,17 +33,45 @@ public class ForumTopicRepository : IForumTopicRepository
                 .ThenInclude(fp => fp.User)
             .OrderBy(ft => ft.Order)
             .ToListAsync();
+
+        foreach (var topic in topics)
+        {
+            foreach (var post in topic.ForumPosts ?? new List<ForumPost>())
+            {
+                foreach (var comment in post.Comments ?? new List<ForumComment>())
+                {
+                    if (comment.UserProfile != null) await SetPostCountOnProfile(comment.UserProfile);
+                }
+                if (post.User != null) await SetPostCountOnProfile(post.User);
+            }
+        }
+
+        return topics;
     }
     
     public async Task<ForumTopic?> GetForumTopicBySlugAsync(string slug)
     {
-        return await _context.ForumTopics
+        var topic = await _context.ForumTopics
             .Include(topic => topic.ForumPosts)
                 .ThenInclude(fp => fp.Comments)
                     .ThenInclude(comment => comment.UserProfile)
             .Include(topic => topic.ForumPosts)
                 .ThenInclude(fp => fp.User)
             .FirstOrDefaultAsync(topic => topic.Slug == slug);
+
+        if (topic != null)
+        {
+            foreach (var post in topic.ForumPosts ?? new List<ForumPost>())
+            {
+                foreach (var comment in post.Comments ?? new List<ForumComment>())
+                {
+                    if (comment.UserProfile != null) await SetPostCountOnProfile(comment.UserProfile);
+                }
+                if (post.User != null) await SetPostCountOnProfile(post.User);
+            }
+        }
+
+        return topic;
     }
 
     public async Task AddForumTopicAsync(ForumTopic topic)

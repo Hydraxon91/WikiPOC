@@ -17,25 +17,38 @@ public class UserProfileRepository : IUserProfileRepository
         _picturesPath = storageSettings.Value.PicturesPath;
     }
     
+    private async Task SetPostCount(UserProfile profile)
+    {
+        var forumPostCount = await _context.ForumPosts.CountAsync(fp => fp.UserId == profile.Id);
+        var forumCommentCount = await _context.ForumComments.CountAsync(fc => fc.UserProfileId == profile.Id);
+        profile.PostCount = forumPostCount + forumCommentCount;
+    }
+
     public async Task<UserProfile?> GetByIdAsync(Guid id)
     {
-        return await _context.UserProfiles
+        var profile = await _context.UserProfiles
             .Include(up => up.User)
             .SingleOrDefaultAsync(up => up.Id == id);
+        if (profile != null) await SetPostCount(profile);
+        return profile;
     }
 
     public async Task<UserProfile?> GetByUsernameAsync(string username)
     {
-        return await _context.UserProfiles
+        var profile = await _context.UserProfiles
             .Include(up => up.User)
             .SingleOrDefaultAsync(up => up.UserName == username);
+        if (profile != null) await SetPostCount(profile);
+        return profile;
     }
 
     public async Task<UserProfile?> GetByUserIdAsync(string id)
     {
-        return await _context.UserProfiles
+        var profile = await _context.UserProfiles
             .Include(up => up.User)
             .SingleOrDefaultAsync(up => up.UserId == id);
+        if (profile != null) await SetPostCount(profile);
+        return profile;
     }
     //Not needed for now
     // public Task AddAsync(UserProfile wikiPage)

@@ -23,9 +23,6 @@
 - **Reserve deep reasoning for genuinely ambiguous or destructive decisions**
   (see confirmation rule above), not for routine refactors or migrations with
   a clear precedent already in this codebase.
-- **When you have multiple plausible approaches (A/B/C) for a feature, ask
-  the user for their preference before building.** Don't pick one yourself
-  and implement it — describe the options concisely and let them decide.
 
 ## Commit Discipline
 
@@ -33,7 +30,7 @@
   notes, logs, scratch files) **without being explicitly asked.**
 - **Code changes that fix a confirmed bug or complete a requested task
   SHOULD be committed as part of finishing that task**, following the
-  atomic-commit rules above — this is the expected default, not something
+  atomic-commit rules below — this is the expected default, not something
   you need separate permission for each time.
 - **Keep commits atomic.** Each commit should represent one logical change —
   not a grab-bag of everything done in a session. If a task naturally splits
@@ -46,6 +43,24 @@
 - **Don't bundle unrelated fixes "while you're in there."** If you notice an
   unrelated issue while working on something else, mention it and ask, or
   commit it separately — don't fold it into the current commit.
+
+## Docker Workflow
+
+- **For frontend-only changes**, use:
+  ```bash
+  docker-compose up -d --build wiki-frontend
+  ```
+  This rebuilds and restarts only the frontend container — backend and SQL
+  Server stay running untouched. Much faster than a full rebuild.
+- **Reserve the full rebuild** (`docker-compose down -v && docker-compose
+  build --no-cache && docker-compose up -d`) **for**: `package.json`/NuGet
+  dependency changes, Docker config changes (Dockerfile, docker-compose.yml),
+  or database schema changes requiring a fresh volume. Don't reach for this
+  by default for routine code edits.
+- **If a `docker-compose` command fails twice in a row, stop and report
+  the error instead of retrying with bigger/more destructive flags**
+  (e.g. don't escalate from a normal rebuild to `--no-cache` to `down -v`
+  hoping one of them works). Show the actual error and let the user decide.
 
 ### Test Output Handling
 
@@ -182,14 +197,6 @@ VITE_API_URL=http://localhost:5050
 - **Admin-only**: `/edit-wiki`, `/user-submissions`, `/user-updates`, `/categories/edit`, `/forum/:slug/create-topic`
 - **Authenticated**: `/create`, `/page/:title/edit`, `/profile/edit/:username`
 - **Public**: `/login`, `/register`
-
-## Docker Workflow
-
-- For frontend-only changes, use `docker-compose up -d --build wiki-frontend`
-  — don't tear down volumes or use `--no-cache` unless explicitly debugging
-  a caching/dependency issue or package.json changed.
-- Full `docker-compose down -v && docker-compose build --no-cache && up -d`
-  is reserved for: dependency changes, Docker config changes, or when asked.
 
 ## Key Commands
 

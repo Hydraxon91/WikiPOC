@@ -28,11 +28,32 @@ public class ForumPostRepository : IForumPostRepository
     
     public async Task<ForumPost?> GetForumPostBySlugAsync(string slug)
     {
-        return await _context.ForumPosts
+        var post = await _context.ForumPosts
             .Include(post => post.Comments.OrderBy(c => c.PostDate).ThenBy(c => c.Id))
                 .ThenInclude(comment => comment.UserProfile)
             .Include(post => post.User)
             .FirstOrDefaultAsync(post => post.Slug == slug);
+
+        if (post != null)
+        {
+            foreach (var comment in post.Comments)
+            {
+                if (comment.UserProfile != null)
+                {
+                    var forumPostCount = await _context.ForumPosts.CountAsync(fp => fp.UserId == comment.UserProfile.Id);
+                    var forumCommentCount = await _context.ForumComments.CountAsync(fc => fc.UserProfileId == comment.UserProfile.Id);
+                    comment.UserProfile.PostCount = forumPostCount + forumCommentCount;
+                }
+            }
+            if (post.User != null)
+            {
+                var forumPostCount = await _context.ForumPosts.CountAsync(fp => fp.UserId == post.User.Id);
+                var forumCommentCount = await _context.ForumComments.CountAsync(fc => fc.UserProfileId == post.User.Id);
+                post.User.PostCount = forumPostCount + forumCommentCount;
+            }
+        }
+
+        return post;
     }
 
     public async Task AddForumPostAsync(ForumPost post)

@@ -52,7 +52,7 @@ public class AuthService : IAuthService
         
         var user = new ApplicationUser() { UserName = username, Email = email };
     
-        var userProfile = new UserProfile() { UserName = username, DisplayName = username, ProfilePicture = "default_pfp.png"};
+        var userProfile = new UserProfile() { UserName = username, DisplayName = username, ProfilePicture = "default_pfp.png", JoinDate = DateTime.UtcNow};
         
         user.Profile = userProfile;
         user.ProfileId = userProfile.Id;

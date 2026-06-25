@@ -3,6 +3,7 @@ import { useUserContext } from '../../../Components/contexts/UserContextProvider
 import { getUserProfileByUsername } from '../../../Api/wikiUserApi';
 import { postForumComment } from '../../../Api/forumApi';
 import { Link } from 'react-router-dom';
+import { format } from 'date-fns';
 import { formatDate } from '../../../utils/formatDate';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
@@ -99,6 +100,13 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
                                         <DisplayProfileImageElement profilePicture={comment.userProfile?.profilePicture} classNameProp={'forum-profilepic'} />
                                         <div className="post-author-name">
                                             <Link to={`/profile/${comment.userProfile.userName}`}>{comment.userProfile.displayName}</Link>
+                                        </div>
+                                        <div className="post-author-title">Member</div>
+                                        <div className="post-author-stats">
+                                            <span>Posts: {comment.userProfile?.postCount ?? 0}</span>
+                                            {comment.userProfile?.joinDate && (
+                                                <span>Joined: {format(new Date(comment.userProfile.joinDate + 'Z'), 'MMM yyyy')}</span>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="post-content-area" onClick={handleContentClick}>

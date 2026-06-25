@@ -70,6 +70,8 @@ export interface UserProfile {
   displayName?: string;
   profilePicture?: string;
   userId?: string;
+  joinDate?: string;
+  postCount?: number;
 }
 
 export interface UserComment {
