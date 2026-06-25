@@ -26,8 +26,7 @@ const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit
         try {
             await postComment(newComment, jwtToken, user);
             setCommentText('');
-            (newComment as any).userProfile = user;
-            handleCommentSubmit(newComment);
+            handleCommentSubmit();
             resetQuotedPostId && resetQuotedPostId();
             showNotification('Successfully submitted comment');
             togglePopupVisibility();

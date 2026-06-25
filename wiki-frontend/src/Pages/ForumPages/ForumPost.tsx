@@ -15,16 +15,16 @@ const ForumPost = ({jwtToken}) => {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const { showNotification } = useNotification();
 
-    useEffect(() => {
-        const fetchForumPost = async () => {
-            try {
-                const fetchedPost = await getForumPostBySlug(postSlug);
-                setPost(fetchedPost);
-            } catch (error) {
-                console.error("Error fetching post:", error);
-            }
-        };
+    const fetchForumPost = async () => {
+        try {
+            const fetchedPost = await getForumPostBySlug(postSlug);
+            setPost(fetchedPost);
+        } catch (error) {
+            console.error("Error fetching post:", error);
+        }
+    };
 
+    useEffect(() => {
         fetchForumPost();
     }, [postSlug]);
 
@@ -57,7 +57,7 @@ const ForumPost = ({jwtToken}) => {
             </button>
             <ForumCommentComponent post={post} jwtToken={jwtToken} isPopupVisible={isPopupVisible} 
                 togglePopupVisibility={togglePopupVisibility} quotedPostId={quotedPostId} setQuotedPostMethod={setQuotedPostMethod}
-                resetQuotedPostId={() => setQuotedPostId(null)}
+                resetQuotedPostId={() => setQuotedPostId(null)} refreshPost={fetchForumPost}
             />
         </div>
     );

@@ -9,7 +9,7 @@ import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import "../Styles/forumpost.css";
 
-const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisibility, quotedPostId, setQuotedPostMethod, resetQuotedPostId }) => {
+const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisibility, quotedPostId, setQuotedPostMethod, resetQuotedPostId, refreshPost }) => {
     const { decodedTokenContext } = useUserContext();
     const [user, setUser] = useState();
     const [currPost, setCurrPost] = useState(post);
@@ -30,17 +30,13 @@ const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisi
         setCurrPost(post);
     }, [post]);
 
-    const handleCommentSubmit = (newComment) => {
-        const postDate = newComment.postDate.endsWith('Z') ? newComment.postDate.slice(0, -1) : newComment.postDate;
-        setCurrPost((currPost) => ({
-            ...currPost,
-            comments: [...currPost.comments, { ...newComment, postDate }],
-        }));
+    const handleCommentSubmit = () => {
+        refreshPost && refreshPost();
     };
 
     const renderQuote = (comment, currentDepth, maxDepth) => {
         var replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
-        if (!replyComment || currentDepth > maxDepth) {
+        if (!replyComment || currentDepth >= maxDepth) {
             return null;
         }
         
