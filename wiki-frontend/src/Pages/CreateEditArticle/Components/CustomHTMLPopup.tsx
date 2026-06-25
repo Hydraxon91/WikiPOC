@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill-new';
 import UserImagesContainer from './UserImagesContainer';
+import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import '../Style/articleeditor.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css'
 
 const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) => {
+  const { styles } = useStyleContext();
   const [imageUrl, setImageUrl] = useState('');
   const [imageData, setImageData] = useState('');
   const [text, setText] = useState('Enter Text Here');
