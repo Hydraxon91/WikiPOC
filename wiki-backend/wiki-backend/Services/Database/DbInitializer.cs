@@ -178,9 +178,21 @@ public class DbInitializer : IHostedService
                 Title = "Example Page 1",
                 SiteSub = "Example SiteSub 1",
                 RoleNote = "Example RoleNote 1",
-                LegacyWikiPage = true,
+                LegacyWikiPage = false,
                 PostDate = DateTime.UtcNow,
-                CategoryId = characters.Id
+                CategoryId = characters.Id,
+                Content = @"<h2>Example Page 1 - Paragraph 1</h2>
+<p>This is the first paragraph of Example Page 1.</p>
+<div class=""thumbnail left"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
+  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
+    <img class=""paragraphImage"" src=""https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg"" alt=""Example ParagraphImageText 1"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+  </div>
+  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Example ParagraphImageText 1</div>
+</div>
+<h2>Example Page 1 - Paragraph 2</h2>
+<p>This is the second paragraph.</p>
+<h2>Example Page 1 - Paragraph 3</h2>
+<p>This is the third paragraph.</p>"
             };
 
             var wikiPage2 = new WikiPage
@@ -188,27 +200,22 @@ public class DbInitializer : IHostedService
                 Title = "Example Page 2",
                 SiteSub = "Example SiteSub 2",
                 RoleNote = "Example RoleNote 2",
-                LegacyWikiPage = true,
+                LegacyWikiPage = false,
                 PostDate = DateTime.UtcNow,
-                CategoryId = stories.Id
+                CategoryId = stories.Id,
+                Content = @"<h2>Example Page 2 - Paragraph 1</h2>
+<p>This is the first paragraph of Example Page 2.</p>
+<div class=""thumbnail right"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
+  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
+    <img class=""paragraphImage"" src=""https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg"" alt=""Example ParagraphImageText 2"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+  </div>
+  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Example ParagraphImageText 2</div>
+</div>
+<h2>Example Page 2 - Paragraph 2</h2>
+<p>This is the second paragraph.</p>"
             };
 
             dbContext.WikiPages.AddRange(wikiPage1, wikiPage2);
-
-            var paragraphs1 = new List<Paragraph>
-            {
-                new() { WikiPageId = wikiPage1.Id, Title = "Example Page 1 - Paragraph 1", Content = "This is the first paragraph of Example Page 1.", ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg", ParagraphImageText = "Example ParagraphImageText 1" },
-                new() { WikiPageId = wikiPage1.Id, Title = "Example Page 1 - Paragraph 2", Content = "This is the second paragraph." },
-                new() { WikiPageId = wikiPage1.Id, Title = "Example Page 1 - Paragraph 3", Content = "This is the third paragraph." }
-            };
-
-            var paragraphs2 = new List<Paragraph>
-            {
-                new() { WikiPageId = wikiPage2.Id, Title = "Example Page 2 - Paragraph 1", Content = "This is the first paragraph of Example Page 2.", ParagraphImage = "https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg", ParagraphImageText = "Example ParagraphImageText 2" },
-                new() { WikiPageId = wikiPage2.Id, Title = "Example Page 2 - Paragraph 2", Content = "This is the second paragraph." }
-            };
-
-            dbContext.Paragraphs.AddRange(paragraphs1.Concat(paragraphs2));
             await dbContext.SaveChangesAsync();
 
             var userSubmittedPage = new UserSubmittedWikiPage
@@ -217,10 +224,26 @@ public class DbInitializer : IHostedService
                 SiteSub = "User Submitted SiteSub",
                 RoleNote = "User Submitted RoleNote",
                 SubmittedBy = "tester",
-                LegacyWikiPage = true,
+                LegacyWikiPage = false,
                 IsNewPage = true,
                 PostDate = DateTime.UtcNow,
-                CategoryId = locations.Id
+                CategoryId = locations.Id,
+                Content = @"<h2>User Submitted Paragraph 1</h2>
+<p>User Submitted Content 1</p>
+<div class=""thumbnail left"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
+  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
+    <img class=""paragraphImage"" src=""https://i.kym-cdn.com/entries/icons/original/000/029/079/hellothere.jpg"" alt=""Hello there"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+  </div>
+  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Hello there</div>
+</div>
+<h2>User Submitted Paragraph 2</h2>
+<p>User Submitted Content 2</p>
+<div class=""thumbnail right"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
+  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
+    <img class=""paragraphImage"" src=""https://i.ytimg.com/vi/jAB3mMdS0xE/maxresdefault.jpg"" alt=""General Kenobi"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+  </div>
+  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">General Kenobi</div>
+</div>"
             };
 
             var userSubmittedUpdate = new UserSubmittedWikiPage
@@ -230,23 +253,29 @@ public class DbInitializer : IHostedService
                 SiteSub = "Example SiteSub 1 Update",
                 RoleNote = "Example RoleNote 1 Update",
                 SubmittedBy = "tester",
-                LegacyWikiPage = true,
+                LegacyWikiPage = false,
                 IsNewPage = false,
                 PostDate = DateTime.UtcNow,
-                CategoryId = events.Id
+                CategoryId = events.Id,
+                Content = @"<h2>New Paragraph 1</h2>
+<p>Helldivers never die!</p>
+<div class=""thumbnail left"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
+  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
+    <img class=""paragraphImage"" src=""https://i.ytimg.com/vi/nhhICroqfpU/hq720_live.jpg"" alt=""Helldivers never die!"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+  </div>
+  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Helldivers never die!</div>
+</div>
+<h2>Liber-Tea</h2>
+<p>Liber-Tea is a funny line haha</p>
+<div class=""thumbnail right"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
+  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
+    <img class=""paragraphImage"" src=""https://i.kym-cdn.com/photos/images/original/002/760/001/66d"" alt=""Time for a nice cup of Liber-Tea"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+  </div>
+  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Time for a nice cup of Liber-Tea</div>
+</div>"
             };
 
             dbContext.UserSubmittedWikiPages.AddRange(userSubmittedPage, userSubmittedUpdate);
-
-            var submittedParagraphs = new List<Paragraph>
-            {
-                new() { WikiPageId = userSubmittedPage.Id, Title = "User Submitted Paragraph 1", Content = "User Submitted Content 1", ParagraphImage = "https://i.kym-cdn.com/entries/icons/original/000/029/079/hellothere.jpg", ParagraphImageText = "Hello there" },
-                new() { WikiPageId = userSubmittedPage.Id, Title = "User Submitted Paragraph 2", Content = "User Submitted Content 2", ParagraphImage = "https://i.ytimg.com/vi/jAB3mMdS0xE/maxresdefault.jpg", ParagraphImageText = "General Kenobi" },
-                new() { WikiPageId = userSubmittedUpdate.Id, Title = "New Paragraph 1", Content = "Helldivers never die!", ParagraphImage = "https://i.ytimg.com/vi/nhhICroqfpU/hq720_live.jpg", ParagraphImageText = "Helldivers never die!" },
-                new() { WikiPageId = userSubmittedUpdate.Id, Title = "Liber-Tea", Content = "Liber-Tea is a funny line haha", ParagraphImage = "https://i.kym-cdn.com/photos/images/original/002/760/001/66d", ParagraphImageText = "Time for a nice cup of Liber-Tea" }
-            };
-
-            dbContext.Paragraphs.AddRange(submittedParagraphs);
             await dbContext.SaveChangesAsync();
         }
     }

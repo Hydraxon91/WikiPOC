@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArticleEditor from './Components/ArticleEditor';
 import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
-import LegacyEditPage from './LegacyEditPage';
-import LegacyWikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
-import LegacyEditPageComponent from './Components/LegacyEditPageComponent';
 import { useNotification } from '../../Components/NotificationProvider';
 import './Style/articleeditor.css';
 
@@ -24,6 +21,22 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
   const [legacyPage, setLegacyPage] = useState(false);
   const { showNotification } = useNotification();
 
+  const buildContentFromParagraphs = (paragraphs) => {
+    if (!paragraphs || paragraphs.length === 0) return '';
+    return paragraphs.map(p => {
+      let html = `<h2>${p.title}</h2>\n<p>${p.content}</p>`;
+      if (p.paragraphImage) {
+        html += `\n<div class="thumbnail left" style="border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;">
+  <div class="thumbnail-inner" style="border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;">
+    <img class="paragraphImage" src="${p.paragraphImage}" alt="${p.paragraphImageText || ''}" style="max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;"/>
+  </div>
+  <div class="wikipage-content-container" style="white-space:normal;word-wrap:break-word;">${p.paragraphImageText || ''}</div>
+</div>`;
+      }
+      return html;
+    }).join('\n');
+  };
+
   useEffect(() => {
     if (page) {
       const pageData = page.wikiPage || page.userSubmittedWikiPage;
@@ -33,13 +46,17 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
       setTitle(pageData.title || '');
       setRoleNote(pageData.roleNote || '');
       setSiteSub(pageData.siteSub || '');
-      if (pageData.content) setContent(pageData.content);
+      if (pageData.content) {
+        setContent(pageData.content);
+      } else if (pageData.paragraphs) {
+        setContent(buildContentFromParagraphs(pageData.paragraphs));
+      }
       setCategory(pageData.categoryId || '');
       if (pageData.paragraphs) setParagraphs([...pageData.paragraphs]);
       const renamedImages = page.images ? page.images.map(image => ({ ...image, name: image.fileName })) : [];
       setImages(renamedImages);
       setUsedImages(renamedImages);
-      setLegacyPage(pageData.legacyWikiPage);
+      setLegacyPage(false);
       setNewPage(false);
     }
     else{
@@ -138,30 +155,19 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
   }
 
   return (
-    <>
-    {!legacyPage && (
-      <div className='editor-container'>
-        <div className='articleeditor-container'>
-          <ArticleEditor 
-            title={title} siteSub={siteSub} 
-            roleNote={roleNote} content={content}
-            handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
-            images={images} setImages={setImages} category={category}
-          />
-        </div>
-        <div className='preview-container'>
-          <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images} setDecodedTitle={undefined}/>
-        </div>
+    <div className='editor-container'>
+      <div className='articleeditor-container'>
+        <ArticleEditor 
+          title={title} siteSub={siteSub} 
+          roleNote={roleNote} content={content}
+          handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
+          images={images} setImages={setImages} category={category}
+        />
       </div>
-    )}
-
-    {legacyPage && (
-      <LegacyEditPage page={temporaryPage} handleEdit={handleEdit} handleCreate={handleCreate}
-        handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
-        category={category} setCategory={setCategory}
-      ></LegacyEditPage>
-    )}
-  </>
+      <div className='preview-container'>
+        <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images} setDecodedTitle={undefined}/>
+      </div>
+    </div>
   );
 };
 
