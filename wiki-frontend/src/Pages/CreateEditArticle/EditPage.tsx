@@ -26,19 +26,20 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
 
   useEffect(() => {
     if (page) {
-      setTemporaryPage(page.wikiPage || page.userSubmittedWikiPage);
-      setTitle(page.wikiPage.title || page.userSubmittedWikiPage.title);
-      setRoleNote(page.wikiPage.roleNote || page.userSubmittedWikiPage.roleNote);
-      setSiteSub(page.wikiPage.siteSub || page.userSubmittedWikiPage.siteSub);
-      page.wikiPage && page.wikiPage.content && setContent(page.wikiPage.content);
-      page.userSubmittedWikiPage && page.userSubmittedWikiPage.content &&  setContent(page.userSubmittedWikiPage.content);
-      setCategory(page.wikiPage.categoryId || page.userSubmittedWikiPage.categoryId);
-      page.wikiPage.paragraphs && setParagraphs([...page.wikiPage.paragraphs]);
+      const pageData = page.wikiPage || page.userSubmittedWikiPage;
+      if (!pageData) return;
+
+      setTemporaryPage(pageData);
+      setTitle(pageData.title || '');
+      setRoleNote(pageData.roleNote || '');
+      setSiteSub(pageData.siteSub || '');
+      if (pageData.content) setContent(pageData.content);
+      setCategory(pageData.categoryId || '');
+      if (pageData.paragraphs) setParagraphs([...pageData.paragraphs]);
       const renamedImages = page.images ? page.images.map(image => ({ ...image, name: image.fileName })) : [];
       setImages(renamedImages);
       setUsedImages(renamedImages);
-      page.wikiPage && setLegacyPage(page.wikiPage.legacyWikiPage);
-      page.userSubmittedWikiPage && setLegacyPage(page.wikiPage.legacyWikiPage);
+      setLegacyPage(pageData.legacyWikiPage);
       setNewPage(false);
     }
     else{
