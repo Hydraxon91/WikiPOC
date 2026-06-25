@@ -74,7 +74,7 @@ public class WikiPagesController : ControllerBase
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost("admin")]
-    [RequestSizeLimit(10 * 1024 * 1024)]
+    [RequestSizeLimit(2 * 1024 * 1024)]
     public async Task<ActionResult<WikiPage>> CreateWikiPageForAdmin([FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
         if (wikiPageWithImagesInputModel.Title == null)
@@ -107,7 +107,7 @@ public class WikiPagesController : ControllerBase
     
     [Authorize(Policy = IdentityData.UserPolicyName)]
     [HttpPost("user")]
-    [RequestSizeLimit(10 * 1024 * 1024)]
+    [RequestSizeLimit(2 * 1024 * 1024)]
     public async Task<ActionResult<WikiPage>> CreateWikiPageForUser([FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
         if (wikiPageWithImagesInputModel.Title == null)
@@ -161,7 +161,7 @@ public class WikiPagesController : ControllerBase
     
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut("admin/{id:guid}")]
-    [RequestSizeLimit(10 * 1024 * 1024)]
+    [RequestSizeLimit(2 * 1024 * 1024)]
     public async Task<IActionResult> UpdateWikiPageForAdmin(Guid id, [FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
         var existingWikiPageOutputModel = await _wikiPageRepository.GetByIdAsync(id);
@@ -196,7 +196,7 @@ public class WikiPagesController : ControllerBase
     
     [Authorize(Policy = IdentityData.UserPolicyName)]
     [HttpPut("userUpdate/{id:guid}")]
-    [RequestSizeLimit(10 * 1024 * 1024)]
+    [RequestSizeLimit(2 * 1024 * 1024)]
     public async Task<IActionResult> UpdateWikiPageForUser(Guid id, [FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
     {
         var updatedWikiPage = new UserSubmittedWikiPage()

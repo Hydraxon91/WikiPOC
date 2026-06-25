@@ -90,3 +90,10 @@
     margin-bottom: 4em;
     font-style: italic;
 }
+
+.forum-profilepic img {
+    width: 64px;
+    height: 64px;
+    border-radius: 4px;
+    object-fit: cover;
+}

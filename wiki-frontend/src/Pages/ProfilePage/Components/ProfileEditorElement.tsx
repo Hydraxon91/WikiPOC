@@ -4,6 +4,7 @@ import DisplayProfileImageElement from "./DisplayProfileImageElement"
 import "../../../Styles/profilepage.css";
 import { postProfileEdit } from "../../../Api/wikiUserApi";
 import { useNotification } from '../../../Components/NotificationProvider';
+import { resizeImage } from '../../../utils/resizeImage';
 
 const ProfileEditorElement = ({user, jwtToken}) => {
     const[profilePicture, setProfilePicture] = useState(null);
@@ -16,10 +17,18 @@ const ProfileEditorElement = ({user, jwtToken}) => {
       setDisplayName(event.target.value);
     };
 
-    const handleProfilePictureFileChange = (event) => {
+    const handleProfilePictureFileChange = async (event) => {
       const file = event.target.files[0];
-      setProfilePictureFile(file);
-      setProfilePicture(URL.createObjectURL(file));
+      if (!file) return;
+      try {
+        const resized = await resizeImage(file, 300, 300);
+        const resizedFile = new File([resized], file.name, { type: file.type });
+        setProfilePictureFile(resizedFile);
+        setProfilePicture(URL.createObjectURL(resized));
+      } catch {
+        setProfilePictureFile(file);
+        setProfilePicture(URL.createObjectURL(file));
+      }
     };
 
     const handleSubmit = async (e) =>{
