@@ -59,8 +59,10 @@ public class UserProfileRepository : IUserProfileRepository
             if (!ImageStorageService.IsValidFileType(profilePictureFile.FileName))
                 throw new InvalidOperationException("Invalid profile picture file type. Allowed: png, jpg, jpeg, gif, webp.");
 
-            var fileName = $"profile_pictures/{existingProfile.UserName}_pfp{Path.GetExtension(profilePictureFile.FileName)}";
-            var filePath = Path.Combine(_picturesPath, fileName);
+            var dirPath = Path.Combine(_picturesPath, "profile_pictures");
+            Directory.CreateDirectory(dirPath);
+            var fileName = $"{existingProfile.UserName}_pfp{Path.GetExtension(profilePictureFile.FileName)}";
+            var filePath = Path.Combine(dirPath, fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await profilePictureFile.CopyToAsync(fileStream);

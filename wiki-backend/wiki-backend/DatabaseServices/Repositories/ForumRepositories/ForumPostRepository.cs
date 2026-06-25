@@ -29,7 +29,7 @@ public class ForumPostRepository : IForumPostRepository
     public async Task<ForumPost?> GetForumPostBySlugAsync(string slug)
     {
         return await _context.ForumPosts
-            .Include(post => post.Comments)
+            .Include(post => post.Comments.OrderBy(c => c.PostDate).ThenBy(c => c.Id))
                 .ThenInclude(comment => comment.UserProfile)
             .Include(post => post.User)
             .FirstOrDefaultAsync(post => post.Slug == slug);
@@ -42,7 +42,8 @@ public class ForumPostRepository : IForumPostRepository
             Id = Guid.NewGuid(),
             Content = post.Content,
             UserProfileId = post.UserId,
-            ForumPostId = post.Id
+            ForumPostId = post.Id,
+            PostDate = DateTime.UtcNow
         };
         post.Comments = new List<ForumComment> { firstComment };
         post.Slug = await GenerateUniqueSlugAsync(post.PostTitle);
