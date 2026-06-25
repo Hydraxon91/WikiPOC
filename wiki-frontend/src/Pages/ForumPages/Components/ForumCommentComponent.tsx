@@ -82,7 +82,9 @@ const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisi
         <>
             {currPost && (
                 <div>
-                    {currentComments.map((comment, index) => (
+                    {currentComments.map((comment, index) => {
+                        const postNumber = (currentPage - 1) * commentsPerPage + index + 1;
+                        return (
                         <div key={index}>
                             <div className="fp-grid">
                                 <div className="fp-grid-row">
@@ -94,17 +96,20 @@ const ForumCommentComponent = ({ post, jwtToken, isPopupVisible, togglePopupVisi
                                     </div>
                                     <div className="post-content-area">
                                         <div className="post-meta">
-                                            <span className="post-subject">re: {post.postTitle}</span>
+                                            <span className="post-subject">#{postNumber} re: {post.postTitle}</span>
                                             <span className="post-date">Posted: {formatDate(comment.postDate)}</span>
-                                            <button className="quote-button" style={{ backgroundColor: styles.articleColor }} onClick={() => setQuotedPostMethod(comment)}>Quote</button>
                                         </div>
                                         {renderQuote(comment, 0, maxQuoteDepth)}
                                         <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
+                                        <div className="post-actions">
+                                            <button className="quote-button" style={{ backgroundColor: styles.articleColor }} onClick={() => setQuotedPostMethod(comment)}>Quote</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                     {renderPagination(totalPages, currentPage, setCurrentPage, commentsPerPage, currPost.comments.length)}
                     {isPopupVisible && user && <ForumSubmitCommentComponent user={user} page={currPost} jwtToken={jwtToken}
                         handleCommentSubmit={handleCommentSubmit} postComment={postForumComment}
