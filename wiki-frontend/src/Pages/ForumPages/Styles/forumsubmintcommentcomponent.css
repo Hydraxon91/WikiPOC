@@ -50,16 +50,17 @@
 }
 
 .fp-custom-popup .fp-comment-button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
+    padding: 6px 12px;
+    border: 1px solid var(--article-right-color, #0056b3);
+    border-radius: 2px;
+    background-color: var(--article-color, #007bff);
     color: white;
     cursor: pointer;
+    font-size: 90%;
 }
 
 .fp-custom-popup .fp-comment-button:hover {
-    background-color: #0056b3;
+    background-color: var(--article-right-color, #0056b3);
 }
 
 .fp-custom-popup .fp-comment-write-container {
@@ -107,16 +108,16 @@
 }
 
 .fp-custom-popup .fp-comment-write-textarea .ql-toolbar .ql-picker-options .ql-picker-item.selected {
-    background-color: #007bff;
+    background-color: var(--article-color, #007bff);
     color: white;
 }
 
 .fp-custom-popup .fp-comment-write-textarea .ql-toolbar .ql-picker.ql-expanded .ql-picker-label {
-    border-color: #007bff;
+    border-color: var(--article-color, #007bff);
 }
 
 .fp-custom-popup .fp-comment-write-textarea .ql-toolbar .ql-picker.ql-expanded .ql-picker-options {
-    border-color: #007bff;
+    border-color: var(--article-color, #007bff);
 }
 
 .fp-custom-popup .fp-comment-write-textarea .ql-toolbar .ql-picker.ql-expanded .ql-picker-options .ql-picker-item {

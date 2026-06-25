@@ -1,16 +1,16 @@
 .modular-button {
     display: inline-block;
-    padding: 0.3rem;
+    padding: 0.2rem 0.5rem;
     margin-left: 0.1rem;
     margin-top: 0.6rem;
-    background-color: #007bff;
+    background-color: var(--article-color, #007bff);
     color: white;
     text-align: center;
     text-decoration: none;
-    border-radius: 1rem;
-    transition: background-color 0.3s ease;
+    border-radius: 0.1875rem;
+    font-size: 90%;
 }
 
 .modular-button:hover {
-    background-color: #0056b3;
+    background-color: var(--article-right-color, #0056b3);
 }

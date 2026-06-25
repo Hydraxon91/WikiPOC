@@ -42,7 +42,7 @@
 }
 
 .grid-row:hover {
-    background-color: rgba(0, 0, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.06);
 }
 
 .grid-cell {

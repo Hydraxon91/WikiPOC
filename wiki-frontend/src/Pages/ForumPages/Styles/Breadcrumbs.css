@@ -16,7 +16,7 @@
 
 .breadcrumbs ul li a {
     text-decoration: none;
-    color: #024185;
+    color: var(--footer-link-color, #024185);
 }
 
 .breadcrumbs ul li a:hover {
@@ -24,5 +24,5 @@
 }
 
 .breadcrumbs ul li span {
-    color: #2e3236;
+    color: var(--footer-text-color, #2e3236);
 }

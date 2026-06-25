@@ -50,7 +50,7 @@ const ForumPost = ({jwtToken}) => {
     }
 
     return (
-        <div className='forum-mainsection'>
+        <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
             <Breadcrumbs/>
             <button className="modular-button" style={{backgroundColor: styles.articleColor}} onClick={() => { setQuotedPostId(null); togglePopupVisibility(); }}>
                 Post Reply

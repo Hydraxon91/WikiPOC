@@ -90,9 +90,9 @@
 }
 
 .quoted-comment {
-    backdrop-filter: brightness(80%);
-    border: 0.1em solid #ccc;
-    border-left: 0.4em solid #ccc;
+    background-color: color-mix(in srgb, var(--article-color, #526cad) 12%, transparent);
+    border: 0.1em solid color-mix(in srgb, var(--article-color, #ccc) 40%, transparent);
+    border-left: 0.4em solid var(--article-color, #ccc);
     padding: 1em;
     margin-bottom: 1em;
     font-style: italic;

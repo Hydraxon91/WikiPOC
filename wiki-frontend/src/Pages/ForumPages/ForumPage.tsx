@@ -94,7 +94,7 @@ const ForumPage = ({ jwtToken }) => {
     if (loading) return <LoadingSpinner text="Loading forum topic..." />;
 
     return (
-        <div className='forum-mainsection'>
+        <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
             <Breadcrumbs />
             <ForumPostButton buttonTitle="New Topic" linkTo={`/forum/${slug}/create-topic`} jwtToken={jwtToken} />
             <div className="forum-grid article" style={{ backgroundColor: styles.articleColor }}>
@@ -107,7 +107,7 @@ const ForumPage = ({ jwtToken }) => {
                 {currentPosts && currentPosts.map(post => (
                     <div className="grid-row" key={post.id}>
                         <div className="grid-cell title">
-                            <span className="topic-status"></span>
+                            <span className="topic-status read"></span>
                             <div className="topic-content">
                                 <Link to={`/forum/${slug}/${post.slug}`}><div className='topicTitle'>{post.postTitle}</div></Link>
                             </div>

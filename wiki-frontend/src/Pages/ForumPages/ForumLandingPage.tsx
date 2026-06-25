@@ -84,7 +84,7 @@ const ForumLandingPage = () => {
     if (loading) return <LoadingSpinner text="Loading topics..." />;
 
     return (
-        <div className='forum-mainsection'> 
+        <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}> 
         <Breadcrumbs/>
         {isAdmin && (
           <div style={{ textAlign: 'right', marginBottom: '8px' }}>
@@ -103,7 +103,7 @@ const ForumLandingPage = () => {
             {topics.map(topic => (
                 <div className="grid-row" key={topic.id}>
                     <div className="grid-cell title">
-                        <span className="topic-status"></span>
+                        <span className="topic-status read"></span>
                         <div className="topic-content">
                             <Link to={`/forum/${topic.slug}`}><div className='topicTitle'>{topic.title}</div></Link>
                             <div className="topic-description">{topic.description}</div>

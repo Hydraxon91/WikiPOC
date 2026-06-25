@@ -86,7 +86,7 @@ const CreateForumTopic = ({ jwtToken }) => {
     return (
         <>
         <Breadcrumbs/>
-        <div className="create-forum-topic fp-custom-popup"  style={{ backgroundColor: styles.articleRightColor}}>
+        <div className="create-forum-topic fp-custom-popup"  style={{ backgroundColor: styles.articleRightColor, '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
             <h2>Create a New Forum Topic</h2>
             <form onSubmit={handleSubmit}>
                 <div className="fp-comment-write-textarea">
