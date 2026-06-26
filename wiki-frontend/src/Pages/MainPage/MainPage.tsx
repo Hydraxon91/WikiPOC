@@ -61,7 +61,7 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
             {/* Render children, which will be the specific WikiPage component */}
             <Outlet />
           </div>
-          <div className="pagefooter" style={{color: styles.footerListTextColor, marginTop: 'auto'}}>
+          <div className="pagefooter" style={{color: styles.footerListTextColor}}>
             This is a footer | Template by <a href="http://html5-templates.com/" target="_blank" rel="nofollow" style={{color: styles.footerListLinkTextColor}}>HTML5 Templates</a>
             <div className="footerlinks" >
               <a href="#" style={{color: styles.footerListLinkTextColor}}>Privacy policy</a> 

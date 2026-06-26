@@ -568,7 +568,7 @@ span.user {
 	content: "";
 }
 .pagefooter {
-	padding: 4.5em 1.3em 2em;
+	padding: 1.5vh 1vh;
 	font-size: 75%;
 	line-height: 2em;
 }

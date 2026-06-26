@@ -10,6 +10,12 @@
     height: 100%;
 }
 
+@media (max-width: 768px) {
+    .wikipage-component {
+        min-height: 77vh;
+    }
+}
+
 
 .wikipage-component{
     padding: 1.25em 1.5em 1.5em 1.5em;
