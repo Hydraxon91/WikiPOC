@@ -141,20 +141,22 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
 
   return (
     <div className='editor-container'>
-      <div className={`articleeditor-container${showPreview ? ' hidden' : ''}`}>
-        <ArticleEditor 
-          title={title} siteSub={siteSub} 
-          roleNote={roleNote} content={content}
-          handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
-          images={images} setImages={setImages} category={category}
-        />
+      <div className='articleeditor-container'>
+        <div style={{ display: showPreview ? 'none' : 'block' }}>
+          <ArticleEditor 
+            title={title} siteSub={siteSub} 
+            roleNote={roleNote} content={content}
+            handleContentChange={handleContentChange} handleFieldChange={handleFieldChange} handleSave={handleSave}
+            images={images} setImages={setImages} category={category}
+          />
+        </div>
+      </div>
+      <div className={`preview-container${showPreview ? ' visible' : ''}`}>
+        <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images} setDecodedTitle={undefined}/>
       </div>
       <button className="preview-toggle" onClick={() => setShowPreview(!showPreview)}>
         {showPreview ? 'Edit' : 'Preview'}
       </button>
-      <div className={`preview-container${showPreview ? ' visible' : ''}`}>
-        <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images} setDecodedTitle={undefined}/>
-      </div>
     </div>
   );
 };

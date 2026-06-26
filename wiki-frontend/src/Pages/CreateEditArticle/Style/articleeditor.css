@@ -20,23 +20,17 @@
 }
 
 @media (max-width: 768px) {
+  .editor-container {
+    flex-direction: column;
+  }
   .articleeditor-container {
     width: 100%;
     margin-right: 0;
   }
-  .articleeditor-container.hidden {
-    display: none;
-  }
   .preview-toggle {
-    display: block;
-    width: 100%;
-    padding: 0.5em;
-    background: var(--article-color, #526cad);
-    color: white;
-    border: none;
+    display: inline-block;
+    margin-top: 0.5em;
     cursor: pointer;
-    font-size: 90%;
-    text-align: center;
   }
   .preview-container {
     display: none;

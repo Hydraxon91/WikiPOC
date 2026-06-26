@@ -33,6 +33,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
   const renderEditButton = () => {
     if (!decodedTokenContext) return null;
     if (!window.location.pathname.includes('/page/')) return null;
+    if (window.location.pathname.includes('/edit')) return null;
     return (
       <Link to={`/page/${page.title}/edit`}>
         <img className="editButton" src="/img/edit.png" alt="Edit" />

@@ -7,7 +7,7 @@ import '../../WikiPage-Article/Style/wikipagecomponent.css'
 const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [imageData, setImageData] = useState('');
-  const [text, setText] = useState('Enter Text Here');
+  const [text, setText] = useState('');
   const [orientation, setOrientation] = useState('left');
 
   const handleContentChange = (value) => {
