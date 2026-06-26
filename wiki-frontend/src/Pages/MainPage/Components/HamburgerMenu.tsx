@@ -12,15 +12,14 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
 
   return (
     <>
-      <button className="hamburger-toggle" onClick={() => setIsOpen(!isOpen)} aria-label="Menu">
+      <button className={`hamburger-toggle${isOpen ? ' hidden' : ''}`} onClick={() => setIsOpen(true)} aria-label="Menu">
         <span className="hamburger-line"></span>
         <span className="hamburger-line"></span>
         <span className="hamburger-line"></span>
       </button>
-      {isOpen && (
-        <div className="hamburger-overlay" onClick={closeDrawer}>
-          <div className="hamburger-drawer" onClick={e => e.stopPropagation()}>
-            <button className="hamburger-close" onClick={closeDrawer}>×</button>
+      <div className={`hamburger-overlay${isOpen ? ' open' : ''}`} onClick={closeDrawer}>
+        <div className={`hamburger-drawer${isOpen ? ' open' : ''}`} onClick={e => e.stopPropagation()}>
+          <button className="hamburger-close" onClick={closeDrawer}>×</button>
 
             <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Categories</h3>
             {categories && categories.map((category, index) => (
@@ -83,7 +82,6 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
             )}
           </div>
         </div>
-      )}
     </>
   );
 };

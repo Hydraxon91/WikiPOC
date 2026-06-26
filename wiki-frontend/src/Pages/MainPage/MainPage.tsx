@@ -50,13 +50,12 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
   return (
     <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily}} >
       <div>
-        <div className="header-with-hamburger">
-          <HeaderComponent userName={userName} userRole={userRole}/>
+        <HeaderComponent userName={userName} userRole={userRole}>
           <HamburgerMenu handleLogout={handleLogout} categories={categories} />
-        </div>
+        </HeaderComponent>
         {/* <Breadcrumbs/> */}
         <WikiList handleLogout={handleLogout} jwtToken={jwtToken} categories={categories}/>
-        <div className="mainsection" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 120px)' }}>
+        <div className="mainsection">
           {/* <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div> */}
           <div style={{ flex: 1 }}>
             {/* Render children, which will be the specific WikiPage component */}

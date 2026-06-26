@@ -10,7 +10,6 @@
     cursor: pointer;
     padding: 0;
     gap: 4px;
-    z-index: 1100;
 }
 
 .hamburger-line {
@@ -29,6 +28,14 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.4);
     z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.hamburger-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .hamburger-drawer {
@@ -42,6 +49,16 @@
     padding: 1rem;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
     z-index: 1001;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+}
+
+.hamburger-drawer.open {
+    transform: translateX(0);
+}
+
+.hamburger-toggle.hidden {
+    display: none;
 }
 
 .hamburger-close {
@@ -60,10 +77,5 @@
 @media (max-width: 768px) {
     .hamburger-toggle {
         display: flex;
-        position: absolute;
-        top: 50%;
-        left: 0.5em;
-        transform: translateY(-50%);
-        z-index: 1100;
     }
 }

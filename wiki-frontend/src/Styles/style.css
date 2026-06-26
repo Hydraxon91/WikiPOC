@@ -356,6 +356,9 @@ a:hover {
 }
 .mainsection {
 	margin: 0 0 0 11em;
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - 120px);
 }
 .headerLinks {
 	text-align: right;
@@ -655,6 +658,7 @@ span.user {
 	}
 	.mainsection {
 		margin-left: 0 !important;
+		min-height: calc(100vh - 50px);
 	}
 }
 

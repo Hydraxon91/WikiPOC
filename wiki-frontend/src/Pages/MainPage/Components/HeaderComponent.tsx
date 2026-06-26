@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { getLogo } from "../../../Api/wikiApi";
 import '../Styles/headercomponent.css';
-const HeaderComponent = ({userName, userRole}) => { 
+const HeaderComponent = ({userName, userRole, children}) => { 
     const { styles }  = useStyleContext();
     const [imageSrc, setImageSrc] = useState("/img/logo.png");
     const [title, setTitle] = useState("Default Title");
@@ -35,11 +35,12 @@ const HeaderComponent = ({userName, userRole}) => {
 
     return (
         <div className="top-header" style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '' }}>
+            {children}
             <div className="logo-container">
                 <Link to="/"><img src={imageSrc} alt="logo" className="site-logo"/></Link>
             </div>
             <div className="title-container">
-                <h1 className="page-title">{title}</h1>
+                <Link to="/"><h1 className="page-title">{title}</h1></Link>
             </div>
             <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div>
         </div>
