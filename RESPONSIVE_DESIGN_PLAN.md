@@ -173,8 +173,13 @@ boundary. The current ~850px breakpoint was arbitrary.
 - [x] **P2** Forum grid header/data column width mismatch at iPad sizes (flex-basis: 0% + min-width: 0 fix)
 - [x] **P2** Forum grid header alignment — header row flex values don't
       match data rows; causes visual mismatch `[NEW]`
-- [ ] **P2** Editor 50/50 split → single column on mobile, preview
+- [x] **P2** Editor 50/50 split → single column on mobile, preview
       behind a toggle button — also blocks testing popup fixes
+- [x] **Bug** Protected routes redirect to home on page refresh — root
+      cause: token decoded in useEffect (async), 3-render-cycle delay
+      between cookie → decodedToken → decodedTokenContext. Fixed with
+      synchronous token decode on App.tsx mount + loading spinner in
+      ProtectedRoute when cookie exists but context is null. `[NEW]`
 - [x] **P2** Simplify forum reply popup Quill toolbar — limit to H1-H2,
       font, image only `[NEW]`
 - [x] **P2** Delete category button as × icon on mobile `[NEW]`

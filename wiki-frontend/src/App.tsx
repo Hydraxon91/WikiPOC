@@ -49,7 +49,10 @@ function App() {
   const [pageError, setPageError] = useState(false);
 
   const [cookies, setCookie, removeCookie] = useCookies(["jwt_token"]);
-  const [decodedToken, setDecodedToken] = useState(null);
+  const [decodedToken, setDecodedToken] = useState(() => {
+    if (cookies["jwt_token"]) return decodeToken(cookies["jwt_token"]);
+    return null;
+  });
   const { showNotification } = useNotification();
 
   useEffect(() => {
