@@ -178,16 +178,17 @@ public class DbInitializer : IHostedService
                 Title = "Example Page 1",
                 SiteSub = "Example SiteSub 1",
                 RoleNote = "Example RoleNote 1",
-                LegacyWikiPage = false,
                 PostDate = DateTime.UtcNow,
                 CategoryId = characters.Id,
                 Content = @"<h2>Example Page 1 - Paragraph 1</h2>
 <p>This is the first paragraph of Example Page 1.</p>
-<div class=""thumbnail left"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
-  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraph-image"" src=""https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg"" alt=""Example ParagraphImageText 1"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+<div class=""thumbnail left"">
+  <div class=""thumbnail-inner"">
+    <img class=""paragraph-image"" alt=""logo"" src=""https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg"">
   </div>
-  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Example ParagraphImageText 1</div>
+  <div class=""wikipage-content-container"">
+    <div>Example ParagraphImageText 1</div>
+  </div>
 </div>
 <h2>Example Page 1 - Paragraph 2</h2>
 <p>This is the second paragraph.</p>
@@ -200,16 +201,17 @@ public class DbInitializer : IHostedService
                 Title = "Example Page 2",
                 SiteSub = "Example SiteSub 2",
                 RoleNote = "Example RoleNote 2",
-                LegacyWikiPage = false,
                 PostDate = DateTime.UtcNow,
                 CategoryId = stories.Id,
                 Content = @"<h2>Example Page 2 - Paragraph 1</h2>
 <p>This is the first paragraph of Example Page 2.</p>
-<div class=""thumbnail right"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
-  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraph-image"" src=""https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg"" alt=""Example ParagraphImageText 2"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+<div class=""thumbnail right"">
+  <div class=""thumbnail-inner"">
+    <img class=""paragraph-image"" alt=""logo"" src=""https://html5-templates.com/demo/wikipedia-template/img/pencil.jpg"">
   </div>
-  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Example ParagraphImageText 2</div>
+  <div class=""wikipage-content-container"">
+    <div>Example ParagraphImageText 2</div>
+  </div>
 </div>
 <h2>Example Page 2 - Paragraph 2</h2>
 <p>This is the second paragraph.</p>"
@@ -224,25 +226,28 @@ public class DbInitializer : IHostedService
                 SiteSub = "User Submitted SiteSub",
                 RoleNote = "User Submitted RoleNote",
                 SubmittedBy = "tester",
-                LegacyWikiPage = false,
                 IsNewPage = true,
                 PostDate = DateTime.UtcNow,
                 CategoryId = locations.Id,
                 Content = @"<h2>User Submitted Paragraph 1</h2>
 <p>User Submitted Content 1</p>
-<div class=""thumbnail left"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
-  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraph-image"" src=""https://i.kym-cdn.com/entries/icons/original/000/029/079/hellothere.jpg"" alt=""Hello there"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+<div class=""thumbnail left"">
+  <div class=""thumbnail-inner"">
+    <img class=""paragraph-image"" alt=""logo"" src=""https://i.kym-cdn.com/entries/icons/original/000/029/079/hellothere.jpg"">
   </div>
-  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Hello there</div>
+  <div class=""wikipage-content-container"">
+    <div>Hello there</div>
+  </div>
 </div>
 <h2>User Submitted Paragraph 2</h2>
 <p>User Submitted Content 2</p>
-<div class=""thumbnail right"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
-  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraph-image"" src=""https://i.ytimg.com/vi/jAB3mMdS0xE/maxresdefault.jpg"" alt=""General Kenobi"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+<div class=""thumbnail right"">
+  <div class=""thumbnail-inner"">
+    <img class=""paragraph-image"" alt=""logo"" src=""https://i.ytimg.com/vi/jAB3mMdS0xE/maxresdefault.jpg"">
   </div>
-  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">General Kenobi</div>
+  <div class=""wikipage-content-container"">
+    <div>General Kenobi</div>
+  </div>
 </div>"
             };
 
@@ -253,25 +258,28 @@ public class DbInitializer : IHostedService
                 SiteSub = "Example SiteSub 1 Update",
                 RoleNote = "Example RoleNote 1 Update",
                 SubmittedBy = "tester",
-                LegacyWikiPage = false,
                 IsNewPage = false,
                 PostDate = DateTime.UtcNow,
                 CategoryId = events.Id,
                 Content = @"<h2>New Paragraph 1</h2>
 <p>Helldivers never die!</p>
-<div class=""thumbnail left"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
-  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraph-image"" src=""https://i.ytimg.com/vi/nhhICroqfpU/hq720_live.jpg"" alt=""Helldivers never die!"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+<div class=""thumbnail left"">
+  <div class=""thumbnail-inner"">
+    <img class=""paragraph-image"" alt=""logo"" src=""https://i.ytimg.com/vi/nhhICroqfpU/hq720_live.jpg"">
   </div>
-  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Helldivers never die!</div>
+  <div class=""wikipage-content-container"">
+    <div>Helldivers never die!</div>
+  </div>
 </div>
 <h2>Liber-Tea</h2>
 <p>Liber-Tea is a funny line haha</p>
-<div class=""thumbnail right"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;"">
-  <div class=""thumbnail-inner"" style=""border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;"">
-    <img class=""paragraph-image"" src=""https://i.kym-cdn.com/photos/images/original/002/760/001/66d"" alt=""Time for a nice cup of Liber-Tea"" style=""max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;""/>
+<div class=""thumbnail right"">
+  <div class=""thumbnail-inner"">
+    <img class=""paragraph-image"" alt=""logo"" src=""https://i.kym-cdn.com/photos/images/original/002/760/001/66d"">
   </div>
-  <div class=""wikipage-content-container"" style=""white-space:normal;word-wrap:break-word;"">Time for a nice cup of Liber-Tea</div>
+  <div class=""wikipage-content-container"">
+    <div>Time for a nice cup of Liber-Tea</div>
+  </div>
 </div>"
             };
 

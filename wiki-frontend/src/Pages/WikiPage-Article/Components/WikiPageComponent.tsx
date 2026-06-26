@@ -44,7 +44,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
     : '';
 
   return (
-    <div className="article" style={{backgroundColor: styles.articleColor}}>
+    <div className="article" style={{backgroundColor: styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor} as any}>
       {page && (
         <div className={activeTab === 'wiki' ? 'wikipage-component' : 'wikipage-component wikipage-hidden'}>
           <h1>

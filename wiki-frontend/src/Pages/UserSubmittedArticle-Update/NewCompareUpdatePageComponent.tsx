@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import LegacyWikiPageComponent from '../WikiPage-Article/Components/LegacyWikiPageComponent';
 import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import '../../Styles/wikipage.css';
@@ -22,19 +21,12 @@ const NewCompareUpdatePage = ({page: wikipage, setDecodedTitle}) => {
     return(
         <div className="article" style={{backgroundColor: styles.articleColor}}>         
             <div className="update-page-container">
-                {page && !page.legacyWikiPage ? 
-                (
+                {page && (
                     <WikiPageComponent
                         page={page}
                         setDecodedTitle={setDecodedTitle}
                         activeTab={activeTab}
                         images={images}
-                    />
-                ) : (
-                    <LegacyWikiPageComponent
-                        page={page}
-                        setDecodedTitle={setDecodedTitle}
-                        activeTab={activeTab}
                     />
                 )}
             </div>

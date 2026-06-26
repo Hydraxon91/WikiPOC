@@ -673,7 +673,6 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
             RoleNote = "Updated RoleNote",
             Content = "Updated Content",
             CategoryId = dummyCategory.Id,
-            LegacyWikiPage = false,
             Paragraphs = new List<Paragraph>
             {
                 new() { Id = savedPara1Id, Title = "Updated Para 1", Content = "Updated Content 1" }

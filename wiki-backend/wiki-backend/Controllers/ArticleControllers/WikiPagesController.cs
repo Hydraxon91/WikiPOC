@@ -183,8 +183,7 @@ public class WikiPagesController : ControllerBase
             RoleNote = wikiPageWithImagesInputModel.RoleNote,
             Content = wikiPageWithImagesInputModel.Content,
             Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
-            CategoryId = wikiPageWithImagesInputModel.CategoryId,
-            LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage
+            CategoryId = wikiPageWithImagesInputModel.CategoryId
         };
 
         var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
@@ -207,7 +206,6 @@ public class WikiPagesController : ControllerBase
             Content = wikiPageWithImagesInputModel.Content,
             Paragraphs = wikiPageWithImagesInputModel.Paragraphs,
             CategoryId = wikiPageWithImagesInputModel.CategoryId,
-            LegacyWikiPage = wikiPageWithImagesInputModel.LegacyWikiPage,
             SubmittedBy = wikiPageWithImagesInputModel.SubmittedBy!,
             Approved = false,
             IsNewPage = false,

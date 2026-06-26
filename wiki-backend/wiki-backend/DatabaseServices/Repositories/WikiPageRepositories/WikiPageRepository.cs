@@ -136,7 +136,6 @@ public class WikiPageRepository : IWikiPageRepository
         existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
         existingWikiPage.Content = updatedWikiPage.Content;
         existingWikiPage.CategoryId = updatedWikiPage.CategoryId;
-        existingWikiPage.LegacyWikiPage = updatedWikiPage.LegacyWikiPage;
         existingWikiPage.LastUpdateDate = DateTime.Now;
 
         // Remove paragraphs that are not present in the updatedWikiPage

@@ -105,7 +105,7 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
                                         <div className="post-author-stats">
                                             <span>Posts: {comment.userProfile?.postCount ?? 0}</span>
                                             {comment.userProfile?.joinDate && (
-                                                <span>Joined: {format(new Date(comment.userProfile.joinDate + 'Z'), 'MMM yyyy')}</span>
+                                                <span>Joined: {format(new Date(comment.userProfile.joinDate.replace(/Z$/, '') + 'Z'), 'MMM yyyy')}</span>
                                             )}
                                         </div>
                                     </div>

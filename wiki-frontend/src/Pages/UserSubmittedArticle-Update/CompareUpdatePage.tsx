@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { getUpdatePageById, getWikiPageById, acceptUserSubmittedUpdate, declineUserSubmittedWikiPage } from '../../Api/wikiApi';
-import CompareUpdatePageComponent from './CompareUpdatePageComponent';
 import NewCompareUpdatePage from './NewCompareUpdatePageComponent';
 import { useNotification } from '../../Components/NotificationProvider';
 import './Style/compareupdates.css';

@@ -14,7 +14,6 @@ public class WikiPageWithImagesInputModel
     public DateTime? PostDate { get; set; }
     public DateTime? LastUpdateDate { get; set; }
     public ICollection<Paragraph> Paragraphs { get; set; } = new List<Paragraph>();
-    public bool LegacyWikiPage { get; set; } = false;
     //if usersubbmittedwikipage
     public Guid? WikiPageId { get; set; }
     [JsonIgnore]
@@ -29,6 +28,6 @@ public class WikiPageWithImagesInputModel
     
     public override string ToString()
     {
-        return $"Title: {Title}, SiteSub: {SiteSub}, RoleNote: {RoleNote}, Content: {Content}, Category: {CategoryId}, PostDate: {PostDate}, LastUpdateDate: {LastUpdateDate}, LegacyWikiPage: {LegacyWikiPage}, WikiPageId: {WikiPageId}, SubmittedBy: {SubmittedBy}, Approved: {Approved}, IsNewPage: {IsNewPage}, Images: {Images?.Count ?? 0}";
+        return $"Title: {Title}, SiteSub: {SiteSub}, RoleNote: {RoleNote}, Content: {Content}, Category: {CategoryId}, PostDate: {PostDate}, LastUpdateDate: {LastUpdateDate}, WikiPageId: {WikiPageId}, SubmittedBy: {SubmittedBy}, Approved: {Approved}, IsNewPage: {IsNewPage}, Images: {Images?.Count ?? 0}";
     }
 }

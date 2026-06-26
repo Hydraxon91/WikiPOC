@@ -1,7 +1,6 @@
 import {useState, useEffect} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LegacyEditPage from "./Pages/CreateEditArticle/LegacyEditPage";
 import EditPage from "./Pages/CreateEditArticle/EditPage";
 import EditStylePage from "./Pages/EditStylePage/EditStylePage";
 import MainPage from "./Pages/MainPage/MainPage";
@@ -155,16 +154,6 @@ function App() {
                   </ProtectedRoute>
                   } 
                 />
-                <Route path="/page/:title/legacyedit" element={
-                  <ProtectedRoute roles={['User', 'Admin']}>
-                    <LegacyEditPage page={currentWikiPage} />
-                  </ProtectedRoute>
-                } />
-                <Route path="/legacycreate" element={
-                  <ProtectedRoute roles={['User', 'Admin']}>
-                    <LegacyEditPage />
-                  </ProtectedRoute>
-                } />
                 <Route path="/create" element={
                   <ProtectedRoute roles={['User', 'Admin']}>
                     <EditPage handleEdit={handleEdit} handleCreate={handleCreate} />

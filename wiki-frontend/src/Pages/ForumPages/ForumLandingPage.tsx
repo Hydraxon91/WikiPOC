@@ -54,7 +54,7 @@ const ForumLandingPage = () => {
         const userProfile = latestComment.userProfile ? latestComment.userProfile : latestComment.user; 
     
         // Parse the date string as UTC
-        const utcDate = new Date(latestComment.postDate + 'Z');
+        const utcDate = new Date(latestComment.postDate.replace(/Z$/, '') + 'Z');
         // Calculate time difference in minutes
         const diffInMinutes = Math.floor((Number(new Date()) - Number(utcDate)) / (1000 * 60));
         // Format the zoned date

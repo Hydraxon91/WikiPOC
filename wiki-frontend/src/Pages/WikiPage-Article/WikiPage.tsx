@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import LegacyWikiPageComponent from './Components/LegacyWikiPageComponent';
 import WikiPageComponent from './Components/WikiPageComponent';
 import WikiPageCommentsComponent from './Components/WikiPageCommentsComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
@@ -63,19 +62,12 @@ const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = fa
             )}
             
             <div className="wiki-page-container">
-                {page && !page.legacyWikiPage ? 
-                (
+                {page && (
                     <WikiPageComponent
                         page={page}
                         setDecodedTitle={setDecodedTitle}
                         activeTab={activeTab}
                         images={images}
-                    />
-                ) : (
-                    <LegacyWikiPageComponent
-                        page={page}
-                        setDecodedTitle={setDecodedTitle}
-                        activeTab={activeTab}
                     />
                 )}
                 

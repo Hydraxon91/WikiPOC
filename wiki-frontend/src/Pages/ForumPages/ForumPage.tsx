@@ -50,7 +50,7 @@ const ForumPage = ({ jwtToken }) => {
             return <div>No comments yet</div>;
         }
 
-        const utcDate = new Date(latestComment.postDate + 'Z');
+        const utcDate = new Date(latestComment.postDate.replace(/Z$/, '') + 'Z');
         const diffInMinutes = Math.floor((Number(new Date()) - Number(utcDate)) / (1000 * 60));
         const formattedDate = diffInMinutes < 60 ? `${diffInMinutes} minutes ago` : formatDate(latestComment.postDate);
 

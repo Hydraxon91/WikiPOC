@@ -342,31 +342,6 @@ a:hover {
 	font-size: 0.75em;
 	word-wrap: break-word;
 }
-div.articleRight {
-	border: 1px solid #c8ccd1;
-	padding: 3px;
-	float: right;
-	background-color: #3c5fb8;;
-	font-size: 94%;
-	text-align: center;
-	overflow: hidden;
-	line-height: 1.4em;
-	padding: 3px;
-	font-size: 94%;
-	margin: 0 0 5px 15px;
-	text-align: left;
-	margin-bottom:2vh;
-	max-width: 200px;
-}
-
-div.articleRightInner {
-	border: 1px solid #c8ccd1;
-	padding: 3px;
-	background-color: #2b4ea6;
-	font-size: 94%;
-	text-align: center;
-	overflow: hidden;
-}
 .logo {
 	margin-bottom: 20px;
 }
