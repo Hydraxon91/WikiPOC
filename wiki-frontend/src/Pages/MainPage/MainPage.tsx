@@ -47,7 +47,7 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
   };
 
   return (
-    <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, width: "100vw", minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily}} >
+    <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily}} >
       <div>
         <HeaderComponent userName={userName} userRole={userRole}/>
         {/* <Breadcrumbs/> */}

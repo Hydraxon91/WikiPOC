@@ -314,7 +314,9 @@ a:hover {
 	text-decoration: underline;
 }
 .wrapAll {
+	max-width: 1200px;
 	width: 90%;
+	margin: 0 auto;
 }
 .sidebar {
 	float: left;
