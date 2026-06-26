@@ -167,7 +167,7 @@ boundary. The current ~850px breakpoint was arbitrary.
 - [x] **P1** Reduce header height (`.top-header` 10em) on mobile `[NEW]`
 - [x] **P1** Add wiki name to mobile header, left-align hamburger+logo+title `[NEW]`
 - [x] **P1** Animate hamburger drawer slide-in/out `[NEW]`
-- [ ] **P2** Forum author sidebar → replace 130px fixed sidebar with
+- [x] **P2** Forum author sidebar → replace 130px fixed sidebar with
       inline "Posted by Username" line on narrow screens
 - [x] **P2** Forum grid column collapse (4-col → stacked on mobile)
 - [x] **P2** Forum grid header/data column width mismatch at iPad sizes (flex-basis: 0% + min-width: 0 fix)
@@ -194,7 +194,7 @@ boundary. The current ~850px breakpoint was arbitrary.
 - [ ] **P3** Breadcrumbs wrapping/truncation `[NEW]`
 - [ ] **P3** Style page preset card height + font select width `[NEW]`
 - [ ] **P3** Font sizing review with `clamp()` or `rem` for high-res
-- [ ] **P3** Mobile navigation improvements (hamburger for sidebar)
+- [x] **P3** Mobile navigation improvements (hamburger for sidebar)
 - [ ] **P4** Profile page responsive refinement
 - [ ] **P4** Article navbar tab responsive sizing `[NEW]`
 - [ ] **P4** High-DPI / retina rendering check
