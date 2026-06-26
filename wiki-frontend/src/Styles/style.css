@@ -649,6 +649,15 @@ span.user {
 		width: auto;
 	}
 }
+@media screen and (max-width: 768px) {
+	.sidebar {
+		display: none;
+	}
+	.mainsection {
+		margin-left: 0 !important;
+	}
+}
+
 @media screen and (max-width: 400px) {
 	#simpleSearch {
 		display: none;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import WikiList from './Components/WikiList';
+import HamburgerMenu from './Components/HamburgerMenu';
 import Breadcrumbs from '../ForumPages/Components/Breadcrumbs';
 import HeaderComponent from './Components/HeaderComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
@@ -50,6 +51,9 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
     <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily}} >
       <div>
         <HeaderComponent userName={userName} userRole={userRole}/>
+        <div className="hamburger-header-bar">
+          <HamburgerMenu handleLogout={handleLogout} categories={categories} />
+        </div>
         {/* <Breadcrumbs/> */}
         <WikiList handleLogout={handleLogout} jwtToken={jwtToken} categories={categories}/>
         <div className="mainsection" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 120px)' }}>
