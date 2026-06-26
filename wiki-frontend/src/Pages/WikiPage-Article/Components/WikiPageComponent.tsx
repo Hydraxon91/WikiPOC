@@ -3,10 +3,12 @@ import { Link, useParams} from 'react-router-dom';
 import '../../../Styles/style.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css'
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
-import { extractParagraphTitles, processArticleContent } from '../../../utils/articleRenderer';
+import { useUserContext } from '../../../Components/contexts/UserContextProvider';
+import { extractParagraphTitles, processArticleContent, buildContentFromParagraphs } from '../../../utils/articleRenderer';
 
 const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
   const { styles }  = useStyleContext();
+  const { decodedTokenContext } = useUserContext();
   const { title } = useParams();
   const decodedTitle = decodeURIComponent(title);
   const [pTitles, setPTitles] = useState<{mainParagraphs: {id:string;text:string}[]; subparagraphs: {id:string;mainId:string;text:string}[]}>({mainParagraphs: [], subparagraphs: []});
@@ -29,18 +31,22 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
   };
 
   const renderEditButton = () => {
-    if (window.location.pathname.includes('/page/')) {
-      return (
-        <Link to={`/page/${page.title}/edit`}>
-          <img className="editButton" src="/img/edit.png" alt="Edit" />
-        </Link>
-      );
-    }
-    return null;
+    if (!decodedTokenContext) return null;
+    if (!window.location.pathname.includes('/page/')) return null;
+    return (
+      <Link to={`/page/${page.title}/edit`}>
+        <img className="editButton" src="/img/edit.png" alt="Edit" />
+      </Link>
+    );
   };
 
-  const renderedContent = page?.content
-    ? processArticleContent(page.content, styles, images)
+  const contentHtml = page?.content
+    ? page.content
+    : page?.paragraphs
+    ? buildContentFromParagraphs(page.paragraphs)
+    : '';
+  const renderedContent = contentHtml
+    ? processArticleContent(contentHtml, styles, images)
     : '';
 
   return (
@@ -73,7 +79,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
                             {pTitles.subparagraphs.filter(sp => sp.mainId === paragraph.id).map((subParagraph, subIndex) => (
                                 <li key={`sub-${subIndex}`}>
                                     <span>{`${mainIndex + 1}.${subIndex + 1}`}</span>
-                                    <a href={`#sub-${subIndex + 1}`}>
+                                    <a href={`#${subParagraph.id}`}>
                                         {subParagraph.text}
                                     </a>
                                 </li>
