@@ -167,6 +167,16 @@
     cursor: default;
 }
 
+@media (max-width: 768px) {
+    .wikipage-comment-profilepic img {
+        width: 2em;
+        height: 2em;
+    }
+    .btn-center {
+        font-size: 16px;
+    }
+}
+
 .btn-left {
     width: 13px;
     height: 26px;

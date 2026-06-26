@@ -71,6 +71,8 @@ public class WikiPageRepository : IWikiPageRepository
             .Include(p => p.Paragraphs)
             .Include(wp => wp.Comments)
             .ThenInclude(uc => uc.UserProfile)
+            .Include(wp => wp.Comments)
+            .ThenInclude(uc => uc.Replies)
             .FirstOrDefaultAsync(p => p.Title == title);
 
         if (wikiPage != null)

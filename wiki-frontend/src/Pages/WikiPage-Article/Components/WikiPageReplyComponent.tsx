@@ -25,15 +25,7 @@ const WikiPageReplyComponent = ({ user, page, jwtToken, handleCommentSubmit, pos
         try {
             await postComment(newComment, jwtToken, user);
             setCommentText('');
-            (newComment as any).userProfile = user;
-            handleCommentSubmit(newComment);
-            // Ensure replyTo.replies is initialized
-            if (!replyTo.replies) {
-                replyTo.replies = [];
-            }
-
-            // Add newComment to replyTo.replies
-            replyTo.replies.push(newComment);
+            handleCommentSubmit();
             showNotification('Successfully submitted comment');
         } catch (error) {
             console.error('Error posting comment:', error);

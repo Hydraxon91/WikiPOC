@@ -25,8 +25,7 @@ const WikiPageSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSub
         try {
             await postComment(newComment, jwtToken, user);
             setCommentText('');
-            (newComment as any).userProfile = user;
-            handleCommentSubmit(newComment);
+            handleCommentSubmit();
             showNotification('Successfully submitted comment');
         } catch (error) {
             console.error('Error posting comment:', error);

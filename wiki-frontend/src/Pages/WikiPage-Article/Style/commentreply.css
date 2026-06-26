@@ -37,7 +37,7 @@
     border-bottom: 0.0625em solid #757575; /* 1px to em */
     padding: 0.625em; /* 10px to em */
     font-size: 0.875em; /* 14px to em */
-    resize: none;
+    resize: vertical;
     background-color: transparent;
     margin-bottom: auto;
     overflow: hidden;

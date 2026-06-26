@@ -83,6 +83,12 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .WithMany()
             .HasForeignKey(uc => uc.UserProfileId);
 
+        modelBuilder.Entity<UserComment>()
+            .HasOne(uc => uc.ReplyToComment)
+            .WithMany(uc => uc.Replies)
+            .HasForeignKey(uc => uc.ReplyToCommentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         modelBuilder.Entity<ForumTopic>()
             .Property(ft => ft.Order);
 

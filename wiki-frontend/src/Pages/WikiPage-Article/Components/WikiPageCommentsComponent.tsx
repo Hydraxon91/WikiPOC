@@ -4,7 +4,7 @@ import { getUserProfileByUsername, postEditedComment, postComment } from '../../
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
 import UserCommentComponent from './UserCommentComponent';
 
-const WikiPageCommentsComponent = ({ page, jwtToken, activeTab }) => {
+const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) => {
     const { decodedTokenContext } = useUserContext();
     const [user, setUser] = useState();
     const [currPage, setCurrPage] = useState(page);
@@ -21,12 +21,8 @@ const WikiPageCommentsComponent = ({ page, jwtToken, activeTab }) => {
         setCurrPage(page);
     }, [page]);
 
-    const handleCommentSubmit = (newComment) => {
-        // Logic for handling new comment submission goes here
-        setCurrPage((currPage) => ({
-            ...currPage,
-            comments: [...currPage.comments, newComment],
-        }));
+    const handleCommentSubmit = () => {
+        if (refreshPage) refreshPage();
     };
 
     const toggleRepliesIndex = (index) => {

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import WikiPageComponent from './Components/WikiPageComponent';
 import WikiPageCommentsComponent from './Components/WikiPageCommentsComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
+import { getWikiPageByTitle } from '../../Api/wikiApi';
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import '../../Styles/wikipage.css';
 
@@ -34,6 +35,18 @@ const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = fa
     const handleTabClick = (tab) =>{
         setActiveTab(tab);
     }
+
+    const refreshPage = async () => {
+        try {
+            const data = await getWikiPageByTitle(decodedTitle);
+            if (data) {
+                setPage(data.wikiPage ?? data.userSubmittedWikiPage);
+                setImages(data.images);
+            }
+        } catch (error) {
+            console.error("Error refreshing page:", error);
+        }
+    };
 
     if (pageError) return <div style={{ padding: '2rem', textAlign: 'center' }}><h2>Page not found</h2><p>The page you're looking for doesn't exist.</p></div>;
     if (!wikipage) return <LoadingSpinner text="Loading article..." />;
@@ -75,6 +88,7 @@ const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = fa
                     page={page}
                     jwtToken={jwtToken}
                     activeTab={activeTab}
+                    refreshPage={refreshPage}
                 />
             </div>
         </div>
