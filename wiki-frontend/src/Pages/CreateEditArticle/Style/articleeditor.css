@@ -209,9 +209,10 @@ input {
 	z-index: -1;
 }
 
+.custom-file-upload + .label-for-custom-file-upload,
 .label-for-custom-file-upload {
     display: inline-block;
-    background: var(--editor-btn-bg, #526cad);
+    background: var(--editor-btn-bg, #526cad) !important;
     color: #fff;
     border: 1px solid var(--editor-btn-border, #1d305e);
     border-radius: 3px;
@@ -220,6 +221,7 @@ input {
     font-size: 0.9em;
 }
 
+.custom-file-upload + .label-for-custom-file-upload:hover,
 .label-for-custom-file-upload:hover {
     filter: brightness(85%);
 }
