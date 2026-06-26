@@ -8,10 +8,18 @@
     list-style: none;
     padding: 0;
     display: flex;
+    flex-wrap: wrap;
 }
 
 .breadcrumbs ul li {
     margin-right: 10px;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .breadcrumbs ul li {
+        white-space: normal;
+    }
 }
 
 .breadcrumbs ul li a {
