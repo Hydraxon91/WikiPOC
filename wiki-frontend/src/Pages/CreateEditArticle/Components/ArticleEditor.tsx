@@ -94,7 +94,16 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
       const orientation = thumbMatch[1];
       const content = thumbMatch[2].trim();
       const selection = editor.getSelection(true);
-      editor.insertEmbed(selection.index, 'thumbnail', JSON.stringify({ orientation, content }));
+      if (!selection) return;
+      const format = editor.getFormat(selection.index);
+      if (format.header !== 2 && format.header !== 3) {
+        showNotification('Place cursor on a Heading 2 or Heading 3 line to insert a thumbnail.');
+        return;
+      }
+      const [line] = editor.getLine(selection.index);
+      if (!line) return;
+      const lineEnd = line.offset(editor.scroll) + line.length();
+      editor.insertEmbed(lineEnd, 'thumbnail', JSON.stringify({ orientation, content }));
       return;
     }
     const selection = editor.getSelection(true);
