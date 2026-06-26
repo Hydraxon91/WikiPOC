@@ -5,6 +5,23 @@ import { getUserProfileByUsername, postEditedComment, postComment } from '../../
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
 import UserCommentComponent from './UserCommentComponent';
 
+const getCommentsPerPage = () => {
+    const h = window.innerHeight;
+    if (h < 700) return 4;
+    if (h < 900) return 5;
+    return 6;
+};
+
+const useCommentsPerPage = () => {
+    const [count, setCount] = useState(getCommentsPerPage());
+    useEffect(() => {
+        const handler = () => setCount(getCommentsPerPage());
+        window.addEventListener('resize', handler);
+        return () => window.removeEventListener('resize', handler);
+    }, []);
+    return count;
+};
+
 const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) => {
     const { decodedTokenContext } = useUserContext();
     const { styles } = useStyleContext();
@@ -12,7 +29,7 @@ const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) =
     const [currPage, setCurrPage] = useState(page);
     const [showRepliesIndex, setShowRepliesIndex] = useState({});
     const [commentPage, setCommentPage] = useState(1);
-    const [commentsPerPage] = useState(5);
+    const commentsPerPage = useCommentsPerPage();
     const [sortOrder, setSortOrder] = useState('newest');
     const [focusedCommentId, setFocusedCommentId] = useState(null);
 
@@ -55,7 +72,7 @@ const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) =
     const renderPagination = () => {
         if (totalPages <= 1) return null;
         return (
-            <div className="pagination" style={{ marginTop: '1em' }}>
+            <div className="pagination" style={{ marginTop: 'auto', paddingTop: '1em' }}>
                 <button onClick={() => setCommentPage(c => Math.max(1, c - 1))} disabled={commentPage === 1}>Previous</button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                     <button key={page} onClick={() => setCommentPage(page)} className={commentPage === page ? 'active' : ''}>{page}</button>
@@ -92,7 +109,7 @@ const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) =
                             />
                         </div>
                     ) : (
-                        <div className="comments-list-view">
+                        <div className="comments-list-view" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                             <h3>Comments</h3>
                             <select value={sortOrder} onChange={e => setSortOrder(e.target.value)} style={{ marginBottom: '0.5em', padding: '0.2em 0.5em', background: styles.articleColor, color: '#fff', border: 'none', borderRadius: '3px', fontSize: '90%', cursor: 'pointer' }}>
                                 <option value="newest">Newest first</option>
