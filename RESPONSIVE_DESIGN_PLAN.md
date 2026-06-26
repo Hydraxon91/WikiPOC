@@ -325,6 +325,42 @@ See task list in section 4 for prioritized items. `[NEW]`
 
 ---
 
+## 8. Design Language Consistency — Audit Results `[NEW]`
+
+### Critical inconsistencies found
+
+| # | Issue | Location | Impact |
+|---|-------|----------|--------|
+| 1 | **10+ distinct button styles** | Across all pages | Themed pills (login), flat themed (forum `.modular-button`), pixel-art segmented (wiki Send), browser defaults (editor, categories, admin, style page). No shared component. |
+| 2 | **Editor/Style page buttons unstyled** | `ArticleEditor.tsx`, `EditStylePage.tsx` | Raw `<button>` tags with zero CSS. |
+| 3 | **Admin approval buttons unstyled** | `CheckUserSubmittedPage.tsx`, `CompareUpdatePage.tsx` | Browser defaults on admin actions. |
+| 4 | **Style Edit page missing background** | `EditStylePage.tsx` | No `.article` wrapper — floats on whatever background is behind it. |
+| 5 | **Wiki comment links `color: black`** | `wikipage.css:128` | Invisible on dark-themed pages. |
+| 6 | **Global `<a>` tags hardcoded `#0645ad`** | `style.css:309` | Not theme-aware. Affects sidebar, forum, profile links. |
+| 7 | **5 different input styling approaches** | Login, forum, wiki, admin, editor | Transparent, `#ccc` bordered, `#757575` bordered, semi-white, unstyled. |
+| 8 | **No unified focus state** | Most inputs | Login uses label animation, wiki suppresses outlines, others have no focus indicator. |
+| 9 | **Pagination hardcoded gray** | Forum + wiki comments | `#f0f0f0` / `#ccc` — no theme variables. |
+| 10 | **Profile buttons hardcoded white** | `profilepage.css` | `background: #fff` instead of theme accent color. |
+
+### Completed: Login/Register re-styled to wiki pattern
+- Gradient background replaced with `.article` container using `styles.articleColor`
+- Rounded pill buttons replaced with flat themed buttons
+- Transparent underlined inputs replaced with `#ccc` bordered inputs
+- Text colors changed from white to dark text
+- Old CSS files (`login.css`, `register.css`) cleared
+
+### Remaining tasks
+- [ ] Standardize all buttons across editor, admin, categories, and style pages
+- [ ] Add `.article` wrapper to Style Edit page
+- [ ] Fix wiki comment link colors from hardcoded `black` to theme var
+- [ ] Make global `<a>` tag color theme-aware
+- [ ] Unify input border styles across the app (use `#ccc` with border-radius)
+- [ ] Add focus indicators to all inputs
+- [ ] Make pagination buttons theme-aware
+- [ ] Profile button backgrounds: `#fff` → theme accent color
+
+---
+
 ## 8. Other Observations
 
 - **`.wrapAll` inline override**: `MainPage.tsx:50` sets `width: 100vw`
@@ -371,3 +407,4 @@ See task list in section 4 for prioritized items. `[NEW]`
 | Wiki comment analysis | Added full responsive audit of wiki comment section (section 5). Found zero media queries, fixed 64px avatar, no mobile adaptation. Added P2 tasks for fixes. |
 | Comment fixes batch | Reply bug fix (EF relationship + re-fetch pattern), comments tab nesting fix, 64px→2em avatar on mobile, reply textarea resize enabled, footer gap reduction, comment pagination (5/page) with sort dropdown, focused reply view with fade animation. Admin compare-update 50/50 stacking also included. |
 | Login/register audit + Profile plan | Added sections 6 (login/register style consistency) and 7 (profile page refinement) with detailed fixes. |
+| Design consistency audit | Added section 8 with full audit of buttons, backgrounds, inputs, links across the entire frontend. Login/register re-styled to wiki `.article` pattern (gradient → flat, pills → flat buttons, white text → dark). Old CSS cleared. Added remaining tasks to list. |

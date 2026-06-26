@@ -63,35 +63,29 @@ export default function RegisterPageComponent(){
     },[response])
 
     return(
-        <div className='register-form' style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '', '--text-color': styles.footerListTextColor, '--link-color': styles.footerListLinkTextColor, '--accent-color': styles.articleColor } as any}>
-            <div>
-                <form onSubmit={HandleSubmit}>
-                    <h2 className="register-text">Register</h2>
-                    <div className="inputboxholder">
-                        <div className={emailInputClass}>
-                            <input type="text" required onClick={InputClick} onChange={(e) => setEmail(e.target.value)}></input>
-                            <label htmlFor="emailInput">Email</label>
-                            <h3 className="invalid-email-text">invalid email or already in use</h3>
-                        </div>
-                        <div className={userInputClass}>
-                            <input type="text" required onClick={InputClick} onChange={(e) => setUsername(e.target.value)}/>
-                            <label htmlFor="userInput">Username</label>
-                            <h3 className="invalid-username-text">invalid username or already in use</h3>
-                        </div>
-                        <div className={passwordInputClass}>
-                            <input type="password" required onClick={InputClick} onChange={(e) => setPassword(e.target.value)}></input>
-                            <label htmlFor="passwordInput">Password</label>
-                            <h3 className="invalid-password-text">should be at least 6 characters long</h3>
-                        </div>
-                    
+        <div className="article" style={{backgroundColor: styles.articleColor, padding: '2rem', maxWidth: '500px', margin: '2rem auto'}}>
+            <div style={{ width: '100%' }}>
+                <form onSubmit={HandleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <h2 style={{ margin: '0 0 0.5em 0', fontSize: '1.5em', fontWeight: 'bold' }}>Register</h2>
+                    <div>
+                        <input type="text" required value={email || ''} onChange={(e) => setEmail(e.target.value)} placeholder="Email"
+                            style={{ width: '100%', padding: '0.5em', fontSize: '1em', border: '1px solid #ccc', borderRadius: '3px', boxSizing: 'border-box' }} />
+                        {response?.DuplicateEmail && <p style={{ color: 'red', margin: '0.25em 0 0', fontSize: '0.85em' }}>Email already in use</p>}
                     </div>
-                    <button type="submit" className="register-button">Register</button>
-                    <div className="login">
-                        <p>
-                            Already have an account? 
-                            <Link to="/login"> Login here!</Link>
-                        </p>
+                    <div>
+                        <input type="text" required value={username || ''} onChange={(e) => setUsername(e.target.value)} placeholder="Username"
+                            style={{ width: '100%', padding: '0.5em', fontSize: '1em', border: '1px solid #ccc', borderRadius: '3px', boxSizing: 'border-box' }} />
+                        {response?.DuplicateUserName && <p style={{ color: 'red', margin: '0.25em 0 0', fontSize: '0.85em' }}>Username already in use</p>}
                     </div>
+                    <div>
+                        <input type="password" required value={password || ''} onChange={(e) => setPassword(e.target.value)} placeholder="Password"
+                            style={{ width: '100%', padding: '0.5em', fontSize: '1em', border: '1px solid #ccc', borderRadius: '3px', boxSizing: 'border-box' }} />
+                        {response?.PasswordTooShort && <p style={{ color: 'red', margin: '0.25em 0 0', fontSize: '0.85em' }}>Password must be at least 6 characters</p>}
+                    </div>
+                    <button type="submit" className="modular-button" style={{ backgroundColor: styles.articleColor, border: '1px solid ' + styles.footerListLinkTextColor, borderRadius: '3px', padding: '0.5em 1em', color: '#fff', cursor: 'pointer', fontSize: '0.9em', alignSelf: 'flex-start' }}>Register</button>
+                    <p style={{ margin: 0, fontSize: '0.9em' }}>
+                        Already have an account? <Link to="/login" style={{ color: styles.footerListLinkTextColor }}>Login here!</Link>
+                    </p>
                 </form>
             </div>
         </div>

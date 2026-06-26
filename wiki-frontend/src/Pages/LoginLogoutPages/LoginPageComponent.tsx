@@ -55,32 +55,25 @@ export default function LoginPageComponent({handleLogin}){
     },[response])
 
     return(
-        <div className='login-form' style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '', '--text-color': styles.footerListTextColor, '--link-color': styles.footerListLinkTextColor, '--accent-color': styles.articleColor } as any}>
-            <div>
-                <form onSubmit={HandleSubmit}>
-                    <h2 className="login-text">Login</h2>
-                    <div className="login-inputboxholder">
-                        <div className={emailInputClass}>
-                            <input type="text" required onClick={InputClick} onChange={(e) => setEmail(e.target.value)}></input>
-                            <label htmlFor="emailInput">Email/Username</label>
-                            <h3 className="invalid-email-text">invalid email or username</h3>
-                        </div>
-                        <div className={passwordInputClass}>
-                            <input type="password" required onClick={InputClick} onChange={(e) => setPassword(e.target.value)}></input>
-                            <label htmlFor="passwordInput">Password</label>
-                            <h3 className="invalid-password-text">invalid password</h3>
-                        </div>
+        <div className="article" style={{backgroundColor: styles.articleColor, padding: '2rem', maxWidth: '500px', margin: '2rem auto'}}>
+            <div style={{ width: '100%' }}>
+                <form onSubmit={HandleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <h2 style={{ margin: '0 0 0.5em 0', fontSize: '1.5em', fontWeight: 'bold' }}>Login</h2>
+                    <div>
+                        <input type="text" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email/Username"
+                            style={{ width: '100%', padding: '0.5em', fontSize: '1em', border: '1px solid #ccc', borderRadius: '3px', boxSizing: 'border-box' }} />
                     </div>
-                    <div className="forget">
-                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"> Forgot Password?</a>
+                    <div>
+                        <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password"
+                            style={{ width: '100%', padding: '0.5em', fontSize: '1em', border: '1px solid #ccc', borderRadius: '3px', boxSizing: 'border-box' }} />
                     </div>
-                    <button type="submit" className="login-button">Login</button>
-                    <div className="register">
-                        <p>
-                            Don't have an account? 
-                            <Link to="/register"> Register here!</Link>
-                        </p>
-                    </div>
+                    {response && !response.token && (
+                        <p style={{ color: 'red', margin: 0, fontSize: '0.9em' }}>Invalid email or password</p>
+                    )}
+                    <button type="submit" className="modular-button" style={{ backgroundColor: styles.articleColor, border: '1px solid ' + styles.footerListLinkTextColor, borderRadius: '3px', padding: '0.5em 1em', color: '#fff', cursor: 'pointer', fontSize: '0.9em', alignSelf: 'flex-start' }}>Login</button>
+                    <p style={{ margin: 0, fontSize: '0.9em' }}>
+                        Don't have an account? <Link to="/register" style={{ color: styles.footerListLinkTextColor }}>Register here!</Link>
+                    </p>
                 </form>
             </div>
         </div>
