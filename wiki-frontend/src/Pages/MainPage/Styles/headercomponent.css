@@ -27,3 +27,13 @@
     color: #333; /* Text color */
     /* Add other styles as needed */
 }
+
+@media (max-width: 768px) {
+    .top-header {
+        height: 3em;
+        padding: 0.5em 1em;
+    }
+    .title-container {
+        display: none;
+    }
+}
