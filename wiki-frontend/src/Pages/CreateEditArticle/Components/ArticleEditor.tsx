@@ -193,7 +193,7 @@ const getCategories = async () => {
 
 
   return (
-    <div className="article article-editor" style={{backgroundColor: styles.articleColor}}>
+    <div className="article article-editor" style={{backgroundColor: styles.articleColor, '--editor-btn-bg': styles.articleColor, '--editor-btn-border': styles.footerListLinkTextColor} as any}>
       <div className='editDiv'>
         <label className="editLabel">Article Title:</label>
         <input 

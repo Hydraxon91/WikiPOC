@@ -46,6 +46,14 @@
     padding: 8px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.fp-custom-popup input:focus,
+.fp-custom-popup textarea:focus {
+    outline: 2px solid var(--article-color, #526cad);
+    outline-offset: -1px;
 }
 
 .fp-custom-popup .fp-confirm-button.left {

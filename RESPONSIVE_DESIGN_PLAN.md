@@ -349,15 +349,15 @@ See task list in section 4 for prioritized items. `[NEW]`
 - Text colors changed from white to dark text
 - Old CSS files (`login.css`, `register.css`) cleared
 
-### Remaining tasks
-- [ ] Standardize all buttons across editor, admin, categories, and style pages
-- [ ] Add `.article` wrapper to Style Edit page
-- [ ] Fix wiki comment link colors from hardcoded `black` to theme var
-- [ ] Make global `<a>` tag color theme-aware
-- [ ] Unify input border styles across the app (use `#ccc` with border-radius)
-- [ ] Add focus indicators to all inputs
-- [ ] Make pagination buttons theme-aware
-- [ ] Profile button backgrounds: `#fff` → theme accent color
+### Completed
+- [x] Standardize all buttons across editor, admin, categories, and style pages
+- [x] Add `.article` wrapper to Style Edit page
+- [x] Fix wiki comment link colors from hardcoded `black` to theme var
+- [x] Make global `<a>` tag color theme-aware
+- [x] Unify input border styles across the app (use `#ccc` with border-radius)
+- [x] Add focus indicators to all inputs
+- [x] Make pagination buttons theme-aware
+- [x] Profile button backgrounds: `#fff` → theme accent color
 
 ---
 

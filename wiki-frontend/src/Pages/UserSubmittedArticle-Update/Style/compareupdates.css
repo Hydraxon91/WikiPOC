@@ -15,6 +15,17 @@
 }
 .compareUpdatePageButtons{
     margin: 1vh 1vw;
+    background: var(--accent-color, #526cad);
+    color: #fff;
+    border: 1px solid var(--footer-link-color, #1d305e);
+    border-radius: 3px;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.compareUpdatePageButtons:hover {
+    filter: brightness(85%);
 }
 
 .comparePageComponent{

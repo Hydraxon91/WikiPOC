@@ -48,7 +48,7 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
   };
 
   return (
-    <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily}} >
+    <div className="wrapAll clearfix" style={{ backgroundColor: styles.bodyColor, minHeight: "100vh", fontWeight:"bold", fontFamily: styles.fontFamily, '--accent-color': styles.articleColor, '--article-color': styles.articleColor, '--footer-link-color': styles.footerListLinkTextColor } as any} >
       <div>
         <HeaderComponent userName={userName} userRole={userRole}>
           <HamburgerMenu handleLogout={handleLogout} categories={categories} />

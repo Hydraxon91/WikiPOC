@@ -209,6 +209,21 @@ input {
 	z-index: -1;
 }
 
+.label-for-custom-file-upload {
+    display: inline-block;
+    background: var(--editor-btn-bg, #526cad);
+    color: #fff;
+    border: 1px solid var(--editor-btn-border, #1d305e);
+    border-radius: 3px;
+    padding: 0.4em 0.8em;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.label-for-custom-file-upload:hover {
+    filter: brightness(85%);
+}
+
 .custom-file-upload + label{
   margin-left: 0.1rem;
   margin-top: 0.5rem;
@@ -222,6 +237,35 @@ input {
   border-color: buttonborder;
   border-image: initial;
   cursor: pointer;
+}
+
+.article-editor button {
+    background: var(--editor-btn-bg, #526cad);
+    color: #fff;
+    border: 1px solid var(--editor-btn-border, #1d305e);
+    border-radius: 3px;
+    padding: 0.4em 0.8em;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.article-editor button:hover {
+    filter: brightness(85%);
+}
+
+.article-editor input[type="text"],
+.article-editor select {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 0.4em;
+    font-size: 0.9em;
+    box-sizing: border-box;
+}
+
+.article-editor input[type="text"]:focus,
+.article-editor select:focus {
+    outline: 2px solid var(--editor-btn-bg, #526cad);
+    outline-offset: -1px;
 }
 
 .quill{
