@@ -1,11 +1,16 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ReactQuill from 'react-quill-new';
+import Quill from 'quill';
 import CustomHTMLPopup from './CustomHTMLPopup';
 import UserImagesContainer from './UserImagesContainer';
 import { fetchCategories } from '../../../Api/wikiApi';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { useNotification } from '../../../Components/NotificationProvider';
+import ThumbnailBlot from '../../../utils/thumbnailBlot';
 import 'react-quill-new/dist/quill.snow.css';
+import '../../WikiPage-Article/Style/wikipagecomponent.css';
+
+(Quill.register as any)(ThumbnailBlot);
 
 
 const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave, images, setImages, category }) => {
@@ -66,16 +71,34 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
         ['link'],
         [{ 'image': {} }],
     ],
+    clipboard: {
+      matchers: [
+        ['div.thumbnail', (node, delta) => {
+          const orientation = Array.from(node.classList).find(c => c !== 'thumbnail') || 'mid';
+          const content = node.innerHTML;
+          const Delta = Quill.import('delta');
+          return new Delta().insert({ thumbnail: JSON.stringify({ orientation, content }) });
+        }],
+      ],
+    },
   };
 
   const insertCustomHTML = (htmlContent) => {
     const editor = quillRef.current?.getEditor();
-    if (editor) {
-      const cursorPosition = lastSelection ? lastSelection.index + lastSelection.length : editor.getSelection();
-      editor.clipboard.dangerouslyPasteHTML(cursorPosition, htmlContent, 'user');
-    } else {
+    if (!editor) {
       console.error('Could not get current selection.');
+      return;
     }
+    const thumbMatch = htmlContent.match(/<div class="thumbnail (\w+)">([\s\S]*)<\/div>/);
+    if (thumbMatch) {
+      const orientation = thumbMatch[1];
+      const content = thumbMatch[2].trim();
+      const selection = editor.getSelection(true);
+      editor.insertEmbed(selection.index, 'thumbnail', JSON.stringify({ orientation, content }));
+      return;
+    }
+    const cursorPosition = lastSelection ? lastSelection.index + lastSelection.length : editor.getSelection();
+    editor.clipboard.dangerouslyPasteHTML(cursorPosition, htmlContent, 'user');
   };
 
   const insertImageToEditor = (imageData) =>{
