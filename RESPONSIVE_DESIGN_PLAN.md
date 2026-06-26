@@ -198,10 +198,49 @@ boundary. The current ~850px breakpoint was arbitrary.
 - [ ] **P4** Profile page responsive refinement
 - [ ] **P4** Article navbar tab responsive sizing `[NEW]`
 - [ ] **P4** High-DPI / retina rendering check
+- [ ] **P2** Wiki comment section responsive — 64px avatar never shrinks on mobile,
+      no media queries, no flex-wrap on rows. Add mobile adaptation like forum:
+      shrink avatar to 2em, or collapse to inline compact layout. `[NEW]`
+- [ ] **P2** Wiki comment submit form — avatar (64px) eats ~20% of 375px screen,
+      Send button font-size 20px too large. Shrink avatar and button on mobile. `[NEW]`
+- [ ] **P2** Wiki reply form — better than main comment (smaller 2em avatar) but
+      textarea has `resize: none` making long replies cramped on mobile with
+      virtual keyboard. Enable resize or increase min-height on mobile. `[NEW]`
 
 ---
 
-## 5. Open Questions
+## 5. Wiki Comment Section — Responsive Analysis `[NEW]`
+
+### Current state: not deliberately responsive
+
+Unlike the forum (which hides its 130px sidebar at ≤768px and shows a
+compact inline author row), the wiki comment section has **zero media
+queries** in any of its CSS files (`wikipage.css`, `commentreply.css`).
+It relies on basic flex layouts that degrade gracefully but are not
+optimized for mobile.
+
+### Key issues
+
+| Issue | File | Line(s) |
+|-------|------|---------|
+| Fixed 64×64px avatar never shrinks on mobile | `wikipage.css` | 70-76 |
+| Comment row has no `flex-wrap` | `wikipage.css` | 60-64 |
+| Submit form avatar (64px) eats ~20% of 375px width | `wikipage.css` | 70-76, 128 |
+| Send button font-size 20px oversized on mobile | `wikipage.css` | 184 |
+| Reply textarea has `resize: none` — cramped on mobile with virtual keyboard | `commentreply.css` | 40 |
+| No compact mobile layout for comment metadata | `UserCommentComponent.tsx` | 34-39 |
+| No media queries anywhere in comment CSS | All comment files | — |
+
+### Recommendation
+
+Apply the same pattern used for the forum author sidebar:
+- **Mobile**: shrink avatar to 2em (~32px) or replace with an inline
+  "User said" line
+- **Desktop**: unchanged (64px avatar as currently)
+- Submit form: shrink avatar proportionally on mobile, reduce Send button font
+- Reply form: enable vertical resize or increase min-height on mobile
+
+See task list in section 4 for prioritized items. `[NEW]`
 
 1. **~~Sidebar on mobile~~ RESOLVED**: Hamburger drawer. Navigation moves
    into a new hamburger-triggered drawer component on mobile, rather than
@@ -284,3 +323,4 @@ boundary. The current ~850px breakpoint was arbitrary.
 | Implemented P1 | All 5 P1 tasks completed: hamburger drawer + sidebar collapse, root layout cap (1200px), fixed-width containers (profile/login/register), login/register margin-top fix, header slim bar. Also added wiki name in mobile header, hamburger slide animation. |
 | Quick wins | Thumbnail responsive sizing, forum+editor popup max-width fix, categories flex-wrap + mobile font. Added new findings from testing: forum grid header alignment, popup Quill toolbar trim, delete button as X, hamburger theme styling, category input clear bug. |
 | Implemented batch | Category input clear after submit, long name truncation + heading centering on categories page, forum grid header alignment, forum reply Quill toolbar trimmed to header+font+image, hamburger drawer themed with backend colors. Category input/add-row styling reverted after test feedback. |
+| Wiki comment analysis | Added full responsive audit of wiki comment section (section 5). Found zero media queries, fixed 64px avatar, no mobile adaptation. Added P2 tasks for fixes. |
