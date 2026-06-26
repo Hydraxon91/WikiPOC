@@ -18,7 +18,14 @@
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     overflow-y: scroll;
-  }
+}
+
+@media (max-width: 768px) {
+    .fp-custom-popup {
+        max-width: 90%;
+        min-width: 300px;
+    }
+}
 
   .fp-custom-popup::-webkit-scrollbar {
     width: 0; /* hide scrollbar for webkit browsers */

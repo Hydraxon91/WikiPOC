@@ -170,12 +170,20 @@ boundary. The current ~850px breakpoint was arbitrary.
 - [ ] **P2** Forum author sidebar → replace 130px fixed sidebar with
       inline "Posted by Username" line on narrow screens
 - [ ] **P2** Forum grid column collapse (4-col → stacked on mobile)
+- [ ] **P2** Forum grid header alignment — header row flex values don't
+      match data rows; causes visual mismatch `[NEW]`
 - [ ] **P2** Editor 50/50 split → single column on mobile, preview
-      behind a toggle button
-- [ ] **P2** Thumbnail sizing (fixed 200px → responsive)
-- [ ] **P2** Forum reply popup + editor popup `max-width: 40%` →
+      behind a toggle button — also blocks testing popup fixes
+- [ ] **P2** Simplify forum reply popup Quill toolbar — limit to H1-H2,
+      font, image only `[NEW]`
+- [ ] **P2** Delete category button as × icon on mobile `[NEW]`
+- [ ] **P2** Style hamburger drawer with backend theme colors (not
+      hardcoded white/black) `[NEW]`
+- [ ] **Bug** Category input doesn't clear after submitting new name `[NEW]`
+- [x] **P2** Thumbnail sizing (fixed 200px → responsive)
+- [x] **P2** Forum reply popup + editor popup `max-width: 40%` →
       responsive `[NEW]`
-- [ ] **P2** Categories page flex-wrap + font sizing `[NEW]`
+- [x] **P2** Categories page flex-wrap + font sizing `[NEW]`
 - [ ] **P3** Admin compare-update 50/50 → vertical stack on mobile
 - [ ] **P3** Breadcrumbs wrapping/truncation `[NEW]`
 - [ ] **P3** Style page preset card height + font select width `[NEW]`
@@ -268,3 +276,4 @@ boundary. The current ~850px breakpoint was arbitrary.
 | Decision pass | Resolved open questions #6 (header: slim bar with logo only on mobile) and #7 (login/register: full-height form on mobile, no card box) |
 | User decision pass | Resolved remaining open questions #1-4 with user input: sidebar → hamburger drawer (new component), forum author info → inline "Posted by Username" line, editor preview → toggle button, ultra-wide cap → flat `max-width: 1200px` on `.wrapAll`. Updated P1/P2 task list wording to match these concrete decisions. |
 | Implemented P1 | All 5 P1 tasks completed: hamburger drawer + sidebar collapse, root layout cap (1200px), fixed-width containers (profile/login/register), login/register margin-top fix, header slim bar. Also added wiki name in mobile header, hamburger slide animation. |
+| Quick wins | Thumbnail responsive sizing, forum+editor popup max-width fix, categories flex-wrap + mobile font. Added new findings from testing: forum grid header alignment, popup Quill toolbar trim, delete button as X, hamburger theme styling, category input clear bug. |

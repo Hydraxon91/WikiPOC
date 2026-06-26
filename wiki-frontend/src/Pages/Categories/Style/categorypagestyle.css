@@ -1,11 +1,13 @@
 .category-row{
     display: flex;
-    /* margin: 15px 0px 15px 0px; */
-    /* margin-bottom: 10px; */
-    /* margin-top: 10px; */
-    /* width: 50%; */
+    flex-wrap: wrap;
     border-bottom: 1px solid #a2a9b1;
-    /* border-top: 1px solid #a2a9b1; */
+}
+
+@media (max-width: 768px) {
+    .cat-text {
+        font-size: 1.2em;
+    }
 }
 
 .category-row span{

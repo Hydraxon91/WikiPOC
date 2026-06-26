@@ -37,6 +37,13 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     overflow-y: scroll;
   }
+
+@media (max-width: 768px) {
+    .custom-popup {
+        max-width: 90%;
+        min-width: 300px;
+    }
+}
   
   .custom-popup label {
     display: block;
