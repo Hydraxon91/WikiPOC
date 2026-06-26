@@ -55,6 +55,13 @@
     filter: brightness(80%);
 }
 
+@media (max-width: 768px) {
+    .wiki-navbar-button {
+        font-size: 0.85em;
+        padding: 0 0.5em;
+    }
+}
+
 .wiki-navbar-button-active{
     filter: brightness(60%);
 }
