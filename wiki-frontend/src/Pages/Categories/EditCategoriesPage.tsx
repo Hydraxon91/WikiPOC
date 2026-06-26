@@ -28,6 +28,7 @@ const EditCategoriesPage = ({ setAppCategories, jwtToken }) => {
             const addedCategory = await addCategory(newCategory, jwtToken);
             if (addedCategory) {
 
+                setNewCategory('');
                 const updatedCategories = [...categories, addedCategory];
                 const updatedCategorieNames = updatedCategories.map(category => category.categoryName);
                 setCategories(updatedCategories);

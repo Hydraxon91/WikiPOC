@@ -170,16 +170,16 @@ boundary. The current ~850px breakpoint was arbitrary.
 - [ ] **P2** Forum author sidebar → replace 130px fixed sidebar with
       inline "Posted by Username" line on narrow screens
 - [ ] **P2** Forum grid column collapse (4-col → stacked on mobile)
-- [ ] **P2** Forum grid header alignment — header row flex values don't
+- [x] **P2** Forum grid header alignment — header row flex values don't
       match data rows; causes visual mismatch `[NEW]`
 - [ ] **P2** Editor 50/50 split → single column on mobile, preview
       behind a toggle button — also blocks testing popup fixes
-- [ ] **P2** Simplify forum reply popup Quill toolbar — limit to H1-H2,
+- [x] **P2** Simplify forum reply popup Quill toolbar — limit to H1-H2,
       font, image only `[NEW]`
-- [ ] **P2** Delete category button as × icon on mobile `[NEW]`
-- [ ] **P2** Style hamburger drawer with backend theme colors (not
+- [x] **P2** Delete category button as × icon on mobile `[NEW]`
+- [x] **P2** Style hamburger drawer with backend theme colors (not
       hardcoded white/black) `[NEW]`
-- [ ] **Bug** Category input doesn't clear after submitting new name `[NEW]`
+- [x] **Bug** Category input doesn't clear after submitting new name `[NEW]`
 - [x] **P2** Thumbnail sizing (fixed 200px → responsive)
 - [x] **P2** Forum reply popup + editor popup `max-width: 40%` →
       responsive `[NEW]`
