@@ -120,8 +120,8 @@
 }
 
 .wikipage-comment-data p{
-    font-size: 14px;
-    margin: 0px;
+    font-size: 0.875rem;
+    margin: 0;
 }
 
 .wikipage-comment-data p a{
@@ -131,8 +131,7 @@
 
 .wikipage-comment-text p{
     margin: 0;
-    font-size: 14px;
-    text-align: justify;
+    font-size: 0.875rem;
 }
 
 .wikipage-hidden {
@@ -162,7 +161,7 @@
 .comment-write-counter {
     text-align: right;
     margin: 0;
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: bold;
 }
 
@@ -188,7 +187,7 @@
         height: 2em;
     }
     .btn-center {
-        font-size: 16px;
+        font-size: 1rem;
     }
 }
 
@@ -206,7 +205,7 @@
     text-decoration: none;
     height: 26px;
     line-height: 26px;
-    font-size: 20px;
+    font-size: 1.25rem;
     padding-left: 5px;
     padding-right: 5px;
     width: max-content;

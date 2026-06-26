@@ -82,7 +82,7 @@
     height: 2em;
     border-radius: 5px;
     font-family: Arial, sans-serif;
-    font-size: 10px; 
+    font-size: 0.625rem; 
     font-weight: bold;
     padding: 5px 10px;
     display: flex;
@@ -93,7 +93,7 @@
 
 .quote-button:before {
     content: '❝';
-    font-size: 18px;
+    font-size: 1.125rem;
     margin-right: 5px;
     padding-left: 1px;
 }
