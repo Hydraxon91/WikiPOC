@@ -116,10 +116,8 @@ function App() {
   const handleEdit = (updatedPage, images) => {
     return updateWikiPage(updatedPage, cookies["jwt_token"], decodedToken, images)
       .then((updatedWikiPage) => {
-        setWikiPageTitles((prevPages) =>
-          prevPages.map((page) => (page === updatedWikiPage.Title ? updatedWikiPage.Title : page))
-        );
-        return updatedWikiPage; // Ensure you're returning a value
+        setCurrentWikiPage({ wikiPage: updatedPage, images: images });
+        return updatedWikiPage;
       })
       .catch((error) => {
         console.error("Error updating WikiPage:", error);

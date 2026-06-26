@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ArticleEditor from './Components/ArticleEditor';
 import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
 import { useNotification } from '../../Components/NotificationProvider';
+import { buildContentFromParagraphs } from '../../utils/articleRenderer';
 import './Style/articleeditor.css';
 
 const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?: any; handleCreate?: any }) => {
@@ -20,24 +21,6 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
   const [usedImages, setUsedImages] = useState([]);
   const [legacyPage, setLegacyPage] = useState(false);
   const { showNotification } = useNotification();
-
-  const buildContentFromParagraphs = (paragraphs) => {
-    if (!paragraphs || paragraphs.length === 0) return '';
-    return paragraphs.map(p => {
-      let html = `<h2>${p.title}</h2>\n<p>${p.content}</p>`;
-      if (p.paragraphImage) {
-        html += `\n<div class="thumbnail right">
-  <div class="thumbnail-inner">
-    <img class="paragraph-image" src="${p.paragraphImage}" alt="logo">
-  </div>
-  <div class="wikipage-content-container">
-    <div>${p.paragraphImageText || ''}</div>
-  </div>
-</div>`;
-      }
-      return html;
-    }).join('\n');
-  };
 
   useEffect(() => {
     if (page) {
@@ -147,9 +130,8 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
 
     savePromise
       .then((data) => {
-        // setCurrentWikiPage(temporaryPage);
         showNotification('Successfully submitted page!')
-        navigate(`/`);
+        navigate(`/page/${encodeURIComponent(title)}`);
       })
       .catch((error) => {
         console.error("Error during save:", error);
