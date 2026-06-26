@@ -110,6 +110,16 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
                                         </div>
                                     </div>
                                     <div className="post-content-area" onClick={handleContentClick}>
+                                        <div className="post-mobile-author">
+                                            <DisplayProfileImageElement profilePicture={comment.userProfile?.profilePicture} classNameProp={'forum-mobile-profilepic'} />
+                                            <span className="post-mobile-author-name">
+                                                Posted by <Link to={`/profile/${comment.userProfile.userName}`}>{comment.userProfile.displayName}</Link>
+                                                &middot; Posts: {comment.userProfile?.postCount ?? 0}
+                                                {comment.userProfile?.joinDate && (
+                                                    <> &middot; Joined: {format(new Date(comment.userProfile.joinDate.replace(/Z$/, '') + 'Z'), 'MMM yyyy')}</>
+                                                )}
+                                            </span>
+                                        </div>
                                         <div className="post-meta">
                                             <span className="post-subject">#{postNumber} re: {post.postTitle}</span>
                                             <span className="post-date">Posted: {formatDate(comment.postDate)}</span>
