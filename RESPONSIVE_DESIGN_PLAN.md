@@ -193,12 +193,12 @@ boundary. The current ~850px breakpoint was arbitrary.
 - [x] **P3** Admin compare-update 50/50 → vertical stack on mobile
 - [x] **P3** Breadcrumbs wrapping/truncation `[NEW]`
 - [x] **P3** Style page preset card grid + responsive layout `[NEW]`
-- [ ] **P3** Font sizing review with `clamp()` or `rem` for high-res
+- [x] **P3** Font sizing review with `clamp()` or `rem` for high-res
 - [x] **P3** Mobile navigation improvements (hamburger for sidebar)
 - [x] **P4** Article navbar tab responsive sizing `[NEW]`
-- [ ] **P4** Profile page responsive refinement
-- [ ] **P4** High-DPI / retina rendering check
-- [ ] **P3** Login/register style consistency — use theme colors, responsive inputs, match rest of app styling `[NEW]`
+- [x] **P4** Profile page responsive refinement
+- [x] **P4** High-DPI / retina rendering check
+- [x] **P3** Login/register style consistency — use theme colors, responsive inputs, match rest of app styling `[NEW]`
 - [x] **P2** Wiki comment section responsive — 64px avatar shrinks to 2em on
       mobile, comment tab panel nesting fixed, `[NEW]`
 - [x] **P2** Wiki comment submit form — avatar/button sized for mobile, reply
