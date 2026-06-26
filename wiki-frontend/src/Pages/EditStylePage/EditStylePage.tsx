@@ -46,6 +46,7 @@ const EditStylePage = ({jwtToken}) =>{
     };
 
     return (
+        <div className="article" style={{backgroundColor: styles.articleColor, padding: '1.5em'}}>
         <div className="stylepage">
             {manualEdit ? 
                 <ManualEditStylesComponent handleChange={handleChange} newStyles={newStyles} handleLogoPictureChange={handleLogoPictureChange}/>
@@ -54,6 +55,7 @@ const EditStylePage = ({jwtToken}) =>{
             }
             <button onClick={handleUpdate}>Update</button>
             <button onClick={()=>setManualEdit(!manualEdit)}>{manualEdit ? "Presets" : "Manual Edit"}</button>
+        </div>
         </div>    
     )
 }

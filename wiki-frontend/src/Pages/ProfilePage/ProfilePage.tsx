@@ -32,7 +32,7 @@ const ProfilePage = () => {
     }, [decodedTokenContext]);
 
     return (
-        <div className="profilepage article" style={{backgroundColor: styles.articleColor}}>
+        <div className="profilepage article" style={{backgroundColor: styles.articleColor, '--accent-color': styles.articleColor, '--footer-link-color': styles.footerListLinkTextColor} as any}>
             {userProfile?.userName && <ProfileElement user={userProfile} canEdit={isYourProfile}/>}
         </div>
     )

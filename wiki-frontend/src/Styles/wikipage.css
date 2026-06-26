@@ -125,7 +125,7 @@
 }
 
 .wikipage-comment-data p a{
-    color: black;
+    color: var(--footer-link-color, black);
     text-decoration: none;
 }
 

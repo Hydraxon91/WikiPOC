@@ -127,25 +127,22 @@
 .edit-profile-button{
     text-align: center;
     text-decoration: none;
-    color: black;
-    font-family: serif;
-    /* transform: translateY(180%); */
+    color: #fff;
     width: 100%;
     height: 40px;
-    border-radius: 40px;
-    background: #fff;
-    border: none;
+    border-radius: 3px;
+    background: var(--accent-color, #526cad);
+    border: 1px solid var(--footer-link-color, #1d305e);
     outline: none;
     cursor: pointer;
-    font-size: 1.6em;
-    font-weight: 800;
+    font-size: 1em;
+    font-weight: bold;
 }
 .upload-picture-container{
     margin-top: 3%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: white;
 }
 
 .upload-picture-container button{
