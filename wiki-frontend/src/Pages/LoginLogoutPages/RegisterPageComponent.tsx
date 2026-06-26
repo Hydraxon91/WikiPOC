@@ -63,7 +63,7 @@ export default function RegisterPageComponent(){
     },[response])
 
     return(
-        <div className='register-form' style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '' }}>
+        <div className='register-form' style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '', '--text-color': styles.footerListTextColor, '--link-color': styles.footerListLinkTextColor, '--accent-color': styles.articleColor } as any}>
             <div>
                 <form onSubmit={HandleSubmit}>
                     <h2 className="register-text">Register</h2>

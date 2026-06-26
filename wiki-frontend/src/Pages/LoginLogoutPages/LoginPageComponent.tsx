@@ -55,7 +55,7 @@ export default function LoginPageComponent({handleLogin}){
     },[response])
 
     return(
-        <div className='login-form' style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '' }}>
+        <div className='login-form' style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '', '--text-color': styles.footerListTextColor, '--link-color': styles.footerListLinkTextColor, '--accent-color': styles.articleColor } as any}>
             <div>
                 <form onSubmit={HandleSubmit}>
                     <h2 className="login-text">Login</h2>
