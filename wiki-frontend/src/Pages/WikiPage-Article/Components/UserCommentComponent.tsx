@@ -3,7 +3,7 @@ import { formatDate } from '../../../utils/formatDate';
 import WikiPageReplyComponent from './WikiPageReplyComponent';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 
-const UserCommentComponent = ({ comment, user, jwtToken, handleCommentSubmit, postComment, page, index, showRepliesIndex, toggleRepliesIndex }) => {
+const UserCommentComponent = ({ comment, user, jwtToken, handleCommentSubmit, postComment, page, index, showRepliesIndex, toggleRepliesIndex, setFocusedCommentId, isFocused = false }) => {
     const [editingCommentIndex, setEditingCommentIndex] = useState(null);
     const [editedComment, setEditedComment] = useState("");
     const [showReplyBox, setShowReplyBox] = useState(false);
@@ -51,10 +51,10 @@ const UserCommentComponent = ({ comment, user, jwtToken, handleCommentSubmit, po
                 {showReplyBox && (
                     <WikiPageReplyComponent user={user} page={page} jwtToken={jwtToken} handleCommentSubmit={handleCommentSubmit} postComment={postComment} replyTo={comment} />
                 )}
-                {comment.replies && comment.replies.length > 0 &&
-                    <a href="#" onClick={() => toggleRepliesIndex(index)}>{showRepliesIndex[index] ? "Hide Replies" : "Show Replies"}</a>
+                {comment.replies && comment.replies.length > 0 && !isFocused &&
+                    <a href="#" onClick={(e) => { e.preventDefault(); if (setFocusedCommentId) setFocusedCommentId(comment.id); }}>View Replies ({comment.replies.length})</a>
                 }
-                {showRepliesIndex[index] && comment.replies && comment.replies.length > 0 &&
+                {(isFocused || showRepliesIndex[index]) && comment.replies && comment.replies.length > 0 &&
                     comment.replies.map((reply, replyIndex) => (
                         <div key={replyIndex} className='wikipage-reply'>
                             <div className='wikipage-reply-profile'>

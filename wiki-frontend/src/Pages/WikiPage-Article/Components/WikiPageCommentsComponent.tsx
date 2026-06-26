@@ -14,6 +14,7 @@ const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) =
     const [commentPage, setCommentPage] = useState(1);
     const [commentsPerPage] = useState(5);
     const [sortOrder, setSortOrder] = useState('newest');
+    const [focusedCommentId, setFocusedCommentId] = useState(null);
 
     useEffect(() => {
         setCommentPage(1);
@@ -64,31 +65,67 @@ const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) =
         );
     };
 
+    const focusedComment = focusedCommentId
+        ? currPage?.comments?.find(c => c.id === focusedCommentId)
+        : null;
+
     return (
         <div className={activeTab === 'comments' ? 'wikipage-component' : 'wikipage-component wikipage-hidden'}>
             {currPage && (
                 <div>
-                    <h3>Comments</h3>
-                    <select value={sortOrder} onChange={e => setSortOrder(e.target.value)} style={{ marginBottom: '0.5em', padding: '0.2em 0.5em', background: styles.articleColor, color: '#fff', border: 'none', borderRadius: '3px', fontSize: '90%', cursor: 'pointer' }}>
-                        <option value="newest">Newest first</option>
-                        <option value="oldest">Oldest first</option>
-                    </select>
-                    {user && <WikiPageSubmitCommentComponent user={user} page={currPage} jwtToken={jwtToken} handleCommentSubmit={handleCommentSubmit} postComment={postComment} />}
-                    {currentComments.map((comment, index) => (
-                        <UserCommentComponent
-                            key={comment.id}
-                            comment={comment}
-                            user={user}
-                            jwtToken={jwtToken}
-                            handleCommentSubmit={handleCommentSubmit}
-                            postComment={postComment}
-                            page={page}
-                            index={index}
-                            showRepliesIndex={showRepliesIndex}
-                            toggleRepliesIndex={toggleRepliesIndex}
-                        />
-                    ))}
-                    {renderPagination()}
+                    {focusedComment ? (
+                        <div className="focused-reply-view">
+                            <button onClick={() => setFocusedCommentId(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '0.9em', marginBottom: '0.5em', color: styles.footerListLinkTextColor }}>← Back to comments</button>
+                            <UserCommentComponent
+                                key={focusedComment.id}
+                                comment={focusedComment}
+                                user={user}
+                                jwtToken={jwtToken}
+                                handleCommentSubmit={handleCommentSubmit}
+                                postComment={postComment}
+                                page={page}
+                                index={-1}
+                                showRepliesIndex={showRepliesIndex}
+                                toggleRepliesIndex={toggleRepliesIndex}
+                                setFocusedCommentId={setFocusedCommentId}
+                                isFocused={true}
+                            />
+                        </div>
+                    ) : (
+                        <div className="comments-list-view">
+                            <h3>Comments</h3>
+                            <select value={sortOrder} onChange={e => setSortOrder(e.target.value)} style={{ marginBottom: '0.5em', padding: '0.2em 0.5em', background: styles.articleColor, color: '#fff', border: 'none', borderRadius: '3px', fontSize: '90%', cursor: 'pointer' }}>
+                                <option value="newest">Newest first</option>
+                                <option value="oldest">Oldest first</option>
+                            </select>
+                            {user && <WikiPageSubmitCommentComponent user={user} page={currPage} jwtToken={jwtToken} handleCommentSubmit={handleCommentSubmit} postComment={postComment} />}
+                            {currentComments.map((comment, index) => (
+                                <UserCommentComponent
+                                    key={comment.id}
+                                    comment={comment}
+                                    user={user}
+                                    jwtToken={jwtToken}
+                                    handleCommentSubmit={handleCommentSubmit}
+                                    postComment={postComment}
+                                    page={page}
+                                    index={index}
+                                    showRepliesIndex={showRepliesIndex}
+                                    toggleRepliesIndex={toggleRepliesIndex}
+                                    setFocusedCommentId={setFocusedCommentId}
+                                />
+                            ))}
+                            {renderPagination()}
+                        </div>
+                    )}
+                    <style>{`
+                        .focused-reply-view, .comments-list-view {
+                            animation: commentFadeIn 0.4s ease;
+                        }
+                        @keyframes commentFadeIn {
+                            from { opacity: 0; transform: translateY(8px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                    `}</style>
                 </div>
             )}
         </div>
