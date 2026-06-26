@@ -89,7 +89,7 @@ const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) =
     return (
         <div className={activeTab === 'comments' ? 'wikipage-component' : 'wikipage-component wikipage-hidden'}>
             {currPage && (
-                <div>
+                <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                     {focusedComment ? (
                         <div className="focused-reply-view">
                             <button onClick={() => setFocusedCommentId(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '0.9em', marginBottom: '0.5em', color: styles.footerListLinkTextColor }}>← Back to comments</button>
