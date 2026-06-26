@@ -15,6 +15,39 @@
   width: 50%;
 }
 
+.preview-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .articleeditor-container {
+    width: 100%;
+    margin-right: 0;
+  }
+  .articleeditor-container.hidden {
+    display: none;
+  }
+  .preview-toggle {
+    display: block;
+    width: 100%;
+    padding: 0.5em;
+    background: var(--article-color, #526cad);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 90%;
+    text-align: center;
+  }
+  .preview-container {
+    display: none;
+    width: 100%;
+    margin-left: 0;
+  }
+  .preview-container.visible {
+    display: block;
+  }
+}
+
 
 .custom-popup-overlay {
     position: fixed;
@@ -163,6 +196,14 @@
 
 input {
   margin-left: 5px;
+}
+
+.ql-editor .thumbnail {
+  background-color: #fff !important;
+}
+
+.ql-editor .thumbnail-inner {
+  background-color: #f5f5f5 !important;
 }
 
 .custom-file-upload{

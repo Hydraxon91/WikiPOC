@@ -20,6 +20,7 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
   const [images, setImages] = useState([]);
   const [usedImages, setUsedImages] = useState([]);
   const [legacyPage, setLegacyPage] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const { showNotification } = useNotification();
 
   useEffect(() => {
@@ -140,7 +141,7 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
 
   return (
     <div className='editor-container'>
-      <div className='articleeditor-container'>
+      <div className={`articleeditor-container${showPreview ? ' hidden' : ''}`}>
         <ArticleEditor 
           title={title} siteSub={siteSub} 
           roleNote={roleNote} content={content}
@@ -148,7 +149,10 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
           images={images} setImages={setImages} category={category}
         />
       </div>
-      <div className='preview-container'>
+      <button className="preview-toggle" onClick={() => setShowPreview(!showPreview)}>
+        {showPreview ? 'Edit' : 'Preview'}
+      </button>
+      <div className={`preview-container${showPreview ? ' visible' : ''}`}>
         <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images} setDecodedTitle={undefined}/>
       </div>
     </div>
