@@ -190,7 +190,7 @@ boundary. The current ~850px breakpoint was arbitrary.
 - [x] **P2** Forum reply popup + editor popup `max-width: 40%` →
       responsive `[NEW]`
 - [x] **P2** Categories page flex-wrap + font sizing `[NEW]`
-- [ ] **P3** Admin compare-update 50/50 → vertical stack on mobile
+- [x] **P3** Admin compare-update 50/50 → vertical stack on mobile
 - [ ] **P3** Breadcrumbs wrapping/truncation `[NEW]`
 - [ ] **P3** Style page preset card height + font select width `[NEW]`
 - [ ] **P3** Font sizing review with `clamp()` or `rem` for high-res
@@ -198,14 +198,15 @@ boundary. The current ~850px breakpoint was arbitrary.
 - [ ] **P4** Profile page responsive refinement
 - [ ] **P4** Article navbar tab responsive sizing `[NEW]`
 - [ ] **P4** High-DPI / retina rendering check
-- [ ] **P2** Wiki comment section responsive — 64px avatar never shrinks on mobile,
-      no media queries, no flex-wrap on rows. Add mobile adaptation like forum:
-      shrink avatar to 2em, or collapse to inline compact layout. `[NEW]`
-- [ ] **P2** Wiki comment submit form — avatar (64px) eats ~20% of 375px screen,
-      Send button font-size 20px too large. Shrink avatar and button on mobile. `[NEW]`
-- [ ] **P2** Wiki reply form — better than main comment (smaller 2em avatar) but
-      textarea has `resize: none` making long replies cramped on mobile with
-      virtual keyboard. Enable resize or increase min-height on mobile. `[NEW]`
+- [x] **P2** Wiki comment section responsive — 64px avatar shrinks to 2em on
+      mobile, comment tab panel nesting fixed, `[NEW]`
+- [x] **P2** Wiki comment submit form — avatar/button sized for mobile, reply
+      textarea resize enabled `[NEW]`
+- [x] **P2** Wiki comment pagination — 5 per page with sort (newest/oldest) `[NEW]`
+- [x] **P2** Wiki comment focused reply view — click "View Replies" transitions
+      to single-comment view with back button, fade animation `[NEW]`
+- [x] **P3** Footer gap reduction — removed `margin-top: auto`, compact padding,
+      wikipage min-height 77vh on mobile `[NEW]`
 
 ---
 
@@ -324,3 +325,4 @@ See task list in section 4 for prioritized items. `[NEW]`
 | Quick wins | Thumbnail responsive sizing, forum+editor popup max-width fix, categories flex-wrap + mobile font. Added new findings from testing: forum grid header alignment, popup Quill toolbar trim, delete button as X, hamburger theme styling, category input clear bug. |
 | Implemented batch | Category input clear after submit, long name truncation + heading centering on categories page, forum grid header alignment, forum reply Quill toolbar trimmed to header+font+image, hamburger drawer themed with backend colors. Category input/add-row styling reverted after test feedback. |
 | Wiki comment analysis | Added full responsive audit of wiki comment section (section 5). Found zero media queries, fixed 64px avatar, no mobile adaptation. Added P2 tasks for fixes. |
+| Comment fixes batch | Reply bug fix (EF relationship + re-fetch pattern), comments tab nesting fix, 64px→2em avatar on mobile, reply textarea resize enabled, footer gap reduction, comment pagination (5/page) with sort dropdown, focused reply view with fade animation. Admin compare-update 50/50 stacking also included. |
