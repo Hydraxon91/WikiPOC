@@ -191,13 +191,14 @@ boundary. The current ~850px breakpoint was arbitrary.
       responsive `[NEW]`
 - [x] **P2** Categories page flex-wrap + font sizing `[NEW]`
 - [x] **P3** Admin compare-update 50/50 → vertical stack on mobile
-- [ ] **P3** Breadcrumbs wrapping/truncation `[NEW]`
-- [ ] **P3** Style page preset card height + font select width `[NEW]`
+- [x] **P3** Breadcrumbs wrapping/truncation `[NEW]`
+- [x] **P3** Style page preset card grid + responsive layout `[NEW]`
 - [ ] **P3** Font sizing review with `clamp()` or `rem` for high-res
 - [x] **P3** Mobile navigation improvements (hamburger for sidebar)
+- [x] **P4** Article navbar tab responsive sizing `[NEW]`
 - [ ] **P4** Profile page responsive refinement
-- [ ] **P4** Article navbar tab responsive sizing `[NEW]`
 - [ ] **P4** High-DPI / retina rendering check
+- [ ] **P3** Login/register style consistency — use theme colors, responsive inputs, match rest of app styling `[NEW]`
 - [x] **P2** Wiki comment section responsive — 64px avatar shrinks to 2em on
       mobile, comment tab panel nesting fixed, `[NEW]`
 - [x] **P2** Wiki comment submit form — avatar/button sized for mobile, reply
@@ -281,7 +282,50 @@ See task list in section 4 for prioritized items. `[NEW]`
 
 ---
 
-## 6. Other Observations
+## 6. Login / Register Page — Style Consistency Audit `[NEW]`
+
+### Current issues
+- Gradient background uses `styles.bodyColor / styles.articleColor` (good)
+- All text, labels, links, and borders are hardcoded `#fff` — ignore
+  `styles.footerListTextColor` / `styles.footerListLinkTextColor`
+- Input boxes have fixed `width: 310px` — overflow risk on narrow screens
+- Login has no `backdrop-filter`; register has `backdrop-filter: blur(10px)` —
+  inconsistent
+
+### Proposed fixes (CSS-only: `login.css`, `register.css`)
+1. Replace hardcoded `#fff` text with `var(--footer-text-color)` and link colors
+   with `var(--footer-link-color)` to match the rest of the app
+2. `.login-inputbox`: `width: 310px` → `width: 100%; max-width: 310px`
+3. Button backgrounds: `#fff` → `var(--article-color)` to match other themed
+   buttons
+4. Remove `backdrop-filter: blur(10px)` from register form for consistency
+5. Remove Rick Roll "Forgot Password?" link or replace with a real page
+
+---
+
+## 7. Profile Page — Current State & Refinement Plan `[NEW]`
+
+### Current issues
+- `.profilepage` has `height: 50em` (800px) — very tall, leaves empty space
+- `.edit-displayname` and `.edit-profilepic` have fixed pixel widths that
+  don't scale on mobile
+- `.avatar-container` breakpoints (3000px/2000px/1999px) are dead CSS —
+  the class appears unused
+- Buttons use hardcoded `#fff` background instead of theme colors
+- Profile picture `backdrop-filter: blur(10px)` may not render well everywhere
+
+### Proposed fixes (CSS-only: `profilepage.css`)
+1. Remove `height: 50em` — let the page grow naturally
+2. Responsive inputs: `.edit-displayname width: 7em` → `max-width: 7em; width: 90%`,
+   `.edit-profilepic width: 20em` → `max-width: 20em; width: 90%`
+3. Remove dead `.avatar-container` CSS (lines 60-82) unless the class is
+   still in use
+4. Use `var(--article-color)` for button backgrounds instead of `#fff`
+5. Add `@media (max-width: 768px)` to reduce profile pic size and spacing
+
+---
+
+## 8. Other Observations
 
 - **`.wrapAll` inline override**: `MainPage.tsx:50` sets `width: 100vw`
   inline — this overrides the CSS `width: 90%` and should be removed.
@@ -326,3 +370,4 @@ See task list in section 4 for prioritized items. `[NEW]`
 | Implemented batch | Category input clear after submit, long name truncation + heading centering on categories page, forum grid header alignment, forum reply Quill toolbar trimmed to header+font+image, hamburger drawer themed with backend colors. Category input/add-row styling reverted after test feedback. |
 | Wiki comment analysis | Added full responsive audit of wiki comment section (section 5). Found zero media queries, fixed 64px avatar, no mobile adaptation. Added P2 tasks for fixes. |
 | Comment fixes batch | Reply bug fix (EF relationship + re-fetch pattern), comments tab nesting fix, 64px→2em avatar on mobile, reply textarea resize enabled, footer gap reduction, comment pagination (5/page) with sort dropdown, focused reply view with fade animation. Admin compare-update 50/50 stacking also included. |
+| Login/register audit + Profile plan | Added sections 6 (login/register style consistency) and 7 (profile page refinement) with detailed fixes. |
