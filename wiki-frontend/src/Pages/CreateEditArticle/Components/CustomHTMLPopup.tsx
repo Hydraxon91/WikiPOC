@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill-new';
 import UserImagesContainer from './UserImagesContainer';
-import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import '../Style/articleeditor.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css'
 
 const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) => {
-  const { styles } = useStyleContext();
   const [imageUrl, setImageUrl] = useState('');
   const [imageData, setImageData] = useState('');
   const [text, setText] = useState('Enter Text Here');
@@ -79,11 +77,13 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
 
 
   const handleConfirm = () => {
-    const thumbnailHtml = `<div class="thumbnail ${orientation}" style="background-color:${styles.articleRightColor || '#3c5fb8'};">
-      <div class="thumbnail-inner" style="background-color:${styles.articleRightInnerColor || '#2b4ea6'};">
-        <img class="paragraph-image" src="${imageData}" alt="Thumbnail"/>
+    const thumbnailHtml = `<div class="thumbnail ${orientation}">
+      <div class="thumbnail-inner">
+        <img class="paragraph-image" alt="logo" src="${imageData}">
       </div>
-      <div class="wikipage-content-container">${text}</div>
+      <div class="wikipage-content-container">
+        <div>${text}</div>
+      </div>
     </div>`;
     insertCustomHTML(thumbnailHtml);
     togglePopupVisibility();
@@ -97,12 +97,12 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
           <>
             <label className='article-preview'>Preview:</label>
             <div className='article-container'>
-              <div className='thumbnail mid'>
-                <div className='thumbnail-inner'>
-                  <img className="paragraph-image" src={imageData} alt="logo"/>
-                </div>
-                <div className="wikipage-content-container">{trimText(text)}</div>
+            <div className={`thumbnail ${orientation}`}>
+              <div className='thumbnail-inner'>
+                <img className="paragraph-image" src={imageData} alt="logo"/>
               </div>
+              <div className="wikipage-content-container">{trimText(text)}</div>
+            </div>
             </div>
           </>
         }

@@ -97,16 +97,18 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
       editor.insertEmbed(selection.index, 'thumbnail', JSON.stringify({ orientation, content }));
       return;
     }
-    const cursorPosition = lastSelection ? lastSelection.index + lastSelection.length : editor.getSelection();
-    editor.clipboard.dangerouslyPasteHTML(cursorPosition, htmlContent, 'user');
+    const selection = editor.getSelection(true);
+    if (!selection) return;
+    editor.clipboard.dangerouslyPasteHTML(selection.index, htmlContent, 'user');
   };
 
   const insertImageToEditor = (imageData) =>{
     const editor = quillRef.current?.getEditor();
     if (editor) {
-      const cursorPosition = lastSelection ? lastSelection.index + lastSelection.length : editor.getSelection();
+      const selection = editor.getSelection(true);
+      if (!selection) return;
       const insertData = `<img src="${imageData}" alt="${imageData}"/>`;
-      editor.clipboard.dangerouslyPasteHTML(cursorPosition, insertData, 'user');
+      editor.clipboard.dangerouslyPasteHTML(selection.index, insertData, 'user');
     } else {
       console.error('Could not get current selection.');
     }

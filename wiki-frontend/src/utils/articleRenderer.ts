@@ -60,30 +60,6 @@ export function replaceImageRefs(
   });
 }
 
-export function renderThumbnails(
-  htmlContent: string,
-  bodyColor?: string,
-  articleRightColor?: string,
-  articleRightInnerColor?: string,
-  images?: { name?: string; fileName?: string; dataURL?: string }[]
-): string {
-  if (!htmlContent) return htmlContent;
-
-  const thumbRegex = /<img\s+src="wiki-thumbnail:\/\/([^\/]+)\/([^"]*)"[^>]*\/?>/g;
-
-  return htmlContent.replace(thumbRegex, (match, orientation, imageRef) => {
-    const image = images?.find(i => i.name === imageRef || i.fileName === imageRef);
-    if (!image?.dataURL) return match;
-
-    return `<div class="thumbnail ${orientation}" style="background-color: ${articleRightColor || '#3c5fb8'};">
-      <div class="thumbnail-inner" style="background-color: ${articleRightInnerColor || '#2b4ea6'};">
-        <img class="paragraphImage" src="${image.dataURL}" alt="Thumbnail"/>
-      </div>
-      <div class="wikipage-content-container"></div>
-    </div>`;
-  });
-}
-
 export function addHeadingIds(htmlContent: string): string {
   if (!htmlContent) return htmlContent;
 

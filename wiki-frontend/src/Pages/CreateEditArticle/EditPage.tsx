@@ -26,11 +26,13 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
     return paragraphs.map(p => {
       let html = `<h2>${p.title}</h2>\n<p>${p.content}</p>`;
       if (p.paragraphImage) {
-        html += `\n<div class="thumbnail left" style="border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;line-height:1.4em;margin-bottom:2vh;width:200px;">
-  <div class="thumbnail-inner" style="border:1px solid #c8ccd1;padding:3px;font-size:94%;text-align:center;overflow:hidden;">
-    <img class="paragraphImage" src="${p.paragraphImage}" alt="${p.paragraphImageText || ''}" style="max-width:100%;max-height:11em;width:auto;height:auto;display:block;margin:0 auto;object-fit:contain;"/>
+        html += `\n<div class="thumbnail right">
+  <div class="thumbnail-inner">
+    <img class="paragraph-image" src="${p.paragraphImage}" alt="logo">
   </div>
-  <div class="wikipage-content-container" style="white-space:normal;word-wrap:break-word;">${p.paragraphImageText || ''}</div>
+  <div class="wikipage-content-container">
+    <div>${p.paragraphImageText || ''}</div>
+  </div>
 </div>`;
       }
       return html;
