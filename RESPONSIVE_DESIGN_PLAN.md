@@ -156,15 +156,17 @@ boundary. The current ~850px breakpoint was arbitrary.
 > because capping width without fixing the absolute-positioned sidebar
 > first could create layout issues on medium screens.
 
-- [ ] **P1** Build hamburger drawer component and collapse sidebar into
+- [x] **P1** Build hamburger drawer component and collapse sidebar into
       it below 768px — unblocks mobile entirely
-- [ ] **P1** Cap root layout width at `max-width: 1200px` on `.wrapAll`,
+- [x] **P1** Cap root layout width at `max-width: 1200px` on `.wrapAll`,
       remove `100vw` inline override — fixes ultra-wide stretch
-- [ ] **P1** Fix fixed-width AND fixed-height containers (profile 550×650,
+- [x] **P1** Fix fixed-width AND fixed-height containers (profile 550×650,
       login 450×550, register 450×600 → responsive width + auto height)
-- [ ] **P1** Fix login/register `margin-top: 30vh` → smaller on mobile
+- [x] **P1** Fix login/register `margin-top: 30vh` → smaller on mobile
       `[NEW]`
-- [ ] **P1** Reduce header height (`.top-header` 10em) on mobile `[NEW]`
+- [x] **P1** Reduce header height (`.top-header` 10em) on mobile `[NEW]`
+- [x] **P1** Add wiki name to mobile header, left-align hamburger+logo+title `[NEW]`
+- [x] **P1** Animate hamburger drawer slide-in/out `[NEW]`
 - [ ] **P2** Forum author sidebar → replace 130px fixed sidebar with
       inline "Posted by Username" line on narrow screens
 - [ ] **P2** Forum grid column collapse (4-col → stacked on mobile)
@@ -265,3 +267,4 @@ boundary. The current ~850px breakpoint was arbitrary.
 | Review pass | Verified all CSS-file claims against source; corrected login/register file paths (`src/Styles/` not `LoginPage/`); added `height` and `margin-top` issues for profile/login/register; added missing areas (header, categories, style page, breadcrumbs, article navbar, forum reply popup); added `float: left` dead CSS note on sidebar; reordered P1 tasks (sidebar before root cap); added 2 new open questions |
 | Decision pass | Resolved open questions #6 (header: slim bar with logo only on mobile) and #7 (login/register: full-height form on mobile, no card box) |
 | User decision pass | Resolved remaining open questions #1-4 with user input: sidebar → hamburger drawer (new component), forum author info → inline "Posted by Username" line, editor preview → toggle button, ultra-wide cap → flat `max-width: 1200px` on `.wrapAll`. Updated P1/P2 task list wording to match these concrete decisions. |
+| Implemented P1 | All 5 P1 tasks completed: hamburger drawer + sidebar collapse, root layout cap (1200px), fixed-width containers (profile/login/register), login/register margin-top fix, header slim bar. Also added wiki name in mobile header, hamburger slide animation. |
