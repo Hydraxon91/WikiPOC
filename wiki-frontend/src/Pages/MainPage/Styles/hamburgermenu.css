@@ -54,19 +54,16 @@
     cursor: pointer;
     color: #666;
     line-height: 1;
-}
-
-.hamburger-header-bar {
-    display: none;
+    z-index: 1002;
 }
 
 @media (max-width: 768px) {
     .hamburger-toggle {
         display: flex;
-    }
-    .hamburger-header-bar {
-        display: flex;
-        align-items: center;
-        padding: 0.5em 1em;
+        position: absolute;
+        top: 50%;
+        left: 0.5em;
+        transform: translateY(-50%);
+        z-index: 1100;
     }
 }
