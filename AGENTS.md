@@ -26,12 +26,25 @@
 
 ## Commit Discipline
 
-- **Never commit or push housekeeping/non-code files** (session handoffs,
-  notes, logs, scratch files) **without being explicitly asked.**
-- **Code changes that fix a confirmed bug or complete a requested task
-  SHOULD be committed as part of finishing that task**, following the
-  atomic-commit rules below — this is the expected default, not something
-  you need separate permission for each time.
+- **Always ask before committing or pushing, full stop — no exceptions.**
+  This applies to code changes too, not just housekeeping files. Before
+  running `git commit` or `git push`, show me what you're about to commit
+  (`git status` / `git diff --stat` and the proposed commit message) and
+  wait for my confirmation. Do not commit as an automatic last step of
+  finishing a task, even if the fix is small and confirmed working.
+- **Commit immediately after each individual fix is done and verified —
+  don't batch multiple fixes into one commit-at-the-end.** If a session
+  involves fixing 3 separate things, that's 3 separate commit proposals at
+  3 separate points, not one summary commit after everything is done. As
+  soon as one fix is complete and verified, stop and propose committing
+  just that fix before moving to the next one.
+- **A commit should touch the smallest number of files possible for the
+  one change it represents.** If you're about to commit and the file list
+  includes anything not directly required for the one fix being committed
+  (e.g. an unrelated formatting change, a file you touched while
+  investigating but didn't actually need to change), stop and either
+  revert that unrelated change or ask whether it should be a separate
+  commit.
 - **Keep commits atomic.** Each commit should represent one logical change —
   not a grab-bag of everything done in a session. If a task naturally splits
   into unrelated parts (e.g. "migrate assertions" + "fix unrelated .env typo"
@@ -46,21 +59,35 @@
 
 ## Docker Workflow
 
-- **For frontend-only changes**, use:
+- **Run Docker commands one at a time, not chained with `&&`.** Check the
+  result of each command before running the next. If a command fails,
+  stop and show the actual error — don't chain to the next step assuming
+  it succeeded.
+- **For frontend-only changes:**
   ```bash
   docker-compose up -d --build wiki-frontend
   ```
-  This rebuilds and restarts only the frontend container — backend and SQL
-  Server stay running untouched. Much faster than a full rebuild.
-- **Reserve the full rebuild** (`docker-compose down -v && docker-compose
-  build --no-cache && docker-compose up -d`) **for**: `package.json`/NuGet
-  dependency changes, Docker config changes (Dockerfile, docker-compose.yml),
-  or database schema changes requiring a fresh volume. Don't reach for this
+  (single command, no chaining needed for this one)
+- **If a full rebuild is genuinely needed**, run each step separately and
+  confirm it completed before the next:
+  ```bash
+  docker-compose down -v
+  ```
+  then
+  ```bash
+  docker-compose build --no-cache
+  ```
+  then
+  ```bash
+  docker-compose up -d
+  ```
+- **Reserve the full rebuild for**: `package.json`/NuGet dependency
+  changes, Docker config changes (Dockerfile, docker-compose.yml), or
+  database schema changes requiring a fresh volume. Don't reach for this
   by default for routine code edits.
-- **If a `docker-compose` command fails twice in a row, stop and report
-  the error instead of retrying with bigger/more destructive flags**
-  (e.g. don't escalate from a normal rebuild to `--no-cache` to `down -v`
-  hoping one of them works). Show the actual error and let the user decide.
+- **If any single command fails, stop and report the exact error** — do
+  not retry the same command, do not chain to the next step, and do not
+  escalate to a more destructive command hoping it works instead.
 
 ### Test Output Handling
 
