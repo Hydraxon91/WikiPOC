@@ -169,7 +169,8 @@ boundary. The current ~850px breakpoint was arbitrary.
 - [x] **P1** Animate hamburger drawer slide-in/out `[NEW]`
 - [ ] **P2** Forum author sidebar → replace 130px fixed sidebar with
       inline "Posted by Username" line on narrow screens
-- [ ] **P2** Forum grid column collapse (4-col → stacked on mobile)
+- [x] **P2** Forum grid column collapse (4-col → stacked on mobile)
+- [x] **P2** Forum grid header/data column width mismatch at iPad sizes (flex-basis: 0% + min-width: 0 fix)
 - [x] **P2** Forum grid header alignment — header row flex values don't
       match data rows; causes visual mismatch `[NEW]`
 - [ ] **P2** Editor 50/50 split → single column on mobile, preview
