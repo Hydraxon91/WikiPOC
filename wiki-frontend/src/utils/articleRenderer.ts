@@ -67,8 +67,28 @@ export function addHeadingIds(htmlContent: string): string {
   let subParCounter = 0;
 
   return htmlContent
+    .replace(/<h2>\s*<\/h2>/g, '')
+    .replace(/<h3>\s*<\/h3>/g, '')
     .replace(/<h2>/g, () => `<h2 id="main-${++parCounter}">`)
     .replace(/<h3>/g, () => `<h3 id="sub-${++subParCounter}">`);
+}
+
+export function buildContentFromParagraphs(paragraphs: any[]): string {
+  if (!paragraphs || paragraphs.length === 0) return '';
+  return paragraphs.map(p => {
+    let html = `<h2>${p.title}</h2>\n<p>${p.content}</p>`;
+    if (p.paragraphImage) {
+      html += `\n<div class="thumbnail right">
+  <div class="thumbnail-inner">
+    <img class="paragraph-image" src="${p.paragraphImage}" alt="logo">
+  </div>
+  <div class="wikipage-content-container">
+    <div>${p.paragraphImageText || ''}</div>
+  </div>
+</div>`;
+    }
+    return html;
+  }).join('\n');
 }
 
 export function processArticleContent(
@@ -86,6 +106,11 @@ export function processArticleContent(
   let content = replaceImageRefs(htmlContent, images);
   content = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
   content = addHeadingIds(content);
+
+  content = content.replace(
+    /(<h2[^>]*>[\s\S]*?)(?=<h2[^>]*>|$)/g,
+    '<div style="display: flow-root;">$1</div>'
+  );
 
   return content;
 }
