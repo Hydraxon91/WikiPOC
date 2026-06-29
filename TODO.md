@@ -69,12 +69,12 @@
 - [ ] **SMELL** 3 different slug implementations — consolidate into shared utility
 - [ ] **SMELL** 4 near-identical "load WikiPage + nested data" methods in `WikiPageRepository` — extract
 - [ ] **SMELL** `UsersController.cs:49` — `GetUserRoles` wrapped in async but consumed via `.Result` synchronously
-- [ ] **SMELL** `TokenServices.cs:22` — `DefaultOutboundClaimTypeMap.Clear()` called per request (process-global mutation)
-- [ ] **SMELL** `AuthService.cs:98-109 vs 140-145` — Two email-format validators disagreeing
+- [x] **SMELL** `TokenServices.cs:22` — `DefaultOutboundClaimTypeMap.Clear()` called per request (process-global mutation)
+- [x] **SMELL** `AuthService.cs:98-109 vs 140-145` — Two email-format validators disagreeing
 - [ ] **SMELL** `DbInitializer.cs` — 4 copies of "create profile, attach UserId" pattern; extract shared helper
 
 ### Security
-- [ ] **MED** `WikiDbContextDesignTimeFactory.cs:11` — Hardcoded plaintext password in connection string
+- [x] **MED** `WikiDbContextDesignTimeFactory.cs:11` — Hardcoded plaintext password in connection string
 
 ### Unused Imports
 - [x] `ForumCommentController.cs:5` — `using wiki_backend.Models`

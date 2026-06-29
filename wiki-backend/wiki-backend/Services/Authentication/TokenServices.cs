@@ -14,12 +14,12 @@ public class TokenServices : ITokenServices
 
     public TokenServices(IOptions<JwtSettings> jwtSettings)
     {
+        JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
         _jwtSettings = jwtSettings.Value;
     }
     
     public string CreateToken(ApplicationUser user, string role)
     {
-        JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
         var expiration = DateTime.UtcNow.AddMinutes(_jwtSettings.TokenTime);
         var token = CreateJwtToken(
             CreateClaims(user, role),

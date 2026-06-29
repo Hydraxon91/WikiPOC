@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.DatabaseServices;
@@ -139,9 +138,7 @@ return InvalidPassword(managedUser.Email!, managedUser.UserName!);
     }
     private bool IsValidEmail(string email)
     {
-        // Use a simple regular expression to validate email format
-        string pattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
-        return Regex.IsMatch(email, pattern);
+        return IsEmail(email);
     }
 }
 
