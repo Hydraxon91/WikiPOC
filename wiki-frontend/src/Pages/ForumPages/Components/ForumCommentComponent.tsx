@@ -12,7 +12,7 @@ import "../Styles/forumpost.css";
 
 const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMethod, resetQuotedPostId, refreshPost }) => {
     const { decodedTokenContext } = useUserContext();
-    const [user, setUser] = useState();
+    const [user, setUser] = useState<any>();
     const [currPost, setCurrPost] = useState(post);
     const { styles } = useStyleContext();
     const maxQuoteDepth = 1;

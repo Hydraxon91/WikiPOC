@@ -57,7 +57,7 @@ const CheckUserSubmittedPage = () => {
             {page &&
                 (
                     <>
-                        <WikiPage page={page} setDecodedSlug={undefined} cookies={cookies} disableNavbar={true}></WikiPage>
+                        <WikiPage page={page} setDecodedSlug={undefined} jwtToken={cookies?.jwt_token} disableNavbar={true}></WikiPage>
                     </>
                 )
             }

@@ -25,7 +25,7 @@ const useCommentsPerPage = () => {
 const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) => {
     const { decodedTokenContext } = useUserContext();
     const { styles } = useStyleContext();
-    const [user, setUser] = useState();
+    const [user, setUser] = useState<any>();
     const [currPage, setCurrPage] = useState(page);
     const [showRepliesIndex, setShowRepliesIndex] = useState({});
     const [commentPage, setCommentPage] = useState(1);

@@ -87,5 +87,28 @@ jobs:
       - name: Run unit tests
         run: dotnet test wiki-backend/UnitTests/UnitTests.csproj --no-build --configuration Release --logger trx
 
+      - name: Upload unit test results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: unit-test-results
+          path: wiki-backend/UnitTests/TestResults/*.trx
+
       - name: Run integration tests
         run: dotnet test wiki-backend/IntegrationTests/IntegrationTests.csproj --no-build --configuration Release --logger trx
+
+      - name: Upload integration test results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: integration-test-results
+          path: wiki-backend/IntegrationTests/TestResults/*.trx
+
+      - name: Test Reporter
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test Results
+          path: '**/TestResults/*.trx'
+          reporter: dotnet-trx
+          only-summary: 'true'
