@@ -202,6 +202,9 @@ void AddAuthentication()
     {
         options.AddPolicy(IdentityData.AdminUserPolicyName, p => p.RequireClaim(ClaimTypes.Role, IdentityData.AdminUserClaimName));
         options.AddPolicy(IdentityData.UserPolicyName, p => p.RequireClaim(ClaimTypes.Role, IdentityData.UserClaimName));
+        options.AddPolicy(IdentityData.ModeratorPolicyName, p => p.RequireAssertion(context =>
+            context.User.HasClaim(ClaimTypes.Role, IdentityData.AdminUserClaimName) ||
+            context.User.HasClaim(ClaimTypes.Role, IdentityData.ModeratorClaimName)));
     });
 }
 

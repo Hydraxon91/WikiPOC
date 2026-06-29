@@ -97,4 +97,30 @@ public class UsersController : ControllerBase
 
         return Ok("User deleted successfully");
     }
+
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [HttpPatch("UpdateRole/{userId}")]
+    public async Task<IActionResult> UpdateUserRole(string userId, [FromBody] UpdateRoleRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return NotFound("User not found");
+
+        var validRoles = new[] { "Admin", "Moderator", "User" };
+        if (!validRoles.Contains(request.Role))
+            return BadRequest("Invalid role. Must be Admin, Moderator, or User.");
+
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        await _userManager.RemoveFromRolesAsync(user, currentRoles);
+        var result = await _userManager.AddToRoleAsync(user, request.Role);
+
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
+
+        return Ok(new { Message = $"User role updated to {request.Role}" });
+    }
+}
+
+public class UpdateRoleRequest
+{
+    public string Role { get; set; } = "";
 }

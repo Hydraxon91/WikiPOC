@@ -30,6 +30,7 @@ public class DbInitializer : IHostedService
 
         await AddRolesAsync();
         await AddAdminAsync();
+        await AddModeratorAsync();
         await AddUserAsync();
         await SeedCategoriesAsync();
         await SeedWikiPagesAsync();
@@ -53,6 +54,11 @@ public class DbInitializer : IHostedService
         if (!await roleManager.RoleExistsAsync("User"))
         {
             await roleManager.CreateAsync(new IdentityRole("User"));
+        }
+
+        if (!await roleManager.RoleExistsAsync("Moderator"))
+        {
+            await roleManager.CreateAsync(new IdentityRole("Moderator"));
         }
     }
 
@@ -90,6 +96,49 @@ public class DbInitializer : IHostedService
                 await userManager.AddToRoleAsync(admin, "Admin");
                 adminProfile.UserId = admin.Id;
                 dbContext.UserProfiles.Update(adminProfile);
+                await dbContext.SaveChangesAsync();
+            }
+        }
+    }
+
+    private async Task AddModeratorAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+        var modUsername = _configuration["MODERATOR_USERNAME"];
+        if (string.IsNullOrEmpty(modUsername)) return;
+        var modEmail = _configuration["MODERATOR_EMAIL"];
+        if (string.IsNullOrEmpty(modEmail)) return;
+        var modPassword = _configuration["MODERATOR_PASSWORD"];
+        if (string.IsNullOrEmpty(modPassword)) return;
+        var modInDb = await userManager.FindByEmailAsync(modEmail);
+        if (modInDb == null)
+        {
+            var modProfile = new UserProfile()
+            {
+                UserName = modUsername,
+                DisplayName = "Moderator",
+                ProfilePicture = "default_pfp.png",
+                JoinDate = DateTime.UtcNow
+            };
+            await dbContext.UserProfiles.AddAsync(modProfile);
+            await dbContext.SaveChangesAsync();
+
+            var modUser = new ApplicationUser
+            {
+                UserName = modUsername,
+                Email = modEmail,
+                ProfileId = modProfile.Id
+            };
+
+            var modCreated = await userManager.CreateAsync(modUser, modPassword);
+
+            if (modCreated.Succeeded)
+            {
+                await userManager.AddToRoleAsync(modUser, "Moderator");
+                modProfile.UserId = modUser.Id;
+                dbContext.UserProfiles.Update(modProfile);
                 await dbContext.SaveChangesAsync();
             }
         }
