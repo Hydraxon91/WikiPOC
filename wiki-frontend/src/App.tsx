@@ -29,6 +29,7 @@ import UserRequestsPageComponent from "./Pages/UserSubmittedArticle-Update/UserR
 import CompareUpdatePage from "./Pages/UserSubmittedArticle-Update/CompareUpdatePage";
 import CheckUserSubmittedPage from "./Pages/UserSubmittedArticle-Update/CheckUserSubmittedPage";
 import UserManagementPage from "./Pages/UserManagement/UserManagementPage";
+import DebugRolesPage from "./Pages/DebugRoles/DebugRolesPage";
 import WikiPage from "./Pages/WikiPage-Article/WikiPage";
 import ProfilePage from "./Pages/ProfilePage/ProfilePage";
 import EditProfilePage from "./Pages/ProfilePage/EditProfilePage";
@@ -162,7 +163,7 @@ function App() {
                   </ProtectedRoute>
                 } />
                 <Route path="/edit-wiki" element={
-                  <ProtectedRoute roles={['Admin']} >
+                  <ProtectedRoute roles={['Owner']} >
                     <EditStylePage jwtToken={cookies["jwt_token"]}/>
                   </ProtectedRoute>
                 } />
@@ -227,6 +228,7 @@ function App() {
                 }/>
                 <Route path="/forum/:slug/:postSlug" element={<ForumPost jwtToken={cookies["jwt_token"]}
  />} />
+                <Route path="/debug/roles" element={<DebugRolesPage jwtToken={cookies["jwt_token"]} />} />
                 <Route path="*" element={<div style={{ padding: '2rem', textAlign: 'center' }}><h2>Page Not Found</h2></div>} />
               </Route>
             </Routes>

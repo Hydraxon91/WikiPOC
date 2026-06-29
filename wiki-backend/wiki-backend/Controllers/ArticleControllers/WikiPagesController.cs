@@ -273,7 +273,7 @@ public class WikiPagesController : ControllerBase
         return Ok(new { Message = "UserSubmittedWikiPage deleted successfully" });
     }
     
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
     [HttpGet("GetSubmittedPageTitles")]
     public async Task<ActionResult<IEnumerable<WikiPageTitleEntry>>> GetSubmittedPages()
     {
@@ -281,7 +281,7 @@ public class WikiPagesController : ControllerBase
 
         return Ok(titles);
     }
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
     [HttpGet("GetSubmittedPageById/{id:guid}")]
     public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedPageById(Guid id)
     {
@@ -297,7 +297,7 @@ public class WikiPagesController : ControllerBase
         return Ok(wikiPage);
     }
     
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
     [HttpGet("GetSubmittedUpdates")]
     public async Task<ActionResult<IEnumerable<string>>> GetSubmittedUpdates()
     {
@@ -305,7 +305,7 @@ public class WikiPagesController : ControllerBase
 
         return Ok(titles);
     }
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
     [HttpGet("GetSubmittedUpdateById/{id:guid}")]
     public async Task<ActionResult<UserSubmittedWikiPage>> GetSubmittedUpdateByTitle(Guid id)
     {

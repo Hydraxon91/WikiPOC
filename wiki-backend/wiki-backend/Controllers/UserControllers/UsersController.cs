@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,14 @@ public class UsersController : ControllerBase
     private async Task<List<string>> GetUserRoles(ApplicationUser user)
     {
         return (await _userManager.GetRolesAsync(user)).ToList();
+    }
+
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [HttpGet("DebugPrincipal")]
+    public IActionResult DebugPrincipal()
+    {
+        var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+        return Ok(new { claims, isAuth = User.Identity?.IsAuthenticated });
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
@@ -100,7 +109,9 @@ public class UsersController : ControllerBase
         if (!allRoles.Contains(request.Role))
             return BadRequest("Invalid role. Must be Owner, Admin, Moderator, or User.");
 
-        var currentUser = await _userManager.GetUserAsync(User);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(currentUserId)) return Unauthorized();
+        var currentUser = await _userManager.FindByIdAsync(currentUserId);
         if (currentUser == null) return Unauthorized();
 
         var currentUserRoles = await _userManager.GetRolesAsync(currentUser);

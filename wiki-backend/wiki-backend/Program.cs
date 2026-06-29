@@ -200,13 +200,12 @@ void AddAuthentication()
     
     builder.Services.AddAuthorization(options =>
     {
-        options.AddPolicy(IdentityData.AdminUserPolicyName, p => p.RequireAssertion(context =>
-            context.User.HasClaim(ClaimTypes.Role, IdentityData.AdminUserClaimName) ||
-            context.User.HasClaim(ClaimTypes.Role, IdentityData.OwnerClaimName)));
-        options.AddPolicy(IdentityData.UserPolicyName, p => p.RequireClaim(ClaimTypes.Role, IdentityData.UserClaimName));
+        options.AddPolicy(IdentityData.AdminUserPolicyName, p => p.RequireClaim(ClaimTypes.Role, IdentityData.AdminUserClaimName, IdentityData.OwnerClaimName));
+        options.AddPolicy(IdentityData.UserPolicyName, p => p.RequireClaim(ClaimTypes.Role, IdentityData.UserClaimName, IdentityData.ModeratorClaimName, IdentityData.OwnerClaimName));
         options.AddPolicy(IdentityData.ModeratorPolicyName, p => p.RequireAssertion(context =>
             context.User.HasClaim(ClaimTypes.Role, IdentityData.AdminUserClaimName) ||
-            context.User.HasClaim(ClaimTypes.Role, IdentityData.ModeratorClaimName)));
+            context.User.HasClaim(ClaimTypes.Role, IdentityData.ModeratorClaimName) ||
+            context.User.HasClaim(ClaimTypes.Role, IdentityData.OwnerClaimName)));
         options.AddPolicy(IdentityData.OwnerPolicyName, p => p.RequireClaim(ClaimTypes.Role, IdentityData.OwnerClaimName));
     });
 }

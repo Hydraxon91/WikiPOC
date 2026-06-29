@@ -19,6 +19,7 @@ public class TokenServices : ITokenServices
     
     public string CreateToken(ApplicationUser user, string role)
     {
+        JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
         var expiration = DateTime.UtcNow.AddMinutes(_jwtSettings.TokenTime);
         var token = CreateJwtToken(
             CreateClaims(user, role),

@@ -87,11 +87,13 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
             Create New Page
           </Link>
         </li>
+        {(role === "Owner") && (
         <li>
           <Link key="edit-wiki-link" to="/edit-wiki">
             Edit Wiki
           </Link>
         </li>
+        )}
         <li>
           <Link key="edit-categories" to="/categories/edit">
             Edit Categories

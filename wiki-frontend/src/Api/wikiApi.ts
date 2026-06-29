@@ -19,10 +19,11 @@ export const getWikiPageById = async (id) => {
 export const createWikiPage = async (newPage, token, decodedToken, images) => {
   var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
   var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-  var url = role==="Admin"? `/api/WikiPages/admin` : `/api/WikiPages/user`;
+  var isAdmin = role === "Admin" || role === "Owner";
+  var url = isAdmin ? `/api/WikiPages/admin` : `/api/WikiPages/user`;
 
   const formData = new FormData();
-  if (role !== "Admin") {
+  if (!isAdmin) {
     formData.append('wikiPageWithImagesInputModel.IsNewPage', 'true')
     formData.append('wikiPageWithImagesInputModel.Approved', 'false')
     formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
@@ -47,9 +48,10 @@ export const createWikiPage = async (newPage, token, decodedToken, images) => {
 export const updateWikiPage = async (updatedPage, token, decodedToken, images) => {
     var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
     var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-    var url = role==="Admin"? `/api/WikiPages/admin/${updatedPage.id}` : `/api/WikiPages/userUpdate/${updatedPage.id}`;
+    var isAdmin = role === "Admin" || role === "Owner";
+    var url = isAdmin ? `/api/WikiPages/admin/${updatedPage.id}` : `/api/WikiPages/userUpdate/${updatedPage.id}`;
     const formData = new FormData();
-    if (role !== "Admin") {
+    if (!isAdmin) {
       formData.append('wikiPageWithImagesInputModel.WikiPageId', updatedPage.id)
       formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
     }
