@@ -60,6 +60,11 @@ public class DbInitializer : IHostedService
         {
             await roleManager.CreateAsync(new IdentityRole("Moderator"));
         }
+
+        if (!await roleManager.RoleExistsAsync("Owner"))
+        {
+            await roleManager.CreateAsync(new IdentityRole("Owner"));
+        }
     }
 
     private async Task AddAdminAsync()
@@ -93,7 +98,7 @@ public class DbInitializer : IHostedService
 
             if (adminCreated.Succeeded)
             {
-                await userManager.AddToRoleAsync(admin, "Admin");
+                await userManager.AddToRoleAsync(admin, "Owner");
                 adminProfile.UserId = admin.Id;
                 dbContext.UserProfiles.Update(adminProfile);
                 await dbContext.SaveChangesAsync();

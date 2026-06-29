@@ -28,6 +28,7 @@ import RegisterPageComponent from "./Pages/LoginLogoutPages/RegisterPageComponen
 import UserRequestsPageComponent from "./Pages/UserSubmittedArticle-Update/UserRequestsPageComponent";
 import CompareUpdatePage from "./Pages/UserSubmittedArticle-Update/CompareUpdatePage";
 import CheckUserSubmittedPage from "./Pages/UserSubmittedArticle-Update/CheckUserSubmittedPage";
+import UserManagementPage from "./Pages/UserManagement/UserManagementPage";
 import WikiPage from "./Pages/WikiPage-Article/WikiPage";
 import ProfilePage from "./Pages/ProfilePage/ProfilePage";
 import EditProfilePage from "./Pages/ProfilePage/EditProfilePage";
@@ -176,23 +177,23 @@ function App() {
                   </PublicRoute>
                 } />
                 <Route path="/user-submissions" element={
-                  <ProtectedRoute roles={['Admin']} >
+                  <ProtectedRoute roles={['Admin', 'Moderator']} >
                     <UserRequestsPageComponent/>
                   </ProtectedRoute>
                 } />
                 <Route path="/user-submissions/:id" element={
-                  <ProtectedRoute roles={['Admin']} >
+                  <ProtectedRoute roles={['Admin', 'Moderator']} >
                     <CheckUserSubmittedPage/>
                   </ProtectedRoute>
                 } />
                 <Route path="/user-updates" element={
-                  <ProtectedRoute roles={['Admin']} >
+                  <ProtectedRoute roles={['Admin', 'Moderator']} >
                     <UserRequestsPageComponent/>
                   </ProtectedRoute>
                 } />
 
                 <Route path="/user-updates/:id" element={
-                  <ProtectedRoute  roles={['Admin']} >
+                  <ProtectedRoute  roles={['Admin', 'Moderator']} >
                     <CompareUpdatePage/>
                   </ProtectedRoute>
                 } />
@@ -209,6 +210,11 @@ function App() {
 />
                   </ProtectedRoute>
                 }/>
+                <Route path="/admin/users" element={
+                  <ProtectedRoute roles={['Admin']}>
+                    <UserManagementPage jwtToken={cookies["jwt_token"]} />
+                  </ProtectedRoute>
+                } />
                 <Route path="/categories/:category" element={<CategoryPageComponent pages={wikiPageTitles} categories={categories} />} />
                 <Route path="/forum" element={<ForumLandingPage />} />
                 <Route path="/forum/:slug" element={<ForumPage jwtToken={cookies["jwt_token"]}

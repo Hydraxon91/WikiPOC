@@ -15,7 +15,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
     if (decodedTokenContext) {
       var role = decodedTokenContext["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
       setRole(role);
-      if (role === "Admin") {
+      if (role === "Admin" || role === "Owner") {
         fetchNewPageTitles(jwtToken["jwt_token"]);
         fetchUpdatePageTitles(jwtToken["jwt_token"]);
       }
@@ -41,7 +41,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
   };
 
   const UserTools = () =>{
-    return role==="Admin" ?
+    return (role==="Admin" || role==="Owner") ?
      (
       <>
         <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Admin Tools</h3>
@@ -69,6 +69,11 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
               <li>
                 <Link key="edit-categories" to="/categories/edit">
                   Edit Categories
+                </Link>
+              </li>
+              <li>
+                <Link key="manage-users" to="/admin/users">
+                  Manage Users
                 </Link>
               </li>
               <li>

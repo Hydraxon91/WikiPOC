@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Identity;
 using wiki_backend.Models;
 
 namespace wiki_backend.Controllers;
-
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -21,13 +21,25 @@ public class UsersController : ControllerBase
         _userManager = userManager;
         _profileRepository = profileRepository;
     }
-    
+
+    private async Task<List<string>> GetUserRoles(ApplicationUser user)
+    {
+        return (await _userManager.GetRolesAsync(user)).ToList();
+    }
+
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetUsers()
     {
-        var users = _userManager.Users.ToList();
-        return Ok(users);
+        var users = await _userManager.Users.ToListAsync();
+        var usersWithRoles = users.Select(user => new
+        {
+            user.Id,
+            user.UserName,
+            user.Email,
+            Roles = GetUserRoles(user).Result
+        }).ToList();
+        return Ok(usersWithRoles);
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
@@ -35,25 +47,18 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> GetUserById(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
-
-        if (user == null)
-            return NotFound();
-
-        return Ok(user);
+        if (user == null) return NotFound();
+        var roles = await GetUserRoles(user);
+        return Ok(new { user.Id, user.UserName, user.Email, Roles = roles });
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost("CreateUser")]
     public async Task<IActionResult> CreateUser([FromBody] ApplicationUser model)
     {
-        if (model == null)
-            return BadRequest("User data is null");
-
+        if (model == null) return BadRequest("User data is null");
         var result = await _userManager.CreateAsync(model);
-
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-
+        if (!result.Succeeded) return BadRequest(result.Errors);
         return Ok(model);
     }
 
@@ -62,18 +67,11 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> UpdateUser(string id, [FromBody] ApplicationUser model)
     {
         var user = await _userManager.FindByIdAsync(id);
-
-        if (user == null)
-            return NotFound();
-
+        if (user == null) return NotFound();
         user.UserName = model.UserName;
         user.Email = model.Email;
-
         var result = await _userManager.UpdateAsync(user);
-
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-
+        if (!result.Succeeded) return BadRequest(result.Errors);
         return Ok(user);
     }
 
@@ -82,19 +80,12 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> DeleteUser(string id)
     {
         var user = await _userManager.FindByIdAsync(id);
-
-        if (user == null)
-            return NotFound();
-        
+        if (user == null) return NotFound();
         var userProfile = await _profileRepository.GetByUserIdAsync(id);
         if (userProfile != null)
             await _profileRepository.RemoveAsync(userProfile.Id);
-        
         var result = await _userManager.DeleteAsync(user);
-
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-
+        if (!result.Succeeded) return BadRequest(result.Errors);
         return Ok("User deleted successfully");
     }
 
@@ -102,21 +93,54 @@ public class UsersController : ControllerBase
     [HttpPatch("UpdateRole/{userId}")]
     public async Task<IActionResult> UpdateUserRole(string userId, [FromBody] UpdateRoleRequest request)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return NotFound("User not found");
+        var targetUser = await _userManager.FindByIdAsync(userId);
+        if (targetUser == null) return NotFound("User not found");
 
-        var validRoles = new[] { "Admin", "Moderator", "User" };
-        if (!validRoles.Contains(request.Role))
-            return BadRequest("Invalid role. Must be Admin, Moderator, or User.");
+        var allRoles = new[] { "Owner", "Admin", "Moderator", "User" };
+        if (!allRoles.Contains(request.Role))
+            return BadRequest("Invalid role. Must be Owner, Admin, Moderator, or User.");
 
+        var currentUser = await _userManager.GetUserAsync(User);
+        if (currentUser == null) return Unauthorized();
+
+        var currentUserRoles = await _userManager.GetRolesAsync(currentUser);
+
+        // Owner can change any role
+        if (currentUserRoles.Contains("Owner"))
+        {
+            // Prevent the last Owner from being demoted
+            if (request.Role != "Owner")
+            {
+                var ownerCount = (await _userManager.GetUsersInRoleAsync("Owner")).Count;
+                if (ownerCount <= 1 && currentUser.Id == userId)
+                    return BadRequest("Cannot demote the last Owner.");
+            }
+            await SetUserRole(targetUser, request.Role);
+            return Ok(new { Message = $"User role updated to {request.Role}" });
+        }
+
+        // Admin can only set Moderator or User, and cannot change other Admins or Owners
+        if (currentUserRoles.Contains("Admin"))
+        {
+            var targetRoles = await _userManager.GetRolesAsync(targetUser);
+            if (targetRoles.Contains("Owner") || targetRoles.Contains("Admin"))
+                return Forbid();
+
+            if (request.Role != "Moderator" && request.Role != "User")
+                return BadRequest("Admins can only assign Moderator or User roles.");
+
+            await SetUserRole(targetUser, request.Role);
+            return Ok(new { Message = $"User role updated to {request.Role}" });
+        }
+
+        return Forbid();
+    }
+
+    private async Task SetUserRole(ApplicationUser user, string newRole)
+    {
         var currentRoles = await _userManager.GetRolesAsync(user);
         await _userManager.RemoveFromRolesAsync(user, currentRoles);
-        var result = await _userManager.AddToRoleAsync(user, request.Role);
-
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-
-        return Ok(new { Message = $"User role updated to {request.Role}" });
+        await _userManager.AddToRoleAsync(user, newRole);
     }
 }
 

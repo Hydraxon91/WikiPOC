@@ -8,4 +8,6 @@ public class IdentityData
     public const string UserPolicyName = "User";
     public const string ModeratorClaimName = "Moderator";
     public const string ModeratorPolicyName = "Moderator";
+    public const string OwnerClaimName = "Owner";
+    public const string OwnerPolicyName = "Owner";
 }
