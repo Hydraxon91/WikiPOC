@@ -15,7 +15,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
     if (decodedTokenContext) {
       var role = decodedTokenContext["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
       setRole(role);
-      if (role === "Admin" || role === "Owner") {
+      if (role === "Admin" || role === "Owner" || role === "Moderator") {
         fetchNewPageTitles(jwtToken["jwt_token"]);
         fetchUpdatePageTitles(jwtToken["jwt_token"]);
       }
@@ -40,68 +40,94 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
     }
   };
 
-  const UserTools = () =>{
-    return (role==="Admin" || role==="Owner") ?
-     (
-      <>
-        <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Admin Tools</h3>
-          <ul>
-              <li>
-                <Link key="approve-new-page-link" to="/user-submissions">
-                  Pages Awaiting for Approval: {pagesWaitingForApproval}
-                </Link>
-              </li>
-              <li>
-                <Link key="approve-page-update-link" to="/user-updates">
-                  Updates Awaiting for Approval: {updatesWaitingForApproval}
-                </Link>
-              </li>
-              <li>
-                <Link key="create-new-page-link" to="/create">
-                  Create New Page
-                </Link>
-              </li>
-              <li>
-                <Link key="edit-wiki-link" to="/edit-wiki">
-                  Edit Wiki
-                </Link>
-              </li>
-              <li>
-                <Link key="edit-categories" to="/categories/edit">
-                  Edit Categories
-                </Link>
-              </li>
-              <li>
-                <Link key="manage-users" to="/admin/users">
-                  Manage Users
-                </Link>
-              </li>
-              <li>
-                <button onClick={() => handleLogout(updateUser)} className="logout-button">
-                  Logout
-                </button>
-              </li>
-        </ul>
-      </>
-    ) :
-    (
-      <>
-        <h3 style={{marginBottom:"5px", fontSize:'110%'}}>User Tools</h3>
-          <ul>
-              <li>
-                <Link key="create-new-page-link" to="/create">
-                  Create New Page
-                </Link>
-              </li>
-              <li>
-                <button onClick={() => handleLogout(updateUser)} className="logout-button">
-                  Logout
-                </button>
-              </li>
-        </ul>
-      </>
-    )
-  }
+  const ModeratorTools = () => (
+    <>
+      <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Admin Tools</h3>
+      <ul>
+        <li>
+          <Link key="approve-new-page-link" to="/user-submissions">
+            Pages Awaiting for Approval: {pagesWaitingForApproval}
+          </Link>
+        </li>
+        <li>
+          <Link key="approve-page-update-link" to="/user-updates">
+            Updates Awaiting for Approval: {updatesWaitingForApproval}
+          </Link>
+        </li>
+        <li>
+          <Link key="create-new-page-link" to="/create">
+            Create New Page
+          </Link>
+        </li>
+        <li>
+          <button onClick={() => handleLogout(updateUser)} className="logout-button">
+            Logout
+          </button>
+        </li>
+      </ul>
+    </>
+  );
+
+  const AdminTools = () => (
+    <>
+      <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Admin Tools</h3>
+      <ul>
+        <li>
+          <Link key="approve-new-page-link" to="/user-submissions">
+            Pages Awaiting for Approval: {pagesWaitingForApproval}
+          </Link>
+        </li>
+        <li>
+          <Link key="approve-page-update-link" to="/user-updates">
+            Updates Awaiting for Approval: {updatesWaitingForApproval}
+          </Link>
+        </li>
+        <li>
+          <Link key="create-new-page-link" to="/create">
+            Create New Page
+          </Link>
+        </li>
+        <li>
+          <Link key="edit-wiki-link" to="/edit-wiki">
+            Edit Wiki
+          </Link>
+        </li>
+        <li>
+          <Link key="edit-categories" to="/categories/edit">
+            Edit Categories
+          </Link>
+        </li>
+        <li>
+          <Link key="manage-users" to="/admin/users">
+            Manage Users
+          </Link>
+        </li>
+        <li>
+          <button onClick={() => handleLogout(updateUser)} className="logout-button">
+            Logout
+          </button>
+        </li>
+      </ul>
+    </>
+  );
+
+  const UserTools = () => (
+    <>
+      <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>User Tools</h3>
+      <ul>
+        <li>
+          <Link key="create-new-page-link" to="/create">
+            Create New Page
+          </Link>
+        </li>
+        <li>
+          <button onClick={() => handleLogout(updateUser)} className="logout-button">
+            Logout
+          </button>
+        </li>
+      </ul>
+    </>
+  );
 
   const LoginTools = () => {
     return(
@@ -142,7 +168,7 @@ return (
           </Link>
         </li>
       </ul>
-      {decodedTokenContext ? UserTools() : LoginTools()}
+      {decodedTokenContext ? (role === "Owner" || role === "Admin" ? <AdminTools /> : role === "Moderator" ? <ModeratorTools /> : <UserTools />) : <LoginTools />}
     </div>
     
   </div>
