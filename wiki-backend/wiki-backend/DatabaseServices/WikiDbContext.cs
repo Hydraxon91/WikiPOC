@@ -29,7 +29,6 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<StyleModel> Styles { get; set; }
     public DbSet<UserProfile> UserProfiles { get; set; }
     public DbSet<UserComment> UserComments { get; set; }
-    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<ForumPost> ForumPosts { get; set; }
     public DbSet<ForumTopic> ForumTopics { get; set; }

@@ -25,9 +25,4 @@ public class WikiPageWithImagesInputModel
     
     //Image data
     public ICollection<ImageFormModel>? Images { get; set; }
-    
-    public override string ToString()
-    {
-        return $"Title: {Title}, SiteSub: {SiteSub}, RoleNote: {RoleNote}, Content: {Content}, Category: {CategoryId}, PostDate: {PostDate}, LastUpdateDate: {LastUpdateDate}, WikiPageId: {WikiPageId}, SubmittedBy: {SubmittedBy}, Approved: {Approved}, IsNewPage: {IsNewPage}, Images: {Images?.Count ?? 0}";
-    }
 }

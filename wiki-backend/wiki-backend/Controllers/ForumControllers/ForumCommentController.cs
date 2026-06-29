@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
-using wiki_backend.Models;
 using wiki_backend.Models.ForumModels;
 using wiki_backend.Services;
 

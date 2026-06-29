@@ -56,11 +56,11 @@
 ### Dead Code / Cleanup
 - [x] **DEAD** `IntegrationTests/Mocks/MockTokenServices.cs` — never referenced
 - [x] **DEAD** `IntegrationTests/Mocks/TestUserStore.cs` — never referenced
-- [ ] **DEAD** `UserAuthorizationService.cs:29-36` — `IsUserModerator()` defined, never called
+- [x] **DEAD** `UserAuthorizationService.cs:29-36` — `IsUserModerator()` defined, never called
 - [ ] **DEAD** `WikiPageTitleEntry.cs:3` — `Slug` parameter never passed by any caller
 - [x] **DEAD** `Program.cs:162-163` — Duplicate `AddControllers()` / `AddEndpointsApiExplorer()` calls
-- [ ] **DEAD** `WikiDbContext.cs:32` — `DbSet<ApplicationUser> ApplicationUsers` never queried
-- [ ] **DEAD** 8 unused `ToString()` overrides across model classes (debugging leftovers)
+- [x] **DEAD** `WikiDbContext.cs:32` — `DbSet<ApplicationUser> ApplicationUsers` never queried
+- [x] **DEAD** 8 unused `ToString()` overrides across model classes (debugging leftovers)
 - [ ] **DEAD** `WikiPagesController.cs:61-73` — `GetWikiPageParagraphs` endpoint, frontend doesn't call it
 - [ ] **DEAD** `ParagraphController` (entirely) — no frontend consumer
 - [ ] **DEAD** `UsersController.cs:55-62,65-72,75-85,88-99` — `GetUserById`, `CreateUser`, `UpdateUser`, `DeleteUser` — frontend never calls them
@@ -77,10 +77,10 @@
 - [ ] **MED** `WikiDbContextDesignTimeFactory.cs:11` — Hardcoded plaintext password in connection string
 
 ### Unused Imports
-- [ ] `ForumCommentController.cs:5` — `using wiki_backend.Models`
-- [ ] `ForumPostController.cs:5` — `using wiki_backend.Models`
-- [ ] `UserCommentController.cs:5` — `using wiki_backend.Identity`
-- [ ] `WikiPageRepository.cs:2` — `using System.Text`
+- [x] `ForumCommentController.cs:5` — `using wiki_backend.Models`
+- [x] `ForumPostController.cs:5` — `using wiki_backend.Models`
+- [x] `UserCommentController.cs:5` — `using wiki_backend.Identity`
+- [x] `WikiPageRepository.cs:2` — `using System.Text`
 
 ### Commented-out Dead Code
 - [ ] `UserProfileRepository.cs:53-57` — commented `AddAsync` stub

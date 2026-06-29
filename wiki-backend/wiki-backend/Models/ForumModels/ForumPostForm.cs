@@ -8,9 +8,4 @@ public class ForumPostForm
     public string ForumTopicId { get; set; } = null!;
     public string UserId { get; set; } = null!;
     public string UserName { get; set; } = null!;
-    
-    public override string ToString()
-    {
-        return $"PostTitle: {PostTitle}, Content: {Content}, PostDate: {PostDate}, ForumTopicId: {ForumTopicId}, UserId: {UserId}, UserName: {UserName}";
-    }
 }
