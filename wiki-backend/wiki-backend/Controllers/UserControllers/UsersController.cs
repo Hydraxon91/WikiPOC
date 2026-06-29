@@ -32,12 +32,14 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> GetUsers()
     {
         var users = await _userManager.Users.ToListAsync();
-        var usersWithRoles = users.Select(user => new
+        var rolesTasks = users.Select(u => GetUserRoles(u)).ToArray();
+        var allRoles = await Task.WhenAll(rolesTasks);
+        var usersWithRoles = users.Select((user, i) => new
         {
             user.Id,
             user.UserName,
             user.Email,
-            Roles = GetUserRoles(user).Result
+            Roles = allRoles[i]
         }).ToList();
         return Ok(usersWithRoles);
     }

@@ -116,8 +116,6 @@ public class ForumTopicRepository : IForumTopicRepository
         {
             slug = $"{originalSlug}-{counter}";
             counter++;
-            // Update originalSlug for the next iteration
-            originalSlug = slug;
         }
 
         return slug;

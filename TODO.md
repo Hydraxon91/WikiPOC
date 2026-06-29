@@ -41,9 +41,9 @@
 - [x] **CRIT** `Program.cs:89-93` — Re-enable IsDevelopment guard around Swagger (commented out — Swagger exposed in prod)
 
 ### Bugs
-- [ ] **BUG** `ForumTopicRepository.cs:112-124` — `GenerateSlug` reassigns `originalSlug = slug` inside loop → slugs compound incorrectly (`foo-1`, `foo-1-2`, `foo-1-2-3`)
-- [ ] **BUG** `UsersController.cs:49` — `.Result` on async task in LINQ `.Select()` — sync-over-async deadlock risk
-- [ ] **BUG** `ForumPostRepository.cs:79` — `UpdateForumPostAsync` regenerates slug on every update, even content-only edits → breaks bookmarks
+- [x] **BUG** `ForumTopicRepository.cs:112-124` — `GenerateSlug` reassigns `originalSlug = slug` inside loop → slugs compound incorrectly (`foo-1`, `foo-1-2`, `foo-1-2-3`)
+- [x] **BUG** `UsersController.cs:49` — `.Result` on async task in LINQ `.Select()` — sync-over-async deadlock risk
+- [x] **BUG** `ForumPostRepository.cs:79` — `UpdateForumPostAsync` regenerates slug on every update, even content-only edits → breaks bookmarks
 - [ ] **BUG** `WikiDbContext.cs:53-56,81-84` — Duplicate FK relationship config (WikiPage ↔ UserComment mapped from both sides)
 - [ ] **BUG** `WikiDbContext.cs:112-122` — Duplicate FK config (ForumPost ↔ ForumComment mapped from both sides)
 - [ ] **BUG** `UserProfileRepository.cs:100-105` — `RemoveAsync` never calls `SaveChangesAsync` (unlike `DeleteAsync` which does)

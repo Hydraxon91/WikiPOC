@@ -143,10 +143,17 @@ namespace UnitTests.RepositoryTests
 
             await _forumPostRepository.AddForumPostAsync(forumPost);
 
-            forumPost.PostTitle = "Updated Post";
-            forumPost.Content = "Updated Content";
+            var updatedPost = new ForumPost
+            {
+                Id = forumPost.Id,
+                PostTitle = "Updated Post",
+                Content = "Updated Content",
+                ForumTopicId = forumPost.ForumTopicId,
+                UserId = forumPost.UserId,
+                UserName = forumPost.UserName
+            };
 
-            await _forumPostRepository.UpdateForumPostAsync(forumPost, forumPost);
+            await _forumPostRepository.UpdateForumPostAsync(forumPost, updatedPost);
 
             var postInDb = await _wikiDbContext.ForumPosts.FirstOrDefaultAsync(p => p.Id == forumPost.Id);
 

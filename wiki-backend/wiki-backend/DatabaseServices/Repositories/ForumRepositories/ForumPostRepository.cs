@@ -74,9 +74,13 @@ public class ForumPostRepository : IForumPostRepository
 
     public async Task UpdateForumPostAsync(ForumPost post, ForumPost updatedPost)
     {
+        var oldTitle = post.PostTitle;
         post.PostTitle = updatedPost.PostTitle;
         post.ForumTopicId = updatedPost.ForumTopicId;
-        post.Slug = await GenerateUniqueSlugAsync(post.PostTitle);
+        if (oldTitle != post.PostTitle)
+        {
+            post.Slug = await GenerateUniqueSlugAsync(post.PostTitle);
+        }
         var firstComment = post.Comments.FirstOrDefault();
         if (firstComment != null)
         {
