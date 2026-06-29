@@ -47,53 +47,55 @@ public class WikiPageRepository : IWikiPageRepository
             .ToListAsync();
     }
 
-    public async Task<WPWithImagesOutputModel?> GetByIdAsync(Guid id)
+    private async Task<WikiPage?> LoadWikiPageAsync(IQueryable<WikiPage> query, bool includeReplies)
     {
-        var wikiPage = await _context.WikiPages
-            .Include(wp => wp.Paragraphs)
+        query = query
+            .Include(p => p.Paragraphs)
             .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.UserProfile)
-            .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.Replies)
-            .SingleOrDefaultAsync(wp => wp.Id == id);
+                .ThenInclude(uc => uc.UserProfile);
 
-        if (wikiPage != null)
+        if (includeReplies)
         {
-            var images = _imageStorage.ReadImages(wikiPage.Id);
-            return new WPWithImagesOutputModel
-            {
-                WikiPage = wikiPage,
-                Images = images.Count > 0 ? images : null
-            };
+            query = query
+                .Include(wp => wp.Comments)
+                    .ThenInclude(uc => uc.Replies);
         }
 
-        return null;
+        return await query.FirstOrDefaultAsync();
+    }
+
+    public async Task<WPWithImagesOutputModel?> GetByIdAsync(Guid id)
+    {
+        var wikiPage = await LoadWikiPageAsync(
+            _context.WikiPages.Where(wp => wp.Id == id), true);
+
+        if (wikiPage == null) return null;
+
+        var images = _imageStorage.ReadImages(wikiPage.Id);
+        return new WPWithImagesOutputModel
+        {
+            WikiPage = wikiPage,
+            Images = images.Count > 0 ? images : null
+        };
     }
 
     public async Task<WPWithImagesOutputModel?> GetBySlugAsync(string slug)
     {
-        var wikiPage = await _context.WikiPages
-            .Where(page =>
-                !(page is UserSubmittedWikiPage) ||
-                (_context.UserSubmittedWikiPages.Any(userPage => userPage.Id == page.Id && userPage.Approved)))
-            .Include(p => p.Paragraphs)
-            .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.UserProfile)
-            .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.Replies)
-            .FirstOrDefaultAsync(p => p.Slug == slug);
+        var wikiPage = await LoadWikiPageAsync(
+            _context.WikiPages
+                .Where(page =>
+                    !(page is UserSubmittedWikiPage) ||
+                    (_context.UserSubmittedWikiPages.Any(userPage => userPage.Id == page.Id && userPage.Approved)))
+                .Where(p => p.Slug == slug), true);
 
-        if (wikiPage != null)
+        if (wikiPage == null) return null;
+
+        var images = _imageStorage.ReadImages(wikiPage.Id);
+        return new WPWithImagesOutputModel
         {
-            var images = _imageStorage.ReadImages(wikiPage.Id);
-            return new WPWithImagesOutputModel
-            {
-                WikiPage = wikiPage,
-                Images = images.Count > 0 ? images : null
-            };
-        }
-
-        return null;
+            WikiPage = wikiPage,
+            Images = images.Count > 0 ? images : null
+        };
     }
 
     public async Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images)
@@ -286,24 +288,17 @@ public class WikiPageRepository : IWikiPageRepository
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedPageByIdAsync(Guid id)
     {
-        var wikiPage = await _context.UserSubmittedWikiPages
-            .Where(page => page.IsNewPage)
-            .Include(p => p.Paragraphs)
-            .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.UserProfile)
-            .FirstOrDefaultAsync(p => p.Id == id);
-        
-        if (wikiPage!=null)
-        {
-            var images = _imageStorage.ReadImages(wikiPage.Id);
-            return new WPWithImagesOutputModel
-            {
-                UserSubmittedWikiPage = wikiPage,
-                Images = images.Count > 0 ? images : null
-            };
-        }
+        var wikiPage = await LoadWikiPageAsync(
+            _context.UserSubmittedWikiPages.Where(page => page.IsNewPage && page.Id == id), false);
 
-        return null;
+        if (wikiPage == null) return null;
+
+        var images = _imageStorage.ReadImages(wikiPage.Id);
+        return new WPWithImagesOutputModel
+        {
+            UserSubmittedWikiPage = (UserSubmittedWikiPage)wikiPage,
+            Images = images.Count > 0 ? images : null
+        };
     }
     
     public async Task<IEnumerable<WikiPageTitleEntry>> GetSubmittedUpdateTitlesAndIdAsync()
@@ -313,23 +308,16 @@ public class WikiPageRepository : IWikiPageRepository
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedUpdateByIdAsync(Guid id)
     {
-        var wikiPage = await _context.UserSubmittedWikiPages
-            .Where(page => !page.IsNewPage)
-            .Include(p => p.Paragraphs)
-            .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.UserProfile)
-            .FirstOrDefaultAsync(p => p.Id == id);
-        
-        if (wikiPage!=null)
-        {
-            var images = _imageStorage.ReadImages(wikiPage.Id);
-            return new WPWithImagesOutputModel
-            {
-                UserSubmittedWikiPage = wikiPage,
-                Images = images.Count > 0 ? images : null
-            };
-        }
+        var wikiPage = await LoadWikiPageAsync(
+            _context.UserSubmittedWikiPages.Where(page => !page.IsNewPage && page.Id == id), false);
 
-        return null;
+        if (wikiPage == null) return null;
+
+        var images = _imageStorage.ReadImages(wikiPage.Id);
+        return new WPWithImagesOutputModel
+        {
+            UserSubmittedWikiPage = (UserSubmittedWikiPage)wikiPage,
+            Images = images.Count > 0 ? images : null
+        };
     }
 }
