@@ -36,7 +36,8 @@ public class UserControllerTests : IntegrationTestBase
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
-            var users = okResult.Value as List<ApplicationUser>;
+            var json = System.Text.Json.JsonSerializer.Serialize(okResult.Value);
+            var users = System.Text.Json.JsonSerializer.Deserialize<List<System.Text.Json.JsonElement>>(json);
             Assert.That(users, Is.Not.Null);
             Assert.That(users.Count > 0, Is.True);
         }
@@ -176,9 +177,10 @@ public class UserControllerTests : IntegrationTestBase
             Assert.That(okResult, Is.Not.Null);
             Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
-            var user = okResult.Value as ApplicationUser;
-            Assert.That(user, Is.Not.Null);
-            Assert.That(user.Id, Is.EqualTo(testUser.Id));
+            var json = System.Text.Json.JsonSerializer.Serialize(okResult.Value);
+            var user = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(json);
+            Assert.That(user.TryGetProperty("Id", out var idProp), Is.True);
+            Assert.That(idProp.GetString(), Is.EqualTo(testUser.Id));
         }
         
         [Test]
