@@ -1,90 +1,173 @@
 # WikiPOC
 
-Welcome to WikiPOC, short for Wiki Proof Of Concept! 
+A customizable, Wikipedia-style wiki platform. Backend-driven theming, JWT auth with role-based access (Owner / Admin / Moderator / User), forum, user-submitted content with approval workflow, and slug-based page URLs.
 
-WikiPOC is a free and open-source proof of concept framework inspired by Wikipedia. 
+## Tech Stack
 
-It was created to explore the feasibility of building a Wikipedia-like platform with modern web technologies.
-
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Introduction
-
-WikiPOC is a free and open-source proof of concept framework inspired by Wikipedia. It aims to provide a customizable, extensible, and accessible platform for collaborative content creation and dissemination.
-
-## Why WikiPOC
-
-WikiPOC was created to address the need for a flexible and scalable platform for collaborative content creation. Traditional content management systems often lack the features required for community-driven projects, such as Wikipedia. By providing a framework tailored to the needs of collaborative projects, WikiPOC empowers users to create and share knowledge in a structured and organized manner.
+- **Frontend:** React 19 + TypeScript + Vite
+- **Backend:** .NET 10 ASP.NET Core
+- **Database:** SQL Server (via Docker)
+- **Orchestration:** Docker Compose
 
 ## Features
 
-- User-friendly interface for content creation and editing
-- Customizable styling and theming options (colors, fonts, logo)
+- Wikipedia-style article creation, editing, and categorization
+- Slug-based page URLs with automatic collision disambiguation
+- Role-based access: Owner, Admin, Moderator, User
+  - **Owner** — full system control, including wiki styling, categories, and user management
+  - **Admin** — same as Owner except cannot edit wiki styles or demote Owner
+  - **Moderator** — can approve/decline submissions and direct-publish pages (no approval queue for themselves)
+  - **User** — can create and edit pages, but submissions require approval
 - Forum with topics, posts, and comments
-- User comment system on articles
-- User profile pages with editable display names and profile pictures
-- User-submitted content workflow with admin approval
-- JWT-based authentication with Admin and User roles
+- User comments on articles (with replies and pagination)
+- User profiles with display names and profile pictures
+- Admin user management page with inline role changes
+- Customizable wiki styling (colors, fonts, logo) via admin interface
 - Image upload and serving
+- JWT authentication
 - Responsive Wikipedia-style design
 
-## Installation
+## Quick Start
 
-To install WikiPOC, follow these steps:
+### Prerequisites
 
-1. Clone the repository: `git clone https://github.com/Hydraxon91/WikiPOC.git`
-2. Navigate to the Main directory: `cd WikiPOC/`
-3. Create a `.env` file with the following environment variables:
-   - `ASPNETCORE_CONNECTIONSTRING`: Connection string for the database
-   - `ADMINUSER_EMAIL`: Email address for the admin user (Will add the ability to create new administrators)
-   - `ADMINUSER_PASSWORD`: Password for the admin user
-   - `ADMINUSER_USERNAME`: Username for the admin user
-   - `TESTUSER_EMAIL`: Email address for the test user
-   - `TESTUSER_PASSWORD`: Password for the test user
-   - `TESTUSER_USERNAME`: Username for the test user
-   - `JWT_ISSUER_SIGNING_KEY`: Secret key for JWT token signing
-   - `JWT_VALID_AUDIENCE`: Valid audience for JWT tokens
-   - `JWT_VALID_ISSUER`: Valid issuer for JWT tokens
-   - `JWT_TOKEN_TIME`: Expiry time for JWT tokens
-   - `PICTURES_PATH`: Path for pictures
-   - `PICTURES_PATH_CONTAINER`: Container path for pictures
-    - `DB_PASSWORD`: Password for the database
-    - `VITE_API_URL`: URL for the API endpoint
-4. Start the services using Docker Compose: `docker-compose up`
+- Docker & Docker Compose
+- .NET 10 SDK (for local backend dev)
+- Node.js 20+ (for local frontend dev)
 
+### Run with Docker (Recommended)
+
+```bash
+git clone https://github.com/Hydraxon91/WikiPOC.git
+cd WikiPOC
+# Create a .env file (see Environment Variables below)
+docker-compose up --build
+```
+
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:5050
+- **SQL Server:** localhost:1433
+
+### Local Development
+
+```bash
+# Backend
+cd wiki-backend/wiki-backend
+dotnet restore && dotnet run
+
+# Frontend
+cd wiki-frontend
+npm install && npm run dev
+```
+
+## Environment Variables (.env)
+
+Create a `.env` file in the project root. Required variables:
+
+```bash
+# Database
+ASPNETCORE_CONNECTIONSTRING=Server=sql-server;Database=WikiDb;User=sa;Password=<DB_PASSWORD>
+DB_PASSWORD=<your-strong-password>
+
+# Admin User (seeded on startup with Owner role)
+ADMINUSER_EMAIL=admin@example.com
+ADMINUSER_USERNAME=admin
+ADMINUSER_PASSWORD=<your-admin-password>
+
+# Moderator User (seeded on startup with Moderator role)
+MODERATOR_USERNAME=moderator
+MODERATOR_EMAIL=moderator@example.com
+MODERATOR_PASSWORD=<your-moderator-password>
+
+# Test User (seeded on startup with User role)
+TESTUSER_EMAIL=testuser@example.com
+TESTUSER_USERNAME=testuser
+TESTUSER_PASSWORD=<your-test-password>
+
+# JWT Configuration
+JWT_ISSUER_SIGNING_KEY=<32+ character random string>
+JWT_VALID_AUDIENCE=https://localhost:5001
+JWT_VALID_ISSUER=https://localhost:5001
+JWT_TOKEN_TIME=60
+
+# File Paths
+PICTURES_PATH=./uploads/profile_pictures
+PICTURES_PATH_CONTAINER=/app/uploads/pictures
+PROFILE_PICTURES_PATH=./uploads/pictures
+
+# Frontend
+VITE_API_URL=http://localhost:5050
+```
+
+## Role System
+
+| Role     | Create Pages | Edit Pages | Approve Submissions | Manage Users | Edit Styling | Edit Categories |
+|----------|:---:|:---:|:---:|:---:|:---:|:---:|
+| Owner    | Direct publish | Yes | Yes | Yes | Yes | Yes |
+| Admin    | Direct publish | Yes | Yes | Yes | No  | Yes |
+| Moderator| Direct publish | Yes | Yes | No  | No  | No  |
+| User     | Needs approval | Needs approval | No  | No  | No  | No  |
+
+All four roles can edit their own profile, create forum topics and posts, and comment on articles.
+
+## Project Structure
+
+```
+WikiPOC/
+├── wiki-backend/
+│   ├── wiki-backend/           # ASP.NET Core app
+│   │   ├── Controllers/        # API controllers by feature
+│   │   ├── Models/             # Entity models and DTOs
+│   │   ├── DatabaseServices/   # DbContext and repositories
+│   │   ├── Services/           # Auth, storage, initialization
+│   │   └── Identity/           # Role/policy definitions
+│   ├── UnitTests/              # NUnit unit tests
+│   └── IntegrationTests/       # NUnit integration tests
+├── wiki-frontend/              # React SPA
+│   └── src/
+│       ├── Api/                # API client modules
+│       ├── Pages/              # Page components
+│       └── Components/         # Shared components (routing, context)
+├── docker-compose.yml
+└── .env
+```
 
 ## Usage
 
-To use WikiPOC, follow these guidelines:
+1. **Browse articles** — the home page lists all published articles grouped by category
+2. **Create a page** — logged-in users can create articles. Owners, Admins, and Moderators publish directly; Users submit for approval
+3. **Edit a page** — click the pencil icon on any article. Same role-based rules as creation
+4. **Approve submissions** — Moderators and above can review and approve/decline pending pages at `/user-submissions`
+5. **Manage users** — Admins and Owners can change user roles at `/admin/users`
+6. **Forum** — browse topics, create posts, and comment
+7. **Customize styling** — Owners can change colors, fonts, and logo at `/edit-wiki`
+8. **User profile** — any logged-in user can edit their display name and profile picture
 
-- Navigate to the deployed application in your web browser.
-- Create an account or log in if you already have one.
-- Explore existing articles or create new ones by clicking on the "Create" button.
-- Customize the theme, name, and logo of the wiki according to your preferences.
-- Submit new pages by filling out the required information and submitting them for approval. Admins can submit pages freely.
-- Admins will review and approve new pages before they are published.
-- Edit existing pages by clicking on the "Edit" button and making changes. Admins can edit pages freely.
-- Customize your user profile by updating your personal information and preferences.
-- Leave comments on pages to engage in discussions and provide feedback.
+## Key Commands
 
-Note: This project is actively developed and has not been deployed to a production environment yet.
+### Backend
+```bash
+cd wiki-backend/wiki-backend
+dotnet run                    # Run
+dotnet build                  # Build
+dotnet ef migrations add Name # Add migration
+```
 
+### Frontend
+```bash
+cd wiki-frontend
+npm run dev                   # Dev server
+npm run build                 # Production build
+```
 
+### Docker
+```bash
+docker-compose up             # Start all services
+docker-compose up --build     # Rebuild and start
+docker-compose down           # Stop
+docker-compose logs -f        # View logs
+```
 
-## Contributing
+## License
 
-We welcome contributions from the community! If you'd like to contribute to WikiPOC, please follow these guidelines:
-
-- Report bugs and suggest features by opening an issue.
-- Submit pull requests with your contributions, following the project's coding conventions and guidelines.
-- Join the discussion on our community forums and help improve WikiPOC together.
-
-## License 
-WikiPOC is open-source software licensed under the [MIT License](https://opensource.org/licenses/MIT).
+MIT License — see [LICENSE](LICENSE) for details.
