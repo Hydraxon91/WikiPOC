@@ -90,7 +90,7 @@ namespace IntegrationTests.Services
             Assert.That(jwtToken.Audiences.First(), Is.EqualTo("TestAudience"));
 
             var claims = jwtToken.Claims.ToList();
-            Assert.That(claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value, Is.EqualTo("TokenForTheApiWithAuth"));
+            Assert.That(claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value, Is.EqualTo(user.Id));
             Assert.That(claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti), Is.Not.Null);
             Assert.That(claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Iat), Is.Not.Null);
             Assert.That(claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value, Is.EqualTo("test-user-id"));

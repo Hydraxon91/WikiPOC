@@ -126,6 +126,6 @@ public class TokenServicesTests
         var jwtToken = handler.ReadJwtToken(token);
 
         Assert.That(jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Sub).Value,
-            Is.EqualTo("TokenForTheApiWithAuth"));
+            Is.EqualTo(user.Id));
     }
 }

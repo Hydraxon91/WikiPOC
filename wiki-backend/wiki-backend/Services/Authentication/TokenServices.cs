@@ -43,7 +43,7 @@ public class TokenServices : ITokenServices
     {
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, "TokenForTheApiWithAuth"),
+            new(JwtRegisteredClaimNames.Sub, user.Id),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer),
             new(ClaimTypes.NameIdentifier, user.Id),
