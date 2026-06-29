@@ -28,9 +28,9 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var result = await _repository.GetAllForumPostTitlesAsync();
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(expectedPostTitles.Count, result.Count());
-        CollectionAssert.AreEquivalent(expectedPostTitles, result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Count(), Is.EqualTo(expectedPostTitles.Count));
+        Assert.That(result, Is.EquivalentTo(expectedPostTitles));
     }
 
     [Test]
@@ -41,7 +41,7 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var topic = await DbContext.ForumTopics.FirstOrDefaultAsync();
         var userprofile = await DbContext.UserProfiles.FirstOrDefaultAsync();
         var postId = Guid.NewGuid();
-        var post = new ForumPost { Id = postId, PostTitle = "New Post", Content = "New Content", Slug = "new-post", UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
+        var post = new ForumPost { Id = postId, PostTitle = "New Post", Content = "New Content", Slug = "new-post", UserName = userprofile!.UserName!, UserId = userprofile.Id, ForumTopicId = topic!.Id};
         DbContext.ForumPosts.Add(post);
         await DbContext.SaveChangesAsync();
 
@@ -49,10 +49,10 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var result = await _repository.GetForumPostByIdAsync(postId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(postId, result.Id);
-        Assert.AreEqual(post.PostTitle, result.PostTitle);
-        Assert.AreEqual(post.Content, result.Content);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Id, Is.EqualTo(postId));
+        Assert.That(result.PostTitle, Is.EqualTo(post.PostTitle));
+        Assert.That(result.Content, Is.EqualTo(post.Content));
     }
 
     [Test]
@@ -63,7 +63,7 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var topic = await DbContext.ForumTopics.FirstOrDefaultAsync();
         var userprofile = await DbContext.UserProfiles.FirstOrDefaultAsync();
         var postSlug = "sample-post";
-        var post = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = postSlug, UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
+        var post = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = postSlug, UserName = userprofile!.UserName!, UserId = userprofile.Id, ForumTopicId = topic!.Id};
         DbContext.ForumPosts.Add(post);
         await DbContext.SaveChangesAsync();
 
@@ -71,8 +71,8 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         var result = await _repository.GetForumPostBySlugAsync(postSlug);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(postSlug, result.Slug);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Slug, Is.EqualTo(postSlug));
     }
 
     [Test]
@@ -82,16 +82,16 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         await AddSampleForumPostsToDatabase();
         var topic = await DbContext.ForumTopics.FirstOrDefaultAsync();
         var userprofile = await DbContext.UserProfiles.FirstOrDefaultAsync();
-        var post = new ForumPost { PostTitle = "New Post", Content = "New Content", UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
+        var post = new ForumPost { PostTitle = "New Post", Content = "New Content", UserName = userprofile!.UserName!, UserId = userprofile.Id, ForumTopicId = topic!.Id};
 
         // Act
         await _repository.AddForumPostAsync(post);
 
         // Assert
         var addedPost = await DbContext.ForumPosts.FirstOrDefaultAsync(p => p.PostTitle == "New Post");
-        Assert.IsNotNull(addedPost);
-        Assert.AreEqual("new-post", addedPost.Slug); // Ensure slug is generated correctly
-        Assert.AreEqual(post.Content, addedPost.Content);
+        Assert.That(addedPost, Is.Not.Null);
+        Assert.That(addedPost.Slug, Is.EqualTo("new-post")); // Ensure slug is generated correctly
+        Assert.That(addedPost.Content, Is.EqualTo(post.Content));
     }
 
     [Test]
@@ -101,21 +101,28 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         await AddSampleForumPostsToDatabase();
         var topic = await DbContext.ForumTopics.FirstOrDefaultAsync();
         var userprofile = await DbContext.UserProfiles.FirstOrDefaultAsync();
-        var existingPost = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = "new-post", UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
+        var existingPost = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = "new-post", UserName = userprofile!.UserName!, UserId = userprofile.Id, ForumTopicId = topic!.Id };
         DbContext.ForumPosts.Add(existingPost);
         await DbContext.SaveChangesAsync();
 
-        existingPost.PostTitle = "Updated Title";
-        existingPost.Content = "Updated Content";
+        var updatedPost = new ForumPost
+        {
+            Id = existingPost.Id,
+            PostTitle = "Updated Title",
+            Content = "Updated Content",
+            ForumTopicId = existingPost.ForumTopicId,
+            UserId = existingPost.UserId,
+            UserName = existingPost.UserName
+        };
 
         // Act
-        await _repository.UpdateForumPostAsync(existingPost, existingPost);
+        await _repository.UpdateForumPostAsync(existingPost, updatedPost);
 
         // Assert
-        var updatedPost = await DbContext.ForumPosts.FirstOrDefaultAsync(p => p.PostTitle == "Updated Title");
-        Assert.IsNotNull(updatedPost);
-        Assert.AreEqual("updated-title", updatedPost.Slug); // Ensure slug is updated correctly
-        Assert.AreEqual("Updated Content", updatedPost.Content);
+        var updatedPostInDb = await DbContext.ForumPosts.FirstOrDefaultAsync(p => p.PostTitle == "Updated Title");
+        Assert.That(updatedPostInDb, Is.Not.Null);
+        Assert.That(updatedPostInDb.Slug, Is.EqualTo("updated-title"));
+        Assert.That(updatedPostInDb.Content, Is.EqualTo("Updated Content"));
     }
 
     [Test]
@@ -125,7 +132,7 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         await AddSampleForumPostsToDatabase();
         var topic = await DbContext.ForumTopics.FirstOrDefaultAsync();
         var userprofile = await DbContext.UserProfiles.FirstOrDefaultAsync();
-        var existingPost = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = "new-post", UserName = userprofile.UserName, UserId = userprofile.Id, ForumTopicId = topic.Id};
+        var existingPost = new ForumPost { PostTitle = "New Post", Content = "New Content", Slug = "new-post", UserName = userprofile!.UserName!, UserId = userprofile.Id, ForumTopicId = topic!.Id };
         DbContext.ForumPosts.Add(existingPost);
         await DbContext.SaveChangesAsync();
 
@@ -134,7 +141,7 @@ public class ForumPostRepositoryTests : IntegrationTestBase
 
         // Assert
         var deletedPost = await DbContext.ForumPosts.FindAsync(existingPost.Id);
-        Assert.IsNull(deletedPost);
+        Assert.That(deletedPost, Is.Null);
     }
 
     private async Task AddSampleForumPostsToDatabase()
@@ -157,9 +164,9 @@ public class ForumPostRepositoryTests : IntegrationTestBase
 
         var posts = new List<ForumPost>
         {
-            new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0]?.UserName, ForumTopicId = forumTopic.Id },
-            new ForumPost { PostTitle = "Post 2", Content = "Content for Post 2", Slug = "post-2", UserId = userProfiles[1].Id, UserName = userProfiles[1].UserName, ForumTopicId = forumTopic.Id },
-            new ForumPost { PostTitle = "Post 3", Content = "Content for Post 3", Slug = "post-3", UserId = userProfiles[2].Id, UserName = userProfiles[2].UserName, ForumTopicId = forumTopic.Id }
+            new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0]!.UserName!, ForumTopicId = forumTopic.Id },
+            new ForumPost { PostTitle = "Post 2", Content = "Content for Post 2", Slug = "post-2", UserId = userProfiles[1].Id, UserName = userProfiles[1].UserName!, ForumTopicId = forumTopic.Id },
+            new ForumPost { PostTitle = "Post 3", Content = "Content for Post 3", Slug = "post-3", UserId = userProfiles[2].Id, UserName = userProfiles[2].UserName!, ForumTopicId = forumTopic.Id }
         };
 
         await DbContext.ForumPosts.AddRangeAsync(posts);

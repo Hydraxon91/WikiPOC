@@ -47,16 +47,16 @@
 }
 
 .create-forum-topic button {
-    padding: 0.625rem 1.25rem; /* 10px / 16px = 0.625rem, 20px / 16px = 1.25rem */
-    font-size: 1rem; /* 16px / 16px = 1rem */
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
     color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 0.3125rem; /* 5px / 16px = 0.3125rem */
+    background-color: var(--article-color, #007bff);
+    border: 1px solid var(--article-right-color, #0056b3);
+    border-radius: 2px;
     cursor: pointer;
     align-self: center;
 }
 
 .create-forum-topic button:hover {
-    background-color: #0056b3;
+    background-color: var(--article-right-color, #0056b3);
 }

@@ -7,10 +7,11 @@
     volumes:
       - ${PICTURES_PATH}:/pictures
     ports:
-      - "5050:80"  # Adjust the port mapping as needed
+      - "5050:80"
     depends_on:
-      - sql-server
-    entrypoint: ["bash", "/wait-for-it.sh", "sql-server:1433", "-t", "120", "--", "dotnet", "wiki-backend.dll"] #Uncomment this if your PC is too slow to start the DB before the backend tries to access it, don't forget dockerfile
+      sql-server:
+        condition: service_healthy
+    restart: unless-stopped
     environment:
       ASPNETCORE_CONNECTIONSTRING: ${ASPNETCORE_CONNECTIONSTRING}
       ADMINUSER_EMAIL: ${ADMINUSER_EMAIL}
@@ -23,23 +24,33 @@
       JWT_VALID_AUDIENCE: ${JWT_VALID_AUDIENCE}
       JWT_VALID_ISSUER: ${JWT_VALID_ISSUER}
       JWT_TOKEN_TIME: ${JWT_TOKEN_TIME}
+      MODERATOR_USERNAME: ${MODERATOR_USERNAME}
+      MODERATOR_EMAIL: ${MODERATOR_EMAIL}
+      MODERATOR_PASSWORD: ${MODERATOR_PASSWORD}
       PICTURES_PATH: ${PROFILE_PICTURES_PATH}
       PICTURES_PATH_CONTAINER: ${PICTURES_PATH_CONTAINER}
 
   sql-server:
-    image: mcr.microsoft.com/mssql/server
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "${DB_PASSWORD}" -C -Q "SELECT 1"
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
     environment:
       SA_PASSWORD: ${DB_PASSWORD} 
       ACCEPT_EULA: Y
     ports:
-      - "1433:1433"  # Adjust the port mapping as needed
-  
+      - "1433:1433"
+    restart: unless-stopped
 
   wiki-frontend:
     build:
       context: ./wiki-frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_URL: ${REACT_APP_API_URL}
+        VITE_API_URL: ${VITE_API_URL}
     ports:
       - "3000:80"
+    restart: unless-stopped

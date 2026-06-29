@@ -1,4 +1,6 @@
-﻿using DotNetEnv;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using DotNetEnv;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +10,7 @@ using wiki_backend.Contracts;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services;
 using wiki_backend.Services.Authentication;
 
 namespace IntegrationTests.ControllerTests.UserControllers;
@@ -44,7 +47,7 @@ public class UserCommentControllerTests : IntegrationTestBase
     {
         var userCommentRepository = new UserCommentRepository(DbContext);
         var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        return new UserCommentController(userCommentRepository, userManager);
+        return new UserCommentController(userCommentRepository, new UserAuthorizationService(userManager));
     }
     
 
@@ -64,7 +67,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         {
             Id = Guid.NewGuid(),
             Content = content,
-            UserProfileId = userProfile.Id,
+            UserProfileId = userProfile!.Id,
             UserProfile = userProfile,
             WikiPageId = wikiPage.Id
         };
@@ -89,8 +92,8 @@ public class UserCommentControllerTests : IntegrationTestBase
         if (result.Result is OkObjectResult okResult)
         {
             var comment = okResult.Value as UserComment;
-            Assert.IsNotNull(comment);
-            Assert.AreEqual(testComment.Id, comment.Id);
+            Assert.That(comment, Is.Not.Null);
+            Assert.That(comment.Id, Is.EqualTo(testComment.Id));
         }
         else
         {
@@ -108,7 +111,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         var result = await _controller.GetComment(nonExistingId);
 
         // Assert
-        Assert.IsInstanceOf<NotFoundObjectResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<NotFoundObjectResult>());
     }
 
     [Test]
@@ -127,7 +130,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         var result = await _controller.PostComment(comment);
 
         // Assert
-        Assert.IsInstanceOf<CreatedAtActionResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<CreatedAtActionResult>());
     }
 
     [Test]
@@ -138,6 +141,12 @@ public class UserCommentControllerTests : IntegrationTestBase
         {
             Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
         };
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadJwtToken(_token);
+        var claimsIdentity = new ClaimsIdentity(jsonToken.Claims, "TestAuth");
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        _controller.ControllerContext.HttpContext.User = claimsPrincipal;
+
         var testComment = await AddTestComment("Original Comment");
         var updatedContent = "Updated Comment";
     
@@ -154,7 +163,7 @@ public class UserCommentControllerTests : IntegrationTestBase
         var result = await _controller.EditComment(testComment.Id, updatedContent);
 
         // Assert
-        Assert.IsInstanceOf<OkObjectResult>(result);
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
     }
 
 
@@ -166,12 +175,18 @@ public class UserCommentControllerTests : IntegrationTestBase
         {
             Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
         };
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadJwtToken(_token);
+        var claimsIdentity = new ClaimsIdentity(jsonToken.Claims, "TestAuth");
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        _controller.ControllerContext.HttpContext.User = claimsPrincipal;
+
         var testComment = await AddTestComment("Test Comment");
 
         // Act
         var result = await _controller.DeleteComment(testComment.Id);
 
         // Assert
-        Assert.IsInstanceOf<OkObjectResult>(result);
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
     }
 }

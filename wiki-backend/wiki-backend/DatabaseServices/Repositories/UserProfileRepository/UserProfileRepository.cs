@@ -1,42 +1,55 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
+using wiki_backend.Services.Storage;
 
 namespace wiki_backend.DatabaseServices.Repositories;
 
 public class UserProfileRepository : IUserProfileRepository
 {
     private readonly WikiDbContext _context;
+    private readonly string _picturesPath;
 
-    public UserProfileRepository(WikiDbContext context)
+    public UserProfileRepository(WikiDbContext context, IOptions<StorageSettings> storageSettings)
     {
         _context = context;
+        _picturesPath = storageSettings.Value.PicturesPath;
     }
     
+    private async Task SetPostCount(UserProfile profile)
+    {
+        var forumPostCount = await _context.ForumPosts.CountAsync(fp => fp.UserId == profile.Id);
+        var forumCommentCount = await _context.ForumComments.CountAsync(fc => fc.UserProfileId == profile.Id);
+        profile.PostCount = forumPostCount + forumCommentCount;
+    }
+
     public async Task<UserProfile?> GetByIdAsync(Guid id)
     {
-        return await _context.UserProfiles
+        var profile = await _context.UserProfiles
             .Include(up => up.User)
             .SingleOrDefaultAsync(up => up.Id == id);
+        if (profile != null) await SetPostCount(profile);
+        return profile;
     }
 
     public async Task<UserProfile?> GetByUsernameAsync(string username)
     {
-        return await _context.UserProfiles
+        var profile = await _context.UserProfiles
             .Include(up => up.User)
             .SingleOrDefaultAsync(up => up.UserName == username);
+        if (profile != null) await SetPostCount(profile);
+        return profile;
     }
 
     public async Task<UserProfile?> GetByUserIdAsync(string id)
     {
-        return await _context.UserProfiles
+        var profile = await _context.UserProfiles
             .Include(up => up.User)
             .SingleOrDefaultAsync(up => up.UserId == id);
+        if (profile != null) await SetPostCount(profile);
+        return profile;
     }
-    //Not needed for now
-    // public Task AddAsync(UserProfile wikiPage)
-    // {
-    //     throw new NotImplementedException();
-    // }
 
     public async Task UpdateAsync(Guid existingId, UserProfile updatedProfile, IFormFile? profilePictureFile)
     {
@@ -51,8 +64,13 @@ public class UserProfileRepository : IUserProfileRepository
         
         if (profilePictureFile != null)
         {
-            var fileName = $"profile_pictures/{existingProfile.UserName}_pfp{Path.GetExtension(profilePictureFile.FileName)}";
-            var filePath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), fileName);
+            if (!ImageStorageService.IsValidFileType(profilePictureFile.FileName))
+                throw new InvalidOperationException("Invalid profile picture file type. Allowed: png, jpg, jpeg, gif, webp.");
+
+            var dirPath = Path.Combine(_picturesPath, "profile_pictures");
+            Directory.CreateDirectory(dirPath);
+            var fileName = $"{existingProfile.UserName}_pfp{Path.GetExtension(profilePictureFile.FileName)}";
+            var filePath = Path.Combine(dirPath, fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await profilePictureFile.CopyToAsync(fileStream);
@@ -67,6 +85,16 @@ public class UserProfileRepository : IUserProfileRepository
     {
         var existingProfile = await _context.UserProfiles.SingleOrDefaultAsync(up => up.Id == id);
 
+        if (existingProfile != null)
+        {
+            _context.UserProfiles.Remove(existingProfile);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task RemoveAsync(Guid id)
+    {
+        var existingProfile = await _context.UserProfiles.FindAsync(id);
         if (existingProfile != null)
         {
             _context.UserProfiles.Remove(existingProfile);

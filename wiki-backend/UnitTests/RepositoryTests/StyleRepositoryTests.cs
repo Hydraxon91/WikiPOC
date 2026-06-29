@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace UnitTests.RepositoryTests;
 [TestFixture]
@@ -21,12 +23,13 @@ public class StyleRepositoryTests
             .Options;
 
         // Use AddDbContext to configure the WikiDbContext
-        _wikiDbContext = new WikiDbContext(options, configuration: null); 
+        _wikiDbContext = new WikiDbContext(options, configuration: null!); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
         _wikiDbContext.SaveChanges();
         
-        _styleRepository = new StyleRepository(_wikiDbContext);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = "test_path" });
+        _styleRepository = new StyleRepository(_wikiDbContext, storageSettings);
     }
     
     [TearDown]
@@ -56,7 +59,7 @@ public class StyleRepositoryTests
         // Act
         var result = await _styleRepository.GetStylesAsync();
         // Assert
-        Assert.IsNotNull(result);
+        Assert.That(result, Is.Not.Null);
         // Add more assertions as needed based on the expected data model
     }
     
@@ -97,15 +100,15 @@ public class StyleRepositoryTests
 
         // Assert
         var result = await _wikiDbContext.Styles.SingleOrDefaultAsync();
-        Assert.IsNotNull(result);
-        Assert.AreEqual(updatedStyles.Logo, result.Logo);
-        Assert.AreEqual(updatedStyles.WikiName, result.WikiName);
-        Assert.AreEqual(updatedStyles.BodyColor, result.BodyColor);
-        Assert.AreEqual(updatedStyles.ArticleRightColor, result.ArticleRightColor);
-        Assert.AreEqual(updatedStyles.ArticleRightInnerColor, result.ArticleRightInnerColor);
-        Assert.AreEqual(updatedStyles.ArticleColor, result.ArticleColor);
-        Assert.AreEqual(updatedStyles.FooterListLinkTextColor, result.FooterListLinkTextColor);
-        Assert.AreEqual(updatedStyles.FooterListTextColor, result.FooterListTextColor);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Logo, Is.EqualTo(updatedStyles.Logo));
+        Assert.That(result.WikiName, Is.EqualTo(updatedStyles.WikiName));
+        Assert.That(result.BodyColor, Is.EqualTo(updatedStyles.BodyColor));
+        Assert.That(result.ArticleRightColor, Is.EqualTo(updatedStyles.ArticleRightColor));
+        Assert.That(result.ArticleRightInnerColor, Is.EqualTo(updatedStyles.ArticleRightInnerColor));
+        Assert.That(result.ArticleColor, Is.EqualTo(updatedStyles.ArticleColor));
+        Assert.That(result.FooterListLinkTextColor, Is.EqualTo(updatedStyles.FooterListLinkTextColor));
+        Assert.That(result.FooterListTextColor, Is.EqualTo(updatedStyles.FooterListTextColor));
     }
     
     [Test]
@@ -131,14 +134,14 @@ public class StyleRepositoryTests
 
         // Assert
         var result = await _wikiDbContext.Styles.SingleOrDefaultAsync();
-        Assert.IsNotNull(result);
-        Assert.AreEqual(updatedStyles.Logo, result.Logo);
-        Assert.AreEqual(updatedStyles.WikiName, result.WikiName);
-        Assert.AreEqual(updatedStyles.BodyColor, result.BodyColor);
-        Assert.AreEqual(updatedStyles.ArticleRightColor, result.ArticleRightColor);
-        Assert.AreEqual(updatedStyles.ArticleRightInnerColor, result.ArticleRightInnerColor);
-        Assert.AreEqual(updatedStyles.ArticleColor, result.ArticleColor);
-        Assert.AreEqual(updatedStyles.FooterListLinkTextColor, result.FooterListLinkTextColor);
-        Assert.AreEqual(updatedStyles.FooterListTextColor, result.FooterListTextColor);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Logo, Is.EqualTo(updatedStyles.Logo));
+        Assert.That(result.WikiName, Is.EqualTo(updatedStyles.WikiName));
+        Assert.That(result.BodyColor, Is.EqualTo(updatedStyles.BodyColor));
+        Assert.That(result.ArticleRightColor, Is.EqualTo(updatedStyles.ArticleRightColor));
+        Assert.That(result.ArticleRightInnerColor, Is.EqualTo(updatedStyles.ArticleRightInnerColor));
+        Assert.That(result.ArticleColor, Is.EqualTo(updatedStyles.ArticleColor));
+        Assert.That(result.FooterListLinkTextColor, Is.EqualTo(updatedStyles.FooterListLinkTextColor));
+        Assert.That(result.FooterListTextColor, Is.EqualTo(updatedStyles.FooterListTextColor));
     }
 }

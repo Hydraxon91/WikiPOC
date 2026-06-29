@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Identity;
@@ -8,6 +7,7 @@ using wiki_backend.Models;
 namespace wiki_backend.Controllers;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("api/[controller]")]
 public class CategoryController : ControllerBase
 {

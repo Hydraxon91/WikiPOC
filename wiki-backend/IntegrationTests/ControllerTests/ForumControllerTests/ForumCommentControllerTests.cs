@@ -1,4 +1,6 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
 using DotNetEnv;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +12,7 @@ using wiki_backend.Controllers.ForumControllers;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Models;
 using wiki_backend.Models.ForumModels;
+using wiki_backend.Services;
 
 namespace IntegrationTests.ControllerTests.ForumControllerTests;
 
@@ -33,7 +36,7 @@ public class ForumCommentControllerTests : IntegrationTestBase
         
         _commentRepository = new ForumCommentRepository(DbContext);
         _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        _controller = new ForumCommentController(_commentRepository, _userManager);
+        _controller = new ForumCommentController(_commentRepository, new UserAuthorizationService(_userManager));
         ResetDatabase();
         await EnsureUserRoleExistsAsync();
         _userName = $"{GetRandomizedString("testuser")}";
@@ -55,11 +58,11 @@ public class ForumCommentControllerTests : IntegrationTestBase
         
         // Assert
         var okResult = result.Result as OkObjectResult;
-        Assert.NotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var returnComment = okResult.Value as ForumComment;
-        Assert.AreEqual(comment.Content, returnComment.Content);
+        Assert.That(returnComment!.Content, Is.EqualTo(comment.Content));
     }
 
     [Test]
@@ -89,8 +92,8 @@ public class ForumCommentControllerTests : IntegrationTestBase
         // Assert
         var comment = await DbContext.ForumComments.FirstOrDefaultAsync(fc => fc.Id == postCommentId);
 
-        Assert.NotNull(comment);
-        Assert.AreEqual(comment, postComment);
+        Assert.That(comment, Is.Not.Null);
+        Assert.That(postComment, Is.EqualTo(comment));
     }
     
     [Test]
@@ -101,6 +104,11 @@ public class ForumCommentControllerTests : IntegrationTestBase
         {
             Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
         };
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadJwtToken(_token);
+        var claimsIdentity = new ClaimsIdentity(jsonToken.Claims, "TestAuth");
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        _controller.ControllerContext.HttpContext.User = claimsPrincipal;
         
         var userProfileId = await AddUserProfile();
         await AddForumTopicAndPost(userProfileId);
@@ -112,11 +120,11 @@ public class ForumCommentControllerTests : IntegrationTestBase
         
         // Assert
         var okResult = result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var editedComment = await DbContext.ForumComments.FirstOrDefaultAsync(fc => fc.Id == comment.Id);
-        Assert.AreEqual(editedComment.Content, updatedContent);
+        Assert.That(updatedContent, Is.EqualTo(editedComment!.Content));
     }
     
     [Test]
@@ -127,6 +135,11 @@ public class ForumCommentControllerTests : IntegrationTestBase
         {
             Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
         };
+        var handler = new JwtSecurityTokenHandler();
+        var jsonToken = handler.ReadJwtToken(_token);
+        var claimsIdentity = new ClaimsIdentity(jsonToken.Claims, "TestAuth");
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        _controller.ControllerContext.HttpContext.User = claimsPrincipal;
         
         var userProfileId = await AddUserProfile();
         await AddForumTopicAndPost(userProfileId);
@@ -137,11 +150,11 @@ public class ForumCommentControllerTests : IntegrationTestBase
         
         // Assert
         var okResult = result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var deletedComment = await DbContext.ForumComments.FirstOrDefaultAsync(fc => fc.Id == comment.Id);
-        Assert.IsNull(deletedComment);
+        Assert.That(deletedComment, Is.Null);
     }
 
     private async Task<Guid> AddUserProfile()
@@ -198,7 +211,7 @@ public class ForumCommentControllerTests : IntegrationTestBase
             Id = commentId,
             Content = "Test comment",
             PostDate = DateTime.Now,
-            UserProfileId = userProfile.Id,
+            UserProfileId = userProfile!.Id,
             ForumPostId = forumPostId
         };
         await DbContext.ForumComments.AddAsync(comment);

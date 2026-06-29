@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using DotNetEnv;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -8,6 +10,7 @@ using wiki_backend.Controllers.ForumControllers;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Models;
 using wiki_backend.Models.ForumModels;
+using wiki_backend.Services;
 
 namespace IntegrationTests.ControllerTests.ForumControllerTests;
 
@@ -31,7 +34,7 @@ public class ForumPostControllerTests : IntegrationTestBase
             
             _forumPostRepository = new ForumPostRepository(DbContext);
             _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            _controller = new ForumPostController(_forumPostRepository, _userManager);
+            _controller = new ForumPostController(_forumPostRepository, new UserAuthorizationService(_userManager));
             ResetDatabase();
             await EnsureUserRoleExistsAsync();
             _userName = $"{GetRandomizedString("testuser")}";
@@ -51,12 +54,12 @@ public class ForumPostControllerTests : IntegrationTestBase
             var result = await _controller.GetForumPostTitles();
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result.Result);
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
             var okResult = result.Result as OkObjectResult;
-            var titles = okResult.Value as IEnumerable<string>;
+            var titles = okResult!.Value as IEnumerable<string>;
 
-            Assert.IsNotNull(titles);
-            Assert.Contains("test", titles.ToList());
+            Assert.That(titles, Is.Not.Null);
+            Assert.That(titles.ToList(), Does.Contain("test"));
         }
 
         [Test]
@@ -69,15 +72,15 @@ public class ForumPostControllerTests : IntegrationTestBase
             var forumPost = await DbContext.ForumPosts.FindAsync(forumPostId);
 
             // Act
-            var result = await _controller.GetForumPostBySlug(forumPost.Slug);
+            var result = await _controller.GetForumPostBySlug(forumPost!.Slug);
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result.Result);
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
             var okResult = result.Result as OkObjectResult;
-            var returnedPost = okResult.Value as ForumPost;
+            var returnedPost = okResult!.Value as ForumPost;
 
-            Assert.IsNotNull(returnedPost);
-            Assert.AreEqual(forumPost.Slug, returnedPost.Slug);
+            Assert.That(returnedPost, Is.Not.Null);
+            Assert.That(returnedPost.Slug, Is.EqualTo(forumPost.Slug));
         }
 
         [Test]
@@ -99,19 +102,19 @@ public class ForumPostControllerTests : IntegrationTestBase
                 PostDate = DateTime.UtcNow,
                 ForumTopicId = forumTopicId.ToString(),
                 UserId = userProfileId.ToString(),
-                UserName = _userName
+                UserName = _userName!
             };
 
             // Act
             var result = await _controller.AddForumPost(forumPostForm);
 
             // Assert
-            Assert.IsInstanceOf<CreatedAtActionResult>(result.Result);
+            Assert.That(result.Result, Is.InstanceOf<CreatedAtActionResult>());
             var createdResult = result.Result as CreatedAtActionResult;
-            var createdPost = createdResult.Value as ForumPost;
+            var createdPost = createdResult!.Value as ForumPost;
 
-            Assert.IsNotNull(createdPost);
-            Assert.AreEqual(forumPostForm.PostTitle, createdPost.PostTitle);
+            Assert.That(createdPost, Is.Not.Null);
+            Assert.That(createdPost.PostTitle, Is.EqualTo(forumPostForm.PostTitle));
         }
 
         [Test]
@@ -122,6 +125,11 @@ public class ForumPostControllerTests : IntegrationTestBase
             {
                 Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
             };
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(_token);
+            var claimsIdentity = new ClaimsIdentity(jsonToken.Claims, "TestAuth");
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            _controller.ControllerContext.HttpContext.User = claimsPrincipal;
 
             var userProfileId = await AddUserProfile();
             var forumPostId = await AddForumTopicAndPost(userProfileId);
@@ -130,13 +138,13 @@ public class ForumPostControllerTests : IntegrationTestBase
 
             var updatedPost = new ForumPost
             {
-                Id = post.Id,
+                Id = post!.Id,
                 PostTitle = "Updated Post",
                 Content = "This is an updated post",
                 PostDate = post.PostDate,
                 ForumTopicId = post.ForumTopicId,
                 UserId = post.UserId,
-                UserName = post.UserName,
+                UserName = post.UserName!,
                 Slug = post.Slug
             };
 
@@ -144,9 +152,9 @@ public class ForumPostControllerTests : IntegrationTestBase
             var result = await _controller.UpdateForumPost(post.Id, updatedPost);
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.That(result, Is.InstanceOf<OkObjectResult>());
             var updatedPostInDb = await DbContext.ForumPosts.FindAsync(post.Id);
-            Assert.AreEqual("Updated Post", updatedPostInDb.PostTitle);
+            Assert.That(updatedPostInDb!.PostTitle, Is.EqualTo("Updated Post"));
         }
 
         [Test]
@@ -157,6 +165,11 @@ public class ForumPostControllerTests : IntegrationTestBase
             {
                 Request = { Headers = { ["Authorization"] = $"Bearer {_token}" } }
             };
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(_token);
+            var claimsIdentity = new ClaimsIdentity(jsonToken.Claims, "TestAuth");
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            _controller.ControllerContext.HttpContext.User = claimsPrincipal;
 
             var userProfileId = await AddUserProfile();
             var forumPostId = await AddForumTopicAndPost(userProfileId);
@@ -165,9 +178,9 @@ public class ForumPostControllerTests : IntegrationTestBase
             var result = await _controller.DeleteForumPost(forumPostId);
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.That(result, Is.InstanceOf<OkObjectResult>());
             var deletedPostInDb = await DbContext.ForumPosts.FindAsync(forumPostId);
-            Assert.IsNull(deletedPostInDb);
+            Assert.That(deletedPostInDb, Is.Null);
         }
 
         private async Task<Guid> AddUserProfile()
@@ -176,7 +189,7 @@ public class ForumPostControllerTests : IntegrationTestBase
             var userProfile = new UserProfile
             {
                 Id = userProfileId,
-                UserName = _userName
+                UserName = _userName!
             };
             await DbContext.UserProfiles.AddAsync(userProfile);
             await DbContext.SaveChangesAsync();
@@ -212,7 +225,7 @@ public class ForumPostControllerTests : IntegrationTestBase
                 Content = "test",
                 PostTitle = "test",
                 Slug = "test",
-                UserName = _userName,
+                UserName = _userName!,
                 ForumTopicId = forumTopicId,
             };
             await DbContext.ForumPosts.AddAsync(forumPost);

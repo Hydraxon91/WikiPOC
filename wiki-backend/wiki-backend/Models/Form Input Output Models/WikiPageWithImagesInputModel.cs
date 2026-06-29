@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Bogus.DataSets;
 
 namespace wiki_backend.Models;
 
@@ -15,7 +14,6 @@ public class WikiPageWithImagesInputModel
     public DateTime? PostDate { get; set; }
     public DateTime? LastUpdateDate { get; set; }
     public ICollection<Paragraph> Paragraphs { get; set; } = new List<Paragraph>();
-    public bool LegacyWikiPage { get; set; } = false;
     //if usersubbmittedwikipage
     public Guid? WikiPageId { get; set; }
     [JsonIgnore]
@@ -27,9 +25,4 @@ public class WikiPageWithImagesInputModel
     
     //Image data
     public ICollection<ImageFormModel>? Images { get; set; }
-    
-    public override string ToString()
-    {
-        return $"Title: {Title}, SiteSub: {SiteSub}, RoleNote: {RoleNote}, Content: {Content}, Category: {CategoryId}, PostDate: {PostDate}, LastUpdateDate: {LastUpdateDate}, LegacyWikiPage: {LegacyWikiPage}, WikiPageId: {WikiPageId}, SubmittedBy: {SubmittedBy}, Approved: {Approved}, IsNewPage: {IsNewPage}, Images: {Images?.Count ?? 0} Images Type: {typeof(Images)}";
-    }
 }

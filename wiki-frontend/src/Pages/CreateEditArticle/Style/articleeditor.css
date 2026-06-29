@@ -15,6 +15,33 @@
   width: 50%;
 }
 
+.preview-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .editor-container {
+    flex-direction: column;
+  }
+  .articleeditor-container {
+    width: 100%;
+    margin-right: 0;
+  }
+  .preview-toggle {
+    display: inline-block;
+    margin-top: 0.5em;
+    cursor: pointer;
+  }
+  .preview-container {
+    display: none;
+    width: 100%;
+    margin-left: 0;
+  }
+  .preview-container.visible {
+    display: block;
+  }
+}
+
 
 .custom-popup-overlay {
     position: fixed;
@@ -22,6 +49,7 @@
     left: 0;
     width: 100%;
     height: 100%;
+    z-index: 1001;
     background-color: rgba(0, 0, 0, 0.5); 
     display: flex;
     justify-content: center;
@@ -34,9 +62,18 @@
     background-color: white;
     padding: 20px;
     border-radius: 5px;
+    position: relative;
+    z-index: 1002;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     overflow-y: scroll;
   }
+
+@media (max-width: 768px) {
+    .custom-popup {
+        max-width: 90%;
+        min-width: 300px;
+    }
+}
   
   .custom-popup label {
     display: block;
@@ -158,6 +195,14 @@ input {
   margin-left: 5px;
 }
 
+.ql-editor .thumbnail {
+  background-color: #fff !important;
+}
+
+.ql-editor .thumbnail-inner {
+  background-color: #f5f5f5 !important;
+}
+
 .custom-file-upload{
   width: 0.1px;
 	height: 0.1px;
@@ -165,6 +210,23 @@ input {
 	overflow: hidden;
 	position: absolute;
 	z-index: -1;
+}
+
+.custom-file-upload + .label-for-custom-file-upload,
+.label-for-custom-file-upload {
+    display: inline-block;
+    background: var(--editor-btn-bg, #526cad) !important;
+    color: #fff;
+    border: 1px solid var(--editor-btn-border, #1d305e);
+    border-radius: 3px;
+    padding: 0.4em 0.8em;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.custom-file-upload + .label-for-custom-file-upload:hover,
+.label-for-custom-file-upload:hover {
+    filter: brightness(85%);
 }
 
 .custom-file-upload + label{
@@ -180,6 +242,35 @@ input {
   border-color: buttonborder;
   border-image: initial;
   cursor: pointer;
+}
+
+.article-editor button {
+    background: var(--editor-btn-bg, #526cad);
+    color: #fff;
+    border: 1px solid var(--editor-btn-border, #1d305e);
+    border-radius: 3px;
+    padding: 0.4em 0.8em;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.article-editor button:hover {
+    filter: brightness(85%);
+}
+
+.article-editor input[type="text"],
+.article-editor select {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 0.4em;
+    font-size: 0.9em;
+    box-sizing: border-box;
+}
+
+.article-editor input[type="text"]:focus,
+.article-editor select:focus {
+    outline: 2px solid var(--editor-btn-bg, #526cad);
+    outline-offset: -1px;
 }
 
 .quill{

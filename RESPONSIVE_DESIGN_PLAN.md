@@ -1,0 +1,410 @@
+# Responsive Design Plan
+
+> Critically reviewed against actual codebase. All CSS-file claims verified
+> against source. Items marked `[VERIFIED]` have been confirmed by reading
+> the actual file. Items marked `[NEW]` were found during review and added.
+
+---
+
+## 1. Current State Assessment
+
+### Breakpoints: effectively none [VERIFIED]
+
+Only `style.css` has a breakpoint chain at `850px → 700px → 550px → 400px`.
+These only affect search bar width, sidebar width, and tab visibility — not
+main content layout at all. `profilepage.css` has 3 enormous breakpoints
+(2000px/3000px) that only reposition `.avatar-container` — a decorative
+element that is not critical to layout. Two empty `@media` blocks at
+`style.css:216,218` suggest planned work that was never implemented.
+
+**No responsive behavior exists** for forum pages, article view, editor,
+profile, login/register, admin review, categories, style editing,
+breadcrumbs, or article navigation bar.
+
+### Layout width and height assumptions
+
+| Area | Container | CSS | Problem | Source |
+|------|-----------|-----|---------|--------|
+| Root wrapper | `.wrapAll` | `width: 100vw` (inline override of CSS `90%`) | Edge-to-edge on ultra-wide | `MainPage.tsx:50`, `style.css:317` |
+| Header | `.top-header` | `height: 10em` (~160px) `[NEW]` | Takes ~43% of a 375px phone screen | `headercomponent.css:3` |
+| Sidebar | `.sidebar` | `position: absolute; width: 10em; float: left` | Doesn't flow; content uses `margin-left: 11em`; `float: left` is contradictory with `absolute` but harmless | `style.css:320-323` |
+| Article body | `.article` | `width: 98%` | Flexible, reasonable | `style.css:453` |
+| Forum grids | `.forum-mainsection` | `width: 98%` | Flexible, reasonable | `forumlandingpage.css:2` |
+| Forum author sidebar | `.post-author-sidebar` | **fixed `width: 130px; min-width: 130px`** | Overwhelming on narrow screens | `forumpost.css:18-19` |
+| Editor | `.editor-container` | **50/50 flex split** | Neither half usable on phones | `articleeditor.css:2-9` |
+| Profile card | `.profile-container` | **fixed `width: 550px; height: 650px`** `[CORRECTED]` | Overflows in BOTH dimensions on small screens | `profilepage.css:28-29` |
+| Login form | `.login-page-element-container` | **fixed `width: 450px; height: 550px; margin-top: 30vh`** `[CORRECTED]` | Overflows width; fixed height; 30vh pushes form toward bottom on short screens | `src/Styles/login.css:7-8` `[CORRECTED path]` |
+| Register form | `.register-page-element-container` | **fixed `width: 450px; height: 600px; margin-top: 30vh`** `[CORRECTED]` | Same issues as login | `src/Styles/register.css:7-8` `[CORRECTED path]` |
+| Thumbnails | `.thumbnail` | **fixed `width: 200px`** | Large on narrow screens | `wikipagecomponent.css:10` |
+| Custom popup (editor) | `.custom-popup` | `max-width: 40%` | ~150px on a phone — unusable | `articleeditor.css:21` |
+| Custom popup (forum) | `.fp-custom-popup` | `max-width: 40%` `[NEW]` | Same narrow popup issue | `forumsubmintcommentcomponent.css:14` |
+| Categories row | `.category-row` | `display: flex` (no `flex-wrap`) `[NEW]` | Long names + delete button overflow horizontally | `categorypagestyle.css:2` |
+| Style preset card | `.wikipage-preset-card-component` | `min-width: 45%; height: 20em` `[NEW]` | Fixed height creates excessive scrolling on mobile | `stylepage.css:19-20` |
+| Style font select | `.font-change select` | `width: 20%` `[NEW]` | Extremely narrow on small screens | `stylepage.css:8` |
+| Breadcrumbs | `.breadcrumbs ul` | `display: flex` (no wrap) `[NEW]` | Deep paths overflow horizontally | `Breadcrumbs.css:10` |
+| Article navbar | `.wiki-navbar` | tab buttons, no wrap behavior `[NEW]` | Tab labels may overflow on narrow screens | `wikipage.css:2` |
+
+### Mobile usability today: essentially broken [VERIFIED]
+
+On a 375px phone screen:
+- The sidebar's `position: absolute` at `10em` (~160px) overlaps the
+  content area (`margin-left: 11em`, ~176px) — content gets ~200px
+- The header at `height: 10em` (~160px) takes ~43% of the viewport `[NEW]`
+- Fixed-width containers (profile 550px, login 450px) overflow
+- Login/register `margin-top: 30vh` + fixed height means on a 667px tall
+  phone, the form starts at 200px and needs 550px more — total 750px,
+  exceeding the viewport `[NEW]`
+- Forum author sidebar at 130px takes 35% of the screen
+- Editor 50/50 split gives each panel ~175px — both unusable
+- Categories page flex rows don't wrap — long names overflow `[NEW]`
+
+---
+
+## 2. Recommended Breakpoint Strategy
+
+```
+Ultra-wide     ≥ 2560px    Cap content width, center
+Desktop        ≥ 1024px    Full layout (current default)
+Tablet         768–1023px  Collapse sidebar, stack columns
+Phone          < 768px      Single column, stacked navigation
+Narrow phone   < 400px      Minimal padding, essential only
+```
+
+Rationale: 768px aligns with iPad portrait and is a widely-used tablet
+boundary. The current ~850px breakpoint was arbitrary.
+
+---
+
+## 3. Per-Area Recommendations
+
+### Main Page / Home (`CSS-only`)
+- Cap `.wrapAll` at `max-width: 1600px; margin: 0 auto;` — remove the
+  `width: 100vw` inline override from `MainPage.tsx:50`
+- Collapse `.sidebar` into a hamburger or top navigation bar below 768px
+- Adjust `.mainsection` margin to `0` when sidebar is hidden
+- Sidebar content (nav links, user tools) moves to a top bar or drawer
+- `[NEW]` Reduce `.top-header` height below 768px to a slim bar
+  (~3em) showing only the logo (title hidden, hamburger menu added)
+
+### Article View (`CSS-only`)
+- `.article` at `width: 98%` and `.wikipage-component` at `min-width: 45%`
+  are reasonably flexible — just need a `max-width` cap
+- Cap article max-width: `max-width: 960px` on `.article`
+- Table of contents (`.contentsPanel`) should go full width below 768px
+- Thumbnails: `width: 200px` → `width: 40%; max-width: 200px` on narrow
+  screens
+- `[NEW]` Article navbar (`.wiki-navbar`) tab buttons should remain
+  side-by-side but shrink padding/font below 768px
+
+### Forum (`CSS-only` + responsive variant)
+- **Critical**: 130px fixed author sidebar needs to collapse to a
+  horizontal mini-profile or inline "Posted by" line on narrow screens
+- **Landing page grid**: 4-column flex (Forum / Topics / Posts / Last
+  Post) → 2-column or stacked below 768px
+- `.post-meta` should wrap — subject + date on one line, quote button
+  below if needed
+- Image thumbnail max-height should reduce on mobile
+- `[NEW]` Forum reply popup (`.fp-custom-popup`) at `max-width: 40%` →
+  `min-width: 90%; max-width: 600px` on narrow screens
+- `[NEW]` Breadcrumbs (`.breadcrumbs ul`) should allow wrapping or
+  truncate with ellipsis on narrow screens
+
+### Profile Page (`CSS-only`)
+- `.profile-container`: `width: 550px; height: 650px` →
+  `max-width: 550px; width: 90%; height: auto; min-height: 400px`
+  `[CORRECTED — height fix added]`
+- Profile image and stats stack vertically below 600px
+- `[NEW]` Check profile editor page for same fixed-width issues
+
+### Editor (`responsive variant`, same component)
+- 50/50 split collapses to single column below 768px: editor on top,
+  preview below (or preview hidden behind a tab toggle)
+- ReactQuill toolbar needs overflow handling (wraps/overflows on narrow
+  screens with many buttons)
+- Custom HTML popup: `max-width: 40%` → `min-width: 90%; max-width: 600px`
+
+### Login / Register (`CSS-only`) `[CORRECTED]`
+- CSS files are at `src/Styles/login.css` and `src/Styles/register.css`
+  (not under `LoginPage/`)
+- `width: 450px` → `max-width: 450px; width: 90%`
+- `[NEW]` Below 768px: go full-height — `height: auto`, remove
+  `margin-top: 30vh`, form fills the viewport (no card-like centered
+  box on mobile)
+
+### Create Forum Topic (`CSS-only`)
+- `max-width: 37.5rem` is already reasonable — just needs `width: 90%`
+
+### Admin Review (Compare Updates) (`CSS-only`)
+- 50/50 side-by-side → vertical stack below 768px
+
+### Categories Page (`CSS-only`) `[NEW]`
+- `.category-row` needs `flex-wrap: wrap` so long names + buttons don't
+  overflow
+- `.cat-text` at `font-size: 1.6em` is large on mobile — consider
+  `font-size: 1.2em` below 768px
+
+### Style Editing Page (`CSS-only`) `[NEW]`
+- `.wikipage-preset-card-component` at `height: 20em` → `height: auto;
+  min-height: 15em` below 768px
+- `.font-change select` at `width: 20%` → `width: 50%` below 768px
+
+---
+
+## 4. Prioritized Task List
+
+> Order revised: sidebar collapse should come before root width cap,
+> because capping width without fixing the absolute-positioned sidebar
+> first could create layout issues on medium screens.
+
+- [x] **P1** Build hamburger drawer component and collapse sidebar into
+      it below 768px — unblocks mobile entirely
+- [x] **P1** Cap root layout width at `max-width: 1200px` on `.wrapAll`,
+      remove `100vw` inline override — fixes ultra-wide stretch
+- [x] **P1** Fix fixed-width AND fixed-height containers (profile 550×650,
+      login 450×550, register 450×600 → responsive width + auto height)
+- [x] **P1** Fix login/register `margin-top: 30vh` → smaller on mobile
+      `[NEW]`
+- [x] **P1** Reduce header height (`.top-header` 10em) on mobile `[NEW]`
+- [x] **P1** Add wiki name to mobile header, left-align hamburger+logo+title `[NEW]`
+- [x] **P1** Animate hamburger drawer slide-in/out `[NEW]`
+- [x] **P2** Forum author sidebar → replace 130px fixed sidebar with
+      inline "Posted by Username" line on narrow screens
+- [x] **P2** Forum grid column collapse (4-col → stacked on mobile)
+- [x] **P2** Forum grid header/data column width mismatch at iPad sizes (flex-basis: 0% + min-width: 0 fix)
+- [x] **P2** Forum grid header alignment — header row flex values don't
+      match data rows; causes visual mismatch `[NEW]`
+- [x] **P2** Editor 50/50 split → single column on mobile, preview
+      behind a toggle button — also blocks testing popup fixes
+- [x] **Bug** Protected routes redirect to home on page refresh — root
+      cause: token decoded in useEffect (async), 3-render-cycle delay
+      between cookie → decodedToken → decodedTokenContext. Fixed with
+      synchronous token decode on App.tsx mount + loading spinner in
+      ProtectedRoute when cookie exists but context is null. `[NEW]`
+- [x] **P2** Simplify forum reply popup Quill toolbar — limit to H1-H2,
+      font, image only `[NEW]`
+- [x] **P2** Delete category button as × icon on mobile `[NEW]`
+- [x] **P2** Style hamburger drawer with backend theme colors (not
+      hardcoded white/black) `[NEW]`
+- [x] **Bug** Category input doesn't clear after submitting new name `[NEW]`
+- [x] **P2** Thumbnail sizing (fixed 200px → responsive)
+- [x] **P2** Forum reply popup + editor popup `max-width: 40%` →
+      responsive `[NEW]`
+- [x] **P2** Categories page flex-wrap + font sizing `[NEW]`
+- [x] **P3** Admin compare-update 50/50 → vertical stack on mobile
+- [x] **P3** Breadcrumbs wrapping/truncation `[NEW]`
+- [x] **P3** Style page preset card grid + responsive layout `[NEW]`
+- [x] **P3** Font sizing review with `clamp()` or `rem` for high-res
+- [x] **P3** Mobile navigation improvements (hamburger for sidebar)
+- [x] **P4** Article navbar tab responsive sizing `[NEW]`
+- [x] **P4** Profile page responsive refinement
+- [x] **P4** High-DPI / retina rendering check
+- [x] **P3** Login/register style consistency — use theme colors, responsive inputs, match rest of app styling `[NEW]`
+- [x] **P2** Wiki comment section responsive — 64px avatar shrinks to 2em on
+      mobile, comment tab panel nesting fixed, `[NEW]`
+- [x] **P2** Wiki comment submit form — avatar/button sized for mobile, reply
+      textarea resize enabled `[NEW]`
+- [x] **P2** Wiki comment pagination — 5 per page with sort (newest/oldest) `[NEW]`
+- [x] **P2** Wiki comment focused reply view — click "View Replies" transitions
+      to single-comment view with back button, fade animation `[NEW]`
+- [x] **P3** Footer gap reduction — removed `margin-top: auto`, compact padding,
+      wikipage min-height 77vh on mobile `[NEW]`
+
+---
+
+## 5. Wiki Comment Section — Responsive Analysis `[NEW]`
+
+### Current state: not deliberately responsive
+
+Unlike the forum (which hides its 130px sidebar at ≤768px and shows a
+compact inline author row), the wiki comment section has **zero media
+queries** in any of its CSS files (`wikipage.css`, `commentreply.css`).
+It relies on basic flex layouts that degrade gracefully but are not
+optimized for mobile.
+
+### Key issues
+
+| Issue | File | Line(s) |
+|-------|------|---------|
+| Fixed 64×64px avatar never shrinks on mobile | `wikipage.css` | 70-76 |
+| Comment row has no `flex-wrap` | `wikipage.css` | 60-64 |
+| Submit form avatar (64px) eats ~20% of 375px width | `wikipage.css` | 70-76, 128 |
+| Send button font-size 20px oversized on mobile | `wikipage.css` | 184 |
+| Reply textarea has `resize: none` — cramped on mobile with virtual keyboard | `commentreply.css` | 40 |
+| No compact mobile layout for comment metadata | `UserCommentComponent.tsx` | 34-39 |
+| No media queries anywhere in comment CSS | All comment files | — |
+
+### Recommendation
+
+Apply the same pattern used for the forum author sidebar:
+- **Mobile**: shrink avatar to 2em (~32px) or replace with an inline
+  "User said" line
+- **Desktop**: unchanged (64px avatar as currently)
+- Submit form: shrink avatar proportionally on mobile, reduce Send button font
+- Reply form: enable vertical resize or increase min-height on mobile
+
+See task list in section 4 for prioritized items. `[NEW]`
+
+1. **~~Sidebar on mobile~~ RESOLVED**: Hamburger drawer. Navigation moves
+   into a new hamburger-triggered drawer component on mobile, rather than
+   a top bar or hiding behind existing links. This requires building a
+   new component (per the plan's "Phone — may need genuinely new
+   components" framing).
+
+2. **~~Forum author sidebar collapse~~ RESOLVED**: Simple inline
+   "Posted by Username" line. No horizontal stats bar — just a compact
+   inline line replacing the 130px sidebar on narrow screens.
+
+3. **~~Editor preview on mobile~~ RESOLVED**: Hide behind a "Preview"
+   toggle button. Preview is not removed, just collapsed behind a toggle
+   so the editor itself gets full width by default on mobile.
+
+4. **~~Ultra-wide max-width~~ RESOLVED**: Flat `max-width: 1200px` on
+   `.wrapAll` (the root wrapper) — not tied to aspect ratio. This is the
+   cap for the overall page layout on ultra-wide monitors; it's separate
+   from `.article`'s own `max-width: 960px` recommendation in the
+   Per-Area section, which governs article content width specifically
+   within whatever the page layout allows.
+
+5. **High-DPI / 4K**: Viewport meta tag is present (`index.html:6`).
+   Font sizes are mostly `rem`/`em` and scale with browser zoom.
+   Recommendation: no specific 4K fix unless testing reveals actual
+   problems. `[VERIFIED]`
+
+6. **~~Header on mobile~~ RESOLVED**: Slim bar with logo only on mobile.
+   The 10em header becomes a compact slim bar (e.g. `height: 3em`) below
+   768px, showing just the logo. Hamburger menu for sidebar toggling can
+   live here too.
+
+7. **~~Login/register height~~ RESOLVED**: Go full-height on mobile.
+   The card-like fixed-height appearance is replaced with a full-height
+   form below 768px — `height: auto` with `min-height: 100vh` style
+   layout, removing the `margin-top: 30vh` offset entirely on mobile.
+
+---
+
+## 6. Login / Register Page — Style Consistency Audit `[NEW]`
+
+### Current issues
+- Gradient background uses `styles.bodyColor / styles.articleColor` (good)
+- All text, labels, links, and borders are hardcoded `#fff` — ignore
+  `styles.footerListTextColor` / `styles.footerListLinkTextColor`
+- Input boxes have fixed `width: 310px` — overflow risk on narrow screens
+- Login has no `backdrop-filter`; register has `backdrop-filter: blur(10px)` —
+  inconsistent
+
+### Proposed fixes (CSS-only: `login.css`, `register.css`)
+1. Replace hardcoded `#fff` text with `var(--footer-text-color)` and link colors
+   with `var(--footer-link-color)` to match the rest of the app
+2. `.login-inputbox`: `width: 310px` → `width: 100%; max-width: 310px`
+3. Button backgrounds: `#fff` → `var(--article-color)` to match other themed
+   buttons
+4. Remove `backdrop-filter: blur(10px)` from register form for consistency
+5. Remove Rick Roll "Forgot Password?" link or replace with a real page
+
+---
+
+## 7. Profile Page — Current State & Refinement Plan `[NEW]`
+
+### Current issues
+- `.profilepage` has `height: 50em` (800px) — very tall, leaves empty space
+- `.edit-displayname` and `.edit-profilepic` have fixed pixel widths that
+  don't scale on mobile
+- `.avatar-container` breakpoints (3000px/2000px/1999px) are dead CSS —
+  the class appears unused
+- Buttons use hardcoded `#fff` background instead of theme colors
+- Profile picture `backdrop-filter: blur(10px)` may not render well everywhere
+
+### Proposed fixes (CSS-only: `profilepage.css`)
+1. Remove `height: 50em` — let the page grow naturally
+2. Responsive inputs: `.edit-displayname width: 7em` → `max-width: 7em; width: 90%`,
+   `.edit-profilepic width: 20em` → `max-width: 20em; width: 90%`
+3. Remove dead `.avatar-container` CSS (lines 60-82) unless the class is
+   still in use
+4. Use `var(--article-color)` for button backgrounds instead of `#fff`
+5. Add `@media (max-width: 768px)` to reduce profile pic size and spacing
+
+---
+
+## 8. Design Language Consistency — Audit Results `[NEW]`
+
+### Critical inconsistencies found
+
+| # | Issue | Location | Impact |
+|---|-------|----------|--------|
+| 1 | **10+ distinct button styles** | Across all pages | Themed pills (login), flat themed (forum `.modular-button`), pixel-art segmented (wiki Send), browser defaults (editor, categories, admin, style page). No shared component. |
+| 2 | **Editor/Style page buttons unstyled** | `ArticleEditor.tsx`, `EditStylePage.tsx` | Raw `<button>` tags with zero CSS. |
+| 3 | **Admin approval buttons unstyled** | `CheckUserSubmittedPage.tsx`, `CompareUpdatePage.tsx` | Browser defaults on admin actions. |
+| 4 | **Style Edit page missing background** | `EditStylePage.tsx` | No `.article` wrapper — floats on whatever background is behind it. |
+| 5 | **Wiki comment links `color: black`** | `wikipage.css:128` | Invisible on dark-themed pages. |
+| 6 | **Global `<a>` tags hardcoded `#0645ad`** | `style.css:309` | Not theme-aware. Affects sidebar, forum, profile links. |
+| 7 | **5 different input styling approaches** | Login, forum, wiki, admin, editor | Transparent, `#ccc` bordered, `#757575` bordered, semi-white, unstyled. |
+| 8 | **No unified focus state** | Most inputs | Login uses label animation, wiki suppresses outlines, others have no focus indicator. |
+| 9 | **Pagination hardcoded gray** | Forum + wiki comments | `#f0f0f0` / `#ccc` — no theme variables. |
+| 10 | **Profile buttons hardcoded white** | `profilepage.css` | `background: #fff` instead of theme accent color. |
+
+### Completed: Login/Register re-styled to wiki pattern
+- Gradient background replaced with `.article` container using `styles.articleColor`
+- Rounded pill buttons replaced with flat themed buttons
+- Transparent underlined inputs replaced with `#ccc` bordered inputs
+- Text colors changed from white to dark text
+- Old CSS files (`login.css`, `register.css`) cleared
+
+### Completed
+- [x] Standardize all buttons across editor, admin, categories, and style pages
+- [x] Add `.article` wrapper to Style Edit page
+- [x] Fix wiki comment link colors from hardcoded `black` to theme var
+- [x] Make global `<a>` tag color theme-aware
+- [x] Unify input border styles across the app (use `#ccc` with border-radius)
+- [x] Add focus indicators to all inputs
+- [x] Make pagination buttons theme-aware
+- [x] Profile button backgrounds: `#fff` → theme accent color
+
+---
+
+## 8. Other Observations
+
+- **`.wrapAll` inline override**: `MainPage.tsx:50` sets `width: 100vw`
+  inline — this overrides the CSS `width: 90%` and should be removed.
+  Note: this line also sets `minHeight: "100vh"` and `fontWeight: "bold"`
+  inline — keep those, just remove `width`. `[VERIFIED]`
+
+- **Empty media query blocks** at `style.css:216,218` — clean them up.
+
+- **`.sidebar` has both `float: left` and `position: absolute`** —
+  these are contradictory. `position: absolute` takes the element out of
+  flow, making `float: left` meaningless. The `float` declaration should
+  be removed as dead CSS. `[NEW]`
+
+- **Zebra striping** on forum grids uses `rgba(0,0,0,0.03)` — invisible
+  on small screens due to compressed layout; may need a different
+  approach on mobile.
+
+- **`div.articleRight` CSS was already removed** in legacy cleanup,
+  but `stylepage.css` still has `.article-right-preset` and
+  `.article-right-inner-preset` classes (lines 32-55) that reference
+  the removed naming convention — these are used by the style preview
+  cards, not the article rendering. Not a responsive issue, just
+  potential confusion. `[NEW]`
+
+- **`style.css` has both `.wrapAll { width: 90% }` and a comment that
+  says the file is based on the HTML5 Wikipedia template** — the
+  template's responsive intent was never fully implemented. The empty
+  `@media` blocks at lines 216 and 218 are remnants of this. `[NEW]`
+
+---
+
+## 7. Revision Log
+
+| Date | Changes |
+|------|---------|
+| Initial | First draft from codebase analysis |
+| Review pass | Verified all CSS-file claims against source; corrected login/register file paths (`src/Styles/` not `LoginPage/`); added `height` and `margin-top` issues for profile/login/register; added missing areas (header, categories, style page, breadcrumbs, article navbar, forum reply popup); added `float: left` dead CSS note on sidebar; reordered P1 tasks (sidebar before root cap); added 2 new open questions |
+| Decision pass | Resolved open questions #6 (header: slim bar with logo only on mobile) and #7 (login/register: full-height form on mobile, no card box) |
+| User decision pass | Resolved remaining open questions #1-4 with user input: sidebar → hamburger drawer (new component), forum author info → inline "Posted by Username" line, editor preview → toggle button, ultra-wide cap → flat `max-width: 1200px` on `.wrapAll`. Updated P1/P2 task list wording to match these concrete decisions. |
+| Implemented P1 | All 5 P1 tasks completed: hamburger drawer + sidebar collapse, root layout cap (1200px), fixed-width containers (profile/login/register), login/register margin-top fix, header slim bar. Also added wiki name in mobile header, hamburger slide animation. |
+| Quick wins | Thumbnail responsive sizing, forum+editor popup max-width fix, categories flex-wrap + mobile font. Added new findings from testing: forum grid header alignment, popup Quill toolbar trim, delete button as X, hamburger theme styling, category input clear bug. |
+| Implemented batch | Category input clear after submit, long name truncation + heading centering on categories page, forum grid header alignment, forum reply Quill toolbar trimmed to header+font+image, hamburger drawer themed with backend colors. Category input/add-row styling reverted after test feedback. |
+| Wiki comment analysis | Added full responsive audit of wiki comment section (section 5). Found zero media queries, fixed 64px avatar, no mobile adaptation. Added P2 tasks for fixes. |
+| Comment fixes batch | Reply bug fix (EF relationship + re-fetch pattern), comments tab nesting fix, 64px→2em avatar on mobile, reply textarea resize enabled, footer gap reduction, comment pagination (5/page) with sort dropdown, focused reply view with fade animation. Admin compare-update 50/50 stacking also included. |
+| Login/register audit + Profile plan | Added sections 6 (login/register style consistency) and 7 (profile page refinement) with detailed fixes. |
+| Design consistency audit | Added section 8 with full audit of buttons, backgrounds, inputs, links across the entire frontend. Login/register re-styled to wiki `.article` pattern (gradient → flat, pills → flat buttons, white text → dark). Old CSS cleared. Added remaining tasks to list. |

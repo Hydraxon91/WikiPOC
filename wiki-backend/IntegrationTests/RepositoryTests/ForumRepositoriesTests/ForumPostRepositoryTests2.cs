@@ -41,7 +41,7 @@ public class ForumPostRepositoryTests2 : IntegrationTestBase
     public async Task AddForumPostAsync_ShouldThrowException_WhenPostIsNull()
     {
         // Act & Assert
-        Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.AddForumPostAsync(null));
+        Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.AddForumPostAsync(null!));
     }
     
 
@@ -49,7 +49,7 @@ public class ForumPostRepositoryTests2 : IntegrationTestBase
     public async Task UpdateForumPostAsync_ShouldThrowException_WhenPostIsNull()
     {
         // Act & Assert
-        Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.UpdateForumPostAsync(null, null));
+        Assert.ThrowsAsync<NullReferenceException>(async () => await _repository.UpdateForumPostAsync(null!, null!));
     }
 
     [Test]
@@ -81,9 +81,9 @@ public class ForumPostRepositoryTests2 : IntegrationTestBase
 
         var posts = new List<ForumPost>
         {
-            new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0]?.UserName, ForumTopicId = forumTopic.Id },
-            new ForumPost { PostTitle = "Post 2", Content = "Content for Post 2", Slug = "post-2", UserId = userProfiles[1].Id, UserName = userProfiles[1].UserName, ForumTopicId = forumTopic.Id },
-            new ForumPost { PostTitle = "Post 3", Content = "Content for Post 3", Slug = "post-3", UserId = userProfiles[2].Id, UserName = userProfiles[2].UserName, ForumTopicId = forumTopic.Id }
+            new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0]!.UserName!, ForumTopicId = forumTopic.Id },
+            new ForumPost { PostTitle = "Post 2", Content = "Content for Post 2", Slug = "post-2", UserId = userProfiles[1].Id, UserName = userProfiles[1].UserName!, ForumTopicId = forumTopic.Id },
+            new ForumPost { PostTitle = "Post 3", Content = "Content for Post 3", Slug = "post-3", UserId = userProfiles[2].Id, UserName = userProfiles[2].UserName!, ForumTopicId = forumTopic.Id }
         };
 
         await DbContext.ForumPosts.AddRangeAsync(posts);

@@ -53,8 +53,8 @@ public class CategoryControllerTests : IntegrationTestBase
         var result = await _controller.GetAllCategories();
         // Assert
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
     }
 
     [Test]
@@ -89,12 +89,12 @@ public class CategoryControllerTests : IntegrationTestBase
         
         // Assert
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         
         var category = okResult.Value as Category;
-        Assert.AreEqual(catId, category.Id);
-        Assert.AreEqual(categoryName, category.CategoryName);
+        Assert.That(category!.Id, Is.EqualTo(catId));
+        Assert.That(category.CategoryName, Is.EqualTo(categoryName));
     }
 
     [Test]
@@ -117,8 +117,8 @@ public class CategoryControllerTests : IntegrationTestBase
         
         // Assert
         var category = await DbContext.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);
-        Assert.IsNotNull(category);
-        Assert.AreEqual(categoryName, category.CategoryName);
+        Assert.That(category, Is.Not.Null);
+        Assert.That(category.CategoryName, Is.EqualTo(categoryName));
     }
 
     [Test]
@@ -165,11 +165,11 @@ public class CategoryControllerTests : IntegrationTestBase
         
         // Assert
         var okResult = result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        Assert.AreEqual((int)HttpStatusCode.OK, okResult.StatusCode);
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var dbCategories = await DbContext.Categories.ToListAsync();
-        Assert.IsFalse(dbCategories.Any(c => c.CategoryName == categoryName));
-        Assert.IsFalse(dbCategories.Count == oldCatsLength);
+        Assert.That(dbCategories.Any(c => c.CategoryName == categoryName), Is.False);
+        Assert.That(dbCategories.Count == oldCatsLength, Is.False);
     }
 }

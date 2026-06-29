@@ -8,6 +8,7 @@ namespace wiki_backend.Controllers.ForumControllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class ForumTopicController : ControllerBase
 {
     private readonly IForumTopicRepository _forumTopicRepository;

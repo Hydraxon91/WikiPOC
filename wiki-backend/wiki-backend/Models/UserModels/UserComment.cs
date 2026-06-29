@@ -8,7 +8,6 @@ public class UserComment
     public Guid Id { get; set; }
     public string? Content { get; set; }
     [ForeignKey(nameof(UserProfileId))]
-    // [JsonIgnore]
     public UserProfile? UserProfile { get; set; }
     public Guid UserProfileId { get; set; }
     [ForeignKey(nameof(WikiPageId))]

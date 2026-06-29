@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
 using wiki_backend.DatabaseServices.Repositories;
+using wiki_backend.Services.Storage;
 
 namespace UnitTests.RepositoryTests;
 [TestFixture]
@@ -26,10 +28,13 @@ public class WikiPageRepositoryTests
             .Options;
 
         // Use AddDbContext to configure the WikiDbContext
-        _wikiDbContext = new WikiDbContext(options, configuration: null); 
+        _wikiDbContext = new WikiDbContext(options, configuration: null!); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
-        _wikiPageRepository = new WikiPageRepository(_wikiDbContext);
+        var categoryRepository = new CategoryRepository(_wikiDbContext);
+        var mockImageStorage = new Mock<IImageStorageService>();
+        mockImageStorage.Setup(s => s.ReadImages(It.IsAny<Guid>())).Returns(new List<ImageFormModel>());
+        _wikiPageRepository = new WikiPageRepository(_wikiDbContext, categoryRepository, mockImageStorage.Object);
     }
     
     [TearDown]
@@ -56,8 +61,8 @@ public class WikiPageRepositoryTests
         var result = await _wikiPageRepository.GetAllAsync();
 
         // Assert
-        Assert.IsNotNull(result);
-        CollectionAssert.AreEqual(testData, result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.EqualTo(testData));
     }
 
     [Test]
@@ -78,17 +83,21 @@ public class WikiPageRepositoryTests
         _wikiDbContext.WikiPages.Add(testData);
         await _wikiDbContext.SaveChangesAsync();
 
-        var repository = new WikiPageRepository(_wikiDbContext);
+        var categoryRepository = new CategoryRepository(_wikiDbContext);
+        var mockImageStorage = new Mock<IImageStorageService>();
+        mockImageStorage.Setup(s => s.ReadImages(It.IsAny<Guid>())).Returns(new List<ImageFormModel>());
+        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository, mockImageStorage.Object);
 
         // Act
         var result = await repository.GetByIdAsync(articleId1);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(testData.Id, result.WikiPage.Id);
-        Assert.AreEqual(testData.Title, result.WikiPage.Title);
-        Assert.AreEqual(testData.RoleNote, result.WikiPage.RoleNote);
-        Assert.AreEqual(testData.SiteSub, result.WikiPage.SiteSub);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.WikiPage, Is.Not.Null);
+        Assert.That(result.WikiPage.Id, Is.EqualTo(testData.Id));
+        Assert.That(result.WikiPage.Title, Is.EqualTo(testData.Title));
+        Assert.That(result.WikiPage.RoleNote, Is.EqualTo(testData.RoleNote));
+        Assert.That(result.WikiPage.SiteSub, Is.EqualTo(testData.SiteSub));
     }
     
     [Test]
@@ -120,12 +129,12 @@ public class WikiPageRepositoryTests
         var result = await _wikiPageRepository.GetAllTitlesAndCategoriesAsync();
 
         // Assert
-        Assert.IsNotNull(result);
-        CollectionAssert.AreEqual(testData.Select(page => page.Title), result.Select(r=> r.Title));
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Select(r=> r.Title), Is.EqualTo(testData.Select(page => page.Title)));
     }
     
     [Test]
-    public async Task GetByTitleAsync_ShouldReturnWikiPageForValidTitle()
+    public async Task GetBySlugAsync_ShouldReturnWikiPageForValidSlug()
     {
         // Add a dummy category to the in-memory database
         var dummyCategory = new Category
@@ -139,37 +148,42 @@ public class WikiPageRepositoryTests
         // Arrange
         var articleId1 = Guid.NewGuid();
         var expectedTitle = "Page 1";
-        var expectedWikiPage = new WikiPage { Id = articleId1, Title = expectedTitle, RoleNote = "Test", SiteSub = "Test", CategoryId = dummyCategory.Id};
+        var expectedSlug = "page-1";
+        var expectedWikiPage = new WikiPage { Id = articleId1, Title = expectedTitle, Slug = expectedSlug, RoleNote = "Test", SiteSub = "Test", CategoryId = dummyCategory.Id};
 
         // Add the test data to the in-memory database
         _wikiDbContext.WikiPages.Add(expectedWikiPage);
         await _wikiDbContext.SaveChangesAsync();
 
-        var repository = new WikiPageRepository(_wikiDbContext);
+        var categoryRepository = new CategoryRepository(_wikiDbContext);
+        var mockImageStorage = new Mock<IImageStorageService>();
+        mockImageStorage.Setup(s => s.ReadImages(It.IsAny<Guid>())).Returns(new List<ImageFormModel>());
+        var repository = new WikiPageRepository(_wikiDbContext, categoryRepository, mockImageStorage.Object);
 
         // Act
-        var result = await repository.GetByTitleAsync(expectedTitle);
+        var result = await repository.GetBySlugAsync(expectedSlug);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(expectedWikiPage.Id, result.WikiPage.Id);
-        Assert.AreEqual(expectedWikiPage.Title, result.WikiPage.Title);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.WikiPage, Is.Not.Null);
+        Assert.That(result.WikiPage.Id, Is.EqualTo(expectedWikiPage.Id));
+        Assert.That(result.WikiPage.Title, Is.EqualTo(expectedWikiPage.Title));
     }
 
     [Test]
-    public async Task GetByTitleAsync_ShouldReturnNullForInvalidTitle()
+    public async Task GetBySlugAsync_ShouldReturnNullForInvalidSlug()
     {
         // Arrange
-        var invalidTitle = "Nonexistent Page";
+        var invalidSlug = "nonexistent-page";
             
         var mockRepository = new Mock<IWikiPageRepository>();
-        mockRepository.Setup(repo => repo.GetByTitleAsync(invalidTitle)).ReturnsAsync(null as WPWithImagesOutputModel);
+        mockRepository.Setup(repo => repo.GetBySlugAsync(invalidSlug)).ReturnsAsync(null as WPWithImagesOutputModel);
 
         // Act
-        var result = await mockRepository.Object.GetByTitleAsync(invalidTitle);
+        var result = await mockRepository.Object.GetBySlugAsync(invalidSlug);
 
         // Assert
-        Assert.IsNull(result);
+        Assert.That(result, Is.Null);
         // Additional assertions based on your test data and expectations
     }
     
@@ -219,15 +233,15 @@ public class WikiPageRepositoryTests
 
         // Assert
         // Check if the WikiPage is added to the context
-        CollectionAssert.Contains(_wikiDbContext.WikiPages.ToList(), wikiPageToAdd);
+        Assert.That(_wikiDbContext.WikiPages.ToList(), Does.Contain(wikiPageToAdd));
 
         // Check if Paragraphs are added with correct associations
         var paragraphsList = await _wikiDbContext.Paragraphs.ToListAsync();
         foreach (var paragraph in wikiPageToAdd.Paragraphs)
         {
-            Assert.AreEqual(wikiPageToAdd.Id, paragraph.WikiPageId);
-            Assert.AreSame(wikiPageToAdd, paragraph.WikiPage);
-            CollectionAssert.Contains(paragraphsList, paragraph);
+            Assert.That(paragraph.WikiPageId, Is.EqualTo(wikiPageToAdd.Id));
+            Assert.That(paragraph.WikiPage, Is.SameAs(wikiPageToAdd));
+            Assert.That(paragraphsList, Does.Contain(paragraph));
         }
     }
 
@@ -268,19 +282,19 @@ public class WikiPageRepositoryTests
             
         // Assert
         // Check if the WikiPage is added to the context
-        CollectionAssert.Contains(_wikiDbContext.WikiPages.ToList(), userSubmittedWikiPageToAdd);
+        Assert.That(_wikiDbContext.WikiPages.ToList(), Does.Contain(userSubmittedWikiPageToAdd));
         // var addedWikiPage = _wikiDbContext.UserSubmittedWikiPages.FirstOrDefault(wp => wp.Id == userSubmittedWikiPageToAdd.Id);
-        // Assert.NotNull(addedWikiPage);
+        // Assert.That(addedWikiPage, Is.Not.Null);
 
         // Check if Paragraphs are added with correct associations
         var paragraphsList = await _wikiDbContext.Paragraphs.ToListAsync(); // Convert DbSet to List
         foreach (var paragraph in userSubmittedWikiPageToAdd.Paragraphs)
         {
-            Assert.AreEqual(userSubmittedWikiPageToAdd.Id, paragraph.WikiPageId);
-            Assert.AreSame(userSubmittedWikiPageToAdd, paragraph.WikiPage);
+            Assert.That(paragraph.WikiPageId, Is.EqualTo(userSubmittedWikiPageToAdd.Id));
+            Assert.That(paragraph.WikiPage, Is.SameAs(userSubmittedWikiPageToAdd));
 
-            // Use CollectionAssert.Contains for collections
-            CollectionAssert.Contains(paragraphsList, paragraph);
+            // Use ClassicAssert.Contains for collections
+            Assert.That(paragraphsList, Does.Contain(paragraph));
         }
     }
     
@@ -326,19 +340,19 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
     // Assert
     // Verify WikiPage is updated
     var updatedWikiPageInDb = _wikiDbContext.WikiPages.FirstOrDefault(wp => wp.Id == updatedWikiPage.Id);
-    Assert.NotNull(updatedWikiPageInDb);
-    Assert.AreEqual(updatedWikiPage.Title, updatedWikiPageInDb.Title);
-    Assert.AreEqual(updatedWikiPage.RoleNote, updatedWikiPageInDb.RoleNote);
-    Assert.AreEqual(updatedWikiPage.SiteSub, updatedWikiPageInDb.SiteSub);
+    Assert.That(updatedWikiPageInDb, Is.Not.Null);
+    Assert.That(updatedWikiPageInDb.Title, Is.EqualTo(updatedWikiPage.Title));
+    Assert.That(updatedWikiPageInDb.RoleNote, Is.EqualTo(updatedWikiPage.RoleNote));
+    Assert.That(updatedWikiPageInDb.SiteSub, Is.EqualTo(updatedWikiPage.SiteSub));
 
     // Verify Paragraphs are updated and new one is added
     var paragraphsInDb = await _wikiDbContext.Paragraphs.ToListAsync();
     foreach (var updatedParagraph in updatedWikiPage.Paragraphs)
     {
         var matchingParagraph = paragraphsInDb.FirstOrDefault(p => p.Id == updatedParagraph.Id);
-        Assert.NotNull(matchingParagraph);
-        Assert.AreEqual(updatedParagraph.Title, matchingParagraph.Title);
-        Assert.AreEqual(updatedParagraph.Content, matchingParagraph.Content);
+        Assert.That(matchingParagraph, Is.Not.Null);
+        Assert.That(matchingParagraph.Title, Is.EqualTo(updatedParagraph.Title));
+        Assert.That(matchingParagraph.Content, Is.EqualTo(updatedParagraph.Content));
     }
 }
 
@@ -381,15 +395,15 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
         // Assert
         // Check if the UserSubmittedWikiPage is added to the context
         var addedUserSubmittedWikiPage = _wikiDbContext.UserSubmittedWikiPages.FirstOrDefault(wp => wp.Id == updatedWikiPage.Id);
-        Assert.NotNull(addedUserSubmittedWikiPage);
+        Assert.That(addedUserSubmittedWikiPage, Is.Not.Null);
 
         // Check if Paragraphs are added with correct associations
         var paragraphsList = await _wikiDbContext.Paragraphs.ToListAsync();
         foreach (var paragraph in updatedWikiPage.Paragraphs)
         {
-            Assert.AreEqual(updatedWikiPage.Id, paragraph.WikiPageId);
-            Assert.AreSame(updatedWikiPage, paragraph.WikiPage);
-            CollectionAssert.Contains(paragraphsList, paragraph);
+            Assert.That(paragraph.WikiPageId, Is.EqualTo(updatedWikiPage.Id));
+            Assert.That(paragraph.WikiPage, Is.SameAs(updatedWikiPage));
+            Assert.That(paragraphsList, Does.Contain(paragraph));
         }
     }
     
@@ -429,10 +443,10 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
 
         // Assert
         var deletedWikiPage = await _wikiDbContext.WikiPages.FindAsync(wikiPageToDelete.Id);
-        Assert.Null(deletedWikiPage);
+        Assert.That(deletedWikiPage, Is.Null);
 
         var deletedParagraphs = await _wikiDbContext.Paragraphs.Where(p => p.WikiPageId == wikiPageToDelete.Id).ToListAsync();
-        CollectionAssert.IsEmpty(deletedParagraphs);
+        Assert.That(deletedParagraphs, Is.Empty);
     }
 
     [Test]
@@ -473,10 +487,10 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
 
         // Assert
         var deletedUserSubmittedWikiPage = await _wikiDbContext.UserSubmittedWikiPages.FindAsync(userSubmittedWikiPageToDelete.Id);
-        Assert.Null(deletedUserSubmittedWikiPage);
+        Assert.That(deletedUserSubmittedWikiPage, Is.Null);
 
         var deletedParagraphs = await _wikiDbContext.Paragraphs.Where(p => p.WikiPageId == userSubmittedWikiPageToDelete.Id).ToListAsync();
-        CollectionAssert.IsEmpty(deletedParagraphs);
+        Assert.That(deletedParagraphs, Is.Empty);
     }
     
     [Test]
@@ -507,8 +521,8 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
         var result = await _wikiPageRepository.GetSubmittedPageTitlesAndIdAsync();
 
         // Assert
-        var expected = submittedPages.Where(page => page.IsNewPage).Select(page => new Tuple<string, Guid>(page.Title, page.Id));
-        CollectionAssert.AreEquivalent(expected, result);
+        var expected = submittedPages.Where(page => page.IsNewPage).Select(page => new WikiPageTitleEntry(page.Title!, page.Id));
+        Assert.That(result, Is.EquivalentTo(expected));
     }
     
     [Test]
@@ -548,10 +562,11 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
         var result = await _wikiPageRepository.GetSubmittedPageByIdAsync(userSubmittedPage.Id);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.AreEqual(userSubmittedPage.Id, result.UserSubmittedWikiPage.Id);
-        Assert.AreEqual(userSubmittedPage.Title, result.UserSubmittedWikiPage.Title);
-        CollectionAssert.AreEqual(userSubmittedPage.Paragraphs, result.UserSubmittedWikiPage.Paragraphs);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.UserSubmittedWikiPage, Is.Not.Null);
+        Assert.That(result.UserSubmittedWikiPage.Id, Is.EqualTo(userSubmittedPage.Id));
+        Assert.That(result.UserSubmittedWikiPage.Title, Is.EqualTo(userSubmittedPage.Title));
+        Assert.That(result.UserSubmittedWikiPage.Paragraphs, Is.EqualTo(userSubmittedPage.Paragraphs));
     }
     [Test]
     public async Task GetSubmittedUpdateTitlesAndIdAsync_ShouldReturnSubmittedUpdateTitlesAndIds()
@@ -573,8 +588,8 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
         var result = await _wikiPageRepository.GetSubmittedUpdateTitlesAndIdAsync();
 
         // Assert
-        var expected = submittedUpdatePages.Where(page => !page.IsNewPage).Select(page => new Tuple<string, Guid>(page.Title, page.Id));
-        CollectionAssert.AreEquivalent(expected, result);
+        var expected = submittedUpdatePages.Where(page => !page.IsNewPage).Select(page => new WikiPageTitleEntry(page.Title!, page.Id));
+        Assert.That(result, Is.EquivalentTo(expected));
     }
     
     [Test]
@@ -603,10 +618,85 @@ public async Task AcceptUserSubmittedUpdateAsync_ShouldUpdateWikiPageAndParagrap
         var result = await _wikiPageRepository.GetSubmittedUpdateByIdAsync(userSubmittedUpdatePage.Id);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.AreEqual(userSubmittedUpdatePage.Id, result.UserSubmittedWikiPage.Id);
-        Assert.AreEqual(userSubmittedUpdatePage.Title, result.UserSubmittedWikiPage.Title);
-        CollectionAssert.AreEqual(userSubmittedUpdatePage.Paragraphs, result.UserSubmittedWikiPage.Paragraphs);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.UserSubmittedWikiPage, Is.Not.Null);
+        Assert.That(result.UserSubmittedWikiPage.Id, Is.EqualTo(userSubmittedUpdatePage.Id));
+        Assert.That(result.UserSubmittedWikiPage.Title, Is.EqualTo(userSubmittedUpdatePage.Title));
+        Assert.That(result.UserSubmittedWikiPage.Paragraphs, Is.EqualTo(userSubmittedUpdatePage.Paragraphs));
+    }
+    
+    [Test]
+    public async Task UpdateAsync_ShouldUpdatePropertiesAndManageParagraphs()
+    {
+        var dummyCategory = new Category
+        {
+            Id = Guid.NewGuid(),
+            CategoryName = "Dummy Category"
+        };
+        _wikiDbContext.Categories.Add(dummyCategory);
+        await _wikiDbContext.SaveChangesAsync();
+
+        var wikiPageId = Guid.NewGuid();
+        var para1Id = Guid.NewGuid();
+        var para2Id = Guid.NewGuid();
+        var para3Id = Guid.NewGuid();
+
+        var wikiPage = new WikiPage
+        {
+            Id = wikiPageId,
+            Title = "Original Title",
+            SiteSub = "Original SiteSub",
+            RoleNote = "Original RoleNote",
+            Content = "Original Content",
+            CategoryId = dummyCategory.Id,
+            Paragraphs = new List<Paragraph>
+            {
+                new() { Id = para1Id, Title = "Paragraph 1", Content = "Content 1" },
+                new() { Id = para2Id, Title = "Paragraph 2", Content = "Content 2" },
+                new() { Id = para3Id, Title = "Paragraph 3", Content = "Content 3" }
+            }
+        };
+
+        await _wikiPageRepository.AddAsync(wikiPage, new List<ImageFormModel>());
+        await _wikiDbContext.SaveChangesAsync();
+
+        // AddAsync overwrites paragraph IDs — capture the real IDs
+        var savedPage = await _wikiDbContext.WikiPages
+            .Include(wp => wp.Paragraphs)
+            .FirstAsync(wp => wp.Id == wikiPageId);
+        var savedPara1Id = savedPage.Paragraphs.First(p => p.Title == "Paragraph 1").Id;
+        var savedPara2Id = savedPage.Paragraphs.First(p => p.Title == "Paragraph 2").Id;
+
+        var updatedWikiPage = new WikiPage
+        {
+            Title = "Updated Title",
+            SiteSub = "Updated SiteSub",
+            RoleNote = "Updated RoleNote",
+            Content = "Updated Content",
+            CategoryId = dummyCategory.Id,
+            Paragraphs = new List<Paragraph>
+            {
+                new() { Id = savedPara1Id, Title = "Updated Para 1", Content = "Updated Content 1" }
+            }
+        };
+
+        await _wikiPageRepository.UpdateAsync(savedPage, updatedWikiPage, new List<ImageFormModel>());
+        await _wikiDbContext.SaveChangesAsync();
+
+        var result = await _wikiDbContext.WikiPages
+            .Include(wp => wp.Paragraphs)
+            .FirstAsync(wp => wp.Id == wikiPageId);
+
+        Assert.That(result.Title, Is.EqualTo("Updated Title"));
+        Assert.That(result.Paragraphs.Count, Is.EqualTo(1));
+
+        var updatedPara1 = result.Paragraphs.Single();
+        Assert.That(updatedPara1.Title, Is.EqualTo("Updated Para 1"));
+
+        var removedPara2 = await _wikiDbContext.Paragraphs
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(p => p.Id == savedPara2Id);
+        Assert.That(removedPara2, Is.Null);
     }
     
 }

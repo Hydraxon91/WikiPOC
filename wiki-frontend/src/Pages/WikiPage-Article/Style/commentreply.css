@@ -33,17 +33,20 @@
 .reply-comment-write-textarea textarea {
     width: 100%;
     height: 2.5em;
-    border: none;
-    border-bottom: 0.0625em solid #757575; /* 1px to em */
-    padding: 0.625em; /* 10px to em */
-    font-size: 0.875em; /* 14px to em */
-    resize: none;
-    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 0.625em;
+    font-size: 0.875em;
+    resize: vertical;
     margin-bottom: auto;
-    overflow: hidden;
     min-height: 2em;
     max-height: 10rem;
     box-sizing: border-box;
+}
+
+.reply-comment-write-textarea textarea:focus {
+    outline: 2px solid var(--accent-color, #526cad);
+    outline-offset: -1px;
 }
 
 .reply-buttons {

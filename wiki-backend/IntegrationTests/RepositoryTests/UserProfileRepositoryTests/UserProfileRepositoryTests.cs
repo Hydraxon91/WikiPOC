@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests.Repositories
 {
@@ -14,7 +16,8 @@ namespace IntegrationTests.Repositories
         public void SetUp()
         {
             ResetDatabase();
-            _repository = new UserProfileRepository(DbContext);
+            var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+            _repository = new UserProfileRepository(DbContext, storageSettings);
         }
 
         [Test]
@@ -29,8 +32,8 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByIdAsync(userProfile.Id);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(userProfile.UserName, result.UserName);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.UserName, Is.EqualTo(userProfile.UserName));
         }
 
         [Test]
@@ -45,8 +48,8 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByUsernameAsync(userProfile.UserName);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(userProfile.UserName, result.UserName);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.UserName, Is.EqualTo(userProfile.UserName));
         }
 
         [Test]
@@ -61,8 +64,8 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByUserIdAsync(userProfile.UserId);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(userProfile.UserId, result.UserId);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.UserId, Is.EqualTo(userProfile.UserId));
         }
 
         [Test]
@@ -81,8 +84,8 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var result = await _repository.GetByIdAsync(userProfile.Id);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(updatedProfile.DisplayName, result.DisplayName);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.DisplayName, Is.EqualTo(updatedProfile.DisplayName));
         }
 
         [Test]
@@ -111,7 +114,7 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var result = await _repository.GetByIdAsync(userProfile.Id);
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
         
         [Test]
@@ -121,7 +124,7 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByIdAsync(Guid.NewGuid());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
         
         [Test]
@@ -131,7 +134,7 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByUsernameAsync("nonexistentuser");
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
         
         [Test]
@@ -141,7 +144,7 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByUserIdAsync(Guid.NewGuid().ToString());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
         
         [Test]
@@ -160,8 +163,8 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var result = await _repository.GetByIdAsync(userProfile.Id);
-            Assert.IsNotNull(result);
-            Assert.AreEqual("testuser", result.UserName); // Ensure UserName was not changed
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.UserName, Is.EqualTo("testuser")); // Ensure UserName was not changed
         }
         
         [Test]
@@ -176,7 +179,7 @@ namespace IntegrationTests.Repositories
             // Assert
             // No exception should be thrown and the count of user profiles should remain the same
             var count = await DbContext.UserProfiles.CountAsync();
-            Assert.AreEqual(0, count);
+            Assert.That(count, Is.EqualTo(0));
         }
     }
 }

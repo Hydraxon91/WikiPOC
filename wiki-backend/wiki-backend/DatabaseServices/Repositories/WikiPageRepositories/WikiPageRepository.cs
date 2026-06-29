@@ -1,7 +1,7 @@
-﻿using Azure;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using wiki_backend.Models;
-using System;
+using wiki_backend.Services;
+using wiki_backend.Services.Storage;
 
 namespace wiki_backend.DatabaseServices.Repositories;
 
@@ -9,11 +9,19 @@ public class WikiPageRepository : IWikiPageRepository
 {
     private readonly WikiDbContext _context;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IImageStorageService _imageStorage;
 
-    public WikiPageRepository(WikiDbContext context)
+    public WikiPageRepository(WikiDbContext context, ICategoryRepository categoryRepository, IImageStorageService imageStorage)
     {
         _context = context;
-        _categoryRepository = new CategoryRepository(_context);
+        _categoryRepository = categoryRepository;
+        _imageStorage = imageStorage;
+    }
+
+    private async Task<string> GenerateUniqueSlugAsync(string? title)
+    {
+        return await SlugHelper.GenerateUniqueSlugAsync(title, slug =>
+            _context.WikiPages.AnyAsync(wp => wp.Slug == slug));
     }
 
     public async Task<List<TitleAndCategory>> GetAllTitlesAndCategoriesAsync()
@@ -24,7 +32,8 @@ public class WikiPageRepository : IWikiPageRepository
             .Select(page => new TitleAndCategory
             {
                 Title = page.Title ?? "Untitled",
-                Category = page.Category.CategoryName ?? "Uncategorized"
+                Slug = page.Slug,
+                Category = page.Category!.CategoryName ?? "Uncategorized"
             })
             .ToListAsync();
 
@@ -38,157 +47,82 @@ public class WikiPageRepository : IWikiPageRepository
             .ToListAsync();
     }
 
-    public async Task<WPWithImagesOutputModel?> GetByIdAsync(Guid id)
+    private async Task<WikiPage?> LoadWikiPageAsync(IQueryable<WikiPage> query, bool includeReplies)
     {
-        var wikiPage = await _context.WikiPages
-            .Include(wp => wp.Paragraphs)
-            .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.UserProfile)
-            .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.Replies)
-            .SingleOrDefaultAsync(wp => wp.Id == id);
-
-        if (wikiPage != null)
-        {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles",
-                wikiPage.Id.ToString());
-            if (Directory.Exists(directoryPath))
-            {
-                var imageFiles = Directory.GetFiles(directoryPath);
-                var images = imageFiles.Select(file =>
-                {
-                    var fileName = Path.GetFileName(file);
-                    var imageData = File.ReadAllBytes(file);
-                    var dataURL =
-                        $"data:image/{Path.GetExtension(fileName).TrimStart('.')};base64,{Convert.ToBase64String(imageData)}";
-                    return new ImageFormModel
-                    {
-                        FileName = fileName,
-                        DataURL = dataURL
-                    };
-                }).ToList();
-
-                return new WPWithImagesOutputModel
-                {
-                    WikiPage = wikiPage,
-                    Images = images
-                };
-            }
-            else
-            {
-                return new WPWithImagesOutputModel
-                {
-                    WikiPage = wikiPage,
-                    Images = null
-                };
-            }
-        }
-
-        return null;
-    }
-
-    public async Task<WPWithImagesOutputModel?> GetByTitleAsync(string title)
-    {
-        var wikiPage = await _context.WikiPages
-            .Where(page =>
-                !(page is UserSubmittedWikiPage) ||
-                (_context.UserSubmittedWikiPages.Any(userPage => userPage.Id == page.Id && userPage.Approved)))
+        query = query
             .Include(p => p.Paragraphs)
             .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.UserProfile)
-            .FirstOrDefaultAsync(p => p.Title == title);
+                .ThenInclude(uc => uc.UserProfile);
 
-        if (wikiPage != null)
+        if (includeReplies)
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles",
-                wikiPage.Id.ToString());
-            if (Directory.Exists(directoryPath))
-            {
-                var imageFiles = Directory.GetFiles(directoryPath);
-                var images = imageFiles.Select(file =>
-                {
-                    var fileName = Path.GetFileName(file);
-                    var imageData = File.ReadAllBytes(file);
-                    var dataURL =
-                        $"data:image/{Path.GetExtension(fileName).TrimStart('.')};base64,{Convert.ToBase64String(imageData)}";
-                    return new ImageFormModel
-                    {
-                        FileName = fileName,
-                        DataURL = dataURL
-                    };
-                }).ToList();
-
-                return new WPWithImagesOutputModel
-                {
-                    WikiPage = wikiPage,
-                    Images = images
-                };
-            }
-            else
-            {
-                return new WPWithImagesOutputModel
-                {
-                    WikiPage = wikiPage,
-                    Images = null
-                };
-            }
+            query = query
+                .Include(wp => wp.Comments)
+                    .ThenInclude(uc => uc.Replies);
         }
 
-        return null;
+        return await query.FirstOrDefaultAsync();
+    }
+
+    public async Task<WPWithImagesOutputModel?> GetByIdAsync(Guid id)
+    {
+        var wikiPage = await LoadWikiPageAsync(
+            _context.WikiPages.Where(wp => wp.Id == id), true);
+
+        if (wikiPage == null) return null;
+
+        var images = _imageStorage.ReadImages(wikiPage.Id);
+        return new WPWithImagesOutputModel
+        {
+            WikiPage = wikiPage,
+            Images = images.Count > 0 ? images : null
+        };
+    }
+
+    public async Task<WPWithImagesOutputModel?> GetBySlugAsync(string slug)
+    {
+        var wikiPage = await LoadWikiPageAsync(
+            _context.WikiPages
+                .Where(page =>
+                    !(page is UserSubmittedWikiPage) ||
+                    (_context.UserSubmittedWikiPages.Any(userPage => userPage.Id == page.Id && userPage.Approved)))
+                .Where(p => p.Slug == slug), true);
+
+        if (wikiPage == null) return null;
+
+        var images = _imageStorage.ReadImages(wikiPage.Id);
+        return new WPWithImagesOutputModel
+        {
+            WikiPage = wikiPage,
+            Images = images.Count > 0 ? images : null
+        };
     }
 
     public async Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images)
     {
-        if (images.Count > 0)
-        {
-            foreach (var image in images)
-            {
-                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),
-                    "articles", wikiPage.Id.ToString());
-                Directory.CreateDirectory(directoryPath);
-                var filePath = Path.Combine(directoryPath, image.FileName);
-                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
-                }
-            }
-        }
+        wikiPage.Slug = await GenerateUniqueSlugAsync(wikiPage.Title);
+        await _imageStorage.SaveImagesAsync(wikiPage.Id, images);
 
         foreach (var paragraph in wikiPage.Paragraphs)
         {
-            paragraph.Id = new Guid();
+            paragraph.Id = Guid.NewGuid();
             paragraph.WikiPage = wikiPage;
             paragraph.WikiPageId = wikiPage.Id;
         }
 
-        // Add the article to the category
-        await _categoryRepository.AddArticleToCategoryAsync(wikiPage.CategoryId.Value, wikiPage);
+        await _categoryRepository.AddArticleToCategoryAsync(wikiPage.CategoryId!.Value, wikiPage);
 
         await _context.SaveChangesAsync();
     }
 
     public async Task AddUserSubmittedPageAsync(UserSubmittedWikiPage wikiPage, ICollection<ImageFormModel> images)
     {
-        if (images.Count > 0)
-        {
-            foreach (var image in images)
-            {
-                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),
-                    "articles", wikiPage.Id.ToString());
-                Directory.CreateDirectory(directoryPath);
-                var filePath = Path.Combine(directoryPath, image.FileName);
-                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
-                }
-            }
-        }
+        wikiPage.Slug = await GenerateUniqueSlugAsync(wikiPage.Title);
+        await _imageStorage.SaveImagesAsync(wikiPage.Id, images);
 
         foreach (var paragraph in wikiPage.Paragraphs)
         {
-            paragraph.Id = new Guid();
+            paragraph.Id = Guid.NewGuid();
             paragraph.WikiPage = wikiPage;
             paragraph.WikiPageId = wikiPage.Id;
         }
@@ -201,9 +135,9 @@ public class WikiPageRepository : IWikiPageRepository
     {
         _context.Entry(userSubmittedWikiPage).State = EntityState.Modified;
         userSubmittedWikiPage.Approved = true;
-        // Add the article to the category
-        await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId.Value,
-            userSubmittedWikiPage);
+        if (userSubmittedWikiPage.CategoryId.HasValue)
+            await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId.Value,
+                userSubmittedWikiPage);
         await _context.SaveChangesAsync();
     }
 
@@ -214,10 +148,8 @@ public class WikiPageRepository : IWikiPageRepository
         existingWikiPage.Title = updatedWikiPage.Title;
         existingWikiPage.RoleNote = updatedWikiPage.RoleNote;
         existingWikiPage.SiteSub = updatedWikiPage.SiteSub;
-        existingWikiPage.Paragraphs = updatedWikiPage.Paragraphs;
         existingWikiPage.Content = updatedWikiPage.Content;
         existingWikiPage.CategoryId = updatedWikiPage.CategoryId;
-        existingWikiPage.LegacyWikiPage = updatedWikiPage.LegacyWikiPage;
         existingWikiPage.LastUpdateDate = DateTime.Now;
 
         // Remove paragraphs that are not present in the updatedWikiPage
@@ -228,7 +160,7 @@ public class WikiPageRepository : IWikiPageRepository
 
         foreach (var paragraphToRemove in paragraphsToRemove)
         {
-            _context.Paragraphs.Remove(paragraphToRemove);
+            _context.Entry(paragraphToRemove).State = EntityState.Deleted;
             existingWikiPage.Paragraphs.Remove(paragraphToRemove);
         }
 
@@ -264,32 +196,17 @@ public class WikiPageRepository : IWikiPageRepository
             }
         }
 
-        if (images.Count > 0)
-        {
-            foreach (var image in images)
-            {
-                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),
-                    "articles", existingWikiPage.Id.ToString());
-                Directory.CreateDirectory(directoryPath);
-                var filePath = Path.Combine(directoryPath, image.FileName);
-                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
-                }
-            }
-        }
+        await _imageStorage.SaveImagesAsync(existingWikiPage.Id, images);
 
         await _context.SaveChangesAsync();
     }
 
     public async Task AcceptUserSubmittedUpdateAsync(UserSubmittedWikiPage userSubmittedWikiPage)
     {
-        // Set Approved to true
         userSubmittedWikiPage.Approved = true;
-        // Add the new article to the category
-        await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId.Value,
-            userSubmittedWikiPage);
+        if (userSubmittedWikiPage.CategoryId.HasValue)
+            await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId.Value,
+                userSubmittedWikiPage);
 
         await _context.SaveChangesAsync();
     }
@@ -299,26 +216,12 @@ public class WikiPageRepository : IWikiPageRepository
     {
         foreach (var paragraph in updatedWikiPage.Paragraphs)
         {
-            paragraph.Id = new Guid();
+            paragraph.Id = Guid.NewGuid();
             paragraph.WikiPage = updatedWikiPage;
             paragraph.WikiPageId = updatedWikiPage.Id;
         }
 
-        if (images.Count > 0)
-        {
-            foreach (var image in images)
-            {
-                var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),
-                    "articles", updatedWikiPage.Id.ToString());
-                Directory.CreateDirectory(directoryPath);
-                var filePath = Path.Combine(directoryPath, image.FileName);
-                var imageData = Convert.FromBase64String(image.DataURL.Split(',')[1]);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await fileStream.WriteAsync(imageData, 0, imageData.Length);
-                }
-            }
-        }
+        await _imageStorage.SaveImagesAsync(updatedWikiPage.Id, images);
 
         _context.UserSubmittedWikiPages.Add(updatedWikiPage);
         await _context.SaveChangesAsync();
@@ -333,14 +236,8 @@ public class WikiPageRepository : IWikiPageRepository
 
         if (wikiPage != null)
         {
-            // Remove the associated folder
-            var folderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", wikiPage.Id.ToString());
-            if (Directory.Exists(folderPath))
-            {
-                Directory.Delete(folderPath, true);
-            }
-            
-                    
+            _imageStorage.DeleteImageDirectory(wikiPage.Id);
+
             // Remove the old article from the category
             if (wikiPage.CategoryId.HasValue)
             {
@@ -371,22 +268,11 @@ public class WikiPageRepository : IWikiPageRepository
             
             if (newId != null)
             {
-                // Rename the old folder to the new ID if new ID is not null
-                var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", id.ToString());
-                var newFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", newId.ToString());
-                if (Directory.Exists(oldFolderPath))
-                {
-                    Directory.Move(oldFolderPath, newFolderPath);
-                }
+                _imageStorage.MoveImageDirectory(id, newId.Value);
             }
             else
             {
-                // Delete the old folder if new ID is null
-                var oldFolderPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"), "articles", id.ToString());
-                if (Directory.Exists(oldFolderPath))
-                {
-                    Directory.Delete(oldFolderPath, true);
-                }
+                _imageStorage.DeleteImageDirectory(id);
             }
 
             return true;
@@ -395,107 +281,43 @@ public class WikiPageRepository : IWikiPageRepository
         return false;
     }
     
-    public async Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedPageTitlesAndIdAsync()
+    public async Task<IEnumerable<WikiPageTitleEntry>> GetSubmittedPageTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage && !page.Approved).Select(page => new Tuple<string, Guid>(page.Title, page.Id)).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage && !page.Approved).Select(page => new WikiPageTitleEntry(page.Title!, page.Id)).ToListAsync();
     }
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedPageByIdAsync(Guid id)
     {
-        var wikiPage = await _context.UserSubmittedWikiPages
-            .Where((page => page.IsNewPage==true))
-            .Include(p => p.Paragraphs)
-            .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.UserProfile)
-            .FirstOrDefaultAsync(p => p.Id == id);
-        
-        if (wikiPage!=null)
+        var wikiPage = await LoadWikiPageAsync(
+            _context.UserSubmittedWikiPages.Where(page => page.IsNewPage && page.Id == id), false);
+
+        if (wikiPage == null) return null;
+
+        var images = _imageStorage.ReadImages(wikiPage.Id);
+        return new WPWithImagesOutputModel
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Id.ToString());
-            if (Directory.Exists(directoryPath))
-            {
-                var imageFiles = Directory.GetFiles(directoryPath);
-                var images = imageFiles.Select(file =>
-                {
-                    var fileName = Path.GetFileName(file);
-                    var imageData = File.ReadAllBytes(file);
-                    var dataURL =
-                        $"data:image/{Path.GetExtension(fileName).TrimStart('.')};base64,{Convert.ToBase64String(imageData)}";
-                    return new ImageFormModel
-                    {
-                        FileName = fileName,
-                        DataURL = dataURL
-                    };
-                }).ToList();
-
-                return new WPWithImagesOutputModel
-                {
-                    UserSubmittedWikiPage = wikiPage,
-                    Images = images
-                };
-            }
-            else
-            {
-                return new WPWithImagesOutputModel
-                {
-                    UserSubmittedWikiPage = wikiPage,
-                    Images = null
-                };
-            }
-        }
-
-        return null;
+            UserSubmittedWikiPage = (UserSubmittedWikiPage)wikiPage,
+            Images = images.Count > 0 ? images : null
+        };
     }
     
-    public async Task<IEnumerable<Tuple<string, Guid>>> GetSubmittedUpdateTitlesAndIdAsync()
+    public async Task<IEnumerable<WikiPageTitleEntry>> GetSubmittedUpdateTitlesAndIdAsync()
     {
-        return await _context.UserSubmittedWikiPages.Where(page => page.IsNewPage==false && !page.Approved).Select(page => new Tuple<string, Guid>(page.Title, page.Id)).ToListAsync();
+        return await _context.UserSubmittedWikiPages.Where(page => !page.IsNewPage && !page.Approved).Select(page => new WikiPageTitleEntry(page.Title!, page.Id)).ToListAsync();
     }
     
     public async Task<WPWithImagesOutputModel?> GetSubmittedUpdateByIdAsync(Guid id)
     {
-        var wikiPage = await _context.UserSubmittedWikiPages
-            .Where((page => page.IsNewPage==false))
-            .Include(p => p.Paragraphs)
-            .Include(wp => wp.Comments)
-            .ThenInclude(uc => uc.UserProfile)
-            .FirstOrDefaultAsync(p => p.Id == id);
-        
-        if (wikiPage!=null)
+        var wikiPage = await LoadWikiPageAsync(
+            _context.UserSubmittedWikiPages.Where(page => !page.IsNewPage && page.Id == id), false);
+
+        if (wikiPage == null) return null;
+
+        var images = _imageStorage.ReadImages(wikiPage.Id);
+        return new WPWithImagesOutputModel
         {
-            var directoryPath = Path.Combine(Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER"),"articles", wikiPage.Id.ToString());
-            if (Directory.Exists(directoryPath))
-            {
-                var imageFiles = Directory.GetFiles(directoryPath);
-                var images = imageFiles.Select(file =>
-                {
-                    var fileName = Path.GetFileName(file);
-                    var imageData = File.ReadAllBytes(file);
-                    var dataURL =
-                        $"data:image/{Path.GetExtension(fileName).TrimStart('.')};base64,{Convert.ToBase64String(imageData)}";
-                    return new ImageFormModel
-                    {
-                        FileName = fileName,
-                        DataURL = dataURL
-                    };
-                }).ToList();
-
-                return new WPWithImagesOutputModel
-                {
-                    UserSubmittedWikiPage = wikiPage,
-                    Images = images
-                };
-            }
-            else
-            {
-                return new WPWithImagesOutputModel
-                {
-                    UserSubmittedWikiPage = wikiPage,
-                    Images = null
-                };
-            }
-        }
-
-        return null;
+            UserSubmittedWikiPage = (UserSubmittedWikiPage)wikiPage,
+            Images = images.Count > 0 ? images : null
+        };
     }
 }

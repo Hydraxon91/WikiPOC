@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
+using wiki_backend.Services.Storage;
 
 namespace IntegrationTests.ControllerTests.ArticleControllerTests;
 
@@ -30,8 +33,10 @@ public class WikiPageControllerTests : IntegrationTestBase
         Env.TraversePath().Load();
         var signingKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
         
-        _wikiPageRepository = new WikiPageRepository(DbContext);
         var categoryRepository = new CategoryRepository(DbContext);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+        var imageStorage = new ImageStorageService(storageSettings);
+        _wikiPageRepository = new WikiPageRepository(DbContext, categoryRepository, imageStorage);
         _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         _controller = new WikiPagesController(_wikiPageRepository, categoryRepository);
         ResetDatabase();
@@ -70,45 +75,45 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.GetWikiPages();
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
-        var pages = okResult.Value as IEnumerable<WikiPage>;
-        Assert.IsNotNull(pages);
-        Assert.IsTrue(pages.Contains(page1));
-        Assert.IsTrue(pages.Contains(page2));
+        var pages = okResult!.Value as IEnumerable<WikiPage>;
+        Assert.That(pages, Is.Not.Null);
+        Assert.That(pages, Does.Contain(page1));
+        Assert.That(pages, Does.Contain(page2));
     }
 
     [Test]
-    public async Task GetWikiPageByTitle_ShouldReturnPage()
+    public async Task GetWikiPageBySlug_ShouldReturnPage()
     {
         // Arrange
         var pageId = Guid.NewGuid();
-        var page = new WikiPage {Id = pageId, Title = "IntTestPage", Content = "Content of page" };
+        var page = new WikiPage {Id = pageId, Title = "IntTestPage", Slug = "inttestpage", Content = "Content of page" };
         await DbContext.WikiPages.AddAsync(page);
         await DbContext.SaveChangesAsync();
 
         // Act
-        var result = await _controller.GetWikiPageByTitle(page.Title);
+        var result = await _controller.GetWikiPageBySlug(page.Slug!);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
-        var returnedPage = okResult.Value as WPWithImagesOutputModel;
-        Assert.IsNotNull(returnedPage);
-        Assert.AreEqual(page.Id, returnedPage.WikiPage.Id);
+        var returnedPage = okResult!.Value as WPWithImagesOutputModel;
+        Assert.That(returnedPage, Is.Not.Null);
+        Assert.That(returnedPage.WikiPage!.Id, Is.EqualTo(page.Id));
     }
     
     [Test]
-    public async Task GetWikiPageByTitle_NonExistentTitle_ShouldReturnNull()
+    public async Task GetWikiPageBySlug_NonExistentSlug_ShouldReturnNull()
     {
         // Arrange & Act
-        var result = await _controller.GetWikiPageByTitle("Non existent page");
+        var result = await _controller.GetWikiPageBySlug("non-existent-slug");
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<NotFoundResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<NotFoundResult>());
     }
     
     [Test]
@@ -130,11 +135,11 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.CreateWikiPageForAdmin(pageModel);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var createdPage = await DbContext.WikiPages.FirstOrDefaultAsync(wp => wp.Title == pageModel.Title);
-        Assert.IsNotNull(createdPage);
-        Assert.AreEqual(pageModel.Title, createdPage.Title);
+        Assert.That(createdPage, Is.Not.Null);
+        Assert.That(createdPage.Title, Is.EqualTo(pageModel.Title));
     }
     
     [Test]
@@ -155,8 +160,8 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.CreateWikiPageForAdmin(pageModel);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<BadRequestObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
     }
     
     [Test]
@@ -177,10 +182,10 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.CreateWikiPageForAdmin(pageModel);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<ObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
         var objectResult = result.Result as ObjectResult;
-        Assert.AreEqual(500, objectResult.StatusCode);
+        Assert.That(objectResult!.StatusCode, Is.EqualTo(500));
     }
     
     [Test]
@@ -208,11 +213,11 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.UpdateWikiPageForAdmin(existingPage.Id, pageModel);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
         var updatedPage = await DbContext.WikiPages.FindAsync(existingPage.Id);
-        Assert.IsNotNull(updatedPage);
-        Assert.AreEqual(pageModel.Title, updatedPage.Title);
+        Assert.That(updatedPage, Is.Not.Null);
+        Assert.That(updatedPage.Title, Is.EqualTo(pageModel.Title));
     }
     
     [Test]
@@ -236,8 +241,8 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.UpdateWikiPageForAdmin(existingId, pageModel);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<NotFoundResult>(result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<NotFoundResult>());
     }
     
     [Test]
@@ -264,12 +269,12 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.UpdateWikiPageForAdmin(existingId, pageModel);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         var badRequestResult = result as BadRequestObjectResult;
         
         // Ensure the Value is not null
-        Assert.IsNotNull(badRequestResult.Value);
+        Assert.That(badRequestResult!.Value, Is.Not.Null);
 
         // Cast Value to dynamic
         dynamic value = badRequestResult.Value;
@@ -277,7 +282,7 @@ public class WikiPageControllerTests : IntegrationTestBase
         // Access the Message property
         string message = $"'{value}'";
 
-        Assert.AreEqual($"'{{ Message = Invalid CategoryId }}'", message);
+        Assert.That(message, Is.EqualTo($"'{{ Message = Invalid CategoryId }}'"));
     }
     
     [Test]
@@ -301,11 +306,11 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.CreateWikiPageForUser(pageModel);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<CreatedAtActionResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<CreatedAtActionResult>());
         var createdPage = await DbContext.WikiPages.FirstOrDefaultAsync(wp => wp.Title == pageModel.Title);
-        Assert.IsNotNull(createdPage);
-        Assert.AreEqual(pageModel.Title, createdPage.Title);
+        Assert.That(createdPage, Is.Not.Null);
+        Assert.That(createdPage.Title, Is.EqualTo(pageModel.Title));
     }
     
     [Test]
@@ -334,11 +339,11 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.UpdateWikiPageForUser(existingPage.Id, pageModel);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<CreatedAtActionResult>(result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<CreatedAtActionResult>());
         var updatedPage = await DbContext.WikiPages.FindAsync(existingPage.Id);
-        Assert.IsNotNull(updatedPage);
-        Assert.AreNotEqual(pageModel.Title, updatedPage.Title);
+        Assert.That(updatedPage, Is.Not.Null);
+        Assert.That(updatedPage.Title, Is.Not.EqualTo(pageModel.Title));
     }
     
     [Test]
@@ -359,10 +364,10 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.DeleteWikiPageForAdmin(pageId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
         var deletedPage = await DbContext.WikiPages.FindAsync(pageId);
-        Assert.IsNull(deletedPage);
+        Assert.That(deletedPage, Is.Null);
     }
     
     [Test]
@@ -380,8 +385,8 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.DeleteWikiPageForAdmin(pageId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<NotFoundObjectResult>(result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
     }
 
     [Test]
@@ -402,10 +407,10 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.DeleteUserSubmittedWikiPage(pageId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
         var deletedPage = await DbContext.UserSubmittedWikiPages.FindAsync(pageId);
-        Assert.IsNull(deletedPage);
+        Assert.That(deletedPage, Is.Null);
     }
     
     [Test]
@@ -423,8 +428,8 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.DeleteUserSubmittedWikiPage(pageId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<NotFoundObjectResult>(result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
     }
 
     [Test]
@@ -445,13 +450,13 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.GetSubmittedPageById(pageId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
+        Assert.That(okResult, Is.Not.Null);
         var returnedPage = okResult.Value as WPWithImagesOutputModel;
-        Assert.IsNotNull(returnedPage);
-        Assert.AreEqual(pageId, returnedPage.UserSubmittedWikiPage.Id);
+        Assert.That(returnedPage, Is.Not.Null);
+        Assert.That(returnedPage.UserSubmittedWikiPage!.Id, Is.EqualTo(pageId));
     }
 
     [Test]
@@ -472,13 +477,13 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.GetSubmittedUpdateByTitle(updateId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
+        Assert.That(okResult, Is.Not.Null);
         var returnedPage = okResult.Value as WPWithImagesOutputModel;
-        Assert.IsNotNull(returnedPage);
-        Assert.AreEqual(updateId, returnedPage.UserSubmittedWikiPage.Id);
+        Assert.That(returnedPage, Is.Not.Null);
+        Assert.That(returnedPage.UserSubmittedWikiPage!.Id, Is.EqualTo(updateId));
     }
     
     [Test]
@@ -496,8 +501,8 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.GetSubmittedUpdateByTitle(updateId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<NotFoundResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<NotFoundResult>());
     }
 
     [Test]
@@ -519,12 +524,12 @@ public class WikiPageControllerTests : IntegrationTestBase
 
         
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        var titlesAndIds = okResult.Value as IEnumerable<Tuple<string, Guid>>;
-        Assert.IsNotNull(titlesAndIds);
+        Assert.That(okResult, Is.Not.Null);
+        var titlesAndIds = okResult.Value as IEnumerable<WikiPageTitleEntry>;
+        Assert.That(titlesAndIds, Is.Not.Null);
         // Assert.IsTrue(titlesAndIds.Value.Any());
     }
     
@@ -545,13 +550,13 @@ public class WikiPageControllerTests : IntegrationTestBase
 
         
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        var titlesAndIds = okResult.Value as IEnumerable<Tuple<string, Guid>>;
-        Assert.IsNotNull(titlesAndIds);
-        Assert.AreEqual(0, titlesAndIds.Count());
+        Assert.That(okResult, Is.Not.Null);
+        var titlesAndIds = okResult.Value as IEnumerable<WikiPageTitleEntry>;
+        Assert.That(titlesAndIds, Is.Not.Null);
+        Assert.That(titlesAndIds.Count(), Is.EqualTo(0));
         // Assert.IsTrue(titlesAndIds.Value.Any());
     }
     
@@ -573,10 +578,10 @@ public class WikiPageControllerTests : IntegrationTestBase
         var result = await _controller.GetSubmittedUpdates();
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var titlesAndIds = result.Result as ActionResult;
-        Assert.IsNotNull(titlesAndIds);
+        Assert.That(titlesAndIds, Is.Not.Null);
         // Assert.IsTrue(titlesAndIds.Value.Any());
     }
 }

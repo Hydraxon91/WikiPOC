@@ -2,9 +2,11 @@
 using IntegrationTests.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Moq;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests.Repositories
 {
@@ -17,7 +19,8 @@ namespace IntegrationTests.Repositories
         public void SetUp()
         {
             ResetDatabase();
-            _repository = new StyleRepository(DbContext);
+            var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+            _repository = new StyleRepository(DbContext, storageSettings);
         }
 
         [Test]
@@ -44,9 +47,9 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetStylesAsync();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(existingStyles.ArticleColor, result.ArticleColor);
-            Assert.AreEqual(existingStyles.BodyColor, result.BodyColor);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ArticleColor, Is.EqualTo(existingStyles.ArticleColor));
+            Assert.That(result.BodyColor, Is.EqualTo(existingStyles.BodyColor));
             // Add more assertions for other properties
         }
 
@@ -67,7 +70,7 @@ namespace IntegrationTests.Repositories
                 FontFamily = "Arial, sans-serif",
             };
             
-            // DbContext.Styles.RemoveRange(await DbContext.Styles.ToListAsync());
+            DbContext.Styles.Add(existingStyles);
             await DbContext.SaveChangesAsync();
 
             var updatedStyles = new StyleModel
@@ -86,14 +89,11 @@ namespace IntegrationTests.Repositories
             // Act
             await _repository.UpdateStylesAsync(updatedStyles, null);
 
-            // Detach existingStyles from the context
-            // DbContext.Entry(existingStyles).State = EntityState.Detached;
-            
             // Assert
             var result = await DbContext.Styles.FirstOrDefaultAsync();
-            Assert.IsNotNull(result);
-            Assert.AreEqual(updatedStyles.ArticleColor, result.ArticleColor);
-            Assert.AreEqual(updatedStyles.BodyColor, result.BodyColor);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ArticleColor, Is.EqualTo(updatedStyles.ArticleColor));
+            Assert.That(result.BodyColor, Is.EqualTo(updatedStyles.BodyColor));
         }
         
     }

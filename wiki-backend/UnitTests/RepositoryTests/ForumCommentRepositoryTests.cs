@@ -23,7 +23,7 @@ namespace UnitTests.RepositoryTests
                 .UseInMemoryDatabase(databaseName: databaseName)
                 .Options;
 
-            _wikiDbContext = new WikiDbContext(options, configuration: null);
+            _wikiDbContext = new WikiDbContext(options, configuration: null!);
             _wikiDbContext.Database.EnsureCreated();
             _wikiDbContext.Database.EnsureDeleted();
             _forumCommentRepository = new ForumCommentRepository(_wikiDbContext);
@@ -57,13 +57,13 @@ namespace UnitTests.RepositoryTests
 
             // Assert
             var commentInDb = await _wikiDbContext.ForumComments.FirstOrDefaultAsync(c => c.Id == comment.Id);
-            Assert.NotNull(commentInDb);
-            Assert.AreEqual("Test comment", commentInDb.Content);
-            Assert.AreEqual(userProfileId, commentInDb.UserProfileId);
-            Assert.AreEqual(forumPostId, commentInDb.ForumPostId);
-            Assert.IsFalse(commentInDb.IsReply);
+            Assert.That(commentInDb, Is.Not.Null);
+            Assert.That(commentInDb.Content, Is.EqualTo("Test comment"));
+            Assert.That(commentInDb.UserProfileId, Is.EqualTo(userProfileId));
+            Assert.That(commentInDb.ForumPostId, Is.EqualTo(forumPostId));
+            Assert.That(commentInDb.IsReply, Is.False);
         }
-        
+
         [Test]
         public async Task GetByIdAsync_ShouldReturnCorrectComment()
         {
@@ -76,7 +76,7 @@ namespace UnitTests.RepositoryTests
             };
             await _wikiDbContext.UserProfiles.AddAsync(userProfile);
             await _wikiDbContext.SaveChangesAsync();
-            
+
             var forumPostId = Guid.NewGuid();
             var commentId = Guid.NewGuid();
             var comment = new ForumComment
@@ -95,14 +95,13 @@ namespace UnitTests.RepositoryTests
             var retrievedComment = await _forumCommentRepository.GetByIdAsync(commentId);
 
             // Assert
-            Assert.NotNull(retrievedComment);
-            Assert.AreEqual(commentId, retrievedComment.Id);
-            Assert.AreEqual("Test comment", retrievedComment.Content);
-            Assert.AreEqual(userProfileId, retrievedComment.UserProfileId);
-            Assert.AreEqual(forumPostId, retrievedComment.ForumPostId);
-            Assert.IsFalse(retrievedComment.IsReply);
+            Assert.That(retrievedComment, Is.Not.Null);
+            Assert.That(retrievedComment.Id, Is.EqualTo(commentId));
+            Assert.That(retrievedComment.Content, Is.EqualTo("Test comment"));
+            Assert.That(retrievedComment.UserProfileId, Is.EqualTo(userProfileId));
+            Assert.That(retrievedComment.ForumPostId, Is.EqualTo(forumPostId));
+            Assert.That(retrievedComment.IsReply, Is.False);
         }
-
 
         [Test]
         public async Task UpdateAsync_ShouldUpdateCommentContent()
@@ -126,9 +125,9 @@ namespace UnitTests.RepositoryTests
 
             // Assert
             var updatedComment = await _wikiDbContext.ForumComments.FindAsync(commentId);
-            Assert.NotNull(updatedComment);
-            Assert.AreEqual("Updated content", updatedComment.Content);
-            Assert.IsTrue(updatedComment.IsEdited);
+            Assert.That(updatedComment, Is.Not.Null);
+            Assert.That(updatedComment.Content, Is.EqualTo("Updated content"));
+            Assert.That(updatedComment.IsEdited, Is.True);
         }
 
         [Test]
@@ -153,7 +152,7 @@ namespace UnitTests.RepositoryTests
 
             // Assert
             var deletedComment = await _wikiDbContext.ForumComments.FindAsync(commentId);
-            Assert.Null(deletedComment);
+            Assert.That(deletedComment, Is.Null);
         }
     }
 }

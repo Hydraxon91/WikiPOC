@@ -31,8 +31,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var comment = new ForumComment
             {
                 Content = "Test comment",
-                UserProfileId = userProfile.Id,
-                ForumPostId = forumPost.Id,
+                UserProfileId = userProfile!.Id,
+                ForumPostId = forumPost!.Id,
                 PostDate = DateTime.UtcNow
             };
             DbContext.ForumComments.Add(comment);
@@ -42,10 +42,10 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var result = await _repository.GetByIdAsync(comment.Id);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(comment.Content, result.Content);
-            Assert.AreEqual(comment.UserProfileId, result.UserProfileId);
-            Assert.AreEqual(comment.ForumPostId, result.ForumPostId);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Content, Is.EqualTo(comment.Content));
+            Assert.That(result.UserProfileId, Is.EqualTo(comment.UserProfileId));
+            Assert.That(result.ForumPostId, Is.EqualTo(comment.ForumPostId));
         }
         
         [Test]
@@ -55,7 +55,7 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var result = await _repository.GetByIdAsync(Guid.NewGuid());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -68,8 +68,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var comment = new ForumComment
             {
                 Content = "Test comment",
-                UserProfileId = userProfile.Id,
-                ForumPostId = forumPost.Id,
+                UserProfileId = userProfile!.Id,
+                ForumPostId = forumPost!.Id,
                 PostDate = DateTime.UtcNow
             };
 
@@ -78,8 +78,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
 
             // Assert
             var addedComment = await DbContext.ForumComments.FirstOrDefaultAsync(c => c.Content == "Test comment");
-            Assert.IsNotNull(addedComment);
-            Assert.AreEqual(comment.Content, addedComment.Content);
+            Assert.That(addedComment, Is.Not.Null);
+            Assert.That(addedComment.Content, Is.EqualTo(comment.Content));
         }
         
         [Test]
@@ -92,8 +92,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var comment = new ForumComment
             {
                 Content = null, // Setting content to null
-                UserProfileId = userProfile.Id,
-                ForumPostId = forumPost.Id,
+                UserProfileId = userProfile!.Id,
+                ForumPostId = forumPost!.Id,
                 PostDate = DateTime.UtcNow
             };
 
@@ -111,8 +111,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var comment = new ForumComment
             {
                 Content = "Test comment",
-                UserProfileId = userProfile.Id,
-                ForumPostId = forumPost.Id,
+                UserProfileId = userProfile!.Id,
+                ForumPostId = forumPost!.Id,
                 PostDate = DateTime.UtcNow
             };
             DbContext.ForumComments.Add(comment);
@@ -123,8 +123,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
 
             // Assert
             var updatedComment = await DbContext.ForumComments.FirstOrDefaultAsync(c => c.Id == comment.Id);
-            Assert.IsNotNull(updatedComment);
-            Assert.AreEqual("Updated comment", updatedComment.Content);
+            Assert.That(updatedComment, Is.Not.Null);
+            Assert.That(updatedComment.Content, Is.EqualTo("Updated comment"));
         }
         
         [Test]
@@ -144,8 +144,8 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             var comment = new ForumComment
             {
                 Content = "Test comment",
-                UserProfileId = userProfile.Id,
-                ForumPostId = forumPost.Id,
+                UserProfileId = userProfile!.Id,
+                ForumPostId = forumPost!.Id,
                 PostDate = DateTime.UtcNow
             };
             DbContext.ForumComments.Add(comment);
@@ -156,7 +156,7 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
 
             // Assert
             var deletedComment = await DbContext.ForumComments.FindAsync(comment.Id);
-            Assert.IsNull(deletedComment);
+            Assert.That(deletedComment, Is.Null);
         }
         
         [Test]
@@ -167,7 +167,7 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
 
             // Assert
             var totalComments = await DbContext.ForumComments.CountAsync();
-            Assert.AreEqual(0, totalComments);
+            Assert.That(totalComments, Is.EqualTo(0));
         }
         
         private async Task AddSampleForumPostsToDatabase()
@@ -206,9 +206,9 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
             // Add sample ForumPost objects to the database
             var posts = new List<ForumPost>
             {
-                new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0].UserName, ForumTopicId = forumTopic.Id },
-                new ForumPost { PostTitle = "Post 2", Content = "Content for Post 2", Slug = "post-2", UserId = userProfiles[1].Id, UserName = userProfiles[1].UserName, ForumTopicId = forumTopic.Id },
-                new ForumPost { PostTitle = "Post 3", Content = "Content for Post 3", Slug = "post-3", UserId = userProfiles[2].Id, UserName = userProfiles[2].UserName, ForumTopicId = forumTopic.Id }
+                new ForumPost { PostTitle = "Post 1", Content = "Content for Post 1", Slug = "post-1", UserId = userProfiles[0].Id, UserName = userProfiles[0].UserName!, ForumTopicId = forumTopic.Id },
+                new ForumPost { PostTitle = "Post 2", Content = "Content for Post 2", Slug = "post-2", UserId = userProfiles[1].Id, UserName = userProfiles[1].UserName!, ForumTopicId = forumTopic.Id },
+                new ForumPost { PostTitle = "Post 3", Content = "Content for Post 3", Slug = "post-3", UserId = userProfiles[2].Id, UserName = userProfiles[2].UserName!, ForumTopicId = forumTopic.Id }
             };
             await DbContext.ForumPosts.AddRangeAsync(posts);
             await DbContext.SaveChangesAsync();

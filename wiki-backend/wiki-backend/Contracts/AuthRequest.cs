@@ -1,3 +1,7 @@
-﻿namespace wiki_backend.Contracts;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record AuthRequest(string Email, string Password);
+namespace wiki_backend.Contracts;
+
+public record AuthRequest(
+    [Required] string Email,
+    [Required] string Password);

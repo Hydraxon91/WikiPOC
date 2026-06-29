@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
 using DotNetEnv;
@@ -9,6 +11,7 @@ using wiki_backend.Contracts;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Services.Authentication;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests
 {
@@ -28,11 +31,11 @@ namespace IntegrationTests
         public IntegrationTestBase()
         {
             Env.TraversePath().Load(); // Load environment variables from the .env file
-            DbConnectionString = Environment.GetEnvironmentVariable("INTEGRATIONTEST_CONNECTIONSTRING");
-            JwtTokenTime = Environment.GetEnvironmentVariable("JWT_TOKEN_TIME");
-            JwtValidIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER");
-            JwtValidAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE");
-            JwtIssuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
+            DbConnectionString = Environment.GetEnvironmentVariable("INTEGRATIONTEST_CONNECTIONSTRING")!;
+            JwtTokenTime = Environment.GetEnvironmentVariable("JWT_TOKEN_TIME")!;
+            JwtValidIssuer = Environment.GetEnvironmentVariable("JWT_VALID_ISSUER")!;
+            JwtValidAudience = Environment.GetEnvironmentVariable("JWT_VALID_AUDIENCE")!;
+            JwtIssuerSigningKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY")!;
             PicturesPathContainer = Environment.GetEnvironmentVariable("PICTURES_PATH_CONTAINER") ?? "default/pictures/path";
 
             _uniqueDatabaseName = $"TestDb_{Guid.NewGuid()}";
@@ -45,6 +48,7 @@ namespace IntegrationTests
             services.AddDbContext<WikiDbContext>(options =>
             {
                 options.UseSqlServer(completeConnectionString);
+                options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
             });
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -58,7 +62,7 @@ namespace IntegrationTests
             _authController = CreateAuthController();
 
             // Ensure roles exist
-            Task.Run(async () => await EnsureRolesAsync()).Wait(); // Wait for roles creation to finish
+            EnsureRolesAsync().GetAwaiter().GetResult();
         }
 
         private async Task EnsureRolesAsync()
@@ -79,15 +83,15 @@ namespace IntegrationTests
         
         protected void ResetDatabase()
         {
+            DbContext.ChangeTracker.Clear();
             DbContext.Database.EnsureDeleted();
             DbContext.Database.EnsureCreated();
-            // Task.Run(async () => await EnsureRolesAsync()).Wait(); 
         }
 
         public void Dispose()
         {
             DbContext?.Database.EnsureDeleted();
-            DbContext.Dispose();
+            DbContext?.Dispose();
             ServiceProvider?.Dispose();
         }
         
@@ -99,20 +103,29 @@ namespace IntegrationTests
         
         protected AuthController CreateAuthController()
         {
-            var tokenService = new TokenServices();
+            var jwtSettings = Options.Create(new JwtSettings
+            {
+                ValidIssuer = JwtValidIssuer,
+                ValidAudience = JwtValidAudience,
+                IssuerSigningKey = JwtIssuerSigningKey,
+                TokenTime = int.TryParse(JwtTokenTime, out var time) ? time : 30
+            });
+            var tokenService = new TokenServices(jwtSettings);
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            return new AuthController(new AuthService(userManager, tokenService));
+            return new AuthController(new AuthService(userManager, tokenService, DbContext));
         }
         
         protected UsersController CreateUserController()
         {
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            return new UsersController(userManager, DbContext);
+            var logger = ServiceProvider.GetRequiredService<ILogger<UsersController>>();
+            return new UsersController(userManager, logger);
         }
         
         protected UserProfileController CreateUserProfileController()
         {
-            var userProfileRepository = new UserProfileRepository(DbContext);
+            var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+            var userProfileRepository = new UserProfileRepository(DbContext, storageSettings);
             return new UserProfileController(userProfileRepository);
         }
         
@@ -210,7 +223,7 @@ namespace IntegrationTests
             }
 
             var authResponse = okResult.Value as AuthResponse;
-            return authResponse?.Token;
+            return authResponse?.Token!;
         }
         
     }

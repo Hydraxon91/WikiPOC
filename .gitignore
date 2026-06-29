@@ -314,3 +314,6 @@ wiki-backend/wiki-backend/obj/Debug/net7.0/wiki-backend.AssemblyInfo.cs
 wiki-frontend/.env
 /pictures
 .env
+/wiki-frontend/dist
+wiki-backend/IntegrationTests/.env
+/HANDOFF.md

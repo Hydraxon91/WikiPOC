@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace UnitTests.RepositoryTests;
 
@@ -22,10 +24,11 @@ public class UserProfileRepositoryTests
             .Options;
 
         // Use AddDbContext to configure the WikiDbContext
-        _wikiDbContext = new WikiDbContext(options, configuration: null); 
+        _wikiDbContext = new WikiDbContext(options, configuration: null!); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
-        _userProfileRepository = new UserProfileRepository(_wikiDbContext);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = "test_path" });
+        _userProfileRepository = new UserProfileRepository(_wikiDbContext, storageSettings);
     }
     
     [TearDown]
@@ -49,79 +52,79 @@ public class UserProfileRepositoryTests
         var result = await _userProfileRepository.GetByIdAsync(userProfileId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(testUserProfile.Id, result.Id);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Id, Is.EqualTo(testUserProfile.Id));
     }
     
     [Test]
-        public async Task GetByUsernameAsync_ExistingUsername_ShouldReturnUserProfile()
-        {
-            // Arrange
-            var userProfileId = Guid.NewGuid();
-            var testUserProfile = new UserProfile { Id = userProfileId, UserName = "testuser" };
-            _wikiDbContext.UserProfiles.Add(testUserProfile);
-            await _wikiDbContext.SaveChangesAsync();
+    public async Task GetByUsernameAsync_ExistingUsername_ShouldReturnUserProfile()
+    {
+        // Arrange
+        var userProfileId = Guid.NewGuid();
+        var testUserProfile = new UserProfile { Id = userProfileId, UserName = "testuser" };
+        _wikiDbContext.UserProfiles.Add(testUserProfile);
+        await _wikiDbContext.SaveChangesAsync();
 
-            // Act
-            var result = await _userProfileRepository.GetByUsernameAsync("testuser");
+        // Act
+        var result = await _userProfileRepository.GetByUsernameAsync("testuser");
 
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(testUserProfile.UserName, result.UserName);
-        }
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.UserName, Is.EqualTo(testUserProfile.UserName));
+    }
 
-        [Test]
-        public async Task GetByUserIdAsync_ExistingUserId_ShouldReturnUserProfile()
-        {
-            // Arrange
-            var userProfileId = Guid.NewGuid();
-            var testUserProfile = new UserProfile { Id = userProfileId, UserId = "testuserid" };
-            _wikiDbContext.UserProfiles.Add(testUserProfile);
-            await _wikiDbContext.SaveChangesAsync();
+    [Test]
+    public async Task GetByUserIdAsync_ExistingUserId_ShouldReturnUserProfile()
+    {
+        // Arrange
+        var userProfileId = Guid.NewGuid();
+        var testUserProfile = new UserProfile { Id = userProfileId, UserId = "testuserid" };
+        _wikiDbContext.UserProfiles.Add(testUserProfile);
+        await _wikiDbContext.SaveChangesAsync();
 
-            // Act
-            var result = await _userProfileRepository.GetByUserIdAsync("testuserid");
+        // Act
+        var result = await _userProfileRepository.GetByUserIdAsync("testuserid");
 
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(testUserProfile.UserId, result.UserId);
-        }
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.UserId, Is.EqualTo(testUserProfile.UserId));
+    }
 
-        [Test]
-        public async Task UpdateAsync_ExistingId_ShouldUpdateUserProfile()
-        {
-            var userProfileId = Guid.NewGuid();
-            // Arrange
-            var testUserProfile = new UserProfile { Id = userProfileId, UserName = "testuser" };
-            _wikiDbContext.UserProfiles.Add(testUserProfile);
-            await _wikiDbContext.SaveChangesAsync();
+    [Test]
+    public async Task UpdateAsync_ExistingId_ShouldUpdateUserProfile()
+    {
+        var userProfileId = Guid.NewGuid();
+        // Arrange
+        var testUserProfile = new UserProfile { Id = userProfileId, UserName = "testuser" };
+        _wikiDbContext.UserProfiles.Add(testUserProfile);
+        await _wikiDbContext.SaveChangesAsync();
 
-            var updatedProfile = new UserProfile { Id = userProfileId, DisplayName = "Updated Display Name" };
+        var updatedProfile = new UserProfile { Id = userProfileId, DisplayName = "Updated Display Name" };
 
-            // Act
-            await _userProfileRepository.UpdateAsync(userProfileId, updatedProfile, null);
-            await _wikiDbContext.SaveChangesAsync();
+        // Act
+        await _userProfileRepository.UpdateAsync(userProfileId, updatedProfile, null);
+        await _wikiDbContext.SaveChangesAsync();
 
-            // Assert
-            var result = await _wikiDbContext.UserProfiles.FindAsync(userProfileId);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(updatedProfile.DisplayName, result.DisplayName);
-        }
+        // Assert
+        var result = await _wikiDbContext.UserProfiles.FindAsync(userProfileId);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.DisplayName, Is.EqualTo(updatedProfile.DisplayName));
+    }
 
-        [Test]
-        public async Task UpdateAsync_NonExistingId_ShouldThrowException()
-        {
-            // Arrange
-            var userProfileId = Guid.NewGuid();
-            var testUserProfile = new UserProfile { Id = userProfileId, UserName = "testuser" };
-            _wikiDbContext.UserProfiles.Add(testUserProfile);
-            await _wikiDbContext.SaveChangesAsync();
+    [Test]
+    public async Task UpdateAsync_NonExistingId_ShouldThrowException()
+    {
+        // Arrange
+        var userProfileId = Guid.NewGuid();
+        var testUserProfile = new UserProfile { Id = userProfileId, UserName = "testuser" };
+        _wikiDbContext.UserProfiles.Add(testUserProfile);
+        await _wikiDbContext.SaveChangesAsync();
 
-            var fakeId = Guid.NewGuid();
-            var updatedProfile = new UserProfile { Id = fakeId, DisplayName = "Updated Display Name" };
+        var fakeId = Guid.NewGuid();
+        var updatedProfile = new UserProfile { Id = fakeId, DisplayName = "Updated Display Name" };
 
-            // Act & Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _userProfileRepository.UpdateAsync(fakeId, updatedProfile, null));
+        // Act & Assert
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await _userProfileRepository.UpdateAsync(fakeId, updatedProfile, null));
         }
         
         [Test]
@@ -139,6 +142,6 @@ public class UserProfileRepositoryTests
 
             // Assert
             var result = await _wikiDbContext.UserProfiles.FindAsync(userProfileId);
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 }

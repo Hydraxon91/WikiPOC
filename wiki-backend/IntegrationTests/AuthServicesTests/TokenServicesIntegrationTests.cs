@@ -4,11 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NUnit.Framework;
 using wiki_backend.Identity;
 using wiki_backend.Models;
 using wiki_backend.Services.Authentication;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests.Services
 {
@@ -20,13 +22,15 @@ namespace IntegrationTests.Services
         [SetUp]
         public void Setup()
         {
-            // Mock environment variables
-            Environment.SetEnvironmentVariable("JWT_TOKEN_TIME", JwtTokenTime);
-            Environment.SetEnvironmentVariable("JWT_VALID_ISSUER", JwtValidIssuer);
-            Environment.SetEnvironmentVariable("JWT_VALID_AUDIENCE", JwtValidAudience);
-            Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", JwtIssuerSigningKey);
+            var jwtSettings = Options.Create(new JwtSettings
+            {
+                ValidIssuer = JwtValidIssuer,
+                ValidAudience = JwtValidAudience,
+                IssuerSigningKey = JwtIssuerSigningKey,
+                TokenTime = int.TryParse(JwtTokenTime, out var time) ? time : 30
+            });
 
-            _tokenServices = new TokenServices();
+            _tokenServices = new TokenServices(jwtSettings);
         }
 
         [Test]
@@ -45,21 +49,21 @@ namespace IntegrationTests.Services
             var token = _tokenServices.CreateToken(user, role);
 
             // Assert
-            Assert.IsNotNull(token);
+            Assert.That(token, Is.Not.Null);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(token);
 
-            Assert.IsNotNull(jwtToken);
+            Assert.That(jwtToken, Is.Not.Null);
 
             var claims = jwtToken.Claims
                 .GroupBy(c => c.Type)
                 .ToDictionary(g => g.Key, g => g.First().Value);
 
-            Assert.AreEqual(user.UserName, claims[ClaimTypes.Name]);
-            Assert.AreEqual(user.Email, claims[ClaimTypes.Email]);
-            Assert.AreEqual(role, claims[ClaimTypes.Role]);
-            Assert.AreEqual(user.Id, claims[ClaimTypes.NameIdentifier]);
+            Assert.That(claims[ClaimTypes.Name], Is.EqualTo(user.UserName));
+            Assert.That(claims[ClaimTypes.Email], Is.EqualTo(user.Email));
+            Assert.That(claims[ClaimTypes.Role], Is.EqualTo(role));
+            Assert.That(claims[ClaimTypes.NameIdentifier], Is.EqualTo(user.Id));
         }
 
 
@@ -82,17 +86,17 @@ namespace IntegrationTests.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(token);
 
-            Assert.AreEqual("TestIssuer", jwtToken.Issuer);
-            Assert.AreEqual("TestAudience", jwtToken.Audiences.First());
+            Assert.That(jwtToken.Issuer, Is.EqualTo("TestIssuer"));
+            Assert.That(jwtToken.Audiences.First(), Is.EqualTo("TestAudience"));
 
             var claims = jwtToken.Claims.ToList();
-            Assert.AreEqual("TokenForTheApiWithAuth", claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value);
-            Assert.IsNotNull(claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti));
-            Assert.IsNotNull(claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Iat));
-            Assert.AreEqual("test-user-id", claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
-            Assert.AreEqual("testuser", claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value);
-            Assert.AreEqual("testuser@example.com", claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value);
-            Assert.AreEqual("User", claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value);
+            Assert.That(claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value, Is.EqualTo(user.Id));
+            Assert.That(claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti), Is.Not.Null);
+            Assert.That(claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Iat), Is.Not.Null);
+            Assert.That(claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value, Is.EqualTo("test-user-id"));
+            Assert.That(claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value, Is.EqualTo("testuser"));
+            Assert.That(claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value, Is.EqualTo("testuser@example.com"));
+            Assert.That(claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value, Is.EqualTo("User"));
         }
         
         [Test]
@@ -115,8 +119,8 @@ namespace IntegrationTests.Services
             var jwtToken = tokenHandler.ReadJwtToken(token);
 
             // Assert
-            Assert.IsNotNull(jwtToken);
-            Assert.AreEqual(expectedExpiration.ToString(CultureInfo.InvariantCulture), jwtToken.ValidTo.ToString(CultureInfo.InvariantCulture));
+            Assert.That(jwtToken, Is.Not.Null);
+            Assert.That(jwtToken.ValidTo.ToString(CultureInfo.InvariantCulture), Is.EqualTo(expectedExpiration.ToString(CultureInfo.InvariantCulture)));
         }
         
         [Test]
@@ -131,10 +135,10 @@ namespace IntegrationTests.Services
             };
 
             // Act
-            var token = _tokenServices.CreateToken(user, null);
+            var token = _tokenServices.CreateToken(user, null!);
 
             // Assert
-            Assert.IsNotNull(token);
+            Assert.That(token, Is.Not.Null);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(token);
@@ -143,11 +147,11 @@ namespace IntegrationTests.Services
                 .GroupBy(c => c.Type)
                 .ToDictionary(g => g.Key, g => g.First().Value);
 
-            Assert.IsNotNull(claims);
-            Assert.AreEqual(user.UserName, claims[ClaimTypes.Name]);
-            Assert.AreEqual(user.Email, claims[ClaimTypes.Email]);
-            Assert.AreEqual(user.Id, claims[ClaimTypes.NameIdentifier]);
-            Assert.IsFalse(claims.ContainsKey(ClaimTypes.Role));
+            Assert.That(claims, Is.Not.Null);
+            Assert.That(claims[ClaimTypes.Name], Is.EqualTo(user.UserName));
+            Assert.That(claims[ClaimTypes.Email], Is.EqualTo(user.Email));
+            Assert.That(claims[ClaimTypes.NameIdentifier], Is.EqualTo(user.Id));
+            Assert.That(claims, Does.Not.ContainKey(ClaimTypes.Role));
         }
         
         [Test]
@@ -188,22 +192,5 @@ namespace IntegrationTests.Services
             });
         }
         
-        [Test]
-        public void CreateToken_ShouldThrowExceptionWithMissingEnvVariables()
-        {
-            // Arrange
-            var user = new ApplicationUser
-            {
-                Id = "test-user-id",
-                UserName = GetRandomizedString("testuser"),
-                Email = $"{GetRandomizedString("testuser")}@example.com"
-            };
-            var role = "User";
-
-            Environment.SetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY", null);
-
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => _tokenServices.CreateToken(user, role));
-        }
     }
 }

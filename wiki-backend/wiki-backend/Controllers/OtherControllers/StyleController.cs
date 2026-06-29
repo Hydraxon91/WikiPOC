@@ -7,6 +7,7 @@ using wiki_backend.Models;
 namespace wiki_backend.Controllers;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("api/[controller]")]
 public class StyleController : ControllerBase
 {
@@ -26,6 +27,7 @@ public class StyleController : ControllerBase
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut]
+    [RequestSizeLimit(2 * 1024 * 1024)]
     public async Task<IActionResult> UpdateStyles([FromForm] StyleUpdateForm styleUpdateForm)
     {
         if (styleUpdateForm.StyleModel == null)
@@ -37,9 +39,9 @@ public class StyleController : ControllerBase
             await _styleRepository.UpdateStylesAsync(styleUpdateForm.StyleModel, styleUpdateForm.LogoPictureFile);
             return Ok(new { Message = "StyleContext updated successfully" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return StatusCode(500, $"An error occurred while updating the StyleContext: {ex.Message}");
+            return StatusCode(500, "An error occurred while updating the StyleContext.");
         }
     }
 }

@@ -6,11 +6,10 @@ public class ForumTopic
 {
     public Guid Id { get; set; }
     [Required]
-    public string Title { get; set; }
+    public string Title { get; set; } = null!;
     [Required]
-    public string Description { get; set; }
-    [Required]
-    public string Slug { get; set; }
+    public string Description { get; set; } = null!;
+    public string? Slug { get; set; }
     public int Order { get; set; }
     public ICollection<ForumPost> ForumPosts { get; set; } = new List<ForumPost>();
 }

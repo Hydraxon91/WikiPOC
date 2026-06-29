@@ -1,16 +1,25 @@
+.wikipage-component {
+    display: flow-root;
+}
+
 .thumbnail {
     border: 1px solid #c8ccd1;
     padding: 3px;
-    background-color: #3c5fb8;
+    background-color: var(--article-right-color, #3c5fb8);
     font-size: 94%;
     text-align: center;
     overflow: hidden;
     line-height: 1.4em;
-    padding: 3px;
-    font-size: 94%;
     margin-bottom: 2vh;
     width: 200px;
-    /* text-align: left; */
+}
+
+@media (max-width: 768px) {
+    .thumbnail {
+        max-width: 100%;
+        width: 40%;
+        min-width: 120px;
+    }
 }
 
 .thumbnail.right {
@@ -36,17 +45,20 @@
 .thumbnail-inner {
 	border: 1px solid #c8ccd1;
 	padding: 3px;
-	background-color: #2b4ea6;
+	background-color: var(--article-right-inner-color, #2b4ea6);
 	font-size: 94%;
 	text-align: center;
 	overflow: hidden;
 }
 
 .paragraph-image{
-    max-width: 11em;
+    max-width: 100%;
     max-height: 11em;
     width: auto;
     height: auto;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
 }
 
 .article-preview {

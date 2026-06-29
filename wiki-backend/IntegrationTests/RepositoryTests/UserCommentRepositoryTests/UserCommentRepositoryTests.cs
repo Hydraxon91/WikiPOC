@@ -34,8 +34,8 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByIdAsync(userComment.Id);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(userComment.Content, result.Content);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Content, Is.EqualTo(userComment.Content));
         }
 
         [Test]
@@ -55,8 +55,8 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var result = await _repository.GetByIdAsync(userComment.Id);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(userComment.Content, result.Content);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Content, Is.EqualTo(userComment.Content));
         }
 
         [Test]
@@ -80,9 +80,9 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var result = await _repository.GetByIdAsync(replyComment.Id);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(replyComment.Content, result.Content);
-            Assert.AreEqual(parentComment.Id, result.ReplyToCommentId);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Content, Is.EqualTo(replyComment.Content));
+            Assert.That(result.ReplyToCommentId, Is.EqualTo(parentComment.Id));
         }
 
         [Test]
@@ -106,9 +106,9 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var result = await _repository.GetByIdAsync(userComment.Id);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(updatedContent, result.Content);
-            Assert.IsTrue(result.IsEdited);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Content, Is.EqualTo(updatedContent));
+            Assert.That(result.IsEdited, Is.True);
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var result = await _repository.GetByIdAsync(userComment.Id);
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -152,7 +152,7 @@ namespace IntegrationTests.Repositories
             var result = await _repository.GetByIdAsync(Guid.NewGuid());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -172,8 +172,8 @@ namespace IntegrationTests.Repositories
 
             // Assert
             var result = await _repository.GetByIdAsync(userComment.Id);
-            Assert.IsNotNull(result);
-            Assert.IsNull(result.ReplyToCommentId);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ReplyToCommentId, Is.Null);
         }
 
         [Test]
@@ -188,7 +188,7 @@ namespace IntegrationTests.Repositories
             // Assert
             // No exception should be thrown and the count of user comments should remain the same
             var count = await DbContext.UserComments.CountAsync();
-            Assert.AreEqual(0, count);
+            Assert.That(count, Is.EqualTo(0));
         }
     }
 }

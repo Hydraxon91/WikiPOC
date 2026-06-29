@@ -19,12 +19,12 @@ public class CategoryRepository : ICategoryRepository
             .ToListAsync();
     }
 
-    public async Task<Category> GetCategoryByNameAsync(string categoryName)
+    public async Task<Category?> GetCategoryByNameAsync(string categoryName)
     {
         return await _context.Categories.Include(category => category.WikiPages).FirstOrDefaultAsync(c => c.CategoryName == categoryName);
     }
 
-    public async Task<Category> GetCategoryByIdAsync(Guid categoryId)
+    public async Task<Category?> GetCategoryByIdAsync(Guid categoryId)
     {
         return await _context.Categories.Include(category => category.WikiPages).FirstOrDefaultAsync(c => c.Id == categoryId);
     }
@@ -70,12 +70,12 @@ public class CategoryRepository : ICategoryRepository
 
         if (category != null)
         {
-            // Ensure the WikiPages collection is initialized
             category.WikiPages ??= new List<WikiPage>();
-            // Add the wikiPage to the category's WikiPages collection
-            category.WikiPages.Add(wikiPage);
-            // Update the category in the context
-            _context.Categories.Update(category);
+            wikiPage.CategoryId = categoryId;
+            if (_context.Entry(wikiPage).State == EntityState.Detached)
+            {
+                _context.WikiPages.Add(wikiPage);
+            }
             await _context.SaveChangesAsync();
         }
     }
@@ -94,8 +94,6 @@ public class CategoryRepository : ICategoryRepository
             {
                 // Remove the wikiPage from the category's WikiPages collection
                 category.WikiPages.Remove(wikiPageToRemove);
-                // Update the category in the context
-                _context.Categories.Update(category);
                 await _context.SaveChangesAsync();
             }
         }

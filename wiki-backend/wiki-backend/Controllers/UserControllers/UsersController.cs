@@ -1,101 +1,115 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using wiki_backend.DatabaseServices;
+using wiki_backend.Identity;
 using wiki_backend.Models;
 
 namespace wiki_backend.Controllers;
 
-
 [ApiController]
+[ApiVersion("1.0")]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly WikiDbContext _context;
+    private readonly ILogger<UsersController> _logger;
 
-    public UsersController(UserManager<ApplicationUser> userManager, WikiDbContext context)
+    public UsersController(UserManager<ApplicationUser> userManager, ILogger<UsersController> logger)
     {
         _userManager = userManager;
-        _context = context;
+        _logger = logger;
     }
-    
+
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetUsers()
     {
-        var users = _userManager.Users.ToList();
-        return Ok(users);
+        try
+        {
+            var users = await _userManager.Users.ToListAsync();
+            var usersWithRoles = new List<object>();
+            foreach (var user in users)
+            {
+                var roles = await GetUserRoles(user);
+                usersWithRoles.Add(new
+                {
+                    user.Id,
+                    user.UserName,
+                    user.Email,
+                    Roles = roles
+                });
+            }
+            return Ok(usersWithRoles);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching users");
+            return StatusCode(500, new { Message = "An error occurred while fetching users." });
+        }
     }
 
-    [HttpGet("GetUserById")]
-    public async Task<IActionResult> GetUserById(string id)
+    private async Task<List<string>> GetUserRoles(ApplicationUser user)
     {
-        var user = await _userManager.FindByIdAsync(id);
-
-        if (user == null)
-            return NotFound();
-
-        return Ok(user);
+        return (await _userManager.GetRolesAsync(user)).ToList();
     }
 
-    [Authorize(Roles = "Admin")]
-    [HttpPost("CreateUser")]
-    public async Task<IActionResult> CreateUser([FromBody] ApplicationUser model)
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [HttpPatch("UpdateRole/{userId}")]
+    public async Task<IActionResult> UpdateUserRole(string userId, [FromBody] UpdateRoleRequest request)
     {
-        if (model == null)
-            return BadRequest("User data is null");
+        var targetUser = await _userManager.FindByIdAsync(userId);
+        if (targetUser == null) return NotFound("User not found");
 
-        var result = await _userManager.CreateAsync(model);
+        var allRoles = new[] { "Owner", "Admin", "Moderator", "User" };
+        if (!allRoles.Contains(request.Role))
+            return BadRequest("Invalid role. Must be Owner, Admin, Moderator, or User.");
 
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(currentUserId)) return Unauthorized();
+        var currentUser = await _userManager.FindByIdAsync(currentUserId);
+        if (currentUser == null) return Unauthorized();
 
-        return Ok(model);
+        var currentUserRoles = await _userManager.GetRolesAsync(currentUser);
+
+        if (currentUserRoles.Contains("Owner"))
+        {
+            if (request.Role != "Owner")
+            {
+                var ownerCount = (await _userManager.GetUsersInRoleAsync("Owner")).Count;
+                if (ownerCount <= 1 && currentUser.Id == userId)
+                    return BadRequest("Cannot demote the last Owner.");
+            }
+            await SetUserRole(targetUser, request.Role);
+            return Ok(new { Message = $"User role updated to {request.Role}" });
+        }
+
+        if (currentUserRoles.Contains("Admin"))
+        {
+            var targetRoles = await _userManager.GetRolesAsync(targetUser);
+            if (targetRoles.Contains("Owner") || targetRoles.Contains("Admin"))
+                return Forbid();
+
+            if (request.Role != "Moderator" && request.Role != "User")
+                return BadRequest("Admins can only assign Moderator or User roles.");
+
+            await SetUserRole(targetUser, request.Role);
+            return Ok(new { Message = $"User role updated to {request.Role}" });
+        }
+
+        return Forbid();
     }
 
-    [Authorize(Roles = "Admin")]
-    [HttpPut("UpdateUser")]
-    public async Task<IActionResult> UpdateUser(string id, [FromBody] ApplicationUser model)
+    private async Task SetUserRole(ApplicationUser user, string newRole)
     {
-        var user = await _userManager.FindByIdAsync(id);
-
-        if (user == null)
-            return NotFound();
-
-        // Update user properties here
-        user.UserName = model.UserName;
-        user.Email = model.Email;
-
-        var result = await _userManager.UpdateAsync(user);
-
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-
-        return Ok(user);
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        await _userManager.RemoveFromRolesAsync(user, currentRoles);
+        await _userManager.AddToRoleAsync(user, newRole);
     }
+}
 
-    [Authorize(Roles = "Admin")]
-    [HttpDelete("DeleteUser")]
-    public async Task<IActionResult> DeleteUser(string id)
-    {
-        var user = await _userManager.FindByIdAsync(id);
-
-        if (user == null)
-            return NotFound();
-        
-        //Getting the associated UserProfile & deleting if it's not null
-        var userProfile = await _context.UserProfiles.SingleOrDefaultAsync(up => up.UserId == id);
-        if (userProfile != null)
-            _context.UserProfiles.Remove(userProfile);
-        
-        var result = await _userManager.DeleteAsync(user);
-
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-        //Saving the deletion of UserProfile
-        await _context.SaveChangesAsync();
-
-        return Ok("User deleted successfully");
-    }
+public class UpdateRoleRequest
+{
+    public string Role { get; set; } = "";
 }

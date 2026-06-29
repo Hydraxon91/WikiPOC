@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using wiki_backend.Contracts;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
+using wiki_backend.Services.Settings;
 
 namespace IntegrationTests.ControllerTests.StyleControllerTests;
 
@@ -20,10 +22,28 @@ public class StyleControllerTests : IntegrationTestBase
     [SetUp]
     public async Task SetUp()
     {
-        _styleRepository = new StyleRepository(DbContext);
+        var storageSettings = Options.Create(new StorageSettings { PicturesPath = PicturesPathContainer });
+        _styleRepository = new StyleRepository(DbContext, storageSettings);
         _controller = new StyleController(_styleRepository);
         ResetDatabase();
         await EnsureUserRoleExistsAsync();
+        // Seed a default style (was previously provided by HasData in OnModelCreating)
+        if (!await DbContext.Styles.AnyAsync())
+        {
+            DbContext.Styles.Add(new StyleModel
+            {
+                Logo = "logo/logo_pfp.png",
+                WikiName = "Your Wiki",
+                BodyColor = "#507ced",
+                ArticleRightColor = "#3c5fb8",
+                ArticleRightInnerColor = "#2b4ea6",
+                ArticleColor = "#526cad",
+                FooterListLinkTextColor = "#1d305e",
+                FooterListTextColor = "#233a71",
+                FontFamily = "Arial, sans-serif",
+            });
+            await DbContext.SaveChangesAsync();
+        }
     }
 
     [Test]
@@ -35,12 +55,12 @@ public class StyleControllerTests : IntegrationTestBase
         var result = await _controller.GetStyles();
 
         // Assert
-        Assert.IsInstanceOf<OkObjectResult>(result.Result);
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
         var okResult = result.Result as OkObjectResult;
-        var returnedStyle = okResult.Value;
+        var returnedStyle = okResult!.Value;
         
-        Assert.IsNotNull(returnedStyle);
-        Assert.AreEqual(style, returnedStyle);
+        Assert.That(returnedStyle, Is.Not.Null);
+        Assert.That(returnedStyle, Is.EqualTo(style));
     }
 
     [Test]
@@ -78,10 +98,10 @@ public class StyleControllerTests : IntegrationTestBase
         var result = await _controller.UpdateStyles(styleUpdateForm);
 
         // Assert
-        Assert.IsInstanceOf<OkObjectResult>(result);
-        var updatedStyleInDb = await DbContext.Styles.FindAsync(style.Id);
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+        var updatedStyleInDb = await DbContext.Styles.FindAsync(style!.Id);
         
-        Assert.AreEqual("NewStyle", updatedStyleInDb.WikiName);
-        Assert.AreEqual("#000000", updatedStyleInDb.BodyColor);
+        Assert.That(updatedStyleInDb!.WikiName, Is.EqualTo("NewStyle"));
+        Assert.That(updatedStyleInDb!.BodyColor, Is.EqualTo("#000000"));
     }
 }

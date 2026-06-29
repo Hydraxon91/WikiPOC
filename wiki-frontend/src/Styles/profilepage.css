@@ -1,6 +1,5 @@
 .profilepage{
     width: 100%;
-    height: 50em;
     margin-top: 1vh;
     margin-bottom: 10vh;
 }
@@ -25,11 +24,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 550px;
-    height: 650px;
-    /* background-size: 400% 400%; */
-    /* border: 2px solid rgba(255,255,255,0.5); */
-
+    max-width: 550px;
+    width: 90%;
+    height: auto;
+    min-height: 400px;
 }
 
 .profilepic-container-container{
@@ -58,31 +56,6 @@
     object-fit: contain;
 }
 
-@media(min-width:3000px){
-    .avatar-container{
-        position: absolute;
-        top: 17.5vh;
-        left: 0.7vw;
-    }
-}
-
-@media (max-width: 2999px) and (min-width: 2000px){
-    .avatar-container{
-        position: absolute;
-        top: 28.5vh;
-        left:1vw;
-    }
-}
-
-@media (max-width: 1999px) {
-    .avatar-container{
-        position: absolute;
-        top: 35vh;
-        left:1.5vw;
-    }
-}
-
-
 .user-info{
     width: 100%;
     margin-top: 7%;
@@ -109,13 +82,13 @@
 }
 .edit-displayname{
     height: 1.2em;
-    width: 7em;
+    max-width: 7em;
+    width: 90%;
     padding-left: 0.5em;
     align-items: center;
     color: rgb(0, 0, 0);
     font-family: Arial, Helvetica, sans-serif;
     font-size: 2em;
-    /* margin: 3% 0; */
     background-color: #ffffffc0;
     border-radius: 5px;
     border: 2px solid rgba(118, 118, 118, 0.5);
@@ -123,7 +96,8 @@
 
 .edit-profilepic{
     height: 2em;
-    width: 20em;
+    max-width: 20em;
+    width: 90%;
     padding-left: 0.5em;
     color: rgb(0, 0, 0);
     font-family: Arial, Helvetica, sans-serif;
@@ -153,25 +127,22 @@
 .edit-profile-button{
     text-align: center;
     text-decoration: none;
-    color: black;
-    font-family: serif;
-    /* transform: translateY(180%); */
+    color: #fff;
     width: 100%;
     height: 40px;
-    border-radius: 40px;
-    background: #fff;
-    border: none;
+    border-radius: 3px;
+    background: var(--accent-color, #526cad);
+    border: 1px solid var(--footer-link-color, #1d305e);
     outline: none;
     cursor: pointer;
-    font-size: 1.6em;
-    font-weight: 800;
+    font-size: 1em;
+    font-weight: bold;
 }
 .upload-picture-container{
     margin-top: 3%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: white;
 }
 
 .upload-picture-container button{
@@ -181,4 +152,18 @@
 .upload-picture-container input{
     width: 350px;
     margin-right: 4%;
+}
+
+@media (max-width: 768px) {
+    .user-info p {
+        font-size: 1.5em;
+    }
+    .upload-picture-container {
+        flex-direction: column;
+        gap: 0.5em;
+    }
+    .upload-picture-container input {
+        width: 100%;
+        margin-right: 0;
+    }
 }

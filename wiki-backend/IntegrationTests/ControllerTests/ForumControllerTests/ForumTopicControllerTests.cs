@@ -49,12 +49,12 @@ public class ForumTopicControllerTests : IntegrationTestBase
         var result = await _controller.GetForumTopics() as ActionResult<IEnumerable<ForumTopic>>;
 
         // Assert
-        Assert.IsNotNull(result);
+        Assert.That(result, Is.Not.Null);
         var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
+        Assert.That(okResult, Is.Not.Null);
         var forumTopics = okResult.Value as IEnumerable<ForumTopic>;
-        Assert.IsNotNull(forumTopics);
-        Assert.IsNotEmpty(forumTopics);
+        Assert.That(forumTopics, Is.Not.Null);
+        Assert.That(forumTopics, Is.Not.Empty);
     }
     
     [Test]
@@ -67,10 +67,10 @@ public class ForumTopicControllerTests : IntegrationTestBase
         var result = await _controller.AddForumTopic(forumTopic) as ActionResult<ForumTopic>;
 
         // Assert
-        Assert.IsNotNull(result);
+        Assert.That(result, Is.Not.Null);
         var createdForumTopic = await _forumTopicRepository.GetForumTopicBySlugAsync(forumTopic.Slug);
-        Assert.IsNotNull(createdForumTopic);
-        Assert.AreEqual(forumTopic.Title, createdForumTopic.Title);
+        Assert.That(createdForumTopic, Is.Not.Null);
+        Assert.That(createdForumTopic.Title, Is.EqualTo(forumTopic.Title));
     }
 
     [Test]
@@ -85,10 +85,11 @@ public class ForumTopicControllerTests : IntegrationTestBase
         var result = await _controller.UpdateForumTopic(forumTopic.Id, forumTopic) as NoContentResult;
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(204, result.StatusCode);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.StatusCode, Is.EqualTo(204));
         var updatedForumTopic = await _forumTopicRepository.GetForumTopicBySlugAsync(forumTopic.Slug);
-        Assert.AreEqual("Updated Topic", updatedForumTopic.Title);
+        Assert.That(updatedForumTopic, Is.Not.Null);
+        Assert.That(updatedForumTopic!.Title, Is.EqualTo("Updated Topic"));
     }
 
     [Test]
@@ -102,9 +103,9 @@ public class ForumTopicControllerTests : IntegrationTestBase
         var result = await _controller.DeleteForumTopic(forumTopic.Id) as NoContentResult;
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(204, result.StatusCode);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.StatusCode, Is.EqualTo(204));
         var deletedForumTopic = await _forumTopicRepository.GetForumTopicBySlugAsync(forumTopic.Slug);
-        Assert.IsNull(deletedForumTopic);
+        Assert.That(deletedForumTopic, Is.Null);
     }
 }

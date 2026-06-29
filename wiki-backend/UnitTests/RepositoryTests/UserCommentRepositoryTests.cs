@@ -21,7 +21,7 @@ public class UserCommentRepositoryTests
             .Options;
 
         // Use AddDbContext to configure the WikiDbContext
-        _wikiDbContext = new WikiDbContext(options, configuration: null); 
+        _wikiDbContext = new WikiDbContext(options, configuration: null!); 
         _wikiDbContext.Database.EnsureCreated(); // Ensure the in-memory database is created
         _wikiDbContext.Database.EnsureDeleted();
         _userCommentRepository = new UserCommentRepository(_wikiDbContext);
@@ -56,11 +56,12 @@ public class UserCommentRepositoryTests
         var result = await _userCommentRepository.GetByIdAsync(commentId);
 
         // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(testUserComment.Id, result.Id);
-        Assert.AreEqual(testUserComment.Content, result.Content);
-        Assert.AreEqual(testUserComment.UserProfileId, result.UserProfileId);
-        Assert.AreEqual(testUserComment.UserProfile.UserName, result.UserProfile.UserName);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.UserProfile, Is.Not.Null);
+        Assert.That(result.Id, Is.EqualTo(testUserComment.Id));
+        Assert.That(result.Content, Is.EqualTo(testUserComment.Content));
+        Assert.That(result.UserProfileId, Is.EqualTo(testUserComment.UserProfileId));
+        Assert.That(result.UserProfile.UserName, Is.EqualTo(testUserComment.UserProfile.UserName));
     }
     
     [Test]
@@ -84,8 +85,8 @@ public class UserCommentRepositoryTests
 
         // Assert
         var savedComment = await _wikiDbContext.UserComments.FirstOrDefaultAsync(c => c.Content == "Test comment");
-        Assert.IsNotNull(savedComment);
-        Assert.AreEqual(testComment.Content, savedComment.Content);
+        Assert.That(savedComment, Is.Not.Null);
+        Assert.That(savedComment.Content, Is.EqualTo(testComment.Content));
     }
     
     [Test]
@@ -113,9 +114,9 @@ public class UserCommentRepositoryTests
 
         // Assert
         var updatedComment = await _wikiDbContext.UserComments.FindAsync(testComment.Id);
-        Assert.IsNotNull(updatedComment);
-        Assert.AreEqual(updatedContent, updatedComment.Content);
-        Assert.IsTrue(updatedComment.IsEdited);
+        Assert.That(updatedComment, Is.Not.Null);
+        Assert.That(updatedComment.Content, Is.EqualTo(updatedContent));
+        Assert.That(updatedComment.IsEdited, Is.True);
     }
     
     [Test]
@@ -131,7 +132,7 @@ public class UserCommentRepositoryTests
             await _wikiDbContext.SaveChangesAsync();
         });
 
-        Assert.AreEqual($"Comment with ID {invalidCommentId} not found.", exception.Message);
+        Assert.That(exception.Message, Is.EqualTo($"Comment with ID {invalidCommentId} not found."));
     }
 
     [Test]
@@ -157,6 +158,6 @@ public class UserCommentRepositoryTests
 
         // Assert
         var deletedComment = await _wikiDbContext.UserComments.FindAsync(testComment.Id);
-        Assert.IsNull(deletedComment);
+        Assert.That(deletedComment, Is.Null);
     }
 }
