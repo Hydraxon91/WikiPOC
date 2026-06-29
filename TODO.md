@@ -61,9 +61,9 @@
 - [x] **DEAD** `Program.cs:162-163` — Duplicate `AddControllers()` / `AddEndpointsApiExplorer()` calls
 - [x] **DEAD** `WikiDbContext.cs:32` — `DbSet<ApplicationUser> ApplicationUsers` never queried
 - [x] **DEAD** 8 unused `ToString()` overrides across model classes (debugging leftovers)
-- [ ] **DEAD** `WikiPagesController.cs:61-73` — `GetWikiPageParagraphs` endpoint, frontend doesn't call it
-- [ ] **DEAD** `ParagraphController` (entirely) — no frontend consumer
-- [ ] **DEAD** `UsersController.cs:55-62,65-72,75-85,88-99` — `GetUserById`, `CreateUser`, `UpdateUser`, `DeleteUser` — frontend never calls them
+- [x] **DEAD** `WikiPagesController.cs:61-73` — `GetWikiPageParagraphs` endpoint, frontend doesn't call it
+- [x] **DEAD** `ParagraphController` (entirely) — no frontend consumer
+- [x] **DEAD** `UsersController.cs:55-62,65-72,75-85,88-99` — `GetUserById`, `CreateUser`, `UpdateUser`, `DeleteUser` — frontend never calls them
 
 ### Code Smells
 - [ ] **SMELL** 3 different slug implementations — consolidate into shared utility

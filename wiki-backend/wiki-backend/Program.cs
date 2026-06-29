@@ -160,7 +160,6 @@ void AddDbContext()
 void AddServices()
 {
     builder.Services.AddScoped<IWikiPageRepository, WikiPageRepository>();
-    builder.Services.AddScoped<IParagraphRepository, ParagraphRepository>();
     builder.Services.AddScoped<IStyleRepository, StyleRepository>();
     builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
     builder.Services.AddScoped<IUserCommentRepository, UserCommentRepository>();

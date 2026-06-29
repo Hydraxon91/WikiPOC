@@ -57,20 +57,6 @@ public class WikiPagesController : ControllerBase
 
         return Ok(wikiPage);
     }
-    
-    [HttpGet("{id:guid}/paragraphs")]
-    public async Task<ActionResult<IEnumerable<Paragraph>>> GetWikiPageParagraphs(Guid id)
-    {
-        var wikiPageOutputModel = await _wikiPageRepository.GetByIdAsync(id);
-
-        if (wikiPageOutputModel == null)
-            return NotFound();
-
-        // Check if Paragraphs is null, and return an empty list if it is
-        var paragraphs = wikiPageOutputModel.WikiPage!.Paragraphs ?? new List<Paragraph>();
-
-        return Ok(paragraphs);
-    }
 
     [Authorize(Policy = IdentityData.ModeratorPolicyName)]
     [HttpPost("admin")]
