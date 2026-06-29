@@ -3,14 +3,14 @@ import { useParams } from 'react-router-dom';
 import WikiPageComponent from './Components/WikiPageComponent';
 import WikiPageCommentsComponent from './Components/WikiPageCommentsComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
-import { getWikiPageByTitle } from '../../Api/wikiApi';
+import { getWikiPageBySlug } from '../../Api/wikiApi';
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import '../../Styles/wikipage.css';
 
-const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = false, pageError = false }) => {
+const WikiPage = ({page: wikipage, setDecodedSlug, jwtToken, disableNavbar = false, pageError = false }) => {
     const { styles } = useStyleContext();
-    const { title } = useParams();
-    const decodedTitle = decodeURIComponent(title);
+    const { slug } = useParams();
+    const decodedSlug = decodeURIComponent(slug);
     const [activeTab, setActiveTab] = useState("wiki");
     const [page, setPage] = useState(null);
     const [images, setImages] = useState(null);
@@ -26,11 +26,11 @@ const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = fa
     },[wikipage])
 
     useEffect(() => {
-        console.log('WikiPage: decodedTitle', decodedTitle, 'setDecodedTitle:', !!setDecodedTitle);
-        if (setDecodedTitle && decodedTitle) {
-            setDecodedTitle(decodedTitle);
+        console.log('WikiPage: decodedSlug', decodedSlug, 'setDecodedSlug:', !!setDecodedSlug);
+        if (setDecodedSlug && decodedSlug) {
+            setDecodedSlug(decodedSlug);
         }
-    }, [decodedTitle]);
+    }, [decodedSlug]);
 
     const handleTabClick = (tab) =>{
         setActiveTab(tab);
@@ -38,7 +38,7 @@ const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = fa
 
     const refreshPage = async () => {
         try {
-            const data = await getWikiPageByTitle(decodedTitle);
+            const data = await getWikiPageBySlug(decodedSlug);
             if (data) {
                 setPage(data.wikiPage ?? data.userSubmittedWikiPage);
                 setImages(data.images);
@@ -61,7 +61,7 @@ const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = fa
                             style={{backgroundColor: styles.articleRightInnerColor}} 
                             onClick={() => handleTabClick('wiki')}
                             >
-                                {decodedTitle}
+                                {page?.title || decodedSlug}
                         </button>
                         <button 
                             className={`wiki-navbar-button ${activeTab === 'comments' ? 'wiki-navbar-button-active' : ''}`}
@@ -78,7 +78,7 @@ const WikiPage = ({page: wikipage, setDecodedTitle, jwtToken, disableNavbar = fa
                 {page && (
                     <WikiPageComponent
                         page={page}
-                        setDecodedTitle={setDecodedTitle}
+                        setDecodedSlug={setDecodedSlug}
                         activeTab={activeTab}
                         images={images}
                     />

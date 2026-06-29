@@ -26,6 +26,7 @@ public class DbInitializer : IHostedService
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
             await dbContext.Database.MigrateAsync(cancellationToken);
+            await BackfillSlugsAsync(dbContext);
         }
 
         await AddRolesAsync();
@@ -40,6 +41,48 @@ public class DbInitializer : IHostedService
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    private static async Task BackfillSlugsAsync(WikiDbContext dbContext)
+    {
+        var pagesWithoutSlug = await dbContext.WikiPages
+            .Where(wp => wp.Slug == null)
+            .ToListAsync();
+
+        if (pagesWithoutSlug.Count == 0)
+            return;
+
+        var existingSlugs = await dbContext.WikiPages
+            .Where(wp => wp.Slug != null)
+            .Select(wp => wp.Slug!)
+            .ToHashSetAsync();
+
+        foreach (var page in pagesWithoutSlug)
+        {
+            var baseSlug = Slugify(page.Title);
+            var slug = baseSlug;
+            var suffix = 2;
+            while (existingSlugs.Contains(slug))
+            {
+                slug = $"{baseSlug}-{suffix}";
+                suffix++;
+            }
+            page.Slug = slug;
+            existingSlugs.Add(slug);
+        }
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    private static string Slugify(string? title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            return "untitled";
+        var slug = title.Trim().ToLowerInvariant();
+        slug = slug.Replace(' ', '-');
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[^a-z0-9\-]", "");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"-+", "-").Trim('-');
+        return string.IsNullOrEmpty(slug) ? "untitled" : slug;
+    }
 
     private async Task AddRolesAsync()
     {

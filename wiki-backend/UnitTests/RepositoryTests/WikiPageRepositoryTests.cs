@@ -134,7 +134,7 @@ public class WikiPageRepositoryTests
     }
     
     [Test]
-    public async Task GetByTitleAsync_ShouldReturnWikiPageForValidTitle()
+    public async Task GetBySlugAsync_ShouldReturnWikiPageForValidSlug()
     {
         // Add a dummy category to the in-memory database
         var dummyCategory = new Category
@@ -148,7 +148,8 @@ public class WikiPageRepositoryTests
         // Arrange
         var articleId1 = Guid.NewGuid();
         var expectedTitle = "Page 1";
-        var expectedWikiPage = new WikiPage { Id = articleId1, Title = expectedTitle, RoleNote = "Test", SiteSub = "Test", CategoryId = dummyCategory.Id};
+        var expectedSlug = "page-1";
+        var expectedWikiPage = new WikiPage { Id = articleId1, Title = expectedTitle, Slug = expectedSlug, RoleNote = "Test", SiteSub = "Test", CategoryId = dummyCategory.Id};
 
         // Add the test data to the in-memory database
         _wikiDbContext.WikiPages.Add(expectedWikiPage);
@@ -160,7 +161,7 @@ public class WikiPageRepositoryTests
         var repository = new WikiPageRepository(_wikiDbContext, categoryRepository, mockImageStorage.Object);
 
         // Act
-        var result = await repository.GetByTitleAsync(expectedTitle);
+        var result = await repository.GetBySlugAsync(expectedSlug);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -170,16 +171,16 @@ public class WikiPageRepositoryTests
     }
 
     [Test]
-    public async Task GetByTitleAsync_ShouldReturnNullForInvalidTitle()
+    public async Task GetBySlugAsync_ShouldReturnNullForInvalidSlug()
     {
         // Arrange
-        var invalidTitle = "Nonexistent Page";
+        var invalidSlug = "nonexistent-page";
             
         var mockRepository = new Mock<IWikiPageRepository>();
-        mockRepository.Setup(repo => repo.GetByTitleAsync(invalidTitle)).ReturnsAsync(null as WPWithImagesOutputModel);
+        mockRepository.Setup(repo => repo.GetBySlugAsync(invalidSlug)).ReturnsAsync(null as WPWithImagesOutputModel);
 
         // Act
-        var result = await mockRepository.Object.GetByTitleAsync(invalidTitle);
+        var result = await mockRepository.Object.GetBySlugAsync(invalidSlug);
 
         // Assert
         Assert.That(result, Is.Null);

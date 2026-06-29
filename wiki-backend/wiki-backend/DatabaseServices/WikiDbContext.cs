@@ -61,6 +61,11 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .HasForeignKey(wp => wp.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<WikiPage>()
+            .HasIndex(wp => wp.Slug)
+            .IsUnique()
+            .HasFilter("[Slug] IS NOT NULL");
+
         modelBuilder.Entity<UserSubmittedWikiPage>()
             .HasBaseType<WikiPage>()
             .HasOne(uswp => uswp.WikiPage)

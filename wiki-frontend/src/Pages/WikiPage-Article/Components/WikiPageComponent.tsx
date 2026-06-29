@@ -6,11 +6,11 @@ import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { extractParagraphTitles, processArticleContent, buildContentFromParagraphs } from '../../../utils/articleRenderer';
 
-const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
+const WikiPageComponent = ({page, setDecodedSlug, activeTab, images}) => {
   const { styles }  = useStyleContext();
   const { decodedTokenContext } = useUserContext();
-  const { title } = useParams();
-  const decodedTitle = decodeURIComponent(title);
+  const { slug } = useParams();
+  const decodedSlug = decodeURIComponent(slug);
   const [pTitles, setPTitles] = useState<{mainParagraphs: {id:string;text:string}[]; subparagraphs: {id:string;mainId:string;text:string}[]}>({mainParagraphs: [], subparagraphs: []});
   const [isContentsVisible, setIsContentsVisible] = useState(true);
 
@@ -21,10 +21,10 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
   }, [page]);
 
   useEffect(() => {
-    if (setDecodedTitle) {
-      setDecodedTitle(decodedTitle);
+    if (setDecodedSlug) {
+      setDecodedSlug(decodedSlug);
     }
-  }, [decodedTitle]);
+  }, [decodedSlug]);
 
   const toggleContentsVisibility = () => {
     setIsContentsVisible(!isContentsVisible);
@@ -35,7 +35,7 @@ const WikiPageComponent = ({page, setDecodedTitle, activeTab, images}) => {
     if (!window.location.pathname.includes('/page/')) return null;
     if (window.location.pathname.includes('/edit')) return null;
     return (
-      <Link to={`/page/${page.title}/edit`}>
+      <Link to={`/page/${page.slug}/edit`}>
         <img className="editButton" src="/img/edit.png" alt="Edit" />
       </Link>
     );

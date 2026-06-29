@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Text;
 using wiki_backend.Models;
 using wiki_backend.Services.Storage;
 
@@ -17,6 +18,30 @@ public class WikiPageRepository : IWikiPageRepository
         _imageStorage = imageStorage;
     }
 
+    private static string Slugify(string? title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            return "untitled";
+        var slug = title.Trim().ToLowerInvariant();
+        slug = slug.Replace(' ', '-');
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[^a-z0-9\-]", "");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"-+", "-").Trim('-');
+        return string.IsNullOrEmpty(slug) ? "untitled" : slug;
+    }
+
+    private async Task<string> GenerateUniqueSlugAsync(string? title)
+    {
+        var baseSlug = Slugify(title);
+        var slug = baseSlug;
+        var suffix = 2;
+        while (await _context.WikiPages.AnyAsync(wp => wp.Slug == slug))
+        {
+            slug = $"{baseSlug}-{suffix}";
+            suffix++;
+        }
+        return slug;
+    }
+
     public async Task<List<TitleAndCategory>> GetAllTitlesAndCategoriesAsync()
     {
         var titlesAndCategories = await _context.WikiPages
@@ -25,6 +50,7 @@ public class WikiPageRepository : IWikiPageRepository
             .Select(page => new TitleAndCategory
             {
                 Title = page.Title ?? "Untitled",
+                Slug = page.Slug,
                 Category = page.Category!.CategoryName ?? "Uncategorized"
             })
             .ToListAsync();
@@ -62,7 +88,7 @@ public class WikiPageRepository : IWikiPageRepository
         return null;
     }
 
-    public async Task<WPWithImagesOutputModel?> GetByTitleAsync(string title)
+    public async Task<WPWithImagesOutputModel?> GetBySlugAsync(string slug)
     {
         var wikiPage = await _context.WikiPages
             .Where(page =>
@@ -73,7 +99,7 @@ public class WikiPageRepository : IWikiPageRepository
             .ThenInclude(uc => uc.UserProfile)
             .Include(wp => wp.Comments)
             .ThenInclude(uc => uc.Replies)
-            .FirstOrDefaultAsync(p => p.Title == title);
+            .FirstOrDefaultAsync(p => p.Slug == slug);
 
         if (wikiPage != null)
         {
@@ -90,6 +116,7 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images)
     {
+        wikiPage.Slug = await GenerateUniqueSlugAsync(wikiPage.Title);
         await _imageStorage.SaveImagesAsync(wikiPage.Id, images);
 
         foreach (var paragraph in wikiPage.Paragraphs)
@@ -106,6 +133,7 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task AddUserSubmittedPageAsync(UserSubmittedWikiPage wikiPage, ICollection<ImageFormModel> images)
     {
+        wikiPage.Slug = await GenerateUniqueSlugAsync(wikiPage.Title);
         await _imageStorage.SaveImagesAsync(wikiPage.Id, images);
 
         foreach (var paragraph in wikiPage.Paragraphs)
@@ -123,7 +151,6 @@ public class WikiPageRepository : IWikiPageRepository
     {
         _context.Entry(userSubmittedWikiPage).State = EntityState.Modified;
         userSubmittedWikiPage.Approved = true;
-        // Add the article to the category
         await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId!.Value,
             userSubmittedWikiPage);
         await _context.SaveChangesAsync();
@@ -191,9 +218,7 @@ public class WikiPageRepository : IWikiPageRepository
 
     public async Task AcceptUserSubmittedUpdateAsync(UserSubmittedWikiPage userSubmittedWikiPage)
     {
-        // Set Approved to true
         userSubmittedWikiPage.Approved = true;
-        // Add the new article to the category
         await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId!.Value,
             userSubmittedWikiPage);
 

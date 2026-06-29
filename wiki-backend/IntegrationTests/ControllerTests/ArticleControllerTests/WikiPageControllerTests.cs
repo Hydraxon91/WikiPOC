@@ -85,16 +85,16 @@ public class WikiPageControllerTests : IntegrationTestBase
     }
 
     [Test]
-    public async Task GetWikiPageByTitle_ShouldReturnPage()
+    public async Task GetWikiPageBySlug_ShouldReturnPage()
     {
         // Arrange
         var pageId = Guid.NewGuid();
-        var page = new WikiPage {Id = pageId, Title = "IntTestPage", Content = "Content of page" };
+        var page = new WikiPage {Id = pageId, Title = "IntTestPage", Slug = "inttestpage", Content = "Content of page" };
         await DbContext.WikiPages.AddAsync(page);
         await DbContext.SaveChangesAsync();
 
         // Act
-        var result = await _controller.GetWikiPageByTitle(page.Title);
+        var result = await _controller.GetWikiPageBySlug(page.Slug!);
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -106,10 +106,10 @@ public class WikiPageControllerTests : IntegrationTestBase
     }
     
     [Test]
-    public async Task GetWikiPageByTitle_NonExistentTitle_ShouldReturnNull()
+    public async Task GetWikiPageBySlug_NonExistentSlug_ShouldReturnNull()
     {
         // Arrange & Act
-        var result = await _controller.GetWikiPageByTitle("Non existent page");
+        var result = await _controller.GetWikiPageBySlug("non-existent-slug");
 
         // Assert
         Assert.That(result, Is.Not.Null);
