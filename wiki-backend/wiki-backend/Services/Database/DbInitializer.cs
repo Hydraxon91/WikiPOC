@@ -58,7 +58,7 @@ public class DbInitializer : IHostedService
 
         foreach (var page in pagesWithoutSlug)
         {
-            var baseSlug = Slugify(page.Title);
+            var baseSlug = SlugHelper.Slugify(page.Title);
             var slug = baseSlug;
             var suffix = 2;
             while (existingSlugs.Contains(slug))
@@ -71,17 +71,6 @@ public class DbInitializer : IHostedService
         }
 
         await dbContext.SaveChangesAsync();
-    }
-
-    private static string Slugify(string? title)
-    {
-        if (string.IsNullOrWhiteSpace(title))
-            return "untitled";
-        var slug = title.Trim().ToLowerInvariant();
-        slug = slug.Replace(' ', '-');
-        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[^a-z0-9\-]", "");
-        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"-+", "-").Trim('-');
-        return string.IsNullOrEmpty(slug) ? "untitled" : slug;
     }
 
     private async Task AddRolesAsync()

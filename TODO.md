@@ -66,7 +66,7 @@
 - [x] **DEAD** `UsersController.cs:55-62,65-72,75-85,88-99` — `GetUserById`, `CreateUser`, `UpdateUser`, `DeleteUser` — frontend never calls them
 
 ### Code Smells
-- [ ] **SMELL** 3 different slug implementations — consolidate into shared utility
+- [x] **SMELL** 3 different slug implementations — consolidate into shared utility
 - [ ] **SMELL** 4 near-identical "load WikiPage + nested data" methods in `WikiPageRepository` — extract
 - [ ] **SMELL** `UsersController.cs:49` — `GetUserRoles` wrapped in async but consumed via `.Result` synchronously
 - [x] **SMELL** `TokenServices.cs:22` — `DefaultOutboundClaimTypeMap.Clear()` called per request (process-global mutation)

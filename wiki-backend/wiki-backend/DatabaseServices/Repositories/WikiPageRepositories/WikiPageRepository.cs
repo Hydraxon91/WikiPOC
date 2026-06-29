@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using wiki_backend.Models;
+using wiki_backend.Services;
 using wiki_backend.Services.Storage;
 
 namespace wiki_backend.DatabaseServices.Repositories;
@@ -17,28 +18,10 @@ public class WikiPageRepository : IWikiPageRepository
         _imageStorage = imageStorage;
     }
 
-    private static string Slugify(string? title)
-    {
-        if (string.IsNullOrWhiteSpace(title))
-            return "untitled";
-        var slug = title.Trim().ToLowerInvariant();
-        slug = slug.Replace(' ', '-');
-        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[^a-z0-9\-]", "");
-        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"-+", "-").Trim('-');
-        return string.IsNullOrEmpty(slug) ? "untitled" : slug;
-    }
-
     private async Task<string> GenerateUniqueSlugAsync(string? title)
     {
-        var baseSlug = Slugify(title);
-        var slug = baseSlug;
-        var suffix = 2;
-        while (await _context.WikiPages.AnyAsync(wp => wp.Slug == slug))
-        {
-            slug = $"{baseSlug}-{suffix}";
-            suffix++;
-        }
-        return slug;
+        return await SlugHelper.GenerateUniqueSlugAsync(title, slug =>
+            _context.WikiPages.AnyAsync(wp => wp.Slug == slug));
     }
 
     public async Task<List<TitleAndCategory>> GetAllTitlesAndCategoriesAsync()

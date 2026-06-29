@@ -1,6 +1,6 @@
-﻿using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using wiki_backend.Models.ForumModels;
+using wiki_backend.Services;
 
 namespace wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 
@@ -115,23 +115,7 @@ public class ForumPostRepository : IForumPostRepository
     
     private async Task<string> GenerateUniqueSlugAsync(string title)
     {
-        var slug = GenerateSlug(title);
-        var originalSlug = slug;
-        var counter = 1;
-
-        while (await _context.ForumPosts.AnyAsync(p => p.Slug == slug))
-        {
-            slug = $"{originalSlug}-{counter}";
-            counter++;
-        }
-
-        return slug;
-    }
-
-    private string GenerateSlug(string title)
-    {
-        var slug = Regex.Replace(title.ToLower(), @"[^a-z0-9\s-]", "").Replace(" ", "-");
-        slug = Regex.Replace(slug, @"-+", "-");
-        return slug;
+        return await SlugHelper.GenerateUniqueSlugAsync(title, slug =>
+            _context.ForumPosts.AnyAsync(p => p.Slug == slug));
     }
 }
