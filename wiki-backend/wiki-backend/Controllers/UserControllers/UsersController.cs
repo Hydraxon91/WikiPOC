@@ -13,27 +13,37 @@ namespace wiki_backend.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILogger<UsersController> _logger;
 
-    public UsersController(UserManager<ApplicationUser> userManager)
+    public UsersController(UserManager<ApplicationUser> userManager, ILogger<UsersController> logger)
     {
         _userManager = userManager;
+        _logger = logger;
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpGet("GetUsers")]
     public async Task<IActionResult> GetUsers()
     {
-        var users = await _userManager.Users.ToListAsync();
-        var rolesTasks = users.Select(u => GetUserRoles(u)).ToArray();
-        var allRoles = await Task.WhenAll(rolesTasks);
-        var usersWithRoles = users.Select((user, i) => new
+        try
         {
-            user.Id,
-            user.UserName,
-            user.Email,
-            Roles = allRoles[i]
-        }).ToList();
-        return Ok(usersWithRoles);
+            var users = await _userManager.Users.ToListAsync();
+            var rolesTasks = users.Select(u => GetUserRoles(u)).ToArray();
+            var allRoles = await Task.WhenAll(rolesTasks);
+            var usersWithRoles = users.Select((user, i) => new
+            {
+                user.Id,
+                user.UserName,
+                user.Email,
+                Roles = allRoles[i]
+            }).ToList();
+            return Ok(usersWithRoles);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching users");
+            return StatusCode(500, new { Message = "An error occurred while fetching users." });
+        }
     }
 
     private async Task<List<string>> GetUserRoles(ApplicationUser user)

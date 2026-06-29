@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css'
-import { useNavigate, useParams } from 'react-router-dom';
-import { createForumPost, getForumTopicBySlug } from '../../Api/forumApi';
+import { useNavigate } from 'react-router-dom';
+import { createForumPost, createForumTopic } from '../../Api/forumApi';
 import { getUserProfileByUsername } from '../../Api/wikiUserApi';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
@@ -11,8 +11,6 @@ import Breadcrumbs from './Components/Breadcrumbs';
 
 const CreateForumTopic = ({ jwtToken }) => {
     const {decodedTokenContext} = useUserContext();
-    const { slug } = useParams();
-    const [forumTopic, setForumTopic] = useState<any>(null);
     const [user, setUser] = useState<any>();
     const [postTitle, setPostTitle] = useState('');
     const [content, setContent] = useState('');
@@ -23,24 +21,36 @@ const CreateForumTopic = ({ jwtToken }) => {
     useEffect(() => {
         const decodedTokenName = decodedTokenContext?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
         if (decodedTokenName) {
-            const decodedTokenName = decodedTokenContext["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
             getUserProfileByUsername(decodedTokenName, setUser);
         }
     }, [decodedTokenContext]);
 
-    useEffect(() => {
-        const fetchForumTopic = async () => {
-            try {
-                const fetchedForumTopic = await getForumTopicBySlug(slug);
-                setForumTopic(fetchedForumTopic);
-            } catch (error) {
-                console.error("Error fetching ForumTopic:", error);
-            }
-        };
-    
-        fetchForumTopic();
-    }, [slug]);
-    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError(null);
+
+        if (!postTitle || !content || !user) return;
+
+        try {
+            const newTopic = await createForumTopic(
+                { title: postTitle, description: postTitle },
+                jwtToken
+            );
+
+            const forumPost = {
+                postTitle,
+                content,
+                forumTopicId: newTopic.id,
+                userId: user!.id,
+                userName: user!.userName,
+            };
+
+            await createForumPost(forumPost, jwtToken);
+            navigate(`/forum/${newTopic.slug}`);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
 
     const modules = {
         toolbar: [
@@ -59,29 +69,6 @@ const CreateForumTopic = ({ jwtToken }) => {
         'list', 'bullet', 'indent',
         'link', 'image', 'video'
     ];
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError(null);
-
-        const forumPost = {
-            postTitle,
-            content,
-            forumTopic,
-            forumTopicId: forumTopic.id,
-            userId: user!.id,
-            userName: user!.userName,
-            user: user,
-            slug: ''
-        };
-
-        try {
-            await createForumPost(forumPost, jwtToken);
-            navigate(`/forum/${slug}`); // Redirect to forum page after successful creation
-        } catch (err) {
-            setError(err.message);
-        }
-    };
 
     return (
         <>

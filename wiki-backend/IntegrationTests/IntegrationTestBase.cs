@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using wiki_backend.DatabaseServices;
 using wiki_backend.Models;
@@ -117,7 +118,8 @@ namespace IntegrationTests
         protected UsersController CreateUserController()
         {
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            return new UsersController(userManager);
+            var logger = ServiceProvider.GetRequiredService<ILogger<UsersController>>();
+            return new UsersController(userManager, logger);
         }
         
         protected UserProfileController CreateUserProfileController()

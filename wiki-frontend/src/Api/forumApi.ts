@@ -5,6 +5,9 @@ export const getForumTopics = async () => get<ForumTopic[]>('/api/ForumTopic');
 
 export const getForumTopicBySlug = async (slug: string) => get<ForumTopic>(`/api/ForumTopic/${slug}`);
 
+export const createForumTopic = async (forumTopic: Partial<ForumTopic>, token: string) =>
+  post<ForumTopic>('/api/ForumTopic', forumTopic, token);
+
 export const getForumPostBySlug = async (slug: string) => get<ForumPost>(`/api/ForumPost/${slug}`);
 
 export const createForumPost = async (forumPost: Partial<ForumPost>, token: string) => {

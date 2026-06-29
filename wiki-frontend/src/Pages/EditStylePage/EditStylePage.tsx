@@ -38,8 +38,8 @@ const EditStylePage = ({jwtToken}) =>{
         setLogoPicture(file);
       };
 
-    const handleUpdate = () => {
-        updateStyles(newStyles, logoPicture, jwtToken);
+    const handleUpdate = async () => {
+        await updateStyles(newStyles, logoPicture, jwtToken);
         setStyles(newStyles);
         setBackupStyles(prevStyles => ({ ...prevStyles, ...newStyles }));
         setLeave(true);
