@@ -105,17 +105,24 @@ public class ForumPostRepositoryTests : IntegrationTestBase
         DbContext.ForumPosts.Add(existingPost);
         await DbContext.SaveChangesAsync();
 
-        existingPost.PostTitle = "Updated Title";
-        existingPost.Content = "Updated Content";
+        var updatedPost = new ForumPost
+        {
+            Id = existingPost.Id,
+            PostTitle = "Updated Title",
+            Content = "Updated Content",
+            ForumTopicId = existingPost.ForumTopicId,
+            UserId = existingPost.UserId,
+            UserName = existingPost.UserName
+        };
 
         // Act
-        await _repository.UpdateForumPostAsync(existingPost, existingPost);
+        await _repository.UpdateForumPostAsync(existingPost, updatedPost);
 
         // Assert
-        var updatedPost = await DbContext.ForumPosts.FirstOrDefaultAsync(p => p.PostTitle == "Updated Title");
-        Assert.That(updatedPost, Is.Not.Null);
-        Assert.That(updatedPost.Slug, Is.EqualTo("updated-title")); // Ensure slug is updated correctly
-        Assert.That(updatedPost.Content, Is.EqualTo("Updated Content"));
+        var updatedPostInDb = await DbContext.ForumPosts.FirstOrDefaultAsync(p => p.PostTitle == "Updated Title");
+        Assert.That(updatedPostInDb, Is.Not.Null);
+        Assert.That(updatedPostInDb.Slug, Is.EqualTo("updated-title"));
+        Assert.That(updatedPostInDb.Content, Is.EqualTo("Updated Content"));
     }
 
     [Test]
