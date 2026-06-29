@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,14 +25,6 @@ public class UsersController : ControllerBase
     private async Task<List<string>> GetUserRoles(ApplicationUser user)
     {
         return (await _userManager.GetRolesAsync(user)).ToList();
-    }
-
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpGet("DebugPrincipal")]
-    public IActionResult DebugPrincipal()
-    {
-        var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
-        return Ok(new { claims, isAuth = User.Identity?.IsAuthenticated });
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
@@ -65,23 +56,34 @@ public class UsersController : ControllerBase
     [HttpPost("CreateUser")]
     public async Task<IActionResult> CreateUser([FromBody] ApplicationUser model)
     {
-        if (model == null) return BadRequest("User data is null");
+        if (model == null) return BadRequest("Invalid user data.");
+        model.SecurityStamp = Guid.NewGuid().ToString();
         var result = await _userManager.CreateAsync(model);
-        if (!result.Succeeded) return BadRequest(result.Errors);
-        return Ok(model);
+
+        if (result.Succeeded)
+        {
+            return CreatedAtAction(nameof(GetUsers), new { id = model.Id }, model);
+        }
+
+        return BadRequest(result.Errors);
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPut("UpdateUser")]
     public async Task<IActionResult> UpdateUser(string id, [FromBody] ApplicationUser model)
     {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user == null) return NotFound();
-        user.UserName = model.UserName;
-        user.Email = model.Email;
-        var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded) return BadRequest(result.Errors);
-        return Ok(user);
+        if (model == null || string.IsNullOrEmpty(id)) return BadRequest("Invalid user data.");
+
+        var existingUser = await _userManager.FindByIdAsync(id);
+        if (existingUser == null) return NotFound();
+
+        existingUser.UserName = model.UserName;
+        existingUser.Email = model.Email;
+
+        var result = await _userManager.UpdateAsync(existingUser);
+        if (result.Succeeded) return Ok(existingUser);
+
+        return BadRequest(result.Errors);
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
@@ -90,72 +92,14 @@ public class UsersController : ControllerBase
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null) return NotFound();
+
         var userProfile = await _profileRepository.GetByUserIdAsync(id);
         if (userProfile != null)
             await _profileRepository.RemoveAsync(userProfile.Id);
+
         var result = await _userManager.DeleteAsync(user);
-        if (!result.Succeeded) return BadRequest(result.Errors);
-        return Ok("User deleted successfully");
+        if (result.Succeeded) return NoContent();
+
+        return BadRequest(result.Errors);
     }
-
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
-    [HttpPatch("UpdateRole/{userId}")]
-    public async Task<IActionResult> UpdateUserRole(string userId, [FromBody] UpdateRoleRequest request)
-    {
-        var targetUser = await _userManager.FindByIdAsync(userId);
-        if (targetUser == null) return NotFound("User not found");
-
-        var allRoles = new[] { "Owner", "Admin", "Moderator", "User" };
-        if (!allRoles.Contains(request.Role))
-            return BadRequest("Invalid role. Must be Owner, Admin, Moderator, or User.");
-
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(currentUserId)) return Unauthorized();
-        var currentUser = await _userManager.FindByIdAsync(currentUserId);
-        if (currentUser == null) return Unauthorized();
-
-        var currentUserRoles = await _userManager.GetRolesAsync(currentUser);
-
-        // Owner can change any role
-        if (currentUserRoles.Contains("Owner"))
-        {
-            // Prevent the last Owner from being demoted
-            if (request.Role != "Owner")
-            {
-                var ownerCount = (await _userManager.GetUsersInRoleAsync("Owner")).Count;
-                if (ownerCount <= 1 && currentUser.Id == userId)
-                    return BadRequest("Cannot demote the last Owner.");
-            }
-            await SetUserRole(targetUser, request.Role);
-            return Ok(new { Message = $"User role updated to {request.Role}" });
-        }
-
-        // Admin can only set Moderator or User, and cannot change other Admins or Owners
-        if (currentUserRoles.Contains("Admin"))
-        {
-            var targetRoles = await _userManager.GetRolesAsync(targetUser);
-            if (targetRoles.Contains("Owner") || targetRoles.Contains("Admin"))
-                return Forbid();
-
-            if (request.Role != "Moderator" && request.Role != "User")
-                return BadRequest("Admins can only assign Moderator or User roles.");
-
-            await SetUserRole(targetUser, request.Role);
-            return Ok(new { Message = $"User role updated to {request.Role}" });
-        }
-
-        return Forbid();
-    }
-
-    private async Task SetUserRole(ApplicationUser user, string newRole)
-    {
-        var currentRoles = await _userManager.GetRolesAsync(user);
-        await _userManager.RemoveFromRolesAsync(user, currentRoles);
-        await _userManager.AddToRoleAsync(user, newRole);
-    }
-}
-
-public class UpdateRoleRequest
-{
-    public string Role { get; set; } = "";
 }

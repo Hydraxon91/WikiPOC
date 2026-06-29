@@ -86,11 +86,11 @@ builder.Services.AddHostedService<DbInitializer>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-// }
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -159,9 +159,6 @@ void AddDbContext()
 
 void AddServices()
 {
-    builder.Services.AddControllers();
-    builder.Services.AddEndpointsApiExplorer();
-
     builder.Services.AddScoped<IWikiPageRepository, WikiPageRepository>();
     builder.Services.AddScoped<IParagraphRepository, ParagraphRepository>();
     builder.Services.AddScoped<IStyleRepository, StyleRepository>();
