@@ -45,14 +45,14 @@ public class WikiPagesController : ControllerBase
         return Ok(wikiPage);
     }
     
-    [HttpGet("GetByTitle/{title}")]
-    public async Task<ActionResult<WPWithImagesOutputModel>> GetWikiPageByTitle(string title)
+    [HttpGet("GetBySlug/{slug}")]
+    public async Task<ActionResult<WPWithImagesOutputModel>> GetWikiPageBySlug(string slug)
     {
-        var wikiPage = await _wikiPageRepository.GetByTitleAsync(title);
+        var wikiPage = await _wikiPageRepository.GetBySlugAsync(slug);
 
         if (wikiPage == null)
         {
-            return NotFound(); // Return 404 if the page is not found
+            return NotFound();
         }
 
         return Ok(wikiPage);
@@ -72,7 +72,7 @@ public class WikiPagesController : ControllerBase
         return Ok(paragraphs);
     }
 
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
     [HttpPost("admin")]
     [RequestSizeLimit(2 * 1024 * 1024)]
     public async Task<ActionResult<WikiPage>> CreateWikiPageForAdmin([FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
@@ -97,7 +97,7 @@ public class WikiPagesController : ControllerBase
         try
         {
             await _wikiPageRepository.AddAsync(newWikiPage, images);
-            return Ok(new { Message = "Article submitted successfully" });
+            return Ok(newWikiPage);
         }
         catch (Exception)
         {
@@ -137,7 +137,7 @@ public class WikiPagesController : ControllerBase
         return CreatedAtAction(nameof(GetWikiPage), new { id = newWikiPage.Id }, newWikiPage);
     }
     
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
     [HttpPost("AdminAccept")]
     public async Task<ActionResult<WikiPage>> AcceptCreatedPageForUser([FromBody] string id)
     {
@@ -159,7 +159,7 @@ public class WikiPagesController : ControllerBase
     }
     
     
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
     [HttpPut("admin/{id:guid}")]
     [RequestSizeLimit(2 * 1024 * 1024)]
     public async Task<IActionResult> UpdateWikiPageForAdmin(Guid id, [FromForm] WikiPageWithImagesInputModel wikiPageWithImagesInputModel)
@@ -226,7 +226,7 @@ public class WikiPagesController : ControllerBase
         return CreatedAtAction(nameof(GetWikiPage), new { id = updatedWikiPage.Id }, updatedWikiPage);
     }
     
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
     [HttpPatch("AdminAccept/{id:guid}")]
     public async Task<IActionResult> AcceptUpdateWikiPageForUser(Guid id)
     {
@@ -236,14 +236,15 @@ public class WikiPagesController : ControllerBase
         if (newWikipage?.UserSubmittedWikiPage == null || newWikipage.UserSubmittedWikiPage.WikiPageId == null)
             return NotFound();
         
-        var oldId = newWikipage.UserSubmittedWikiPage.WikiPageId ?? Guid.Empty; // Provide a default value
+        var oldId = newWikipage.UserSubmittedWikiPage.WikiPageId ?? Guid.Empty;
         var existingWikiPage = await _wikiPageRepository.GetByIdAsync(oldId);
         if ( existingWikiPage == null)
             return NotFound();
         
-        await _wikiPageRepository.AcceptUserSubmittedUpdateAsync(newWikipage.UserSubmittedWikiPage);
-        // await _wikiPageRepository.DeleteUserSubmittedAsync(newWikipage.UserSubmittedWikiPage.Id, existingWikiPage.WikiPage.Id);
+        var oldSlug = existingWikiPage.WikiPage?.Slug;
         await _wikiPageRepository.DeleteAsync(existingWikiPage.WikiPage!.Id);
+        newWikipage.UserSubmittedWikiPage.Slug = oldSlug;
+        await _wikiPageRepository.AcceptUserSubmittedUpdateAsync(newWikipage.UserSubmittedWikiPage);
         return Ok(new { Message = "WikiPage updated successfully" });
     }
     
@@ -261,7 +262,7 @@ public class WikiPagesController : ControllerBase
         return Ok(new { Message = "WikiPage deleted successfully" });
     }
     
-    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
     [HttpDelete("AdminDecline/{id:guid}")]
     public async Task<IActionResult> DeleteUserSubmittedWikiPage(Guid id)
     {

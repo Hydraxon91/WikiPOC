@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import ArticleEditor from './Components/ArticleEditor';
 import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
 import { useNotification } from '../../Components/NotificationProvider';
+import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { buildContentFromParagraphs } from '../../utils/articleRenderer';
 import './Style/articleeditor.css';
 
 const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?: any; handleCreate?: any }) => {
   const navigate = useNavigate();
+  const { decodedTokenContext } = useUserContext();
   const [temporaryPage, setTemporaryPage] = useState(null);
   const [title, setTitle] = useState('');
   const [siteSub, setSiteSub] = useState('');
@@ -131,8 +133,16 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
 
     savePromise
       .then((data) => {
-        showNotification('Successfully submitted page!')
-        navigate(`/page/${encodeURIComponent(title)}`);
+        const role = decodedTokenContext?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+        const isDirectPublish = role === 'Admin' || role === 'Owner' || role === 'Moderator';
+        if (isDirectPublish) {
+          const redirectSlug = newPage ? data?.slug : temporaryPage?.slug;
+          showNotification('Successfully published page!');
+          navigate(`/page/${encodeURIComponent(redirectSlug)}`);
+        } else {
+          showNotification('Submission sent for approval. An admin or moderator will review it shortly.');
+          navigate('/');
+        }
       })
       .catch((error) => {
         console.error("Error during save:", error);
@@ -152,7 +162,7 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
         </div>
       </div>
       <div className={`preview-container${showPreview ? ' visible' : ''}`}>
-        <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images} setDecodedTitle={undefined}/>
+        <WikiPageComponent page={temporaryPage} activeTab={"wiki"} images={images} setDecodedSlug={undefined}/>
       </div>
       <button className="preview-toggle" onClick={() => setShowPreview(!showPreview)}>
         {showPreview ? 'Edit' : 'Preview'}

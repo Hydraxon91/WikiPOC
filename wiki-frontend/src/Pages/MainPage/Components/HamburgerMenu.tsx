@@ -38,7 +38,7 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
             </Link>
 
             {decodedTokenContext ? (
-              role === 'Admin' ? (
+              role === 'Admin' || role === 'Owner' ? (
                 <>
                   <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Admin Tools</h3>
                   <Link to="/user-submissions" onClick={closeDrawer}>
@@ -50,11 +50,32 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
                   <Link to="/create" onClick={closeDrawer}>
                     <p style={{ marginBottom: '4px', fontSize: '80%' }}>Create New Page</p>
                   </Link>
-                  <Link to="/edit-wiki" onClick={closeDrawer}>
-                    <p style={{ marginBottom: '4px', fontSize: '80%' }}>Edit Wiki</p>
-                  </Link>
+                  {role === 'Owner' && (
+                    <Link to="/edit-wiki" onClick={closeDrawer}>
+                      <p style={{ marginBottom: '4px', fontSize: '80%' }}>Edit Wiki</p>
+                    </Link>
+                  )}
                   <Link to="/categories/edit" onClick={closeDrawer}>
                     <p style={{ marginBottom: '4px', fontSize: '80%' }}>Edit Categories</p>
+                  </Link>
+                  <Link to="/admin/users" onClick={closeDrawer}>
+                    <p style={{ marginBottom: '4px', fontSize: '80%' }}>Manage Users</p>
+                  </Link>
+                  <button onClick={() => { handleLogout(updateUser); closeDrawer(); }} className="logout-button" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '80%', marginBottom: '4px', color: '#024185', textDecoration: 'underline' }}>
+                    Logout
+                  </button>
+                </>
+              ) : role === 'Moderator' ? (
+                <>
+                  <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Moderator Tools</h3>
+                  <Link to="/user-submissions" onClick={closeDrawer}>
+                    <p style={{ marginBottom: '4px', fontSize: '80%' }}>Pages Awaiting Approval</p>
+                  </Link>
+                  <Link to="/user-updates" onClick={closeDrawer}>
+                    <p style={{ marginBottom: '4px', fontSize: '80%' }}>Updates Awaiting Approval</p>
+                  </Link>
+                  <Link to="/create" onClick={closeDrawer}>
+                    <p style={{ marginBottom: '4px', fontSize: '80%' }}>Create New Page</p>
                   </Link>
                   <button onClick={() => { handleLogout(updateUser); closeDrawer(); }} className="logout-button" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '80%', marginBottom: '4px', color: '#024185', textDecoration: 'underline' }}>
                     Logout

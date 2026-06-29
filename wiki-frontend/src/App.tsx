@@ -6,7 +6,7 @@ import EditStylePage from "./Pages/EditStylePage/EditStylePage";
 import MainPage from "./Pages/MainPage/MainPage";
 import HomeComponent from "./Pages/MainPage/Components/HomeComponent";
 import { StyleProvider  } from "./Components/contexts/StyleContext";
-import { createWikiPage, updateWikiPage, getWikiPageByTitle, fetchCategories } from "./Api/wikiApi";
+import { createWikiPage, updateWikiPage, getWikiPageBySlug, fetchCategories } from "./Api/wikiApi";
 import LoginPageComponent from "./Pages/LoginLogoutPages/LoginPageComponent";
 import { CookiesProvider, useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
@@ -47,7 +47,7 @@ function App() {
   const [wikiPageTitles, setWikiPageTitles] = useState([]);
   const [currentWikiPage, setCurrentWikiPage] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [decodedTitle, setDecodedTitle] = useState(null);
+  const [decodedSlug, setDecodedSlug] = useState(null);
   const [pageError, setPageError] = useState(false);
 
   const [cookies, setCookie, removeCookie] = useCookies(["jwt_token"]);
@@ -83,8 +83,8 @@ function App() {
   const fetchPage = async () => {
     try {
       setPageError(false);
-      console.log('Fetching page:', decodedTitle);
-      const data = await getWikiPageByTitle(decodedTitle);
+      console.log('Fetching page:', decodedSlug);
+      const data = await getWikiPageBySlug(decodedSlug);
       console.log('Page data received:', data ? 'found' : 'null');
       if (!data) {
         setPageError(true);
@@ -99,10 +99,10 @@ function App() {
   };
 
   useEffect(() => {
-    if (decodedTitle) {
+    if (decodedSlug) {
       fetchPage();
     }
-  }, [decodedTitle]);
+  }, [decodedSlug]);
 
 
   const handleCreate = (newPage, images) => {
@@ -149,16 +149,16 @@ function App() {
             <Routes>
               <Route path="/" element={<MainPage decodedToken={decodedToken} handleLogout={handleLogout} jwtToken={cookies} setWikiPageTitles={setWikiPageTitles} categories={categories} />}>
                 <Route path="/" element={<HomeComponent pages={wikiPageTitles} categories={categories} />} />
-                <Route path="/page/:title" element={<WikiPage page={currentWikiPage} setDecodedTitle={setDecodedTitle} jwtToken={cookies["jwt_token"]} pageError={pageError} />}/>
-                <Route path="/page/:title/edit" 
+                <Route path="/page/:slug" element={<WikiPage page={currentWikiPage} setDecodedSlug={setDecodedSlug} jwtToken={cookies["jwt_token"]} pageError={pageError} />}/>
+                <Route path="/page/:slug/edit"
                   element={
-                  <ProtectedRoute roles={['User', 'Admin']}>
+                  <ProtectedRoute roles={['User', 'Admin', 'Moderator']}>
                     <EditPage page={currentWikiPage} handleEdit={handleEdit} handleCreate={handleCreate} />
                   </ProtectedRoute>
                   } 
                 />
                 <Route path="/create" element={
-                  <ProtectedRoute roles={['User', 'Admin']}>
+                  <ProtectedRoute roles={['User', 'Admin', 'Moderator']}>
                     <EditPage handleEdit={handleEdit} handleCreate={handleCreate} />
                   </ProtectedRoute>
                 } />
@@ -200,7 +200,7 @@ function App() {
                 } />
                 <Route path="/profile/:username" element={<ProfilePage />} />
                 <Route path="/profile/edit/:username" element={
-                  <ProtectedRoute roles={['User', 'Admin']}>
+                  <ProtectedRoute roles={['User', 'Admin', 'Moderator']}>
                     <EditProfilePage jwtToken={cookies["jwt_token"]}
 />
                   </ProtectedRoute>
@@ -221,7 +221,7 @@ function App() {
                 <Route path="/forum/:slug" element={<ForumPage jwtToken={cookies["jwt_token"]}
  />} />
                 <Route path="/forum/:slug/create-topic" element={
-                  <ProtectedRoute  roles={['User', 'Admin']}>
+                  <ProtectedRoute  roles={['User', 'Admin', 'Moderator']}>
                     <CreateForumTopic jwtToken={cookies["jwt_token"]}
 />
                   </ProtectedRoute>

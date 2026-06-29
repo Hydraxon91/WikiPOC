@@ -12,18 +12,19 @@ export const getWikiPageById = async (id) => {
     return get(`/api/WikiPages/GetById/${id}`);
   };
 
-  export const getWikiPageByTitle = async (title) => {
-    return get(`/api/WikiPages/GetByTitle/${encodeURIComponent(title)}`);
+  export const getWikiPageBySlug = async (slug) => {
+    return get(`/api/WikiPages/GetBySlug/${encodeURIComponent(slug)}`);
   };
 
 export const createWikiPage = async (newPage, token, decodedToken, images) => {
   var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+  var roles = Array.isArray(role) ? role : [role];
+  var canDirectPublish = roles.includes("Admin") || roles.includes("Owner") || roles.includes("Moderator");
   var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-  var isAdmin = role === "Admin" || role === "Owner";
-  var url = isAdmin ? `/api/WikiPages/admin` : `/api/WikiPages/user`;
+  var url = canDirectPublish ? `/api/WikiPages/admin` : `/api/WikiPages/user`;
 
   const formData = new FormData();
-  if (!isAdmin) {
+  if (!canDirectPublish) {
     formData.append('wikiPageWithImagesInputModel.IsNewPage', 'true')
     formData.append('wikiPageWithImagesInputModel.Approved', 'false')
     formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
@@ -47,11 +48,12 @@ export const createWikiPage = async (newPage, token, decodedToken, images) => {
 
 export const updateWikiPage = async (updatedPage, token, decodedToken, images) => {
     var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    var roles = Array.isArray(role) ? role : [role];
+    var canDirectPublish = roles.includes("Admin") || roles.includes("Owner") || roles.includes("Moderator");
     var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-    var isAdmin = role === "Admin" || role === "Owner";
-    var url = isAdmin ? `/api/WikiPages/admin/${updatedPage.id}` : `/api/WikiPages/userUpdate/${updatedPage.id}`;
+    var url = canDirectPublish ? `/api/WikiPages/admin/${updatedPage.id}` : `/api/WikiPages/userUpdate/${updatedPage.id}`;
     const formData = new FormData();
-    if (!isAdmin) {
+    if (!canDirectPublish) {
       formData.append('wikiPageWithImagesInputModel.WikiPageId', updatedPage.id)
       formData.append('wikiPageWithImagesInputModel.SubmittedBy', userName);
     }
