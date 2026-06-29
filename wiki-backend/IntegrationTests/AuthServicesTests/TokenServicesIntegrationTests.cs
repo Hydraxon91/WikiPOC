@@ -86,8 +86,8 @@ namespace IntegrationTests.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(token);
 
-            Assert.That(jwtToken.Issuer, Is.EqualTo("TestIssuer"));
-            Assert.That(jwtToken.Audiences.First(), Is.EqualTo("TestAudience"));
+            Assert.That(jwtToken.Issuer, Is.EqualTo(JwtValidIssuer));
+            Assert.That(jwtToken.Audiences.First(), Is.EqualTo(JwtValidAudience));
 
             var claims = jwtToken.Claims.ToList();
             Assert.That(claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value, Is.EqualTo(user.Id));

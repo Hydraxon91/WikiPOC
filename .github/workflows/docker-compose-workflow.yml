@@ -7,6 +7,7 @@ on:
 jobs:
   tests:
     uses: ./.github/workflows/backend-tests.yml
+    secrets: inherit
 
   build-and-push:
     needs: tests

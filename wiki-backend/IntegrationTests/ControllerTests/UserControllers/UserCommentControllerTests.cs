@@ -27,14 +27,6 @@ public class UserCommentControllerTests : IntegrationTestBase
     [SetUp]
     public async Task SetUp()
     {
-        // Check JWT configuration, This shouldn't fix anything but somehow it did?
-        Env.TraversePath().Load();
-        var signingKey = Environment.GetEnvironmentVariable("JWT_ISSUER_SIGNING_KEY");
-        if (string.IsNullOrEmpty(signingKey))
-        {
-            throw new InvalidOperationException("JWT_ISSUER_SIGNING_KEY is not configured.");
-        }
-        // Ensure necessary setup
         await EnsureUserRoleExistsAsync();
         // await AddTestUser("testuser99");
         _controller = CreateUserCommentController();
