@@ -4,10 +4,12 @@ import "../../Styles/stylepage.css";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStyleContext } from "../../Components/contexts/StyleContext";
+import { useNotification } from '../../Components/NotificationProvider';
 
 const EditStylePage = ({jwtToken}) =>{
     const navigate = useNavigate();
     const { styles, updateStyles, setStyles } = useStyleContext();
+    const { showNotification } = useNotification();
 
     const[logoPicture, setLogoPicture] = useState(null);
     const [newStyles, setNewStyles] = useState(styles);
@@ -39,10 +41,14 @@ const EditStylePage = ({jwtToken}) =>{
       };
 
     const handleUpdate = async () => {
-        await updateStyles(newStyles, logoPicture, jwtToken);
-        setStyles(newStyles);
-        setBackupStyles(prevStyles => ({ ...prevStyles, ...newStyles }));
-        setLeave(true);
+        try {
+            await updateStyles(newStyles, logoPicture, jwtToken);
+            setStyles(newStyles);
+            setBackupStyles(prevStyles => ({ ...prevStyles, ...newStyles }));
+            setLeave(true);
+        } catch (err) {
+            showNotification('Failed to save styles: ' + err.message);
+        }
     };
 
     return (
