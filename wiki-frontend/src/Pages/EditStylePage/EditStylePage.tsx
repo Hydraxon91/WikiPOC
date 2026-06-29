@@ -25,7 +25,7 @@ const EditStylePage = ({jwtToken}) =>{
         return () => {
             setStyles(backUpStyles);
         };
-    }, []);
+    }, [backUpStyles, setStyles]);
 
     useEffect(()=>{
         leave && navigate("/");
