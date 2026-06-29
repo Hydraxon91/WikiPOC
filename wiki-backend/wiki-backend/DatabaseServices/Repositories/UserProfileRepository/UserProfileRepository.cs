@@ -50,11 +50,6 @@ public class UserProfileRepository : IUserProfileRepository
         if (profile != null) await SetPostCount(profile);
         return profile;
     }
-    //Not needed for now
-    // public Task AddAsync(UserProfile wikiPage)
-    // {
-    //     throw new NotImplementedException();
-    // }
 
     public async Task UpdateAsync(Guid existingId, UserProfile updatedProfile, IFormFile? profilePictureFile)
     {

@@ -68,10 +68,10 @@
 ### Code Smells
 - [x] **SMELL** 3 different slug implementations — consolidate into shared utility
 - [x] **SMELL** 4 near-identical "load WikiPage + nested data" methods in `WikiPageRepository` — extract
-- [ ] **SMELL** `UsersController.cs:49` — `GetUserRoles` wrapped in async but consumed via `.Result` synchronously
+- [x] **SMELL** `UsersController.cs:49` — `GetUserRoles` wrapped in async but consumed via `.Result` synchronously
 - [x] **SMELL** `TokenServices.cs:22` — `DefaultOutboundClaimTypeMap.Clear()` called per request (process-global mutation)
 - [x] **SMELL** `AuthService.cs:98-109 vs 140-145` — Two email-format validators disagreeing
-- [ ] **SMELL** `DbInitializer.cs` — 4 copies of "create profile, attach UserId" pattern; extract shared helper
+- [x] **SMELL** `DbInitializer.cs` — 4 copies of "create profile, attach UserId" pattern; extract shared helper
 
 ### Security
 - [x] **MED** `WikiDbContextDesignTimeFactory.cs:11` — Hardcoded plaintext password in connection string
@@ -83,12 +83,12 @@
 - [x] `WikiPageRepository.cs:2` — `using System.Text`
 
 ### Commented-out Dead Code
-- [ ] `UserProfileRepository.cs:53-57` — commented `AddAsync` stub
-- [ ] `WikiPage.cs:14` — commented `Category` property
-- [ ] `UserSubmittedWikiPage.cs:8` — commented `Id` field
-- [ ] `StyleRepository.cs:44` — commented `SetValues` line
-- [ ] `UserComment.cs:11` — commented `[JsonIgnore]` attribute
-- [ ] `WikiPagesController.cs:233,296,319` — stale investigation comments (no longer match code)
+- [x] `UserProfileRepository.cs:53-57` — commented `AddAsync` stub
+- [x] `WikiPage.cs:14` — commented `Category` property
+- [x] `UserSubmittedWikiPage.cs:8` — commented `Id` field
+- [x] `StyleRepository.cs:44` — commented `SetValues` line
+- [x] `UserComment.cs:11` — commented `[JsonIgnore]` attribute
+- [x] `WikiPagesController.cs:282,303` — stale investigation comments (no longer match code)
 
 ---
 

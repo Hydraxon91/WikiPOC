@@ -99,86 +99,82 @@ public class DbInitializer : IHostedService
         }
     }
 
+    private static async Task<ApplicationUser?> CreateUserWithProfileAsync(
+        UserManager<ApplicationUser> userManager,
+        WikiDbContext dbContext,
+        string userName,
+        string email,
+        string password,
+        string displayName,
+        string profilePicture,
+        string roleName)
+    {
+        var profile = new UserProfile
+        {
+            UserName = userName,
+            DisplayName = displayName,
+            ProfilePicture = profilePicture,
+            JoinDate = DateTime.UtcNow
+        };
+        await dbContext.UserProfiles.AddAsync(profile);
+        await dbContext.SaveChangesAsync();
+
+        var user = new ApplicationUser
+        {
+            UserName = userName,
+            Email = email,
+            ProfileId = profile.Id
+        };
+
+        var created = await userManager.CreateAsync(user, password);
+        if (!created.Succeeded) return null;
+
+        await userManager.AddToRoleAsync(user, roleName);
+        profile.UserId = user.Id;
+        dbContext.UserProfiles.Update(profile);
+        await dbContext.SaveChangesAsync();
+        return user;
+    }
+
     private async Task AddAdminAsync()
     {
         using var scope = _scopeFactory.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
         var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
-        if (adminInDb == null)
-        {
-            var adminName = _configuration["ADMINUSER_USERNAME"]!;
-            
-            var adminProfile = new UserProfile()
-            {
-                UserName = adminName,
-                DisplayName = "Hydraxon",
-                ProfilePicture = "admin_base.gif",
-                JoinDate = DateTime.UtcNow
-            };
-            await dbContext.UserProfiles.AddAsync(adminProfile);
-            await dbContext.SaveChangesAsync();
-            
-            var admin = new ApplicationUser
-            {
-                UserName = adminName,
-            Email = _configuration["ADMINUSER_EMAIL"]!,
-            ProfileId = adminProfile.Id
-        };
-        
-        var adminCreated = await userManager.CreateAsync(admin, _configuration["ADMINUSER_PASSWORD"]!);
+        if (adminInDb != null) return;
 
-            if (adminCreated.Succeeded)
-            {
-                await userManager.AddToRoleAsync(admin, "Owner");
-                adminProfile.UserId = admin.Id;
-                dbContext.UserProfiles.Update(adminProfile);
-                await dbContext.SaveChangesAsync();
-            }
-        }
+        await CreateUserWithProfileAsync(
+            userManager, dbContext,
+            _configuration["ADMINUSER_USERNAME"]!,
+            _configuration["ADMINUSER_EMAIL"]!,
+            _configuration["ADMINUSER_PASSWORD"]!,
+            "Hydraxon",
+            "admin_base.gif",
+            "Owner");
     }
 
     private async Task AddModeratorAsync()
     {
-        using var scope = _scopeFactory.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
         var modUsername = _configuration["MODERATOR_USERNAME"];
         if (string.IsNullOrEmpty(modUsername)) return;
         var modEmail = _configuration["MODERATOR_EMAIL"];
         if (string.IsNullOrEmpty(modEmail)) return;
         var modPassword = _configuration["MODERATOR_PASSWORD"];
         if (string.IsNullOrEmpty(modPassword)) return;
+
+        using var scope = _scopeFactory.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
         var modInDb = await userManager.FindByEmailAsync(modEmail);
-        if (modInDb == null)
-        {
-            var modProfile = new UserProfile()
-            {
-                UserName = modUsername,
-                DisplayName = "Moderator",
-                ProfilePicture = "default_pfp.png",
-                JoinDate = DateTime.UtcNow
-            };
-            await dbContext.UserProfiles.AddAsync(modProfile);
-            await dbContext.SaveChangesAsync();
+        if (modInDb != null) return;
 
-            var modUser = new ApplicationUser
-            {
-                UserName = modUsername,
-                Email = modEmail,
-                ProfileId = modProfile.Id
-            };
-
-            var modCreated = await userManager.CreateAsync(modUser, modPassword);
-
-            if (modCreated.Succeeded)
-            {
-                await userManager.AddToRoleAsync(modUser, "Moderator");
-                modProfile.UserId = modUser.Id;
-                dbContext.UserProfiles.Update(modProfile);
-                await dbContext.SaveChangesAsync();
-            }
-        }
+        await CreateUserWithProfileAsync(
+            userManager, dbContext,
+            modUsername, modEmail, modPassword,
+            "Moderator",
+            "default_pfp.png",
+            "Moderator");
     }
 
     private async Task AddUserAsync()
@@ -187,37 +183,16 @@ public class DbInitializer : IHostedService
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
         var userInDb = await userManager.FindByEmailAsync(_configuration["TESTUSER_EMAIL"]!);
-    if (userInDb == null)
-    {
-        var testUsername = _configuration["TESTUSER_USERNAME"]!;
-            
-            var testUserProfile = new UserProfile()
-            {
-                UserName = testUsername,
-                DisplayName = "Peter Griffin",
-                ProfilePicture = "tester_base.gif",
-                JoinDate = DateTime.UtcNow
-            };
-            await dbContext.UserProfiles.AddAsync(testUserProfile);
-            await dbContext.SaveChangesAsync();
+        if (userInDb != null) return;
 
-            var testUser = new ApplicationUser
-            {
-                UserName = testUsername,
-                Email = _configuration["TESTUSER_EMAIL"]!,
-                ProfileId = testUserProfile.Id
-            };
-            
-            var userCreated = await userManager.CreateAsync(testUser, _configuration["TESTUSER_PASSWORD"]!);
-
-            if (userCreated.Succeeded)
-            {
-                await userManager.AddToRoleAsync(testUser, "User");
-                testUserProfile.UserId = testUser.Id;
-                dbContext.UserProfiles.Update(testUserProfile);
-                await dbContext.SaveChangesAsync();
-            }
-        }
+        await CreateUserWithProfileAsync(
+            userManager, dbContext,
+            _configuration["TESTUSER_USERNAME"]!,
+            _configuration["TESTUSER_EMAIL"]!,
+            _configuration["TESTUSER_PASSWORD"]!,
+            "Peter Griffin",
+            "tester_base.gif",
+            "User");
     }
 
     private async Task SeedCategoriesAsync()

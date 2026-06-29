@@ -41,7 +41,6 @@ public class StyleRepository : IStyleRepository
         
         if (existingStyles != null)
         {
-            // _dbContext.Entry(existingStyles).CurrentValues.SetValues(updatedStyles);
             existingStyles.ArticleColor = updatedStyles.ArticleColor;
             existingStyles.BodyColor = updatedStyles.BodyColor;
             existingStyles.ArticleRightColor = updatedStyles.ArticleRightColor;

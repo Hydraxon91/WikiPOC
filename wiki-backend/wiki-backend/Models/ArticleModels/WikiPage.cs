@@ -11,7 +11,6 @@ public class WikiPage
     public string? SiteSub { get; set; }
     public string? RoleNote { get; set; }
     public string? Content { get; set; }
-    // public string? Category { get; set; }
     public Guid? CategoryId { get; set; }
     [ForeignKey(nameof(CategoryId))]
     [JsonIgnore]

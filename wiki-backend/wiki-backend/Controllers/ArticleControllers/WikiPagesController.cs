@@ -276,10 +276,8 @@ public class WikiPagesController : ControllerBase
         
         if (wikiPage == null)
         {
-            return NotFound(); // Return 404 if the page is not found
+            return NotFound();
         }
-
-        //For some reason the returned object has the Id of zero, need to look into it further
 
         return Ok(wikiPage);
     }
@@ -300,9 +298,8 @@ public class WikiPagesController : ControllerBase
         
         if (wikiPage == null)
         {
-            return NotFound(); // Return 404 if the page is not found
+            return NotFound();
         }
-        //No idea why, but without the line below the Id will be 0
 
         return Ok(wikiPage);
     }
