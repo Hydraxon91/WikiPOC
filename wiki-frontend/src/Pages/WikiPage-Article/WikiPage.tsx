@@ -17,7 +17,6 @@ const WikiPage = ({page: wikipage, setDecodedSlug, jwtToken, disableNavbar = fal
 
 
     useEffect(()=>{
-        console.log('WikiPage: wikipage prop', wikipage ? 'has data' : 'null');
         if (wikipage && (wikipage.wikiPage || wikipage.userSubmittedWikiPage))  {
             setActiveTab('wiki');
             setPage(wikipage.wikiPage ?? wikipage.userSubmittedWikiPage);
@@ -26,7 +25,6 @@ const WikiPage = ({page: wikipage, setDecodedSlug, jwtToken, disableNavbar = fal
     },[wikipage])
 
     useEffect(() => {
-        console.log('WikiPage: decodedSlug', decodedSlug, 'setDecodedSlug:', !!setDecodedSlug);
         if (setDecodedSlug && decodedSlug) {
             setDecodedSlug(decodedSlug);
         }

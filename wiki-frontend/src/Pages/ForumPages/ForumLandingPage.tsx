@@ -13,7 +13,8 @@ const ForumLandingPage = () => {
     const [loading, setLoading] = useState(true);
     const {styles} = useStyleContext();
     const { decodedTokenContext } = useUserContext();
-    const isAdmin = decodedTokenContext?.role === 'Admin';
+    const role = decodedTokenContext?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    const canCreateTopic = role === 'Admin' || role === 'Owner' || role === 'Moderator';
 
     useEffect(() => {
         fetchForumTopics();
@@ -86,7 +87,7 @@ const ForumLandingPage = () => {
     return (
         <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}> 
         <Breadcrumbs/>
-        {isAdmin && (
+        {canCreateTopic && (
           <div style={{ textAlign: 'right', marginBottom: '8px' }}>
             <Link to="/forum/main-forum/create-topic" className="modular-button" style={{ backgroundColor: styles.articleColor, padding: '8px 16px', borderRadius: '4px', color: '#fff', textDecoration: 'none' }}>
               Create New Topic

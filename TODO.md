@@ -95,10 +95,10 @@
 ## Frontend
 
 ### Bugs
-- [ ] **BUG** `ForumLandingPage.tsx:16` — `isAdmin` reads wrong claim key (bare `role` vs full `http://schemas.microsoft.com/.../claims/role`) → "Create New Topic" never shown
-- [ ] **BUG** `UserCommentComponent.tsx:52` / `WikiPageReplyComponent.tsx:52` — Cancel button crashes: `showReplyBoxRemoveIndex`/`index` props never passed by parent
-- [ ] **BUG** `UserCommentComponent.tsx:11-14,42` — Edit state stores `comment.id` but render compares vs `index` → edit textarea unreachable
-- [ ] **BUG** `UserCommentComponent.tsx:21-25` — `handleCommentEditSubmit` is a no-op stub (comment editing not wired to API)
+- [x] **BUG** `ForumLandingPage.tsx:16` — `isAdmin` reads wrong claim key (bare `role` vs full `http://schemas.microsoft.com/.../claims/role`) → "Create New Topic" never shown
+- [x] **BUG** `UserCommentComponent.tsx:52` / `WikiPageReplyComponent.tsx:52` — Cancel button crashes: `showReplyBoxRemoveIndex`/`index` props never passed by parent
+- [x] **BUG** `UserCommentComponent.tsx:11-14,42` — Edit state stores `comment.id` but render compares vs `index` → edit textarea unreachable
+- [x] **BUG** `UserCommentComponent.tsx:21-25` — `handleCommentEditSubmit` is a no-op stub (comment editing not wired to API)
 - [ ] **BUG** `ForumPostRepository` (frontend `forumApi.ts:17,19`) — `getForumPostTitles`/`getForumPostById` exported but never imported
 
 ### Performance / State Issues
@@ -108,11 +108,11 @@
 - [ ] **PERF** `EditStylePage.tsx:18-23` — Buggy backup/restore lifecycle: cleanup runs before each re-run, momentarily resetting styles
 
 ### Debug Leftovers
-- [ ] **LOG** `App.tsx:86,88` — `console.log` in production code
-- [ ] **LOG** `WikiPage.tsx:20,29` — `console.log` in `useEffect`
+- [x] **LOG** `App.tsx:86,88` — `console.log` in production code
+- [x] **LOG** `WikiPage.tsx:20,29` — `console.log` in `useEffect`
 
 ### Dead Code
-- [ ] **DEAD** `Components/ReactQuillComponent.tsx` — entire component file never imported
+- [x] **DEAD** `Components/ReactQuillComponent.tsx` — entire component file never imported
 - [ ] **DEAD** `EditPage.tsx:24` — `legacyPage` state: set but never read
 - [ ] **DEAD** `EditPage.tsx:20` — `emptyFields` state: set but never read
 - [ ] **DEAD** `LoginPageComponent.tsx:13-15` — `emailInputClass`/`passwordInputClass` state values never applied

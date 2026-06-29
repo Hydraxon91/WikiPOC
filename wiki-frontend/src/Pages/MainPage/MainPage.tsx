@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import WikiList from './Components/WikiList';
 import HamburgerMenu from './Components/HamburgerMenu';
-import Breadcrumbs from '../ForumPages/Components/Breadcrumbs';
 import HeaderComponent from './Components/HeaderComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
@@ -53,10 +52,8 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
         <HeaderComponent userName={userName} userRole={userRole}>
           <HamburgerMenu handleLogout={handleLogout} categories={categories} />
         </HeaderComponent>
-        {/* <Breadcrumbs/> */}
         <WikiList handleLogout={handleLogout} jwtToken={jwtToken} categories={categories}/>
         <div className="mainsection">
-          {/* <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div> */}
           <div style={{ flex: 1 }}>
             {/* Render children, which will be the specific WikiPage component */}
             <Outlet />

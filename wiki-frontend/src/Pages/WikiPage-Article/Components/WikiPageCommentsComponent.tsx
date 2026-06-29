@@ -100,6 +100,7 @@ const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) =
                                 jwtToken={jwtToken}
                                 handleCommentSubmit={handleCommentSubmit}
                                 postComment={postComment}
+                                postEditedComment={postEditedComment}
                                 page={page}
                                 index={-1}
                                 showRepliesIndex={showRepliesIndex}
@@ -124,6 +125,7 @@ const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) =
                                     jwtToken={jwtToken}
                                     handleCommentSubmit={handleCommentSubmit}
                                     postComment={postComment}
+                                    postEditedComment={postEditedComment}
                                     page={page}
                                     index={index}
                                     showRepliesIndex={showRepliesIndex}

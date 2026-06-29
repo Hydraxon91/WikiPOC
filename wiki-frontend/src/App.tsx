@@ -83,9 +83,7 @@ function App() {
   const fetchPage = async () => {
     try {
       setPageError(false);
-      console.log('Fetching page:', decodedSlug);
       const data = await getWikiPageBySlug(decodedSlug);
-      console.log('Page data received:', data ? 'found' : 'null');
       if (!data) {
         setPageError(true);
         return;
