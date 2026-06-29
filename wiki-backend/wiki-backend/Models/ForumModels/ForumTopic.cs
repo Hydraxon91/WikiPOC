@@ -9,7 +9,7 @@ public class ForumTopic
     public string Title { get; set; } = null!;
     [Required]
     public string Description { get; set; } = null!;
-    public string Slug { get; set; } = null!;
+    public string? Slug { get; set; }
     public int Order { get; set; }
     public ICollection<ForumPost> ForumPosts { get; set; } = new List<ForumPost>();
 }
