@@ -76,6 +76,7 @@ public class ForumPostRepository : IForumPostRepository
     {
         var oldTitle = post.PostTitle;
         post.PostTitle = updatedPost.PostTitle;
+        post.Content = updatedPost.Content;
         post.ForumTopicId = updatedPost.ForumTopicId;
         if (oldTitle != post.PostTitle)
         {
