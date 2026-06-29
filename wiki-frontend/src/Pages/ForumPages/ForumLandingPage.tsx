@@ -87,7 +87,7 @@ const ForumLandingPage = () => {
         <Breadcrumbs/>
         {canCreateTopic && (
           <div style={{ textAlign: 'right', marginBottom: '8px' }}>
-            <Link to="/forum/main-forum/create-topic" className="modular-button" style={{ backgroundColor: styles.articleColor, padding: '8px 16px', borderRadius: '4px', color: '#fff', textDecoration: 'none' }}>
+            <Link to="/forum/create-topic" className="modular-button" style={{ backgroundColor: styles.articleColor, padding: '8px 16px', borderRadius: '4px', color: '#fff', textDecoration: 'none' }}>
               Create New Topic
             </Link>
           </div>

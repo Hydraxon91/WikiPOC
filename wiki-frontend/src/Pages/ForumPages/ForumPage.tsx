@@ -96,7 +96,7 @@ const ForumPage = ({ jwtToken }) => {
     return (
         <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
             <Breadcrumbs />
-            <ForumPostButton buttonTitle="New Topic" linkTo={`/forum/${slug}/create-topic`} jwtToken={jwtToken} />
+            <ForumPostButton buttonTitle="Create Post" linkTo={`/forum/${slug}/create-post`} jwtToken={jwtToken} />
             <div className="forum-grid article" style={{ backgroundColor: styles.articleColor }}>
                 <div className="grid-header">
                     <div className="header-cell">Topics</div>

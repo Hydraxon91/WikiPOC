@@ -38,7 +38,8 @@ import EditCategoriesPage from "./Pages/Categories/EditCategoriesPage";
 import ForumLandingPage from "./Pages/ForumPages/ForumLandingPage";
 import ForumPage from "./Pages/ForumPages/ForumPage";
 import ForumPost from "./Pages/ForumPages/ForumPost";
-import CreateForumTopic from "./Pages/ForumPages/CreateForumTopic";
+import CreateTopicPage from "./Pages/ForumPages/CreateTopicPage";
+import CreatePostPage from "./Pages/ForumPages/CreatePostPage";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import PublicRoute from "./Components/PublicRoute";
 
@@ -218,10 +219,16 @@ function App() {
                 <Route path="/forum" element={<ForumLandingPage />} />
                 <Route path="/forum/:slug" element={<ForumPage jwtToken={cookies["jwt_token"]}
  />} />
-                <Route path="/forum/:slug/create-topic" element={
+                <Route path="/forum/create-topic" element={
                   <ProtectedRoute  roles={['User', 'Admin', 'Moderator']}>
-                    <CreateForumTopic jwtToken={cookies["jwt_token"]}
-/>
+                    <CreateTopicPage jwtToken={cookies["jwt_token"]}
+ />
+                  </ProtectedRoute>
+                }/>
+                <Route path="/forum/:slug/create-post" element={
+                  <ProtectedRoute  roles={['User', 'Admin', 'Moderator']}>
+                    <CreatePostPage jwtToken={cookies["jwt_token"]}
+ />
                   </ProtectedRoute>
                 }/>
                 <Route path="/forum/:slug/:postSlug" element={<ForumPost jwtToken={cookies["jwt_token"]}

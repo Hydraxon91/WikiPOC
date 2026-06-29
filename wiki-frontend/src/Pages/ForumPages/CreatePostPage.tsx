@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css'
-import { useNavigate } from 'react-router-dom';
-import { createForumPost, createForumTopic } from '../../Api/forumApi';
+import { useNavigate, useParams } from 'react-router-dom';
+import { createForumPost, getForumTopicBySlug } from '../../Api/forumApi';
 import { getUserProfileByUsername } from '../../Api/wikiUserApi';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import "./Styles/createforumtopic.css"
 import Breadcrumbs from './Components/Breadcrumbs';
 
-const CreateForumTopic = ({ jwtToken }) => {
-    const {decodedTokenContext} = useUserContext();
+const CreatePostPage = ({ jwtToken }) => {
+    const { decodedTokenContext } = useUserContext();
+    const { slug } = useParams();
     const [user, setUser] = useState<any>();
     const [postTitle, setPostTitle] = useState('');
     const [content, setContent] = useState('');
@@ -32,21 +33,17 @@ const CreateForumTopic = ({ jwtToken }) => {
         if (!postTitle || !content || !user) return;
 
         try {
-            const newTopic = await createForumTopic(
-                { title: postTitle, description: postTitle },
-                jwtToken
-            );
-
+            const topic = await getForumTopicBySlug(slug);
             const forumPost = {
                 postTitle,
                 content,
-                forumTopicId: newTopic.id,
+                forumTopicId: topic.id,
                 userId: user!.id,
                 userName: user!.userName,
             };
 
-            await createForumPost(forumPost, jwtToken);
-            navigate(`/forum/${newTopic.slug}`);
+            const newPost = await createForumPost(forumPost, jwtToken);
+            navigate(`/forum/${slug}/${newPost.slug}`);
         } catch (err) {
             setError(err.message);
         }
@@ -74,7 +71,7 @@ const CreateForumTopic = ({ jwtToken }) => {
         <>
         <Breadcrumbs/>
         <div className="create-forum-topic fp-custom-popup"  style={{ backgroundColor: styles.articleRightColor, '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
-            <h2>Create a New Forum Topic</h2>
+            <h2>Create a New Post</h2>
             <form onSubmit={handleSubmit}>
                 <div className="fp-comment-write-textarea">
                     <label htmlFor="title">Title:</label>
@@ -87,10 +84,10 @@ const CreateForumTopic = ({ jwtToken }) => {
                     />
                 </div>
                 <div className="fp-comment-write-container">
-                    <label htmlFor="description">Description:</label>
+                    <label htmlFor="content">Content:</label>
                     <div className="fp-comment-write-textarea">
                         <ReactQuill
-                            id="description"
+                            id="content"
                             theme="snow"
                             value={content}
                             onChange={setContent}
@@ -100,11 +97,11 @@ const CreateForumTopic = ({ jwtToken }) => {
                     </div>
                 </div>
                 {error && <div className="error">{error}</div>}
-                <button className="fp-comment-button" type="submit">Create Topic</button>
+                <button className="fp-comment-button" type="submit">Create Post</button>
             </form>
         </div>
         </>
     );
 };
 
-export default CreateForumTopic;
+export default CreatePostPage;
