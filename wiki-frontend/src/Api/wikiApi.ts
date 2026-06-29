@@ -1,9 +1,5 @@
 import { get, post, put, del, postForm, putForm, patch } from './apiClient';
 
-export const getWikiPages = async () => {
-  return get('/api/WikiPages');
-};
-
 export const getWikiPageTitles = async () => {
     return get('/api/WikiPages/GetTitles');
   };
@@ -69,10 +65,6 @@ export const updateWikiPage = async (updatedPage, token, decodedToken, images) =
     });
     return putForm(url, formData, token);
   };
-
-export const deleteWikiPage = async (id, token) =>{
-    return del(`/api/WikiPages/admin/${id}`, token);
-};
 
 export const fetchCurrentStyles = async () => {
   return get('/api/Style');

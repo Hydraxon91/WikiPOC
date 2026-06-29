@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { StyleProvider, useStyleContext } from '../../../Components/contexts/StyleContext';
+import { useStyleContext } from '../../../Components/contexts/StyleContext';
 
 const HomeComponent = ({ pages, categories }) => {
   const [pagesByCategory, setPagesByCategory] = useState({});

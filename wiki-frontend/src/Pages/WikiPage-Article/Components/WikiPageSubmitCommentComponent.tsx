@@ -15,7 +15,6 @@ const WikiPageSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSub
         const newComment = {
             content: commentText,
             userProfileId: user.id,
-            // userProfile: user,
             wikiPageId: page.id,
             postDate: new Date().toISOString(),
             replyToCommentId: null,

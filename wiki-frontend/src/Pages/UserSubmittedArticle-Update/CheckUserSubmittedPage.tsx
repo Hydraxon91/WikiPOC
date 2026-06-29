@@ -30,7 +30,6 @@ const CheckUserSubmittedPage = () => {
       const handleAccept = () => {
         acceptUserSubmittedPage(page, cookies["jwt_token"])
           .then(() => {
-            // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             showNotification("Succesfully Approved Submitted Page");
             navigate(`/user-submissions`);
           })
@@ -42,7 +41,6 @@ const CheckUserSubmittedPage = () => {
       const handleDecline = () => {
         declineUserSubmittedWikiPage((page as any).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
-            // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             showNotification("Declined Submitted Page");
             navigate(`/user-submissions`);
           })

@@ -29,7 +29,7 @@ const ProfilePage = () => {
     useEffect(() => {
         const decodedTokenName = decodedTokenContext?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
         decodedTokenName && (username === decodedTokenName && setIsYourProfile(true));
-    }, [decodedTokenContext]);
+    }, [decodedTokenContext, username]);
 
     return (
         <div className="profilepage article" style={{backgroundColor: styles.articleColor, '--accent-color': styles.articleColor, '--footer-link-color': styles.footerListLinkTextColor} as any}>

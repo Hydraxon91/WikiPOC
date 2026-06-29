@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill-new';
 import UserImagesContainer from './UserImagesContainer';
 import '../Style/articleeditor.css';
@@ -45,36 +45,7 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
         ['link'],
         ['image'],
     ],
-  };
-
-  const handleImageChange = (input) => {
-    if(!input) {
-      setImageUrl('');
-      return;
-    }
-
-    if (typeof input === 'string') {
-      // If input is a string, assume it's a URL and directly set it as imageUrl
-      setImageUrl(input);
-    } else if (input instanceof File) {
-      // If input is a File object, convert it to data URI
-      fileToDataUri(input)
-        .then(dataUri => {
-          setImageUrl(dataUri as string);
-        });
-    }
-    
-  }
-
-  const fileToDataUri = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      resolve(event.target.result);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-
+  };  
 
   const handleConfirm = () => {
     const thumbnailHtml = `<div class="thumbnail ${orientation}">

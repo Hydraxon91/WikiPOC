@@ -20,8 +20,6 @@ const ForumLandingPage = () => {
         fetchForumTopics();
     }, []);
 
-    // useEffect(() => {
-    // }, [topics]);
     
     const getCommentsLength = (topic) =>{
         var counter = 0;

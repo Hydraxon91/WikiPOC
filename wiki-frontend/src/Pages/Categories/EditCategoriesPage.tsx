@@ -11,7 +11,6 @@ const EditCategoriesPage = ({ setAppCategories, jwtToken }) => {
     useEffect(() => {
         fetchCategories()
         .then(categories => {
-            // categories.push("Uncategorized");
             setCategories(categories);
         })
         .catch(error => {

@@ -5,19 +5,6 @@ export const getForumTopics = async () => get<ForumTopic[]>('/api/ForumTopic');
 
 export const getForumTopicBySlug = async (slug: string) => get<ForumTopic>(`/api/ForumTopic/${slug}`);
 
-export const createForumTopic = async (forumTopic: Partial<ForumTopic>, token: string) =>
-  post<ForumTopic>('/api/ForumTopic', forumTopic, token);
-
-export const updateForumTopic = async (forumTopic: ForumTopic, token: string) =>
-  put<ForumTopic>(`/api/ForumTopic/${forumTopic.id}`, forumTopic, token);
-
-export const deleteForumTopic = async (forumTopic: ForumTopic, token: string) =>
-  del(`/api/ForumTopic/${forumTopic.id}`, token);
-
-export const getForumPostTitles = async () => get<string[]>('/api/ForumPost');
-
-export const getForumPostById = async (id: string) => get<ForumPost>(`/api/ForumPost/${id}`);
-
 export const getForumPostBySlug = async (slug: string) => get<ForumPost>(`/api/ForumPost/${slug}`);
 
 export const createForumPost = async (forumPost: Partial<ForumPost>, token: string) => {
@@ -41,6 +28,3 @@ export const postForumComment = async (comment: Partial<ForumComment> & { wikiPa
   updatedComment.forumPostId = wikiPageId;
   return post<ForumComment>('/api/ForumComment/comment/', updatedComment, token);
 };
-
-export const postEditedForumComment = async (commentId: string, editedComment: string, token: string) =>
-  put(`/api/ForumComment/comment/${commentId}`, editedComment, token);

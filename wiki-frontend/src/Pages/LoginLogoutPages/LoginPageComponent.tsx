@@ -11,8 +11,6 @@ export default function LoginPageComponent({handleLogin}){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [response, setResponse] = useState(null);
-    const [emailInputClass, setEmailInputClass] = useState('login-inputbox');
-    const [passwordInputClass, setPasswordInputClass] = useState('login-inputbox');
     const navigate = useNavigate();
     const { showNotification } = useNotification();
     
@@ -34,21 +32,12 @@ export default function LoginPageComponent({handleLogin}){
             });
     }
 
-    const InputClick = () => {
-        setEmailInputClass('login-inputbox');
-        setPasswordInputClass('login-inputbox');
-    }
-    
     useEffect(()=>{
         if (response) {
             if (response?.token) {
                 login(response.token);
                 showNotification('Succesfully logged in!');
                 navigate('/');
-            }
-            else{
-                setEmailInputClass('login-inputbox wrong-credential');
-                setPasswordInputClass('login-inputbox wrong-credential');
             }
         }
         

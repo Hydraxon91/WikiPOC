@@ -17,13 +17,13 @@ const EditStylePage = ({jwtToken}) =>{
     
     useEffect(()=>{
         setStyles(newStyles)
+    }, [newStyles, setStyles]);
+
+    useEffect(() => {
         return () => {
             setStyles(backUpStyles);
         };
-    },[newStyles, backUpStyles, setStyles]);
-
-    useEffect(()=>{
-    },[manualEdit])
+    }, []);
 
     useEffect(()=>{
         leave && navigate("/");

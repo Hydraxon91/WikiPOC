@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getNewPageTitles, getUpdatePageTitles } from "../../../Api/wikiApi";

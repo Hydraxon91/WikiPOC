@@ -24,7 +24,7 @@ const CategoryPageComponent = ({ pages, categories }) => {
 
   useEffect(()=>{
     setPagesInCurrentCategory(pagesByCategory[category] || [])
-  },[pagesByCategory])
+  },[pagesByCategory, category])
 
   return (
     <div className='home-component article' style={{backgroundColor: styles.articleColor}}>

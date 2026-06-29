@@ -77,5 +77,3 @@ export function putForm<T = any>(path: string, body: FormData, token?: string) {
 export function patch<T = any>(path: string, body?: any, token?: string) {
   return request<T>('PATCH', path, { body, token });
 }
-
-export { ApiError };

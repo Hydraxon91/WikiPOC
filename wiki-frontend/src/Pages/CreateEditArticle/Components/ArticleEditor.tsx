@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import Quill from 'quill';
 import CustomHTMLPopup from './CustomHTMLPopup';
@@ -17,7 +17,6 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
   const quillRef = useRef(null); // Define quillRef
   const {styles} = useStyleContext();
   const { showNotification } = useNotification();
-  const [lastSelection, setLastSelection] = useState(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [categories, setCategories] = useState([]);
 
@@ -27,38 +26,10 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
       const editor = quillRef.current.getEditor();
       if (editor) {
         editor.enable(true);
-        // editor.getModule('toolbar').addHandler('custom-html', insertCustomHTML);
       }
     }
     getCategories();
   }, []);
-
-  useEffect(() => {
-    const editor = quillRef.current?.getEditor();
-    if (editor) {
-      let timeoutId;
-
-      const handleChange = (delta, oldDelta, source) => {
-        if (source === 'user') {
-          clearTimeout(timeoutId); // Clear previous timeout
-          timeoutId = setTimeout(() => {
-            const selection = editor.getSelection();
-            if (selection !== null) {
-              setLastSelection(selection);
-            }
-          }, 100); // Adjust the delay as needed
-        }
-      };
-
-      editor.on('selection-change', handleChange);
-      editor.on('text-change', handleChange);
-
-      return () => {
-        editor.off('selection-change', handleChange);
-        editor.off('text-change', handleChange);
-      };
-    }
-  }, [quillRef]);
 
   const togglePopupVisibility = () => {
     setIsPopupVisible(!isPopupVisible);
@@ -231,7 +202,6 @@ const getCategories = async () => {
         />
       </div>
       <div>
-        {/* <CustomQuillToolbar togglePopupVisibility={togglePopupVisibility} /> */}
         <div className="editor-tip" style={{ fontSize: '80%', opacity: 0.7, marginBottom: '0.5rem', padding: '0.3rem 0.5rem', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '3px' }}>
           Tip: use <b>Heading 2</b> in the toolbar above to create paragraph titles that appear in the table of contents.
         </div>

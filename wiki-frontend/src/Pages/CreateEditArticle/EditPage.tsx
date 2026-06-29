@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArticleEditor from './Components/ArticleEditor';
 import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent';
@@ -17,11 +17,9 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
   const [category, setCategory] = useState('');
   const [newPage, setNewPage] = useState(true);
   const [paragraphs, setParagraphs] = useState([]);
-  const [emptyFields, setEmptyFields] = useState([]);
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const [usedImages, setUsedImages] = useState([]);
-  const [legacyPage, setLegacyPage] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const { showNotification } = useNotification();
 
@@ -44,7 +42,6 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
       const renamedImages = page.images ? page.images.map(image => ({ ...image, name: image.fileName })) : [];
       setImages(renamedImages);
       setUsedImages(renamedImages);
-      setLegacyPage(false);
       setNewPage(false);
     }
     else{
@@ -64,7 +61,6 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
 
 
   const handleContentChange = (value) => {
-    // setContent(value);
     const hrefValues = extractHrefValues(value);
     handleFieldChange('content', value);
     const usedImagesArray = images && images.filter(image => hrefValues.some(href => href.includes(image.name)));
@@ -129,7 +125,6 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
       ? handleCreate(temporaryPage, usedImages)
       : 
       handleEdit(temporaryPage, usedImages);
-      // : handleEdit(temporaryPage, usedImages);
 
     savePromise
       .then((data) => {

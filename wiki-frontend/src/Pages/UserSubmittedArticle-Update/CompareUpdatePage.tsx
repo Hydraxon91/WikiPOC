@@ -48,7 +48,6 @@ const CompareUpdatePage = () => {
       const handleAccept = () => {
         acceptUserSubmittedUpdate((updatePage as any).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
-            // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             showNotification("Succesfully updated page");
             navigate(`/user-updates`);
           })
@@ -60,7 +59,6 @@ const CompareUpdatePage = () => {
       const handleDecline = () => {
         declineUserSubmittedWikiPage((updatePage as any).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
-            // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             showNotification("Declined Change");
             navigate(`/user-updates`);
           })
