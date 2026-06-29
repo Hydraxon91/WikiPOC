@@ -40,7 +40,7 @@ const CheckUserSubmittedPage = () => {
       };
 
       const handleDecline = () => {
-        declineUserSubmittedWikiPage((page as any).id, cookies["jwt_token"])
+        declineUserSubmittedWikiPage((page as any).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             // setWikiPageTitles(wikiPageTitles.filter((page) => page !== currentWikiPage.Title));
             showNotification("Declined Submitted Page");
@@ -59,7 +59,7 @@ const CheckUserSubmittedPage = () => {
             {page &&
                 (
                     <>
-                        <WikiPage page={page} setDecodedTitle={undefined} cookies={cookies} disableNavbar={true}></WikiPage>
+                        <WikiPage page={page} setDecodedSlug={undefined} cookies={cookies} disableNavbar={true}></WikiPage>
                     </>
                 )
             }

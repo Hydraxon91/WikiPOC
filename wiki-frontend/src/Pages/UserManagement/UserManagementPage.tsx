@@ -56,6 +56,7 @@ const UserManagementPage = ({ jwtToken }) => {
     return (
         <div className="article" style={{ backgroundColor: styles.articleColor, padding: '1.5em' }}>
             <h2 style={{ margin: '0 0 1em 0' }}>User Management</h2>
+            <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                     <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.2)', textAlign: 'left' }}>
@@ -94,6 +95,7 @@ const UserManagementPage = ({ jwtToken }) => {
                     })}
                 </tbody>
             </table>
+            </div>
         </div>
     );
 };

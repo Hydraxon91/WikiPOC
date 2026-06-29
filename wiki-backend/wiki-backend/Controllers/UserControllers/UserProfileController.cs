@@ -51,7 +51,7 @@ public class UserProfileController : ControllerBase
         return Ok(profile);
     }
     
-    [Authorize(Roles = "Admin, User")]
+    [Authorize]
     [HttpPut("UpdateProfile/{id:guid}")]
     [RequestSizeLimit(1 * 1024 * 1024)]
     public async Task<IActionResult> UpdateUserProfile(Guid id, [FromForm] UserUpdateForm userUpdateForm)

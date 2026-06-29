@@ -78,9 +78,9 @@ const CompareUpdatePage = () => {
             <div className='compare-updates-container'>
             {
                   <>
-                    <NewCompareUpdatePage page={originalPage} setDecodedTitle={undefined}></NewCompareUpdatePage>
+                    <NewCompareUpdatePage page={originalPage} setDecodedSlug={undefined}></NewCompareUpdatePage>
                     <div className="compare-divider"></div>
-                    <NewCompareUpdatePage page={updatePage} setDecodedTitle={undefined}></NewCompareUpdatePage>
+                    <NewCompareUpdatePage page={updatePage} setDecodedSlug={undefined}></NewCompareUpdatePage>
                   </> 
             }
             </div>

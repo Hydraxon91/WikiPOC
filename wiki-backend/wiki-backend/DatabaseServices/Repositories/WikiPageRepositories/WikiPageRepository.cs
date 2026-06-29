@@ -151,8 +151,9 @@ public class WikiPageRepository : IWikiPageRepository
     {
         _context.Entry(userSubmittedWikiPage).State = EntityState.Modified;
         userSubmittedWikiPage.Approved = true;
-        await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId!.Value,
-            userSubmittedWikiPage);
+        if (userSubmittedWikiPage.CategoryId.HasValue)
+            await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId.Value,
+                userSubmittedWikiPage);
         await _context.SaveChangesAsync();
     }
 
@@ -219,8 +220,9 @@ public class WikiPageRepository : IWikiPageRepository
     public async Task AcceptUserSubmittedUpdateAsync(UserSubmittedWikiPage userSubmittedWikiPage)
     {
         userSubmittedWikiPage.Approved = true;
-        await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId!.Value,
-            userSubmittedWikiPage);
+        if (userSubmittedWikiPage.CategoryId.HasValue)
+            await _categoryRepository.AddArticleToCategoryAsync(userSubmittedWikiPage.CategoryId.Value,
+                userSubmittedWikiPage);
 
         await _context.SaveChangesAsync();
     }

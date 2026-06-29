@@ -3,7 +3,7 @@ import WikiPageComponent from '../WikiPage-Article/Components/WikiPageComponent'
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import '../../Styles/wikipage.css';
 
-const NewCompareUpdatePage = ({page: wikipage, setDecodedTitle}) => {
+const NewCompareUpdatePage = ({page: wikipage, setDecodedSlug}) => {
     const [activeTab, setActiveTab] = useState("wiki");
     const [page, setPage] = useState(null);
     const [images, setImages] = useState(null);
@@ -24,7 +24,7 @@ const NewCompareUpdatePage = ({page: wikipage, setDecodedTitle}) => {
                 {page && (
                     <WikiPageComponent
                         page={page}
-                        setDecodedTitle={setDecodedTitle}
+                        setDecodedSlug={setDecodedSlug}
                         activeTab={activeTab}
                         images={images}
                     />
