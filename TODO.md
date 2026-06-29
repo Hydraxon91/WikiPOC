@@ -1,99 +1,62 @@
-# Frontend Migration Plan — React 19 + Vite + TypeScript
-
-Phased migration from CRA 5.0.1 / React 18.2 / JS → Vite / React 19 / TS.
-Estimated total: **16–24 hours** split across 4 phases.
+# TODO — Moderation System & Remaining CI/CD
 
 ---
 
-## Phase 1 — Vite Migration (≈4h)
+## Phase 1: Moderator Role (Backend)
 
-Replace CRA 5.0.1 with Vite as the build tool.
+### 1.1 Database / Seeding
+- [ ] **Add `Moderator` role to `DbInitializer.AddRolesAsync()`** — create `"Moderator"` role alongside `"Admin"` and `"User"`
+- [ ] **Seed a moderator user** — add `AddModeratorAsync()` method that reads env vars `MODERATOR_USERNAME`, `MODERATOR_EMAIL`, `MODERATOR_PASSWORD`. Assigns `"Moderator"` role.
+- [ ] **Add env vars to `.env`** — add `MODERATOR_USERNAME`, `MODERATOR_EMAIL`, `MODERATOR_PASSWORD` with default values
+- [ ] **Add env vars to docker-compose.yml** — pass through to backend service
+- [ ] **Add env vars to GitHub secrets** — so the CI integration tests can use them
 
-| # | Task | Details |
-|---|------|---------|
-| 1.1 | Install Vite + React plugin | `npm install -D vite @vitejs/plugin-react` |
-| 1.2 | Create `vite.config.js` | Standard React plugin config |
-| 1.3 | Move `index.html` → project root | `public/index.html` → `./index.html`; update `<script>` tag |
-| 1.4 | Update `package.json` scripts | `"start": "vite"`, `"build": "vite build"`, `"preview": "vite preview"` |
-| 1.5 | Rename `.js` → `.jsx` | All files containing JSX (~30 files) |
-| 1.6 | Update env var prefix | `REACT_APP_` → `VITE_` in `.env`, Dockerfile, API files |
-| 1.7 | Update env var access pattern | `process.env.REACT_APP_*` → `import.meta.env.VITE_*` (4 API files) |
-| 1.8 | Create `env.d.ts` | Vite environment type declarations |
-| 1.9 | Remove CRA boilerplate | `reportWebVitals.js`, `setupTests.js` (later in P4), `react-scripts` from deps |
-| 1.10 | Update `.gitignore` | Add `/dist` |
+### 1.2 Authorization Service
+- [ ] **Update `IUserAuthorizationService` / `UserAuthorizationService`** — add `IsUserModerator(userName)` method that checks for `"Admin"` or `"Moderator"` role
+- [ ] **Update `IdentityData.cs`** — add `ModeratorUserPolicyName` constant
 
----
+### 1.3 Role Assignment Endpoint
+- [ ] **Add `PATCH /api/Users/{userId}/role`** — Admin-only endpoint that accepts `{ "role": "Admin" | "Moderator" | "User" }`. Calls `_userManager.AddToRoleAsync()` / `RemoveFromRoleAsync()`.
+- [ ] **Add validation** — prevent removing the last Admin, prevent self-demotion
 
-## Phase 2 — React 19 Upgrade (≈2h)
-
-Bump React to v19 and fix audit findings.
-
-| # | Task | Details |
-|---|------|---------|
-| 2.1 | Install React 19 | `npm install react@19 react-dom@19` |
-| 2.2 | Fix `for` → `htmlFor` (5×) | `LoginPageComponent.js`, `RegisterPageComponent.js` |
-| 2.3 | Remove dead `useEffect` hooks (2×) | Same two files — empty body effects |
-| 2.4 | Fix blob URL leaks | Add `URL.revokeObjectURL` cleanup in `HeaderComponent`, `DisplayProfileImageElement` |
-| 2.5 | Remove `forwardRef` | `ReactQuillComponent.js` — optional, still works in React 19 |
-| 2.6 | Remove unused imports | `dotenv`, `web-vitals`, `setupTests.js` cleanup |
-| 2.7 | Smoke test | Login, create article, forum, admin workflow |
+### 1.4 Update Existing Controllers
+- [ ] **UserSubmittedWikiPage review endpoints** — currently `[Authorize(Policy = IdentityData.AdminUserPolicyName)]`. Should also allow `Moderator`. Change to `[Authorize(Roles = "Admin, Moderator")]` or create a shared policy.
+- [ ] **Category management endpoints** — same treatment (allow Moderators)
+- [ ] **Forum topic creation** — currently admin-only in frontend but the backend endpoint is `[Authorize]` (any authenticated user). Clarify whether Moderators can create forum topics.
 
 ---
 
-## Phase 3 — TypeScript Migration (8–16h)
+## Phase 2: Moderator Role (Frontend)
 
-Biggest phase. Every `.jsx` → `.tsx`, every component typed.
+### 2.1 Admin User Management Page
+- [ ] **Create `/admin/users` route** — `ProtectedRoute roles={['Admin']}` that renders a new `UserManagementPage` component
+- [ ] **Fetch user list** — call `GET /api/Users/GetUsers` (already exists)
+- [ ] **Display users** — table with Username, Email, Current Role, and a role dropdown/select
+- [ ] **Role change action** — on dropdown change, call `PATCH /api/Users/{id}/role` with the new role
+- [ ] **Add navigation link** — add "Manage Users" link to the Admin Tools section in the sidebar
 
-| # | Task | Details |
-|---|------|---------|
-| 3.1 | Install TypeScript | `npm install -D typescript @types/react @types/react-dom` |
-| 3.2 | Create `tsconfig.json` | Strict mode recommended |
-| 3.3 | Rename `.jsx` → `.tsx` | All component files (~35 files) |
-| 3.4 | Rename `.js` → `.ts` | API files, hooks, contexts (~10 files) |
-| 3.5 | Create shared type definitions | `src/types/api.ts`, `src/types/models.ts` |
-| 3.6 | Type all 4 API files | Typed request/response for every function |
-| 3.7 | Type `StyleContext` + `UserContext` | Generic provider types |
-| 3.8 | Type `App.tsx` | Route props, state, callbacks |
-| 3.9 | Type every component | Props interface + state types |
-| 3.10 | Fix surfaced bugs | Login error bug, copy-paste error messages, `cookies` prop naming |
-| 3.11 | Type `date-fns` usage | After installing it |
-
----
-
-## Phase 4 — Polish (≈2h)
-
-Fix remaining bugs and clean up dead code.
-
-| # | Task | Details |
-|---|------|---------|
-| 4.1 | Install `date-fns` | Currently missing — causes crash at runtime |
-| 4.2 | Fix login error-handling bug | `|| 'Invalid Username'` always truthy |
-| 4.3 | Add Error Boundary component | Wrap root routes |
-| 4.4 | Remove `react-toastify` | Installed but never used |
-| 4.5 | Remove dead custom hook | `src/Hooks/wikiStyles.js` |
-| 4.6 | Remove `dotenv` if no longer needed | CRA handled it; Vite handles it natively too |
-| 4.7 | Run `vite build` — confirm 0 errors | |
-| 4.8 | Manual smoke test | Full workflow pass |
+### 2.2 Update Route Guards
+- [ ] **Review all admin routes** — which should also allow Moderators?
+  - `/edit-wiki` — Admin only ❌ (style changes are too sensitive)
+  - `/user-submissions` — Admin + Moderator ✅
+  - `/user-updates` — Admin + Moderator ✅
+  - `/categories/edit` — Admin only ❌ (structural)
+  - `/forum/:slug/create-topic` — already `['User', 'Admin']`, should this include Moderator? (it already works)
 
 ---
 
-## Order of execution
+## Phase 3: Remaining CI/CD
 
-```
-P2 (React 19) → P1 (Vite) → P3 (TypeScript) → P4 (Polish)
-```
-
-React 19 first isolates the framework upgrade from the build-tool swap. If something breaks after P2, you know it's React. If it breaks after P1, you know it's Vite.
+- [ ] **Verify Docker Hub token is still valid** — the `DOCKERHUB_TOKEN` secret is 2 years old; regenerate if expired
+- [ ] **Remove unused GitHub secrets** — `ADMINUSER_EMAIL`, `ADMINUSER_PASSWORD`, `ADMINUSER_USERNAME`, `ASPNETCORE_CONNECTIONSTRING`, `DB_PASSWORD`, `DOCKERHUB_REPO_NAME`, `DOCKER_PASSWORD`, `INTEGRATIONTEST_CONNECTIONSTRING`, `PICTURES_PATH`, `PICTURES_PATH_CONTAINER`, `REACT_APP_API_URL`, `TESTUSER_EMAIL`, `TESTUSER_PASSWORD`, `TESTUSER_USERNAME` — none of these are read by any workflow
+- [ ] **Cherry-pick or merge strategy** — decide how to get the 30 responsive-design commits from `feature/modernize-stack` into `main` (squash merge? rebase? regular merge?)
+- [ ] **Update `DOTNET_NOLOGO`** — already set to `true`, good
+- [ ] **Consider adding Dependabot** — for automatic dependency updates (optional)
 
 ---
 
-## Effort summary
+## Notes
 
-| Phase | Hours | Risk | Outcome |
-|-------|-------|------|---------|
-| P1 — Vite | 4 | Low | CRA replaced, faster dev/build |
-| P2 — React 19 | 2 | Low | Current React, blob leaks fixed |
-| P3 — TypeScript | 8–16 | Medium | Full type safety, bugs caught |
-| P4 — Polish | 2 | Low | date-fns fixed, error boundary added |
-
-**Total:** 16–24 hours of hands-on work across 4 phases.
+- The `DbInitializer` checks `if (await roleManager.RoleExistsAsync("Moderator"))` before creating, so re-running the seed is safe.
+- The `UserAuthorizationService.IsUserAdmin()` method currently checks `IsInRoleAsync(user, "Admin")`. The moderator variant would check `IsInRoleAsync(user, "Moderator")`.
+- Frontend role detection uses the JWT claim `http://schemas.microsoft.com/ws/2008/06/identity/claims/role`. The JWT is generated at login and includes the user's role. After role change, the user must log out and back in to get a new token with the updated role.
