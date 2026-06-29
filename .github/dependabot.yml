@@ -8,6 +8,19 @@ updates:
       prefix: "chore"
     labels:
       - "dependencies"
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      npm-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
 
   - package-ecosystem: "nuget"
     directory: "/wiki-backend"
@@ -17,6 +30,19 @@ updates:
       prefix: "chore"
     labels:
       - "dependencies"
+    open-pull-requests-limit: 5
+    groups:
+      nuget-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      nuget-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
 
   - package-ecosystem: "docker"
     directories:
@@ -28,6 +54,10 @@ updates:
       prefix: "chore"
     labels:
       - "dependencies"
+    groups:
+      docker:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -37,3 +67,7 @@ updates:
       prefix: "chore"
     labels:
       - "ci"
+    groups:
+      actions:
+        patterns:
+          - "*"

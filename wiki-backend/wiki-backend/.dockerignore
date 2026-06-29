@@ -1,0 +1,9 @@
+bin
+obj
+*.Tests
+.git
+.env
+.env.*
+*.md
+.gitignore
+*.Development.json

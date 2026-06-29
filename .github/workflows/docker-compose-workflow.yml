@@ -11,6 +11,9 @@ jobs:
   build-and-push:
     needs: tests
     runs-on: ubuntu-24.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     env:
       DOCKER_BUILDKIT: 1
 

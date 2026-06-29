@@ -17,7 +17,7 @@
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vite build"
+    "test": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
