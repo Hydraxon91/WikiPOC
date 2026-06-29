@@ -21,9 +21,9 @@ public class ForumPostRepository : IForumPostRepository
             .ToListAsync();
     }
 
-    public async Task<ForumPost> GetForumPostByIdAsync(Guid id)
+    public async Task<ForumPost?> GetForumPostByIdAsync(Guid id)
     {
-        return (await _context.ForumPosts.FindAsync(id))!;
+        return await _context.ForumPosts.FindAsync(id);
     }
     
     public async Task<ForumPost?> GetForumPostBySlugAsync(string slug)

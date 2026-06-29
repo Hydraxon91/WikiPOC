@@ -44,10 +44,10 @@
 - [x] **BUG** `ForumTopicRepository.cs:112-124` — `GenerateSlug` reassigns `originalSlug = slug` inside loop → slugs compound incorrectly (`foo-1`, `foo-1-2`, `foo-1-2-3`)
 - [x] **BUG** `UsersController.cs:49` — `.Result` on async task in LINQ `.Select()` — sync-over-async deadlock risk
 - [x] **BUG** `ForumPostRepository.cs:79` — `UpdateForumPostAsync` regenerates slug on every update, even content-only edits → breaks bookmarks
-- [ ] **BUG** `WikiDbContext.cs:53-56,81-84` — Duplicate FK relationship config (WikiPage ↔ UserComment mapped from both sides)
-- [ ] **BUG** `WikiDbContext.cs:112-122` — Duplicate FK config (ForumPost ↔ ForumComment mapped from both sides)
-- [ ] **BUG** `UserProfileRepository.cs:100-105` — `RemoveAsync` never calls `SaveChangesAsync` (unlike `DeleteAsync` which does)
-- [ ] **BUG** `ForumPostRepository.cs:24-27` — Null-forgiving `!` on result that can legitimately be null; interface signature lies
+- [x] **BUG** `WikiDbContext.cs:53-56,81-84` — Duplicate FK relationship config (WikiPage ↔ UserComment mapped from both sides)
+- [x] **BUG** `WikiDbContext.cs:112-122` — Duplicate FK config (ForumPost ↔ ForumComment mapped from both sides)
+- [x] **BUG** `UserProfileRepository.cs:100-105` — `RemoveAsync` never calls `SaveChangesAsync` (unlike `DeleteAsync` which does)
+- [x] **BUG** `ForumPostRepository.cs:24-27` — Null-forgiving `!` on result that can legitimately be null; interface signature lies
 
 ### Performance
 - [ ] **PERF** `ForumPostRepository.cs:38-53` — N+1: 2× `CountAsync` per comment to recompute `PostCount`

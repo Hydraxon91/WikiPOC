@@ -101,6 +101,9 @@ public class UserProfileRepository : IUserProfileRepository
     {
         var existingProfile = await _context.UserProfiles.FindAsync(id);
         if (existingProfile != null)
+        {
             _context.UserProfiles.Remove(existingProfile);
+            await _context.SaveChangesAsync();
+        }
     }
 }

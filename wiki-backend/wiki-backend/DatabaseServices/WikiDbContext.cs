@@ -79,11 +79,6 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .HasForeignKey<ApplicationUser>(au => au.ProfileId);
 
         modelBuilder.Entity<UserComment>()
-            .HasOne(uc => uc.WikiPage)
-            .WithMany(wp => wp.Comments)
-            .HasForeignKey(uc => uc.WikiPageId);
-
-        modelBuilder.Entity<UserComment>()
             .HasOne(uc => uc.UserProfile)
             .WithMany()
             .HasForeignKey(uc => uc.UserProfileId);
@@ -113,12 +108,6 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .HasMany(fp => fp.Comments)
             .WithOne(c => c.ForumPost)
             .HasForeignKey(c => c.ForumPostId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<ForumComment>()
-            .HasOne(fc => fc.ForumPost)
-            .WithMany(fp => fp.Comments)
-            .HasForeignKey(fc => fc.ForumPostId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<ForumComment>()
