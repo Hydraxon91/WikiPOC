@@ -2,7 +2,7 @@
 
 ## Important Rule for AI Agents
 
-**Before performing any destructive actions** (like file deletions, large refactors, or package downgrades), you **must**:
+**Before performing any destructive actions** (like file deletions, large refactors, or package downgrades) **or pushing to remote**, you **must**:
 1. Explicitly propose the plan
 2. Explain your reasoning
 3. Wait for the user's 'y' confirmation before executing
@@ -130,6 +130,7 @@ Tech stack:
 - **React 19 + Vite + TypeScript frontend** (wiki-frontend/)
 - **SQL Server** database
 - **Docker Compose** orchestration
+- **GitHub Actions** CI/CD (unit tests, integration tests, Docker image build/push)
 
 ## Architecture
 
@@ -148,7 +149,7 @@ WikiPOC/
 ### Prerequisites
 - Docker & Docker Compose
 - .NET 10 SDK (for local backend dev)
-- Node.js 20+ (for local frontend dev)
+- Node.js 22+ (for local frontend dev)
 
 ### Run with Docker (Recommended)
 ```bash
@@ -201,29 +202,35 @@ PICTURES_PATH_CONTAINER=/pictures
 VITE_API_URL=http://localhost:5050
 ```
 
+> **CI/CD**: The `JWT_*` secrets above must also be added as GitHub Actions secrets in the repo (Settings → Secrets and Actions) or the integration tests will fail with `IDX10703`.
+
 ## Authentication & Authorization
 
 ### Backend Auth Setup
 - **JWT Bearer authentication** with configurable signing key
 - **ASP.NET Core Identity** for user management
-- **Two roles**: `Admin` and `User`
+- **Four roles**: `Owner`, `Admin`, `Moderator`, and `User`
+- Owner inherits Admin privileges (policies, routes, sidebar)
 
 ### Authorization Policies
 ```csharp
-// Policy: "Admin" - requires Role claim = "Admin"
-// Policy: "User" - requires Role claim = "User"
+// Policy: "Admin" - requires Role claim = "Admin" or "Owner"
+// Policy: "User" - requires Role claim = "User", "Moderator", "Admin", or "Owner"
+// Policy: "Moderator" - requires Role claim = "Moderator", "Admin", or "Owner"
 ```
 
 ### Default Users (seeded on startup)
-| Role  | Email           | Username |
-|-------|-----------------|----------|
-| Admin | admin@admin.com | Admin    |
-| User  | test@test.com   | TestUser |
+| Role     | Email              | Username   |
+|----------|--------------------|------------|
+| Owner    | admin@admin.com    | Admin      |
+| Moderator| configurable via MODERATOR_* env vars | (from env) |
+| User     | test@test.com      | TestUser   |
 
 ### Protected Routes (Frontend)
-- **Admin-only**: `/edit-wiki`, `/user-submissions`, `/user-updates`, `/categories/edit`, `/forum/:slug/create-topic`
-- **Authenticated**: `/create`, `/page/:title/edit`, `/profile/edit/:username`
-- **Public**: `/login`, `/register`
+- **Admin/Moderator-only**: `/edit-wiki` (Owner only), `/user-submissions`, `/user-updates`, `/categories/edit`, `/forum/create-topic`
+- **Admin-only**: `/admin/users`
+- **Authenticated (User+/Moderator+)**: `/create`, `/page/:slug/edit`, `/profile/edit/:username`, `/forum/:slug/create-post`
+- **Public**: `/login`, `/register`, `/forum/:slug`
 
 ## Key Commands
 
@@ -260,6 +267,8 @@ npm run build
 npm test
 ```
 
+> **Note**: `npm test` runs `tsc --noEmit` (TypeScript type-check), not a test framework. For actual frontend tests, add vitest.
+
 ### Docker
 ```bash
 # Start all services
@@ -280,7 +289,7 @@ docker-compose logs -f
 ### Backend (wiki-backend/wiki-backend/)
 
 **Controllers by Feature:**
-- `ArticleControllers/` - WikiPages, Paragraphs
+- `ArticleControllers/` - WikiPages
 - `UserControllers/` - Users, Auth, UserProfile, UserComments
 - `ForumControllers/` - ForumTopics, ForumPosts, ForumComments
 - `OtherControllers/` - Style, Categories, Images
@@ -300,6 +309,7 @@ docker-compose logs -f
 - `ITokenServices` / `TokenServices` - JWT token generation
 - `IImageStorageService` / `ImageStorageService` - Image file I/O
 - `IUserAuthorizationService` / `UserAuthorizationService` - Role checks
+- `SlugHelper` - Shared slug generation utility (used by WikiPage, ForumTopic, ForumPost)
 
 ### Frontend (wiki-frontend/src/)
 
@@ -319,7 +329,7 @@ docker-compose logs -f
 - `WikiPage-Article/` - Article view
 - `CreateEditArticle/` - Editor (legacy + new)
 - `UserSubmittedArticle-Update/` - Admin approval workflow
-- `ForumPages/` - Forum components
+- `ForumPages/` - Forum components (landing, topic view, post view, create topic, create post)
 
 ## Important Workflows
 
@@ -352,7 +362,7 @@ docker-compose logs -f
 
 ## Gotchas
 
-1. **Docker startup race**: Backend may start before SQL Server is ready. If you see connection errors, the `wait-for-it.sh` script in docker-compose handles this (uncomment entrypoint if needed).
+1. **Docker startup race**: Backend may start before SQL Server is ready. The docker-compose setup now uses Docker native healthchecks (`sqlcmd` query on SQL Server) with `depends_on: condition: service_healthy` to prevent this. No manual `wait-for-it.sh` uncommenting needed.
 
 2. **Frontend build**: `VITE_API_URL` must be passed as build arg to Docker. The frontend Dockerfile captures this correctly.
 
