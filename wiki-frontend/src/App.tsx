@@ -83,6 +83,7 @@ function App() {
 
   const fetchPage = async () => {
     try {
+      setCurrentWikiPage(null);
       setPageError(false);
       const data = await getWikiPageBySlug(decodedSlug);
       if (!data) {
