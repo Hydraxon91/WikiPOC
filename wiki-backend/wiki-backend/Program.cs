@@ -147,7 +147,10 @@ void AddDbContext()
 {
     builder.Services.AddDbContext<WikiDbContext>(options =>
     {
-        options.UseSqlServer(Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING")!);
+        options.UseSqlServer(Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING")!, sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(10, TimeSpan.FromSeconds(30), null);
+        });
         options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
         if (builder.Environment.IsDevelopment())
         {
