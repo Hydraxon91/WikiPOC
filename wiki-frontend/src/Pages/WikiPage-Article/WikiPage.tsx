@@ -21,6 +21,9 @@ const WikiPage = ({page: wikipage, setDecodedSlug, jwtToken, disableNavbar = fal
             setActiveTab('wiki');
             setPage(wikipage.wikiPage ?? wikipage.userSubmittedWikiPage);
             setImages(wikipage.images)
+        } else {
+            setPage(null);
+            setImages(null);
         }
     },[wikipage])
 
