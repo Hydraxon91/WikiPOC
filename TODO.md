@@ -92,6 +92,13 @@
 
 ---
 
+## New
+
+### HIGH
+- [ ] **HIGH** Add middleware to validate JWT role claim against DB on every request — prevents griefing via stale tokens after role demotion
+
+---
+
 ## Frontend
 
 ### Bugs
