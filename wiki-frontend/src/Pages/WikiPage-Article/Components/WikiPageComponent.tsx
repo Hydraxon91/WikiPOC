@@ -47,7 +47,7 @@ const WikiPageComponent = ({page, setDecodedSlug, activeTab, images}) => {
     ? buildContentFromParagraphs(page.paragraphs)
     : '';
   const renderedContent = contentHtml
-    ? processArticleContent(contentHtml, styles, images)
+    ? processArticleContent(contentHtml, images)
     : '';
 
   return (

@@ -93,12 +93,6 @@ export function buildContentFromParagraphs(paragraphs: any[]): string {
 
 export function processArticleContent(
   htmlContent: string,
-  styles?: {
-    bodyColor?: string;
-    articleColor?: string;
-    articleRightColor?: string;
-    articleRightInnerColor?: string;
-  },
   images?: { name?: string; fileName?: string; dataURL?: string }[]
 ): string {
   if (!htmlContent) return '';
