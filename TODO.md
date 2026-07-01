@@ -165,7 +165,7 @@ When a user's role is changed in the DB, the existing middleware rejects their n
 - [x] `forumApi.ts` — `createForumTopic`, `updateForumTopic`, `deleteForumTopic`, `getForumPostTitles`, `getForumPostById`, `postEditedForumComment`
 - [x] `wikiUserApi.ts` — `postEditedComment` (now wired up to comment editing)
 - [x] `apiClient.ts` — `ApiError` class (export removed, class kept internally)
-- [ ] `types/models.ts` — `WikiPage`, `UserSubmittedWikiPage`, `Category`, `Paragraph`, `StyleModel` (components use `any`)
+- [x] `types/models.ts` — `WikiPage`, `UserSubmittedWikiPage`, `Category`, `Paragraph` removed (never imported); kept `StyleModel`
 
 ### Unused Imports
 - [x] `HomeComponent.tsx:1` — `React`
@@ -194,8 +194,8 @@ When a user's role is changed in the DB, the existing middleware rejects their n
 - [x] `CompareUpdatePage.tsx:51,63` — commented filter lines
 
 ### Weird / Code Smells
-- [ ] `Context guards never fire` — `StyleContext.tsx:33`, `UserContextProvider.tsx:21` — default `{} as Type` is truthy, throw unreachable
-- [ ] `MainPage.tsx:22` — Role stringified differently than WikiList/HamburgerMenu (doesn't handle array role claims)
+- [x] `Context guards never fire` — `StyleContext.tsx:33`, `UserContextProvider.tsx:21` — default `{} as Type` is truthy, throw unreachable
+- [x] `MainPage.tsx:22` — Role stringified differently than WikiList/HamburgerMenu (doesn't handle array role claims)
 - [x] `CreateForumTopic.tsx:67-76` — Payload includes unused fields (`forumTopic` object, `slug: ''`) — file deleted, replaced by CreateTopicPage + CreatePostPage
-- [ ] `articleRenderer.ts:94-116` — `processArticleContent` declares `styles` param but never uses it
-- [ ] Duplicate `StyleModel` interfaces in `types/models.ts:87` vs `types/contexts.ts:3` (diverge — one has `id`, the other doesn't)
+- [x] `articleRenderer.ts:94-116` — `processArticleContent` declares `styles` param but never uses it
+- [x] Duplicate `StyleModel` interfaces in `types/models.ts:87` vs `types/contexts.ts:3` (consolidated to models.ts, contexts.ts imports it)
