@@ -11,26 +11,28 @@
 ## CI/CD (DevOps Tier)
 
 ### Critical
-- [ ] **CRIT** Frontend CI: `npm test` is aliased to `vite build` — no real tests, no `tsc --noEmit` type-check
-- [ ] **CRIT** Add `actions/upload-artifact` for `.trx` test results + `dorny/test-reporter` for PR annotations
+- [x] **CRIT** Frontend CI: `npm test` is aliased to `vite build` — no real tests, no `tsc --noEmit` type-check
+- [x] **CRIT** Add `actions/upload-artifact` for `.trx` test results + `dorny/test-reporter` for PR annotations
 - [ ] **CRIT** Add immutable image tags (`${{ github.sha }}`) via `docker/metadata-action` — currently `:latest` only
 - [ ] **CRIT** Add deployment job (staging/prod environments)
-- [ ] **CRIT** Add backend `.dockerignore` (exclude `bin/`, `obj/`, test projects, `.env*`)
+- [x] **CRIT** Add backend `.dockerignore` (exclude `bin/`, `obj/`, test projects, `.env*`)
 
 ### High
 - [ ] **HIGH** Containers run as root — add `USER` directive to both Dockerfiles
-- [ ] **HIGH** No healthchecks in docker-compose; SQL Server image unpinned (`:latest`)
+- [x] **HIGH** No healthchecks in docker-compose; SQL Server image unpinned (`:latest`)
+- [x] **HIGH** Add CODEOWNERS
+- [ ] **HIGH** Add PR template, CONTRIBUTING.md
+- [x] **HIGH** Add concurrency control to workflows (cancel stale runs)
+- [x] **HIGH** Add middleware to validate JWT role claim against DB on every request
 - [ ] **HIGH** Add CodeQL workflow + Trivy image scan
 - [ ] **HIGH** Add ESLint + Roslyn analyzers
 - [ ] **HIGH** Enable branch protection on `main` (`Tests and Build` required + 1 review)
-- [ ] **HIGH** Add CODEOWNERS, PR template, CONTRIBUTING.md
-- [ ] **HIGH** Add concurrency control to workflows (cancel stale runs)
 
 ### Medium
 - [ ] **MEDIUM** Add coverage reporting (coverlet + ReportGenerator for .NET)
 - [ ] **MEDIUM** Add release tagging / changelog automation (release-please)
 - [ ] **MEDIUM** Add GitHub Environments (staging vs prod)
-- [ ] **MEDIUM** Dependabot: add `groups`, `reviewers`, `open-pull-requests-limit`
+- [x] **MEDIUM** Dependabot: removed (user found it annoying)
 
 ---
 
