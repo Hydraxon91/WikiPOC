@@ -55,6 +55,15 @@ namespace IntegrationTests
                     .AddEntityFrameworkStores<WikiDbContext>()
                     .AddDefaultTokenProviders();
 
+            services.Configure<JwtSettings>(options =>
+            {
+                options.ValidIssuer = JwtValidIssuer;
+                options.ValidAudience = JwtValidAudience;
+                options.IssuerSigningKey = JwtIssuerSigningKey;
+                options.TokenTime = int.TryParse(JwtTokenTime, out var time) ? time : 30;
+            });
+            services.AddScoped<ITokenServices, TokenServices>();
+
             ServiceProvider = services.BuildServiceProvider();
             DbContext = ServiceProvider.GetRequiredService<WikiDbContext>();
             DbContext.Database.EnsureCreated();
