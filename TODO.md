@@ -92,6 +92,37 @@
 
 ---
 
+## Backend
+
+### JWT Refresh Flow — Silent Token Refresh on Role Change
+
+**What this does:**
+When a user's role is changed in the DB, the existing middleware rejects their next API request with 401 + body `{ reason: "role_changed" }`. The frontend automatically calls a refresh endpoint to get a new token with the correct role, then retries the original request — zero interruption to the user.
+
+**Backend changes — `UsersController.cs`:**
+- [x] Add `POST /api/Users/RefreshToken` endpoint
+  - Reads current user from JWT claims
+  - Fetches current DB roles via `UserManager`
+  - Generates a new JWT token with those roles
+  - Returns `{ token: "..." }`
+
+**Backend changes — `Program.cs`:**
+- [x] The existing middleware already returns 401 on role mismatch. Change the response to include `{ reason: "role_changed" }` as JSON body so the frontend can detect it.
+
+**Frontend changes — `apiClient.ts`:**
+- [x] On 401 with `reason === "role_changed"`:
+  1. Call `POST /api/Users/RefreshToken` with current token
+  2. If refresh succeeds, save new token (update cookie), retry the original request
+  3. If refresh fails, clear cookie, redirect to login
+
+**Frontend changes — cookie handling:**
+- [x] Check how `jwt_token` cookie is set/cleared in `App.tsx` (`handleLogin` / `handleLogout` / `useCookies`)
+- [x] Make refresh-token response update the cookie in the same way
+
+**What won't change:**
+- The middleware stays where it is (between auth and authorization)
+- No changes to existing controllers, repositories, or models
+- Unit tests still pass without modification
 ## New
 
 ### HIGH
@@ -109,10 +140,10 @@
 - [ ] **BUG** `ForumPostRepository` (frontend `forumApi.ts:17,19`) — `getForumPostTitles`/`getForumPostById` exported but never imported
 
 ### Performance / State Issues
-- [ ] **PERF** `CategoryPageComponent.tsx:25-27` — Effect missing `category` in deps; navigating categories won't update list
-- [ ] **PERF** `ProfilePage.tsx:29-32` — Effect missing `username` in deps; URL change won't recompute `isYourProfile`
-- [ ] **PERF** `EditStylePage.tsx:25-26` — Empty `useEffect(() => {}, [manualEdit])` — pure no-op
-- [ ] **PERF** `EditStylePage.tsx:18-23` — Buggy backup/restore lifecycle: cleanup runs before each re-run, momentarily resetting styles
+- [x] **PERF** `CategoryPageComponent.tsx:25-27` — Effect missing `category` in deps; navigating categories won't update list
+- [x] **PERF** `ProfilePage.tsx:29-32` — Effect missing `username` in deps; URL change won't recompute `isYourProfile`
+- [x] **PERF** `EditStylePage.tsx:25-26` — Empty `useEffect(() => {}, [manualEdit])` — pure no-op
+- [x] **PERF** `EditStylePage.tsx:18-23` — Buggy backup/restore lifecycle: cleanup runs before each re-run, momentarily resetting styles
 
 ### Debug Leftovers
 - [x] **LOG** `App.tsx:86,88` — `console.log` in production code
@@ -120,51 +151,51 @@
 
 ### Dead Code
 - [x] **DEAD** `Components/ReactQuillComponent.tsx` — entire component file never imported
-- [ ] **DEAD** `EditPage.tsx:24` — `legacyPage` state: set but never read
-- [ ] **DEAD** `EditPage.tsx:20` — `emptyFields` state: set but never read
-- [ ] **DEAD** `LoginPageComponent.tsx:13-15` — `emailInputClass`/`passwordInputClass` state values never applied
-- [ ] **DEAD** `RegisterPageComponent.tsx:13` — `role` state: never set, never read; `RegisterPageComponent.tsx:16-19` — input class states never applied
-- [ ] **DEAD** `ArticleEditor.tsx:20` — `lastSelection` state: set but never read
-- [ ] **DEAD** `LoginPageComponent.tsx:37` — `InputClick` handler never wired
-- [ ] **DEAD** `RegisterPageComponent.tsx:37` — `InputClick` handler never wired
-- [ ] **DEAD** `CustomHTMLPopup.tsx:50,69` — `handleImageChange` / `fileToDataUri` defined but never called
+- [x] **DEAD** `EditPage.tsx:24` — `legacyPage` state: set but never read
+- [x] **DEAD** `EditPage.tsx:20` — `emptyFields` state: set but never read
+- [x] **DEAD** `LoginPageComponent.tsx:13-15` — `emailInputClass`/`passwordInputClass` state values never applied
+- [x] **DEAD** `RegisterPageComponent.tsx:13` — `role` state: never set, never read; `RegisterPageComponent.tsx:16-19` — input class states never applied
+- [x] **DEAD** `ArticleEditor.tsx:20` — `lastSelection` state: set but never read
+- [x] **DEAD** `LoginPageComponent.tsx:37` — `InputClick` handler never wired
+- [x] **DEAD** `RegisterPageComponent.tsx:37` — `InputClick` handler never wired
+- [x] **DEAD** `CustomHTMLPopup.tsx:50,69` — `handleImageChange` / `fileToDataUri` defined but never called
 
 ### Unused Exports
-- [ ] `wikiApi.ts` — `getWikiPages`, `deleteWikiPage`
-- [ ] `forumApi.ts` — `createForumTopic`, `updateForumTopic`, `deleteForumTopic`, `getForumPostTitles`, `getForumPostById`, `postEditedForumComment`
-- [ ] `wikiUserApi.ts` — `postEditedComment` (imported once but unused there)
-- [ ] `apiClient.ts` — `ApiError` class (never imported)
+- [x] `wikiApi.ts` — `getWikiPages`, `deleteWikiPage`
+- [x] `forumApi.ts` — `createForumTopic`, `updateForumTopic`, `deleteForumTopic`, `getForumPostTitles`, `getForumPostById`, `postEditedForumComment`
+- [x] `wikiUserApi.ts` — `postEditedComment` (now wired up to comment editing)
+- [x] `apiClient.ts` — `ApiError` class (export removed, class kept internally)
 - [ ] `types/models.ts` — `WikiPage`, `UserSubmittedWikiPage`, `Category`, `Paragraph`, `StyleModel` (components use `any`)
 
 ### Unused Imports
-- [ ] `HomeComponent.tsx:1` — `React`
-- [ ] `HomeComponent.tsx:3` — `StyleProvider`
-- [ ] `WikiList.tsx:1` — `React`
-- [ ] `EditPage.tsx:1` — `React`
-- [ ] `ArticleEditor.tsx:1` — `React`
-- [ ] `CustomHTMLPopup.tsx:1` — `React`
-- [ ] `WikiPageCommentsComponent.tsx:4` — `postEditedComment`
-- [ ] `ReactQuillComponent.tsx:1` — `useState` (whole file dead)
-- [ ] `MainPage.tsx:5` — `Breadcrumbs` (only usage is commented out)
-- [ ] `WikiPageCommentsComponent.tsx:4` — `postEditedComment`
+- [x] `HomeComponent.tsx:1` — `React`
+- [x] `HomeComponent.tsx:3` — `StyleProvider`
+- [x] `WikiList.tsx:1` — `React`
+- [x] `EditPage.tsx:1` — `React`
+- [x] `ArticleEditor.tsx:1` — `React`
+- [x] `CustomHTMLPopup.tsx:1` — `React`
+- [x] `WikiPageCommentsComponent.tsx:4` — `postEditedComment`
+- [x] `ReactQuillComponent.tsx:1` — `useState` (whole file dead)
+- [x] `MainPage.tsx:5` — `Breadcrumbs` (only usage is commented out)
+- [x] `WikiPageCommentsComponent.tsx:4` — `postEditedComment`
 
 ### Commented-out Dead Code
-- [ ] `ReactQuillComponent.tsx:6-10` — commented useState/handleChange block
-- [ ] `MainPage.tsx:56` — `<Breadcrumbs/>` JSX commented out
-- [ ] `MainPage.tsx:59` — commented header div
-- [ ] `EditPage.tsx:67` — `// setContent(value);` leftover
-- [ ] `EditPage.tsx:132` — duplicate commented line
-- [ ] `ForumLandingPage.tsx:22-23` — empty useEffect comment stub
-- [ ] `ArticleEditor.tsx:30` — commented toolbar handler
-- [ ] `ArticleEditor.tsx:234` — commented `CustomQuillToolbar` reference
-- [ ] `EditCategoriesPage.tsx:14` — commented categories.push
-- [ ] `WikiPageSubmitCommentComponent.tsx:18` — commented field in payload
-- [ ] `CheckUserSubmittedPage.tsx:33,45` — commented filter lines
-- [ ] `CompareUpdatePage.tsx:51,63` — commented filter lines
+- [x] `ReactQuillComponent.tsx:6-10` — commented useState/handleChange block
+- [x] `MainPage.tsx:56` — `<Breadcrumbs/>` JSX commented out
+- [x] `MainPage.tsx:59` — commented header div
+- [x] `EditPage.tsx:67` — `// setContent(value);` leftover
+- [x] `EditPage.tsx:132` — duplicate commented line
+- [x] `ForumLandingPage.tsx:22-23` — empty useEffect comment stub
+- [x] `ArticleEditor.tsx:30` — commented toolbar handler
+- [x] `ArticleEditor.tsx:234` — commented `CustomQuillToolbar` reference
+- [x] `EditCategoriesPage.tsx:14` — commented categories.push
+- [x] `WikiPageSubmitCommentComponent.tsx:18` — commented field in payload
+- [x] `CheckUserSubmittedPage.tsx:33,45` — commented filter lines
+- [x] `CompareUpdatePage.tsx:51,63` — commented filter lines
 
 ### Weird / Code Smells
 - [ ] `Context guards never fire` — `StyleContext.tsx:33`, `UserContextProvider.tsx:21` — default `{} as Type` is truthy, throw unreachable
 - [ ] `MainPage.tsx:22` — Role stringified differently than WikiList/HamburgerMenu (doesn't handle array role claims)
-- [ ] `CreateForumTopic.tsx:67-76` — Payload includes unused fields (`forumTopic` object, `slug: ''`)
+- [x] `CreateForumTopic.tsx:67-76` — Payload includes unused fields (`forumTopic` object, `slug: ''`) — file deleted, replaced by CreateTopicPage + CreatePostPage
 - [ ] `articleRenderer.ts:94-116` — `processArticleContent` declares `styles` param but never uses it
 - [ ] Duplicate `StyleModel` interfaces in `types/models.ts:87` vs `types/contexts.ts:3` (diverge — one has `id`, the other doesn't)

@@ -119,6 +119,39 @@ app.UseCors();
 app.UseRateLimiter();
 
 app.UseAuthentication();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/api/Users/RefreshToken"))
+    {
+        await next();
+        return;
+    }
+
+    if (context.User.Identity?.IsAuthenticated == true)
+    {
+        var userManager = context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+        var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId != null)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var dbRoles = await userManager.GetRolesAsync(user);
+                var tokenRole = context.User.FindFirstValue(ClaimTypes.Role);
+                if (tokenRole != null && !dbRoles.Contains(tokenRole))
+                {
+                    context.Response.StatusCode = 401;
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsJsonAsync(new { reason = "role_changed" });
+                    return;
+                }
+            }
+        }
+    }
+    await next();
+});
+
 app.UseAuthorization();
 
 app.MapControllers();

@@ -81,6 +81,23 @@ function App() {
       });
   }, []); // Trigger the effect when just loading
 
+  // On page load, silently refresh the token so role changes take effect immediately
+  useEffect(() => {
+    const token = cookies["jwt_token"];
+    if (!token) return;
+    fetch(`${import.meta.env.VITE_API_URL}/api/Users/RefreshToken`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).then(res => {
+      if (res.ok) return res.json();
+      return null;
+    }).then(data => {
+      if (data?.token && data.token !== token) {
+        setCookie("jwt_token", data.token, { path: "/" });
+      }
+    });
+  }, []);
+
   const fetchPage = async () => {
     try {
       setCurrentWikiPage(null);

@@ -55,6 +55,15 @@ namespace IntegrationTests
                     .AddEntityFrameworkStores<WikiDbContext>()
                     .AddDefaultTokenProviders();
 
+            services.Configure<JwtSettings>(options =>
+            {
+                options.ValidIssuer = JwtValidIssuer;
+                options.ValidAudience = JwtValidAudience;
+                options.IssuerSigningKey = JwtIssuerSigningKey;
+                options.TokenTime = int.TryParse(JwtTokenTime, out var time) ? time : 30;
+            });
+            services.AddScoped<ITokenServices, TokenServices>();
+
             ServiceProvider = services.BuildServiceProvider();
             DbContext = ServiceProvider.GetRequiredService<WikiDbContext>();
             DbContext.Database.EnsureCreated();
@@ -119,7 +128,8 @@ namespace IntegrationTests
         {
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var logger = ServiceProvider.GetRequiredService<ILogger<UsersController>>();
-            return new UsersController(userManager, logger);
+            var tokenService = ServiceProvider.GetRequiredService<ITokenServices>();
+            return new UsersController(userManager, logger, tokenService);
         }
         
         protected UserProfileController CreateUserProfileController()

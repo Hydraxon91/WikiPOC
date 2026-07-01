@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using wiki_backend.Identity;
 using wiki_backend.Models;
+using wiki_backend.Services.Authentication;
 
 namespace wiki_backend.Controllers;
 
@@ -15,11 +16,13 @@ public class UsersController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<UsersController> _logger;
+    private readonly ITokenServices _tokenService;
 
-    public UsersController(UserManager<ApplicationUser> userManager, ILogger<UsersController> logger)
+    public UsersController(UserManager<ApplicationUser> userManager, ILogger<UsersController> logger, ITokenServices tokenService)
     {
         _userManager = userManager;
         _logger = logger;
+        _tokenService = tokenService;
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
@@ -53,6 +56,22 @@ public class UsersController : ControllerBase
     private async Task<List<string>> GetUserRoles(ApplicationUser user)
     {
         return (await _userManager.GetRolesAsync(user)).ToList();
+    }
+
+    [Authorize]
+    [HttpPost("RefreshToken")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return Unauthorized();
+
+        var roles = await _userManager.GetRolesAsync(user);
+        if (roles.Count == 0) return Unauthorized();
+
+        var newToken = _tokenService.CreateToken(user, roles[0]);
+        return Ok(new { token = newToken });
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
