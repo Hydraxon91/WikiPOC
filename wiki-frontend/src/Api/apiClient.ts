@@ -65,6 +65,9 @@ async function request<T = any>(
           return retryResponse.json();
         }
       }
+      document.cookie = 'jwt_token=; path=/; max-age=0';
+      window.location.href = '/login';
+      return undefined as T;
     }
     throw new ApiError('Unauthorized', 401);
   }

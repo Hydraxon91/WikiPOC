@@ -122,6 +122,12 @@ app.UseAuthentication();
 
 app.Use(async (context, next) =>
 {
+    if (context.Request.Path.StartsWithSegments("/api/Users/RefreshToken"))
+    {
+        await next();
+        return;
+    }
+
     if (context.User.Identity?.IsAuthenticated == true)
     {
         var userManager = context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
