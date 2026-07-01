@@ -238,13 +238,13 @@ function App() {
                 <Route path="/forum/:slug" element={<ForumPage jwtToken={cookies["jwt_token"]}
  />} />
                 <Route path="/forum/create-topic" element={
-                  <ProtectedRoute  roles={['User', 'Admin', 'Moderator']}>
+                  <ProtectedRoute  roles={['User', 'Admin', 'Moderator', 'Owner']}>
                     <CreateTopicPage jwtToken={cookies["jwt_token"]}
  />
                   </ProtectedRoute>
                 }/>
                 <Route path="/forum/:slug/create-post" element={
-                  <ProtectedRoute  roles={['User', 'Admin', 'Moderator']}>
+                  <ProtectedRoute  roles={['User', 'Admin', 'Moderator', 'Owner']}>
                     <CreatePostPage jwtToken={cookies["jwt_token"]}
  />
                   </ProtectedRoute>
