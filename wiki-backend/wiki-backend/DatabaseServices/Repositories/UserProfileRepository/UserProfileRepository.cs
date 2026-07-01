@@ -37,7 +37,7 @@ public class UserProfileRepository : IUserProfileRepository
     {
         var profile = await _context.UserProfiles
             .Include(up => up.User)
-            .SingleOrDefaultAsync(up => up.UserName != null && up.UserName.ToLower() == username.ToLower());
+            .FirstOrDefaultAsync(up => up.UserName != null && up.UserName.ToLower() == username.ToLower());
         if (profile != null) await SetPostCount(profile);
         return profile;
     }
