@@ -136,6 +136,8 @@ app.Use(async (context, next) =>
                 if (tokenRole != null && !dbRoles.Contains(tokenRole))
                 {
                     context.Response.StatusCode = 401;
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsJsonAsync(new { reason = "role_changed" });
                     return;
                 }
             }

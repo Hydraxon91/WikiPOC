@@ -119,7 +119,8 @@ namespace IntegrationTests
         {
             var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var logger = ServiceProvider.GetRequiredService<ILogger<UsersController>>();
-            return new UsersController(userManager, logger);
+            var tokenService = ServiceProvider.GetRequiredService<ITokenServices>();
+            return new UsersController(userManager, logger, tokenService);
         }
         
         protected UserProfileController CreateUserProfileController()

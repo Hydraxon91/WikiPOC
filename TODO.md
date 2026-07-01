@@ -92,7 +92,37 @@
 
 ---
 
-## Frontend
+## Backend
+
+### JWT Refresh Flow — Silent Token Refresh on Role Change
+
+**What this does:**
+When a user's role is changed in the DB, the existing middleware rejects their next API request with 401 + body `{ reason: "role_changed" }`. The frontend automatically calls a refresh endpoint to get a new token with the correct role, then retries the original request — zero interruption to the user.
+
+**Backend changes — `UsersController.cs`:**
+- [x] Add `POST /api/Users/RefreshToken` endpoint
+  - Reads current user from JWT claims
+  - Fetches current DB roles via `UserManager`
+  - Generates a new JWT token with those roles
+  - Returns `{ token: "..." }`
+
+**Backend changes — `Program.cs`:**
+- [x] The existing middleware already returns 401 on role mismatch. Change the response to include `{ reason: "role_changed" }` as JSON body so the frontend can detect it.
+
+**Frontend changes — `apiClient.ts`:**
+- [x] On 401 with `reason === "role_changed"`:
+  1. Call `POST /api/Users/RefreshToken` with current token
+  2. If refresh succeeds, save new token (update cookie), retry the original request
+  3. If refresh fails, clear cookie, redirect to login
+
+**Frontend changes — cookie handling:**
+- [x] Check how `jwt_token` cookie is set/cleared in `App.tsx` (`handleLogin` / `handleLogout` / `useCookies`)
+- [x] Make refresh-token response update the cookie in the same way
+
+**What won't change:**
+- The middleware stays where it is (between auth and authorization)
+- No changes to existing controllers, repositories, or models
+- Unit tests still pass without modification
 
 ### Bugs
 - [x] **BUG** `ForumLandingPage.tsx:16` — `isAdmin` reads wrong claim key (bare `role` vs full `http://schemas.microsoft.com/.../claims/role`) → "Create New Topic" never shown
