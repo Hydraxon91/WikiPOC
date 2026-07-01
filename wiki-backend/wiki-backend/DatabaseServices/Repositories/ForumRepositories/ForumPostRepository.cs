@@ -36,21 +36,12 @@ public class ForumPostRepository : IForumPostRepository
 
         if (post != null)
         {
-            foreach (var comment in post.Comments)
-            {
-                if (comment.UserProfile != null)
-                {
-                    var forumPostCount = await _context.ForumPosts.CountAsync(fp => fp.UserId == comment.UserProfile.Id);
-                    var forumCommentCount = await _context.ForumComments.CountAsync(fc => fc.UserProfileId == comment.UserProfile.Id);
-                    comment.UserProfile.PostCount = forumPostCount + forumCommentCount;
-                }
-            }
-            if (post.User != null)
-            {
-                var forumPostCount = await _context.ForumPosts.CountAsync(fp => fp.UserId == post.User.Id);
-                var forumCommentCount = await _context.ForumComments.CountAsync(fc => fc.UserProfileId == post.User.Id);
-                post.User.PostCount = forumPostCount + forumCommentCount;
-            }
+            var profileIds = post.Comments
+                .Where(c => c.UserProfile != null)
+                .Select(c => c.UserProfile!.Id)
+                .ToList();
+            if (post.User != null) profileIds.Add(post.User.Id);
+            await ForumStatsHelper.SetPostCountsAsync(_context, profileIds);
         }
 
         return post;
