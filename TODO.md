@@ -123,6 +123,14 @@ When a user's role is changed in the DB, the existing middleware rejects their n
 - The middleware stays where it is (between auth and authorization)
 - No changes to existing controllers, repositories, or models
 - Unit tests still pass without modification
+## New
+
+### HIGH
+- [ ] **HIGH** Add middleware to validate JWT role claim against DB on every request — prevents griefing via stale tokens after role demotion
+
+---
+
+## Frontend
 
 ### Bugs
 - [x] **BUG** `ForumLandingPage.tsx:16` — `isAdmin` reads wrong claim key (bare `role` vs full `http://schemas.microsoft.com/.../claims/role`) → "Create New Topic" never shown
