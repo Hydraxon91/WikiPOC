@@ -14,15 +14,6 @@ public class ForumTopicRepository : IForumTopicRepository
         _context = context;
     }
 
-
-    private async Task SetPostCountOnProfile(UserProfile profile)
-    {
-        if (profile == null) return;
-        var forumPostCount = await _context.ForumPosts.CountAsync(fp => fp.UserId == profile.Id);
-        var forumCommentCount = await _context.ForumComments.CountAsync(fc => fc.UserProfileId == profile.Id);
-        profile.PostCount = forumPostCount + forumCommentCount;
-    }
-
     public async Task<IEnumerable<ForumTopic>> GetAllForumTopicsAsync()
     {
         var topics = await _context.ForumTopics
@@ -34,17 +25,16 @@ public class ForumTopicRepository : IForumTopicRepository
             .OrderBy(ft => ft.Order)
             .ToListAsync();
 
-        foreach (var topic in topics)
-        {
-            foreach (var post in topic.ForumPosts ?? new List<ForumPost>())
-            {
-                foreach (var comment in post.Comments ?? new List<ForumComment>())
-                {
-                    if (comment.UserProfile != null) await SetPostCountOnProfile(comment.UserProfile);
-                }
-                if (post.User != null) await SetPostCountOnProfile(post.User);
-            }
-        }
+        var profileIds = topics
+            .SelectMany(t => t.ForumPosts ?? Enumerable.Empty<ForumPost>())
+            .SelectMany(p => (p.Comments ?? Enumerable.Empty<ForumComment>())
+                .Where(c => c.UserProfile != null)
+                .Select(c => c.UserProfile!.Id)
+                .Concat(p.User != null ? new[] { p.User.Id } : Enumerable.Empty<Guid>()))
+            .Distinct()
+            .ToList();
+
+        await ForumStatsHelper.SetPostCountsAsync(_context, profileIds);
 
         return topics;
     }
@@ -61,14 +51,15 @@ public class ForumTopicRepository : IForumTopicRepository
 
         if (topic != null)
         {
-            foreach (var post in topic.ForumPosts ?? new List<ForumPost>())
-            {
-                foreach (var comment in post.Comments ?? new List<ForumComment>())
-                {
-                    if (comment.UserProfile != null) await SetPostCountOnProfile(comment.UserProfile);
-                }
-                if (post.User != null) await SetPostCountOnProfile(post.User);
-            }
+            var profileIds = topic.ForumPosts
+                .SelectMany(p => (p.Comments ?? Enumerable.Empty<ForumComment>())
+                    .Where(c => c.UserProfile != null)
+                    .Select(c => c.UserProfile!.Id)
+                    .Concat(p.User != null ? new[] { p.User.Id } : Enumerable.Empty<Guid>()))
+                .Distinct()
+                .ToList();
+
+            await ForumStatsHelper.SetPostCountsAsync(_context, profileIds);
         }
 
         return topic;

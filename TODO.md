@@ -11,26 +11,28 @@
 ## CI/CD (DevOps Tier)
 
 ### Critical
-- [ ] **CRIT** Frontend CI: `npm test` is aliased to `vite build` — no real tests, no `tsc --noEmit` type-check
-- [ ] **CRIT** Add `actions/upload-artifact` for `.trx` test results + `dorny/test-reporter` for PR annotations
+- [x] **CRIT** Frontend CI: `npm test` is aliased to `vite build` — no real tests, no `tsc --noEmit` type-check
+- [x] **CRIT** Add `actions/upload-artifact` for `.trx` test results + `dorny/test-reporter` for PR annotations
 - [ ] **CRIT** Add immutable image tags (`${{ github.sha }}`) via `docker/metadata-action` — currently `:latest` only
 - [ ] **CRIT** Add deployment job (staging/prod environments)
-- [ ] **CRIT** Add backend `.dockerignore` (exclude `bin/`, `obj/`, test projects, `.env*`)
+- [x] **CRIT** Add backend `.dockerignore` (exclude `bin/`, `obj/`, test projects, `.env*`)
 
 ### High
 - [ ] **HIGH** Containers run as root — add `USER` directive to both Dockerfiles
-- [ ] **HIGH** No healthchecks in docker-compose; SQL Server image unpinned (`:latest`)
+- [x] **HIGH** No healthchecks in docker-compose; SQL Server image unpinned (`:latest`)
+- [x] **HIGH** Add CODEOWNERS
+- [ ] **HIGH** Add PR template, CONTRIBUTING.md
+- [x] **HIGH** Add concurrency control to workflows (cancel stale runs)
+- [x] **HIGH** Add middleware to validate JWT role claim against DB on every request
 - [ ] **HIGH** Add CodeQL workflow + Trivy image scan
 - [ ] **HIGH** Add ESLint + Roslyn analyzers
 - [ ] **HIGH** Enable branch protection on `main` (`Tests and Build` required + 1 review)
-- [ ] **HIGH** Add CODEOWNERS, PR template, CONTRIBUTING.md
-- [ ] **HIGH** Add concurrency control to workflows (cancel stale runs)
 
 ### Medium
 - [ ] **MEDIUM** Add coverage reporting (coverlet + ReportGenerator for .NET)
 - [ ] **MEDIUM** Add release tagging / changelog automation (release-please)
 - [ ] **MEDIUM** Add GitHub Environments (staging vs prod)
-- [ ] **MEDIUM** Dependabot: add `groups`, `reviewers`, `open-pull-requests-limit`
+- [x] **MEDIUM** Dependabot: removed (user found it annoying)
 
 ---
 
@@ -165,7 +167,7 @@ When a user's role is changed in the DB, the existing middleware rejects their n
 - [x] `forumApi.ts` — `createForumTopic`, `updateForumTopic`, `deleteForumTopic`, `getForumPostTitles`, `getForumPostById`, `postEditedForumComment`
 - [x] `wikiUserApi.ts` — `postEditedComment` (now wired up to comment editing)
 - [x] `apiClient.ts` — `ApiError` class (export removed, class kept internally)
-- [ ] `types/models.ts` — `WikiPage`, `UserSubmittedWikiPage`, `Category`, `Paragraph`, `StyleModel` (components use `any`)
+- [x] `types/models.ts` — `WikiPage`, `UserSubmittedWikiPage`, `Category`, `Paragraph` removed (never imported); kept `StyleModel`
 
 ### Unused Imports
 - [x] `HomeComponent.tsx:1` — `React`
@@ -194,8 +196,8 @@ When a user's role is changed in the DB, the existing middleware rejects their n
 - [x] `CompareUpdatePage.tsx:51,63` — commented filter lines
 
 ### Weird / Code Smells
-- [ ] `Context guards never fire` — `StyleContext.tsx:33`, `UserContextProvider.tsx:21` — default `{} as Type` is truthy, throw unreachable
-- [ ] `MainPage.tsx:22` — Role stringified differently than WikiList/HamburgerMenu (doesn't handle array role claims)
+- [x] `Context guards never fire` — `StyleContext.tsx:33`, `UserContextProvider.tsx:21` — default `{} as Type` is truthy, throw unreachable
+- [x] `MainPage.tsx:22` — Role stringified differently than WikiList/HamburgerMenu (doesn't handle array role claims)
 - [x] `CreateForumTopic.tsx:67-76` — Payload includes unused fields (`forumTopic` object, `slug: ''`) — file deleted, replaced by CreateTopicPage + CreatePostPage
-- [ ] `articleRenderer.ts:94-116` — `processArticleContent` declares `styles` param but never uses it
-- [ ] Duplicate `StyleModel` interfaces in `types/models.ts:87` vs `types/contexts.ts:3` (diverge — one has `id`, the other doesn't)
+- [x] `articleRenderer.ts:94-116` — `processArticleContent` declares `styles` param but never uses it
+- [x] Duplicate `StyleModel` interfaces in `types/models.ts:87` vs `types/contexts.ts:3` (consolidated to models.ts, contexts.ts imports it)

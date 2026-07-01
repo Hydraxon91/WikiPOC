@@ -26,14 +26,14 @@ const ProtectedRoute: React.FC<{ roles: string[]; children: React.ReactNode }> =
         if (roles.some(role => userRoles.includes(role))) {
             return children;
         }
-        if (roles.includes('Admin') && userRoles.includes('Owner')) {
+        if (userRoles.includes('Owner')) {
             return children;
         }
     } else {
         if (roles.includes(userRoles)) {
             return children;
         }
-        if (roles.includes('Admin') && userRoles === 'Owner') {
+        if (userRoles === 'Owner') {
             return children;
         }
     }

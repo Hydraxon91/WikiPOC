@@ -1,16 +1,5 @@
 import { ReactNode, Dispatch, SetStateAction } from 'react';
-
-export interface StyleModel {
-  logo?: string;
-  wikiName?: string;
-  bodyColor?: string;
-  articleColor?: string;
-  articleRightColor?: string;
-  articleRightInnerColor?: string;
-  footerListLinkTextColor?: string;
-  footerListTextColor?: string;
-  fontFamily?: string;
-}
+import { StyleModel } from './models';
 
 export interface StyleContextType {
   styles: StyleModel;

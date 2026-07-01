@@ -46,7 +46,7 @@ const CreateTopicPage = ({ jwtToken }) => {
                     />
                 </div>
                 <div className="fp-comment-write-textarea">
-                    <label htmlFor="description">Description (optional):</label>
+                    <label htmlFor="description">Description:</label>
                     <textarea
                         id="description"
                         value={description}

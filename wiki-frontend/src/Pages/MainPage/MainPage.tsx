@@ -18,7 +18,7 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
     if (decodedToken) {
       updateUser(decodedToken);
       setUserName(decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
-      setUserRole("Role: " +decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
+      setUserRole(decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
     }
     else{
       setUserName(null)
