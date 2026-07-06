@@ -129,6 +129,16 @@ server.tool("get_users", "List all wiki users with their IDs, usernames, emails,
     const text = await getJson("/api/Users/GetUsers", token);
     return { content: [{ type: "text", text }] };
 }));
+server.tool("get_submitted_pages", "List all submitted new wiki pages awaiting approval. Requires moderator+ login.", {}, wrap(async () => {
+    const token = requireToken();
+    const text = await getJson("/api/WikiPages/GetSubmittedPageTitles", token);
+    return { content: [{ type: "text", text }] };
+}));
+server.tool("get_submitted_updates", "List all submitted wiki page updates awaiting approval. Requires moderator+ login.", {}, wrap(async () => {
+    const token = requireToken();
+    const text = await getJson("/api/WikiPages/GetSubmittedUpdates", token);
+    return { content: [{ type: "text", text }] };
+}));
 server.tool("update_user_role", "Change a user's role. Requires admin login. Can only assign roles you have permission for (Owner can do anything, Admin can only set Moderator/User).", {
     userId: z.string().describe("The user's ID (GUID) — get this from get_users"),
     role: z.string().describe("New role: Owner, Admin, Moderator, or User"),

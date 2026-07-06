@@ -198,6 +198,28 @@ server.tool(
 );
 
 server.tool(
+  "get_submitted_pages",
+  "List all submitted new wiki pages awaiting approval. Requires moderator+ login.",
+  {} as any,
+  wrap(async () => {
+    const token = requireToken();
+    const text = await getJson("/api/WikiPages/GetSubmittedPageTitles", token);
+    return { content: [{ type: "text", text }] };
+  }),
+);
+
+server.tool(
+  "get_submitted_updates",
+  "List all submitted wiki page updates awaiting approval. Requires moderator+ login.",
+  {} as any,
+  wrap(async () => {
+    const token = requireToken();
+    const text = await getJson("/api/WikiPages/GetSubmittedUpdates", token);
+    return { content: [{ type: "text", text }] };
+  }),
+);
+
+server.tool(
   "update_user_role",
   "Change a user's role. Requires admin login. Can only assign roles you have permission for (Owner can do anything, Admin can only set Moderator/User).",
   {
