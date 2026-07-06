@@ -1,6 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: resolve(__dirname, "..", "..", ".env") });
 const BASE_URL = process.env.WIKIPOC_API_URL ?? "https://wikipoc-backend.azurewebsites.net";
 const server = new McpServer({ name: "wikipoc-mcp", version: "1.0.0" });
 async function getJson(path) {
