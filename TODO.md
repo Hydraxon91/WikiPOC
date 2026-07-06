@@ -57,4 +57,4 @@
 - [ ] `POST /api/ForumComment/comment/` — post forum comment
 
 ### Security findings
-- [ ] **HIGH** Submitted page endpoints (`GetSubmittedPageTitles`, `GetSubmittedPageById`, `GetSubmittedUpdates`, `GetSubmittedUpdateById`) are currently public — should require Moderator+ auth
+- [x] **HIGH** Submitted page endpoints (`GetSubmittedPageTitles`, `GetSubmittedPageById`, `GetSubmittedUpdates`, `GetSubmittedUpdateById`) are currently public — should require Moderator+ auth

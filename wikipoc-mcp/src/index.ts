@@ -4,12 +4,13 @@ import { z } from "zod";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
+import { setToken } from "./auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: resolve(__dirname, "..", "..", ".env") });
 
-const BASE_URL = process.env.WIKIPOC_API_URL ?? "https://wikipoc-backend.azurewebsites.net";
+const BASE_URL = process.env.WIKIPOC_API_URL ?? process.env.VITE_API_URL ?? "http://localhost:5050";
 
 const server: any = new McpServer({ name: "wikipoc-mcp", version: "1.0.0" });
 
@@ -24,11 +25,46 @@ function wrap(fn: (...args: any[]) => any) {
     try {
       return await fn(...args);
     } catch (err: any) {
-      process.stderr.write("MCP FULL ERR: " + JSON.stringify(err, Object.getOwnPropertyNames(err)) + "\n");
-      return { content: [{ type: "text", text: "Error" }], isError: true };
+      const msg = err?.message || String(err);
+      return { content: [{ type: "text", text: msg }], isError: true };
     }
   };
 }
+
+async function postJson(path: string, body: any, token?: string) {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = "Bearer " + token;
+  const res = await fetch(BASE_URL + path, { method: "POST", headers, body: JSON.stringify(body) });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || res.statusText);
+  }
+  return res.json();
+}
+
+server.tool(
+  "login",
+  "Log in to the wiki and store an auth token for write operations. Use admin@admin.com / AdminPass123 for admin access, or test@test.com / TestPass123 for a regular user.",
+  { email: z.string().describe("Email or username"), password: z.string().describe("Account password") } as any,
+  wrap(async (args: any) => {
+    const data = await postJson("/api/Auth/login", { email: args.email, password: args.password });
+    setToken(data.token);
+    return { content: [{ type: "text", text: "Logged in as " + data.userName }] };
+  }),
+);
+
+server.tool(
+  "register",
+  "Create a new wiki account and log in automatically",
+  { email: z.string(), username: z.string(), password: z.string() } as any,
+  wrap(async (args: any) => {
+    const data = await postJson("/api/Auth/register", {
+      email: args.email, username: args.username, password: args.password,
+    });
+    setToken(data.token);
+    return { content: [{ type: "text", text: "Registered and logged in as " + data.userName }] };
+  }),
+);
 
 server.tool(
   "get_wiki_articles",
