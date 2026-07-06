@@ -3,54 +3,56 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import axios from "axios";
 const BASE_URL = process.env.WIKIPOC_API_URL ?? "http://localhost:5050";
-const api = axios.create({ baseURL: BASE_URL });
-const server = new McpServer({
-    name: "wikipoc-mcp",
-    version: "1.0.0",
-});
-server.registerTool("get_wiki_articles", { description: "List all wiki article titles with their slugs and categories" }, async () => {
-    const { data } = await api.get("/api/WikiPages/GetTitles");
-    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
-});
-server.registerTool("get_wiki_article", {
-    description: "Get a full wiki article by its slug",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    inputSchema: { slug: z.string().describe("The URL slug of the article (e.g. 'example-page-1')") },
-}, async ({ slug }) => {
-    const { data } = await api.get(`/api/WikiPages/GetBySlug/${encodeURIComponent(slug)}`);
-    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
-});
-server.registerTool("list_forum_topics", { description: "List all forum topics (boards) with their slugs" }, async () => {
-    const { data } = await api.get("/api/ForumTopic");
-    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
-});
-server.registerTool("get_forum_topic", {
-    description: "Get a single forum topic (board) with its posts, by slug",
-    inputSchema: { slug: z.string().describe("The slug of the forum topic (e.g. 'main-forum')") },
-}, async ({ slug }) => {
-    const { data } = await api.get(`/api/ForumTopic/${encodeURIComponent(slug)}`);
-    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
-});
-server.registerTool("get_forum_post", {
-    description: "Get a single forum post with its comments, by slug",
-    inputSchema: { slug: z.string().describe("The slug of the forum post") },
-}, async ({ slug }) => {
-    const { data } = await api.get(`/api/ForumPost/${encodeURIComponent(slug)}`);
-    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
-});
-server.registerTool("list_categories", { description: "List all categories" }, async () => {
-    const { data } = await api.get("/api/Category");
-    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
-});
-/*
- * TODO: Auth — when implementing write tools, inject Authorization header here:
- *
- *   import axios from "axios";
- *   const api = axios.create({
- *     baseURL: BASE_URL,
- *     headers: { Authorization: `Bearer ${process.env.WIKIPOC_ADMIN_TOKEN}` },
- *   });
- */
+const api = axios.create({ baseURL: BASE_URL, timeout: 15000 });
+const server = new McpServer({ name: "wikipoc-mcp", version: "1.0.0" });
+async function getJson(path) {
+    const { data } = await api.get(path);
+    return JSON.stringify(data, null, 2);
+}
+function wrap(fn) {
+    return async (...args) => {
+        try {
+            return await fn(...args);
+        }
+        catch (err) {
+            process.stderr.write("MCP FULL ERR: " + JSON.stringify(err, Object.getOwnPropertyNames(err)) + "\n");
+            return { content: [{ type: "text", text: "Error" }], isError: true };
+        }
+    };
+}
+server.tool("get_wiki_articles", "List all wiki article titles with their slugs and categories", {}, wrap(async () => {
+    const text = await getJson("/api/WikiPages/GetTitles");
+    return { content: [{ type: "text", text }] };
+}));
+server.tool("get_wiki_article", "Get a full wiki article by its slug", { slug: z.string().describe("The URL slug of the article (e.g. 'example-page-1')") }, wrap(async (args) => {
+    const slug = encodeURIComponent(args.slug);
+    const text = await getJson("/api/WikiPages/GetBySlug/" + slug);
+    return { content: [{ type: "text", text }] };
+}));
+server.tool("list_forum_topics", "List all forum topics (boards) with their slugs", {}, wrap(async () => {
+    const text = await getJson("/api/ForumTopic");
+    return { content: [{ type: "text", text }] };
+}));
+server.tool("get_forum_topic", "Get a single forum topic (board) with its posts, by slug", { slug: z.string().describe("The slug of the forum topic (e.g. 'main-forum')") }, wrap(async (args) => {
+    const slug = encodeURIComponent(args.slug);
+    const text = await getJson("/api/ForumTopic/" + slug);
+    return { content: [{ type: "text", text }] };
+}));
+server.tool("get_forum_post", "Get a single forum post with its comments, by slug", { slug: z.string().describe("The slug of the forum post") }, wrap(async (args) => {
+    const slug = encodeURIComponent(args.slug);
+    const text = await getJson("/api/ForumPost/" + slug);
+    return { content: [{ type: "text", text }] };
+}));
+server.tool("list_categories", "List all categories", {}, wrap(async () => {
+    const text = await getJson("/api/Category");
+    return { content: [{ type: "text", text }] };
+}));
 const transport = new StdioServerTransport();
-await server.connect(transport);
+try {
+    await server.connect(transport);
+}
+catch (err) {
+    process.stderr.write("CONNECT ERR: " + (err?.message || String(err)) + "\n");
+    process.exit(1);
+}
 //# sourceMappingURL=index.js.map

@@ -332,6 +332,52 @@ docker-compose logs -f
 - `UserSubmittedArticle-Update/` - Admin approval workflow
 - `ForumPages/` - Forum components (landing, topic view, post view, create topic, create post)
 
+### MCP Server (wikipoc-mcp/)
+
+A standalone TypeScript MCP server at `wikipoc-mcp/` that exposes WikiPOC's REST API
+as tools for LLMs via the [Model Context Protocol](https://modelcontextprotocol.io).
+
+**Tools (public, no auth):**
+
+| Tool | Description | API Endpoint |
+|------|-------------|-------------|
+| `get_wiki_articles` | List all article titles | `GET /api/WikiPages/GetTitles` |
+| `get_wiki_article` | Get article by slug | `GET /api/WikiPages/GetBySlug/{slug}` |
+| `list_forum_topics` | List all forum topics | `GET /api/ForumTopic` |
+| `get_forum_topic` | Get forum topic with posts | `GET /api/ForumTopic/{slug}` |
+| `get_forum_post` | Get forum post with comments | `GET /api/ForumPost/{slug}` |
+| `list_categories` | List all categories | `GET /api/Category` |
+
+**Architecture:**
+- Uses `@modelcontextprotocol/sdk` with `stdio` transport (spawned as a local child process)
+- Reads `WIKIPOC_API_URL` env var (defaults to `http://localhost:5050`)
+- Calls the backend via `axios` — each tool maps to one public GET endpoint
+- No auth for read tools; write tools planned with JWT admin token via env var
+
+**Connection (opencode.json):**
+```json
+{
+  "mcpServers": {
+    "wikipoc-mcp": {
+      "name": "WikiPOC MCP",
+      "type": "stdio",
+      "command": "node",
+      "args": ["/path/to/wikipoc-mcp/dist/index.js"],
+      "env": {
+        "WIKIPOC_API_URL": "http://localhost:5050"
+      }
+    }
+  }
+}
+```
+
+**Build & run:**
+```bash
+cd wikipoc-mcp
+npm install && npm run build
+npm start  # node dist/index.js (stdio, no output until called)
+```
+
 ## Important Workflows
 
 ### User Submission Workflow (Non-Admin)
@@ -383,10 +429,5 @@ docker-compose logs -f
 - `wiki-frontend/src/Api/wikiApi.ts` - API client for wiki operations
 - `wiki-frontend/src/Api/apiClient.ts` - Centralized HTTP client
 - `docker-compose.yml` - Service orchestration
-
-## MCP Server
-
-- The WikiPOC MCP server lives at `wikipoc-mcp/` in the repo root —
-  it is a separate Node.js/TypeScript project that needs to be implemented, not part of the .NET
-  solution or the React frontend. Never add it to `wiki-backend.sln`
-  or import it from `wiki-frontend/`.
+- `wikipoc-mcp/src/index.ts` - MCP server entry point (tools, transport, API client)
+- `wikipoc-mcp/README.md` - MCP server documentation and opencode.json config
