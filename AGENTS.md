@@ -2,7 +2,7 @@
 
 ## Important Rule for AI Agents
 
-**Before performing any destructive actions** (like file deletions, large refactors, or package downgrades) **or pushing to remote**, you **must**:
+**Before performing any destructive actions** (like file deletions, large refactors, or package downgrades), **committing**, **or pushing to remote**, you **must**:
 1. Explicitly propose the plan
 2. Explain your reasoning
 3. Wait for the user's 'y' confirmation before executing
@@ -19,7 +19,8 @@
   next step.
 - **Bias toward incremental action over exhaustive upfront analysis.** For
   non-destructive changes (reading code, running tests, small edits), just do it
-  — don't ask for confirmation or produce a lengthy plan first.
+  — don't ask for confirmation or produce a lengthy plan first. **This does NOT
+  override the commit discipline below — always ask before committing.**
 - **Reserve deep reasoning for genuinely ambiguous or destructive decisions**
   (see confirmation rule above), not for routine refactors or migrations with
   a clear precedent already in this codebase.
@@ -382,3 +383,10 @@ docker-compose logs -f
 - `wiki-frontend/src/Api/wikiApi.ts` - API client for wiki operations
 - `wiki-frontend/src/Api/apiClient.ts` - Centralized HTTP client
 - `docker-compose.yml` - Service orchestration
+
+## MCP Server
+
+- The WikiPOC MCP server lives at `wikipoc-mcp/` in the repo root —
+  it is a separate Node.js/TypeScript project that needs to be implemented, not part of the .NET
+  solution or the React frontend. Never add it to `wiki-backend.sln`
+  or import it from `wiki-frontend/`.
