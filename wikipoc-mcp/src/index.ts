@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-const BASE_URL = process.env.WIKIPOC_API_URL ?? "http://localhost:5050";
+const BASE_URL = process.env.WIKIPOC_API_URL ?? "https://wikipoc-backend.azurewebsites.net";
 
 const server: any = new McpServer({ name: "wikipoc-mcp", version: "1.0.0" });
 
