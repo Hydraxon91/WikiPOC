@@ -10,8 +10,11 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: resolve(__dirname, "..", "..", ".env") });
 const BASE_URL = process.env.WIKIPOC_API_URL ?? process.env.VITE_API_URL ?? "http://localhost:5050";
 const server = new McpServer({ name: "wikipoc-mcp", version: "1.0.0" });
-async function getJson(path) {
-    const res = await fetch(BASE_URL + path);
+async function getJson(path, token) {
+    const headers = {};
+    if (token)
+        headers["Authorization"] = "Bearer " + token;
+    const res = await fetch(BASE_URL + path, { headers });
     if (!res.ok)
         throw new Error(res.statusText);
     return JSON.stringify(await res.json(), null, 2);
@@ -32,6 +35,17 @@ async function postJson(path, body, token) {
     if (token)
         headers["Authorization"] = "Bearer " + token;
     const res = await fetch(BASE_URL + path, { method: "POST", headers, body: JSON.stringify(body) });
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || res.statusText);
+    }
+    return res.json();
+}
+async function patchJson(path, body, token) {
+    const headers = { "Content-Type": "application/json" };
+    if (token)
+        headers["Authorization"] = "Bearer " + token;
+    const res = await fetch(BASE_URL + path, { method: "PATCH", headers, body: JSON.stringify(body) });
     if (!res.ok) {
         const text = await res.text();
         throw new Error(text || res.statusText);
@@ -80,6 +94,34 @@ server.tool("list_categories", "List all categories", {}, wrap(async () => {
 server.tool("create_forum_topic", "Create a new forum topic (board). Requires admin login.", { title: z.string().describe("Topic title"), description: z.string().describe("Topic description") }, wrap(async (args) => {
     const token = requireToken();
     const data = await postJson("/api/ForumTopic", { title: args.title, description: args.description }, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("post_forum_comment", "Post a comment on a forum post. Requires login.", {
+    content: z.string().describe("The comment text"),
+    forumPostId: z.string().describe("The ID (GUID) of the forum post to comment on"),
+    userProfileId: z.string().describe("Your user profile ID (GUID) — get this from /api/UserProfile/GetByUsername/{username}"),
+}, wrap(async (args) => {
+    const token = requireToken();
+    const data = await postJson("/api/ForumComment/comment/", {
+        content: args.content,
+        forumPostId: args.forumPostId,
+        userProfileId: args.userProfileId,
+        postDate: new Date().toISOString(),
+        isEdited: false,
+    }, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("get_users", "List all wiki users with their IDs, usernames, emails, and roles. Requires admin login.", {}, wrap(async () => {
+    const token = requireToken();
+    const text = await getJson("/api/Users/GetUsers", token);
+    return { content: [{ type: "text", text }] };
+}));
+server.tool("update_user_role", "Change a user's role. Requires admin login. Can only assign roles you have permission for (Owner can do anything, Admin can only set Moderator/User).", {
+    userId: z.string().describe("The user's ID (GUID) — get this from get_users"),
+    role: z.string().describe("New role: Owner, Admin, Moderator, or User"),
+}, wrap(async (args) => {
+    const token = requireToken();
+    const data = await patchJson("/api/Users/UpdateRole/" + args.userId, { role: args.role }, token);
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
 }));
 const transport = new StdioServerTransport();
