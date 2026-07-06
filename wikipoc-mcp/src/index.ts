@@ -47,7 +47,9 @@ async function postJson(path: string, body: any, token?: string) {
 async function patchJson(path: string, body: any, token?: string) {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers["Authorization"] = "Bearer " + token;
-  const res = await fetch(BASE_URL + path, { method: "PATCH", headers, body: JSON.stringify(body) });
+  const init: RequestInit = { method: "PATCH", headers };
+  if (body !== undefined) init.body = JSON.stringify(body);
+  const res = await fetch(BASE_URL + path, init);
   if (!res.ok) {
     const text = await res.text();
     throw new Error(text || res.statusText);
@@ -261,6 +263,17 @@ server.tool(
   wrap(async (args: any) => {
     const token = requireToken();
     const data = await postJson("/api/WikiPages/AdminAccept", args.id, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+  }),
+);
+
+server.tool(
+  "approve_submitted_update",
+  "Approve a user-submitted wiki page update. Requires moderator+ login.",
+  { id: z.string().describe("The ID (GUID) of the submitted update to approve") } as any,
+  wrap(async (args: any) => {
+    const token = requireToken();
+    const data = await patchJson("/api/WikiPages/AdminAccept/" + args.id, undefined, token);
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
   }),
 );

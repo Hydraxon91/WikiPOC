@@ -37,24 +37,24 @@
 | `get_forum_post` | `GET /api/ForumPost/{slug}` | [x] |
 | `list_categories` | `GET /api/Category` | [x] |
 
-### Infrastructure
-- [x] Set up `tsconfig.json` (ES2022, NodeNext, outDir dist)
-- [x] Set up npm build/start scripts
-- [x] Create Axios API client reading `WIKIPOC_API_URL` env var
-- [x] Register all 6 tools with the MCP server
+### Auth tools
+- [x] `login` — store JWT token in memory
+- [x] `register` — create account and login
 
-### Authenticated endpoints (future — JWT admin powers)
-- [ ] Implement JWT auth in MCP server (admin token configured via env var)
-- [ ] `POST /api/WikiPages/admin` — create wiki page
-- [ ] `PUT /api/WikiPages/admin/{id}` — update wiki page
-- [ ] `DELETE /api/WikiPages/admin/{id}` — delete wiki page
-- [ ] `POST /api/WikiPages/AdminAccept` — approve submitted page
-- [ ] `POST /api/ForumTopic` — create forum topic
-- [ ] `POST /api/ForumPost/postTopic` — create forum post
-- [ ] `PUT /api/ForumPost/{id}` — update forum post
-- [ ] `DELETE /api/ForumPost/{id}` — delete forum post
-- [ ] `PATCH /api/Users/UpdateRole/{userId}` — change user role
-- [ ] `POST /api/ForumComment/comment/` — post forum comment
+### Write tools (need stored token)
+- [x] `post_forum_comment` — comment on forum post
+- [x] `post_wiki_comment` — comment on wiki article
+- [x] `create_forum_topic` — create forum topic (Admin+)
+- [x] `get_users` — list users (Admin)
+- [x] `update_user_role` — change user role (Admin+)
+- [x] `approve_submitted_page` — approve new page (Moderator+)
+- [x] `approve_submitted_update` — approve page update (Moderator+)
+- [x] `get_submitted_pages` — list pending pages (Moderator+)
+- [x] `get_submitted_updates` — list pending updates (Moderator+)
+- [x] `delete_wiki_page` — delete wiki page (Moderator+)
+- [x] `delete_forum_post` — delete forum post (Authorize)
 
-### Security findings
-- [x] **HIGH** Submitted page endpoints (`GetSubmittedPageTitles`, `GetSubmittedPageById`, `GetSubmittedUpdates`, `GetSubmittedUpdateById`) are currently public — should require Moderator+ auth
+### Tools needing backend changes (FromForm → JSON)
+- [ ] `create_wiki_page` (FromForm → needs [FromBody] overload)
+- [ ] `update_wiki_page` (FromForm → needs [FromBody] overload)
+- [ ] `create_forum_post` (FromForm → needs [FromBody] overload)

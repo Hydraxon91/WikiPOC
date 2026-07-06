@@ -45,7 +45,10 @@ async function patchJson(path, body, token) {
     const headers = { "Content-Type": "application/json" };
     if (token)
         headers["Authorization"] = "Bearer " + token;
-    const res = await fetch(BASE_URL + path, { method: "PATCH", headers, body: JSON.stringify(body) });
+    const init = { method: "PATCH", headers };
+    if (body !== undefined)
+        init.body = JSON.stringify(body);
+    const res = await fetch(BASE_URL + path, init);
     if (!res.ok) {
         const text = await res.text();
         throw new Error(text || res.statusText);
@@ -165,6 +168,11 @@ server.tool("post_wiki_comment", "Post a comment on a wiki article. Requires log
 server.tool("approve_submitted_page", "Approve a user-submitted wiki page (new page). Requires moderator+ login.", { id: z.string().describe("The ID (GUID) of the submitted page to approve") }, wrap(async (args) => {
     const token = requireToken();
     const data = await postJson("/api/WikiPages/AdminAccept", args.id, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("approve_submitted_update", "Approve a user-submitted wiki page update. Requires moderator+ login.", { id: z.string().describe("The ID (GUID) of the submitted update to approve") }, wrap(async (args) => {
+    const token = requireToken();
+    const data = await patchJson("/api/WikiPages/AdminAccept/" + args.id, undefined, token);
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
 }));
 server.tool("delete_wiki_page", "Delete a wiki page. Requires moderator+ login.", { id: z.string().describe("The ID (GUID) of the wiki page to delete") }, wrap(async (args) => {
