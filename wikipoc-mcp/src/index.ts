@@ -4,7 +4,7 @@ import { z } from "zod";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
-import { setToken } from "./auth.js";
+import { setToken, requireToken } from "./auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -126,6 +126,17 @@ server.tool(
   wrap(async () => {
     const text = await getJson("/api/Category");
     return { content: [{ type: "text", text }] };
+  }),
+);
+
+server.tool(
+  "create_forum_topic",
+  "Create a new forum topic (board). Requires admin login.",
+  { title: z.string().describe("Topic title"), description: z.string().describe("Topic description") } as any,
+  wrap(async (args: any) => {
+    const token = requireToken();
+    const data = await postJson("/api/ForumTopic", { title: args.title, description: args.description }, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
   }),
 );
 
