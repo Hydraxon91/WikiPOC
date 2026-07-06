@@ -30,18 +30,18 @@
 
 | Tool | Endpoint | Status |
 |------|----------|--------|
-| `get_wiki_articles` | `GET /api/WikiPages/GetTitles` | [ ] |
-| `get_wiki_article` | `GET /api/WikiPages/GetBySlug/{slug}` | [ ] |
-| `list_forum_topics` | `GET /api/ForumTopic` | [ ] |
-| `get_forum_topic` | `GET /api/ForumTopic/{slug}` | [ ] |
-| `get_forum_post` | `GET /api/ForumPost/{slug}` | [ ] |
-| `list_categories` | `GET /api/Category` | [ ] |
+| `get_wiki_articles` | `GET /api/WikiPages/GetTitles` | [x] |
+| `get_wiki_article` | `GET /api/WikiPages/GetBySlug/{slug}` | [x] |
+| `list_forum_topics` | `GET /api/ForumTopic` | [x] |
+| `get_forum_topic` | `GET /api/ForumTopic/{slug}` | [x] |
+| `get_forum_post` | `GET /api/ForumPost/{slug}` | [x] |
+| `list_categories` | `GET /api/Category` | [x] |
 
 ### Infrastructure
-- [ ] Set up `tsconfig.json` (ES2022, NodeNext, outDir dist)
-- [ ] Set up npm build/start scripts
-- [ ] Create Axios API client reading `WIKIPOC_API_URL` env var
-- [ ] Register all 6 tools with the MCP server
+- [x] Set up `tsconfig.json` (ES2022, NodeNext, outDir dist)
+- [x] Set up npm build/start scripts
+- [x] Create Axios API client reading `WIKIPOC_API_URL` env var
+- [x] Register all 6 tools with the MCP server
 
 ### Authenticated endpoints (future — JWT admin powers)
 - [ ] Implement JWT auth in MCP server (admin token configured via env var)
