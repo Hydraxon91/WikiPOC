@@ -1,13 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import axios from "axios";
 const BASE_URL = process.env.WIKIPOC_API_URL ?? "http://localhost:5050";
-const api = axios.create({ baseURL: BASE_URL, timeout: 15000 });
 const server = new McpServer({ name: "wikipoc-mcp", version: "1.0.0" });
 async function getJson(path) {
-    const { data } = await api.get(path);
-    return JSON.stringify(data, null, 2);
+    const res = await fetch(BASE_URL + path);
+    if (!res.ok)
+        throw new Error(res.statusText);
+    return JSON.stringify(await res.json(), null, 2);
 }
 function wrap(fn) {
     return async (...args) => {
