@@ -52,6 +52,19 @@ async function patchJson(path, body, token) {
     }
     return res.json();
 }
+async function del(path, token) {
+    const headers = {};
+    if (token)
+        headers["Authorization"] = "Bearer " + token;
+    const res = await fetch(BASE_URL + path, { method: "DELETE", headers });
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || res.statusText);
+    }
+    if (res.status === 204)
+        return { message: "Deleted successfully" };
+    return res.json();
+}
 server.tool("login", "Log in to the wiki and store an auth token for write operations. Use admin@admin.com / AdminPass123 for admin access, or test@test.com / TestPass123 for a regular user.", { email: z.string().describe("Email or username"), password: z.string().describe("Account password") }, wrap(async (args) => {
     const data = await postJson("/api/Auth/login", { email: args.email, password: args.password });
     setToken(data.token);
@@ -122,6 +135,36 @@ server.tool("update_user_role", "Change a user's role. Requires admin login. Can
 }, wrap(async (args) => {
     const token = requireToken();
     const data = await patchJson("/api/Users/UpdateRole/" + args.userId, { role: args.role }, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("post_wiki_comment", "Post a comment on a wiki article. Requires login.", {
+    content: z.string().describe("The comment text"),
+    wikiPageId: z.string().describe("The ID (GUID) of the wiki page to comment on"),
+    userProfileId: z.string().describe("Your user profile ID (GUID)"),
+}, wrap(async (args) => {
+    const token = requireToken();
+    const data = await postJson("/api/UserComment/comment/", {
+        content: args.content,
+        wikiPageId: args.wikiPageId,
+        userProfileId: args.userProfileId,
+        postDate: new Date().toISOString(),
+        isEdited: false,
+    }, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("approve_submitted_page", "Approve a user-submitted wiki page (new page). Requires moderator+ login.", { id: z.string().describe("The ID (GUID) of the submitted page to approve") }, wrap(async (args) => {
+    const token = requireToken();
+    const data = await postJson("/api/WikiPages/AdminAccept", args.id, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("delete_wiki_page", "Delete a wiki page. Requires moderator+ login.", { id: z.string().describe("The ID (GUID) of the wiki page to delete") }, wrap(async (args) => {
+    const token = requireToken();
+    const data = await del("/api/WikiPages/admin/" + args.id, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("delete_forum_post", "Delete a forum post. Requires login.", { id: z.string().describe("The ID (GUID) of the forum post to delete") }, wrap(async (args) => {
+    const token = requireToken();
+    const data = await del("/api/ForumPost/" + args.id, token);
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
 }));
 const transport = new StdioServerTransport();
