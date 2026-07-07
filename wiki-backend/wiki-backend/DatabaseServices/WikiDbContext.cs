@@ -33,6 +33,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ForumPost> ForumPosts { get; set; }
     public DbSet<ForumTopic> ForumTopics { get; set; }
     public DbSet<ForumComment> ForumComments { get; set; }
+    public DbSet<SiteSettings> SiteSettings { get; set; }
 
 protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

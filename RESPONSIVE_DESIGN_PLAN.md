@@ -1,410 +1,1045 @@
-# Responsive Design Plan
+# 4-Era User-Expandable Theme Engine — Refactoring Blueprint
 
-> Critically reviewed against actual codebase. All CSS-file claims verified
-> against source. Items marked `[VERIFIED]` have been confirmed by reading
-> the actual file. Items marked `[NEW]` were found during review and added.
+## 1. Architecture Overview
 
----
+### 1A. The Theme Engine Model
 
-## 1. Current State Assessment
-
-### Breakpoints: effectively none [VERIFIED]
-
-Only `style.css` has a breakpoint chain at `850px → 700px → 550px → 400px`.
-These only affect search bar width, sidebar width, and tab visibility — not
-main content layout at all. `profilepage.css` has 3 enormous breakpoints
-(2000px/3000px) that only reposition `.avatar-container` — a decorative
-element that is not critical to layout. Two empty `@media` blocks at
-`style.css:216,218` suggest planned work that was never implemented.
-
-**No responsive behavior exists** for forum pages, article view, editor,
-profile, login/register, admin review, categories, style editing,
-breadcrumbs, or article navigation bar.
-
-### Layout width and height assumptions
-
-| Area | Container | CSS | Problem | Source |
-|------|-----------|-----|---------|--------|
-| Root wrapper | `.wrapAll` | `width: 100vw` (inline override of CSS `90%`) | Edge-to-edge on ultra-wide | `MainPage.tsx:50`, `style.css:317` |
-| Header | `.top-header` | `height: 10em` (~160px) `[NEW]` | Takes ~43% of a 375px phone screen | `headercomponent.css:3` |
-| Sidebar | `.sidebar` | `position: absolute; width: 10em; float: left` | Doesn't flow; content uses `margin-left: 11em`; `float: left` is contradictory with `absolute` but harmless | `style.css:320-323` |
-| Article body | `.article` | `width: 98%` | Flexible, reasonable | `style.css:453` |
-| Forum grids | `.forum-mainsection` | `width: 98%` | Flexible, reasonable | `forumlandingpage.css:2` |
-| Forum author sidebar | `.post-author-sidebar` | **fixed `width: 130px; min-width: 130px`** | Overwhelming on narrow screens | `forumpost.css:18-19` |
-| Editor | `.editor-container` | **50/50 flex split** | Neither half usable on phones | `articleeditor.css:2-9` |
-| Profile card | `.profile-container` | **fixed `width: 550px; height: 650px`** `[CORRECTED]` | Overflows in BOTH dimensions on small screens | `profilepage.css:28-29` |
-| Login form | `.login-page-element-container` | **fixed `width: 450px; height: 550px; margin-top: 30vh`** `[CORRECTED]` | Overflows width; fixed height; 30vh pushes form toward bottom on short screens | `src/Styles/login.css:7-8` `[CORRECTED path]` |
-| Register form | `.register-page-element-container` | **fixed `width: 450px; height: 600px; margin-top: 30vh`** `[CORRECTED]` | Same issues as login | `src/Styles/register.css:7-8` `[CORRECTED path]` |
-| Thumbnails | `.thumbnail` | **fixed `width: 200px`** | Large on narrow screens | `wikipagecomponent.css:10` |
-| Custom popup (editor) | `.custom-popup` | `max-width: 40%` | ~150px on a phone — unusable | `articleeditor.css:21` |
-| Custom popup (forum) | `.fp-custom-popup` | `max-width: 40%` `[NEW]` | Same narrow popup issue | `forumsubmintcommentcomponent.css:14` |
-| Categories row | `.category-row` | `display: flex` (no `flex-wrap`) `[NEW]` | Long names + delete button overflow horizontally | `categorypagestyle.css:2` |
-| Style preset card | `.wikipage-preset-card-component` | `min-width: 45%; height: 20em` `[NEW]` | Fixed height creates excessive scrolling on mobile | `stylepage.css:19-20` |
-| Style font select | `.font-change select` | `width: 20%` `[NEW]` | Extremely narrow on small screens | `stylepage.css:8` |
-| Breadcrumbs | `.breadcrumbs ul` | `display: flex` (no wrap) `[NEW]` | Deep paths overflow horizontally | `Breadcrumbs.css:10` |
-| Article navbar | `.wiki-navbar` | tab buttons, no wrap behavior `[NEW]` | Tab labels may overflow on narrow screens | `wikipage.css:2` |
-
-### Mobile usability today: essentially broken [VERIFIED]
-
-On a 375px phone screen:
-- The sidebar's `position: absolute` at `10em` (~160px) overlaps the
-  content area (`margin-left: 11em`, ~176px) — content gets ~200px
-- The header at `height: 10em` (~160px) takes ~43% of the viewport `[NEW]`
-- Fixed-width containers (profile 550px, login 450px) overflow
-- Login/register `margin-top: 30vh` + fixed height means on a 667px tall
-  phone, the form starts at 200px and needs 550px more — total 750px,
-  exceeding the viewport `[NEW]`
-- Forum author sidebar at 130px takes 35% of the screen
-- Editor 50/50 split gives each panel ~175px — both unusable
-- Categories page flex rows don't wrap — long names overflow `[NEW]`
-
----
-
-## 2. Recommended Breakpoint Strategy
+The system moves from a single global `StyleModel` row to a multi-theme model:
 
 ```
-Ultra-wide     ≥ 2560px    Cap content width, center
-Desktop        ≥ 1024px    Full layout (current default)
-Tablet         768–1023px  Collapse sidebar, stack columns
-Phone          < 768px      Single column, stacked navigation
-Narrow phone   < 400px      Minimal padding, essential only
+StyleModel (table)
+├── Id              (PK, int)
+├── IsActive        (bool)      ← TRUE for exactly one row (the globally active theme)
+├── IsSystemPreset  (bool)      ← true = shipped with app, false = user-created
+├── UserId          (string?)   ← null for system presets, user GUID for custom
+├── InterfaceEra    (string)    ← "wikipedia" | "glass" | "modern" | "frutiger"
+├── ThemeName       (string?)   ← user-given name for custom themes
+├── Logo / WikiName / BodyColor / ...
+├── GlassBgOpacity / GlassBlurRadius / GlassBorderReflection / BgMeshGradient
+├── BorderRadius / BorderStyle
+└── CreatedAt / UpdatedAt (DateTime?)
 ```
 
-Rationale: 768px aligns with iPad portrait and is a widely-used tablet
-boundary. The current ~850px breakpoint was arbitrary.
+**How it works at load:**
+
+1. `GET /api/Style` returns the **active theme** — the single `StyleModel` row where `IsActive == true`.
+2. `GET /api/Style/presets` returns all system presets (4 rows, `IsSystemPreset == true`).
+3. `GET /api/Style/user-themes?userId={guid}` returns all custom themes for a user.
+4. `POST /api/Style/user-themes` saves the current editor state as a new user theme.
+5. `DELETE /api/Style/user-themes/{id}` deletes a user's custom theme.
+6. `PUT /api/Style/user-themes/{id}` updates an existing custom theme.
+7. `PUT /api/Style/activate/{id}` runs a transaction that sets `IsActive = false` on every row, then `IsActive = true` on the target row.
+
+**Frontend flow:**
+
+```
+App.tsx mount
+  → StyleContext.loadActiveTheme()
+    → GET /api/Style
+    → Sets styles state with returned StyleModel
+    → Body mesh, CSS vars all derived from this active theme
+
+EditStylePage (the Engine Dashboard)
+  ├── "System Eras" zone: 4 cards → click to preview + populate sliders
+  ├── "My Custom Themes" zone: user's saved themes
+  │     → click to load, shows Delete button
+  └── Manual adjustment sliders
+        → "Save as Custom Theme" button → prompts name → POST
+```
+
+### 1B. Fallback Behavior
+
+Each `interfaceEra` value has a hardcoded fallback config in `StyleContext.tsx`. If `GET /api/Style` returns null (fresh DB), the app renders the Wikipedia era defaults. If any field is null, the era's fallback value fills the gap.
 
 ---
 
-## 3. Per-Area Recommendations
+## 2. Backend Model & Repository Changes
 
-### Main Page / Home (`CSS-only`)
-- Cap `.wrapAll` at `max-width: 1600px; margin: 0 auto;` — remove the
-  `width: 100vw` inline override from `MainPage.tsx:50`
-- Collapse `.sidebar` into a hamburger or top navigation bar below 768px
-- Adjust `.mainsection` margin to `0` when sidebar is hidden
-- Sidebar content (nav links, user tools) moves to a top bar or drawer
-- `[NEW]` Reduce `.top-header` height below 768px to a slim bar
-  (~3em) showing only the logo (title hidden, hamburger menu added)
+### 2A. StyleModel.cs
 
-### Article View (`CSS-only`)
-- `.article` at `width: 98%` and `.wikipage-component` at `min-width: 45%`
-  are reasonably flexible — just need a `max-width` cap
-- Cap article max-width: `max-width: 960px` on `.article`
-- Table of contents (`.contentsPanel`) should go full width below 768px
-- Thumbnails: `width: 200px` → `width: 40%; max-width: 200px` on narrow
-  screens
-- `[NEW]` Article navbar (`.wiki-navbar`) tab buttons should remain
-  side-by-side but shrink padding/font below 768px
+Add these fields:
 
-### Forum (`CSS-only` + responsive variant)
-- **Critical**: 130px fixed author sidebar needs to collapse to a
-  horizontal mini-profile or inline "Posted by" line on narrow screens
-- **Landing page grid**: 4-column flex (Forum / Topics / Posts / Last
-  Post) → 2-column or stacked below 768px
-- `.post-meta` should wrap — subject + date on one line, quote button
-  below if needed
-- Image thumbnail max-height should reduce on mobile
-- `[NEW]` Forum reply popup (`.fp-custom-popup`) at `max-width: 40%` →
-  `min-width: 90%; max-width: 600px` on narrow screens
-- `[NEW]` Breadcrumbs (`.breadcrumbs ul`) should allow wrapping or
-  truncate with ellipsis on narrow screens
+```csharp
+public bool IsActive { get; set; } = false;       // Exactly one row has IsActive == true
+public bool IsSystemPreset { get; set; } = false;
+public string? UserId { get; set; }              // Null for system presets
+public string? ThemeName { get; set; }            // User-given name
+public string? InterfaceEra { get; set; }         // "wikipedia" | "glass" | "modern" | "frutiger"
+public string? BorderRadius { get; set; }         // e.g. "0px", "24px", "12px"
+public string? BorderStyle { get; set; }          // e.g. "1px solid rgba(0,0,0,0.08)"
+public double? GlassBgOpacity { get; set; }
+public double? GlassBlurRadius { get; set; }
+public double? GlassBorderReflection { get; set; }
+public string? BgMeshGradient { get; set; }
+```
 
-### Profile Page (`CSS-only`)
-- `.profile-container`: `width: 550px; height: 650px` →
-  `max-width: 550px; width: 90%; height: auto; min-height: 400px`
-  `[CORRECTED — height fix added]`
-- Profile image and stats stack vertically below 600px
-- `[NEW]` Check profile editor page for same fixed-width issues
+### 2B. IStyleRepository.cs — New Methods
 
-### Editor (`responsive variant`, same component)
-- 50/50 split collapses to single column below 768px: editor on top,
-  preview below (or preview hidden behind a tab toggle)
-- ReactQuill toolbar needs overflow handling (wraps/overflows on narrow
-  screens with many buttons)
-- Custom HTML popup: `max-width: 40%` → `min-width: 90%; max-width: 600px`
+```csharp
+public interface IStyleRepository
+{
+    Task<StyleModel> GetActiveStylesAsync();                          // WHERE IsActive == true
+    Task<List<StyleModel>> GetSystemPresetsAsync();                   // WHERE IsSystemPreset == true
+    Task<List<StyleModel>> GetUserThemesAsync(string userId);         // WHERE UserId == userId
+    Task<StyleModel> CreateUserThemeAsync(StyleModel theme);          // POST new custom
+    Task UpdateUserThemeAsync(StyleModel theme);                      // PUT existing custom
+    Task DeleteUserThemeAsync(int id);                                // DELETE custom
+    Task ActivateThemeAsync(int id);                                  // transactional swap
+    Task UpdateGlobalStylesAsync(StyleModel updated, IFormFile? logo); // legacy PUT
+}
+```
 
-### Login / Register (`CSS-only`) `[CORRECTED]`
-- CSS files are at `src/Styles/login.css` and `src/Styles/register.css`
-  (not under `LoginPage/`)
-- `width: 450px` → `max-width: 450px; width: 90%`
-- `[NEW]` Below 768px: go full-height — `height: auto`, remove
-  `margin-top: 30vh`, form fills the viewport (no card-like centered
-  box on mobile)
+### 2C. StyleRepository.cs — Transactional Activation
 
-### Create Forum Topic (`CSS-only`)
-- `max-width: 37.5rem` is already reasonable — just needs `width: 90%`
+```csharp
+public async Task<StyleModel> GetActiveStylesAsync()
+{
+    return await _dbContext.Styles
+        .SingleOrDefaultAsync(s => s.IsActive)
+        ?? throw new InvalidOperationException("No active theme configured. The database must have exactly one row with IsActive = true.");
+}
+```
 
-### Admin Review (Compare Updates) (`CSS-only`)
-- 50/50 side-by-side → vertical stack below 768px
+**`GetActiveStylesAsync()`** uses `SingleOrDefaultAsync` with `WHERE IsActive == true`. If no active theme exists (fresh DB without seed), it throws — the frontend `StyleContext` catches this and falls back to its hardcoded era defaults.
 
-### Categories Page (`CSS-only`) `[NEW]`
-- `.category-row` needs `flex-wrap: wrap` so long names + buttons don't
-  overflow
-- `.cat-text` at `font-size: 1.6em` is large on mobile — consider
-  `font-size: 1.2em` below 768px
+```csharp
+public async Task CreateUserThemeAsync(StyleModel theme)
+{
+    theme.IsSystemPreset = false;
+    theme.IsActive = false;    // new custom themes are never automatically active
+    _dbContext.Styles.Add(theme);
+    await _dbContext.SaveChangesAsync();
+}
+```
 
-### Style Editing Page (`CSS-only`) `[NEW]`
-- `.wikipage-preset-card-component` at `height: 20em` → `height: auto;
-  min-height: 15em` below 768px
-- `.font-change select` at `width: 20%` → `width: 50%` below 768px
+**`CreateUserThemeAsync()`** sets `IsSystemPreset = false`, `IsActive = false`, stamps `UserId` and `ThemeName`, saves as new row.
 
----
+```csharp
+public async Task ActivateThemeAsync(int id)
+{
+    using var transaction = await _dbContext.Database.BeginTransactionAsync();
+    try
+    {
+        // Deactivate ALL themes
+        await _dbContext.Styles
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsActive, false));
 
-## 4. Prioritized Task List
+        // Activate the target theme
+        await _dbContext.Styles
+            .Where(s => s.Id == id)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsActive, true));
 
-> Order revised: sidebar collapse should come before root width cap,
-> because capping width without fixing the absolute-positioned sidebar
-> first could create layout issues on medium screens.
+        await transaction.CommitAsync();
+    }
+    catch
+    {
+        await transaction.RollbackAsync();
+        throw;
+    }
+}
+```
 
-- [x] **P1** Build hamburger drawer component and collapse sidebar into
-      it below 768px — unblocks mobile entirely
-- [x] **P1** Cap root layout width at `max-width: 1200px` on `.wrapAll`,
-      remove `100vw` inline override — fixes ultra-wide stretch
-- [x] **P1** Fix fixed-width AND fixed-height containers (profile 550×650,
-      login 450×550, register 450×600 → responsive width + auto height)
-- [x] **P1** Fix login/register `margin-top: 30vh` → smaller on mobile
-      `[NEW]`
-- [x] **P1** Reduce header height (`.top-header` 10em) on mobile `[NEW]`
-- [x] **P1** Add wiki name to mobile header, left-align hamburger+logo+title `[NEW]`
-- [x] **P1** Animate hamburger drawer slide-in/out `[NEW]`
-- [x] **P2** Forum author sidebar → replace 130px fixed sidebar with
-      inline "Posted by Username" line on narrow screens
-- [x] **P2** Forum grid column collapse (4-col → stacked on mobile)
-- [x] **P2** Forum grid header/data column width mismatch at iPad sizes (flex-basis: 0% + min-width: 0 fix)
-- [x] **P2** Forum grid header alignment — header row flex values don't
-      match data rows; causes visual mismatch `[NEW]`
-- [x] **P2** Editor 50/50 split → single column on mobile, preview
-      behind a toggle button — also blocks testing popup fixes
-- [x] **Bug** Protected routes redirect to home on page refresh — root
-      cause: token decoded in useEffect (async), 3-render-cycle delay
-      between cookie → decodedToken → decodedTokenContext. Fixed with
-      synchronous token decode on App.tsx mount + loading spinner in
-      ProtectedRoute when cookie exists but context is null. `[NEW]`
-- [x] **P2** Simplify forum reply popup Quill toolbar — limit to H1-H2,
-      font, image only `[NEW]`
-- [x] **P2** Delete category button as × icon on mobile `[NEW]`
-- [x] **P2** Style hamburger drawer with backend theme colors (not
-      hardcoded white/black) `[NEW]`
-- [x] **Bug** Category input doesn't clear after submitting new name `[NEW]`
-- [x] **P2** Thumbnail sizing (fixed 200px → responsive)
-- [x] **P2** Forum reply popup + editor popup `max-width: 40%` →
-      responsive `[NEW]`
-- [x] **P2** Categories page flex-wrap + font sizing `[NEW]`
-- [x] **P3** Admin compare-update 50/50 → vertical stack on mobile
-- [x] **P3** Breadcrumbs wrapping/truncation `[NEW]`
-- [x] **P3** Style page preset card grid + responsive layout `[NEW]`
-- [x] **P3** Font sizing review with `clamp()` or `rem` for high-res
-- [x] **P3** Mobile navigation improvements (hamburger for sidebar)
-- [x] **P4** Article navbar tab responsive sizing `[NEW]`
-- [x] **P4** Profile page responsive refinement
-- [x] **P4** High-DPI / retina rendering check
-- [x] **P3** Login/register style consistency — use theme colors, responsive inputs, match rest of app styling `[NEW]`
-- [x] **P2** Wiki comment section responsive — 64px avatar shrinks to 2em on
-      mobile, comment tab panel nesting fixed, `[NEW]`
-- [x] **P2** Wiki comment submit form — avatar/button sized for mobile, reply
-      textarea resize enabled `[NEW]`
-- [x] **P2** Wiki comment pagination — 5 per page with sort (newest/oldest) `[NEW]`
-- [x] **P2** Wiki comment focused reply view — click "View Replies" transitions
-      to single-comment view with back button, fade animation `[NEW]`
-- [x] **P3** Footer gap reduction — removed `margin-top: auto`, compact padding,
-      wikipage min-height 77vh on mobile `[NEW]`
+**`ActivateThemeAsync(int id)`** — Critical: runs inside an explicit `BeginTransactionAsync` block. First, it bulk-sets `IsActive = false` on **every row** via `ExecuteUpdateAsync` (single SQL `UPDATE` statement, no row-by-row). Then it sets `IsActive = true` on the target row. The transaction ensures atomicity — if either statement fails, no theme rows are left in an inconsistent state. EF Core's `ExecuteUpdateAsync` issues a single `UPDATE` command without loading entities into memory.
 
----
+### 2D. StyleController.cs — New Endpoints
 
-## 5. Wiki Comment Section — Responsive Analysis `[NEW]`
+```csharp
+[HttpGet("presets")]
+public async Task<ActionResult<List<StyleModel>>> GetSystemPresets()
+{
+    return Ok(await _styleRepository.GetSystemPresetsAsync());
+}
 
-### Current state: not deliberately responsive
+[HttpGet("user-themes/{userId}")]
+[Authorize]
+public async Task<ActionResult<List<StyleModel>>> GetUserThemes(string userId)
+{
+    return Ok(await _styleRepository.GetUserThemesAsync(userId));
+}
 
-Unlike the forum (which hides its 130px sidebar at ≤768px and shows a
-compact inline author row), the wiki comment section has **zero media
-queries** in any of its CSS files (`wikipage.css`, `commentreply.css`).
-It relies on basic flex layouts that degrade gracefully but are not
-optimized for mobile.
+[HttpPost("user-themes")]
+[Authorize]
+public async Task<IActionResult> CreateUserTheme([FromBody] StyleModel theme)
+{
+    var created = await _styleRepository.CreateUserThemeAsync(theme);
+    return CreatedAtAction(nameof(GetActiveStyles), new { id = created.Id }, created);
+}
 
-### Key issues
+[HttpPut("user-themes/{id}")]
+[Authorize]
+public async Task<IActionResult> UpdateUserTheme(int id, [FromBody] StyleModel theme)
+{
+    theme.Id = id;
+    await _styleRepository.UpdateUserThemeAsync(theme);
+    return Ok(new { Message = "Theme updated" });
+}
 
-| Issue | File | Line(s) |
-|-------|------|---------|
-| Fixed 64×64px avatar never shrinks on mobile | `wikipage.css` | 70-76 |
-| Comment row has no `flex-wrap` | `wikipage.css` | 60-64 |
-| Submit form avatar (64px) eats ~20% of 375px width | `wikipage.css` | 70-76, 128 |
-| Send button font-size 20px oversized on mobile | `wikipage.css` | 184 |
-| Reply textarea has `resize: none` — cramped on mobile with virtual keyboard | `commentreply.css` | 40 |
-| No compact mobile layout for comment metadata | `UserCommentComponent.tsx` | 34-39 |
-| No media queries anywhere in comment CSS | All comment files | — |
+[HttpDelete("user-themes/{id}")]
+[Authorize]
+public async Task<IActionResult> DeleteUserTheme(int id)
+{
+    await _styleRepository.DeleteUserThemeAsync(id);
+    return NoContent();
+}
 
-### Recommendation
+[HttpPut("activate/{id}")]
+[Authorize(Policy = IdentityData.AdminUserPolicyName)]
+public async Task<IActionResult> ActivateTheme(int id)
+{
+    await _styleRepository.ActivateThemeAsync(id);
+    return Ok(new { Message = "Theme activated" });
+}
+```
 
-Apply the same pattern used for the forum author sidebar:
-- **Mobile**: shrink avatar to 2em (~32px) or replace with an inline
-  "User said" line
-- **Desktop**: unchanged (64px avatar as currently)
-- Submit form: shrink avatar proportionally on mobile, reduce Send button font
-- Reply form: enable vertical resize or increase min-height on mobile
+### 2E. DbInitializer.cs — Seed All 4 System Presets
 
-See task list in section 4 for prioritized items. `[NEW]`
-
-1. **~~Sidebar on mobile~~ RESOLVED**: Hamburger drawer. Navigation moves
-   into a new hamburger-triggered drawer component on mobile, rather than
-   a top bar or hiding behind existing links. This requires building a
-   new component (per the plan's "Phone — may need genuinely new
-   components" framing).
-
-2. **~~Forum author sidebar collapse~~ RESOLVED**: Simple inline
-   "Posted by Username" line. No horizontal stats bar — just a compact
-   inline line replacing the 130px sidebar on narrow screens.
-
-3. **~~Editor preview on mobile~~ RESOLVED**: Hide behind a "Preview"
-   toggle button. Preview is not removed, just collapsed behind a toggle
-   so the editor itself gets full width by default on mobile.
-
-4. **~~Ultra-wide max-width~~ RESOLVED**: Flat `max-width: 1200px` on
-   `.wrapAll` (the root wrapper) — not tied to aspect ratio. This is the
-   cap for the overall page layout on ultra-wide monitors; it's separate
-   from `.article`'s own `max-width: 960px` recommendation in the
-   Per-Area section, which governs article content width specifically
-   within whatever the page layout allows.
-
-5. **High-DPI / 4K**: Viewport meta tag is present (`index.html:6`).
-   Font sizes are mostly `rem`/`em` and scale with browser zoom.
-   Recommendation: no specific 4K fix unless testing reveals actual
-   problems. `[VERIFIED]`
-
-6. **~~Header on mobile~~ RESOLVED**: Slim bar with logo only on mobile.
-   The 10em header becomes a compact slim bar (e.g. `height: 3em`) below
-   768px, showing just the logo. Hamburger menu for sidebar toggling can
-   live here too.
-
-7. **~~Login/register height~~ RESOLVED**: Go full-height on mobile.
-   The card-like fixed-height appearance is replaced with a full-height
-   form below 768px — `height: auto` with `min-height: 100vh` style
-   layout, removing the `margin-top: 30vh` offset entirely on mobile.
-
----
-
-## 6. Login / Register Page — Style Consistency Audit `[NEW]`
-
-### Current issues
-- Gradient background uses `styles.bodyColor / styles.articleColor` (good)
-- All text, labels, links, and borders are hardcoded `#fff` — ignore
-  `styles.footerListTextColor` / `styles.footerListLinkTextColor`
-- Input boxes have fixed `width: 310px` — overflow risk on narrow screens
-- Login has no `backdrop-filter`; register has `backdrop-filter: blur(10px)` —
-  inconsistent
-
-### Proposed fixes (CSS-only: `login.css`, `register.css`)
-1. Replace hardcoded `#fff` text with `var(--footer-text-color)` and link colors
-   with `var(--footer-link-color)` to match the rest of the app
-2. `.login-inputbox`: `width: 310px` → `width: 100%; max-width: 310px`
-3. Button backgrounds: `#fff` → `var(--article-color)` to match other themed
-   buttons
-4. Remove `backdrop-filter: blur(10px)` from register form for consistency
-5. Remove Rick Roll "Forgot Password?" link or replace with a real page
-
----
-
-## 7. Profile Page — Current State & Refinement Plan `[NEW]`
-
-### Current issues
-- `.profilepage` has `height: 50em` (800px) — very tall, leaves empty space
-- `.edit-displayname` and `.edit-profilepic` have fixed pixel widths that
-  don't scale on mobile
-- `.avatar-container` breakpoints (3000px/2000px/1999px) are dead CSS —
-  the class appears unused
-- Buttons use hardcoded `#fff` background instead of theme colors
-- Profile picture `backdrop-filter: blur(10px)` may not render well everywhere
-
-### Proposed fixes (CSS-only: `profilepage.css`)
-1. Remove `height: 50em` — let the page grow naturally
-2. Responsive inputs: `.edit-displayname width: 7em` → `max-width: 7em; width: 90%`,
-   `.edit-profilepic width: 20em` → `max-width: 20em; width: 90%`
-3. Remove dead `.avatar-container` CSS (lines 60-82) unless the class is
-   still in use
-4. Use `var(--article-color)` for button backgrounds instead of `#fff`
-5. Add `@media (max-width: 768px)` to reduce profile pic size and spacing
+```csharp
+if (!await dbContext.Styles.AnyAsync())
+{
+    dbContext.Styles.AddRange(new List<StyleModel>
+    {
+        new()  // Wikipedia Classic
+        {
+            IsActive = true,          // Only Wikipedia Classic is active at seed
+            IsSystemPreset = true,
+            ThemeName = "Wikipedia Classic",
+            InterfaceEra = "wikipedia",
+            BodyColor = "#f8f9fa",
+            ArticleColor = "#ffffff",
+            ArticleRightColor = "#f8f9fa",
+            ArticleRightInnerColor = "#eaecf0",
+            FooterListTextColor = "#202122",
+            FooterListLinkTextColor = "#0645ad",
+            FontFamily = "'Linux Libertine', Georgia, serif",
+            GlassBgOpacity = 1.0,
+            GlassBlurRadius = 0,
+            GlassBorderReflection = 0,
+            BgMeshGradient = "none",
+            BorderRadius = "0px",
+            BorderStyle = "1px solid #a2a9b1",
+            Logo = "logo/logo_pfp.png",
+            WikiName = "Your Wiki",
+        },
+        new()  // Liquid Glass
+        {
+            IsSystemPreset = true,
+            ThemeName = "Liquid Glass",
+            InterfaceEra = "glass",
+            BodyColor = "#507ced",
+            ArticleColor = "#526cad",
+            ArticleRightColor = "#3c5fb8",
+            ArticleRightInnerColor = "#2b4ea6",
+            FooterListTextColor = "#233a71",
+            FooterListLinkTextColor = "#1d305e",
+            FontFamily = "Arial, sans-serif",
+            GlassBgOpacity = 0.35,
+            GlassBlurRadius = 12,
+            GlassBorderReflection = 0.15,
+            BgMeshGradient = "radial-gradient(circle at 20% 80%, rgba(80,124,237,0.4) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(82,108,173,0.3) 0%, transparent 50%), linear-gradient(135deg, #1a2a6c, #2b4ea6, #507ced)",
+            BorderRadius = "12px",
+            BorderStyle = "1px solid rgba(255,255,255,0.12)",
+            Logo = "logo/logo_pfp.png",
+            WikiName = "Your Wiki",
+        },
+        new()  // Modern Sleek
+        {
+            IsSystemPreset = true,
+            ThemeName = "Modern Sleek",
+            InterfaceEra = "modern",
+            BodyColor = "#0f1117",
+            ArticleColor = "#1a1d27",
+            ArticleRightColor = "#222639",
+            ArticleRightInnerColor = "#2a2f45",
+            FooterListTextColor = "#8b8fa3",
+            FooterListLinkTextColor = "#6c63ff",
+            FontFamily = "Inter, system-ui, sans-serif",
+            GlassBgOpacity = 0.95,
+            GlassBlurRadius = 0,
+            GlassBorderReflection = 0,
+            BgMeshGradient = "linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #222639 100%)",
+            BorderRadius = "4px",
+            BorderStyle = "1px solid rgba(255,255,255,0.06)",
+            Logo = "logo/logo_pfp.png",
+            WikiName = "Your Wiki",
+        },
+        new()  // Frutiger Aero
+        {
+            IsSystemPreset = true,
+            ThemeName = "Frutiger Aero",
+            InterfaceEra = "frutiger",
+            BodyColor = "#2b8a3e",
+            ArticleColor = "#e8f5e9",
+            ArticleRightColor = "#a5d6a7",
+            ArticleRightInnerColor = "#66bb6a",
+            FooterListTextColor = "#1b5e20",
+            FooterListLinkTextColor = "#1565c0",
+            FontFamily = "Segoe UI, Tahoma, sans-serif",
+            GlassBgOpacity = 0.85,
+            GlassBlurRadius = 0,
+            GlassBorderReflection = 0.25,
+            BgMeshGradient = "linear-gradient(135deg, #2b8a3e 0%, #43a047 30%, #1b5e20 70%, #2b8a3e 100%)",
+            BorderRadius = "24px",
+            BorderStyle = "1px solid rgba(255,255,255,0.35)",
+            Logo = "logo/logo_pfp.png",
+            WikiName = "Your Wiki",
+        },
+    });
+    await dbContext.SaveChangesAsync();
+    // GET /api/Style returns the row where IsActive == true (Wikipedia Classic)
+}
+```
 
 ---
 
-## 8. Design Language Consistency — Audit Results `[NEW]`
+## 3. Frontend API Layer
 
-### Critical inconsistencies found
+### 3A. wikiApi.ts — New Functions
 
-| # | Issue | Location | Impact |
-|---|-------|----------|--------|
-| 1 | **10+ distinct button styles** | Across all pages | Themed pills (login), flat themed (forum `.modular-button`), pixel-art segmented (wiki Send), browser defaults (editor, categories, admin, style page). No shared component. |
-| 2 | **Editor/Style page buttons unstyled** | `ArticleEditor.tsx`, `EditStylePage.tsx` | Raw `<button>` tags with zero CSS. |
-| 3 | **Admin approval buttons unstyled** | `CheckUserSubmittedPage.tsx`, `CompareUpdatePage.tsx` | Browser defaults on admin actions. |
-| 4 | **Style Edit page missing background** | `EditStylePage.tsx` | No `.article` wrapper — floats on whatever background is behind it. |
-| 5 | **Wiki comment links `color: black`** | `wikipage.css:128` | Invisible on dark-themed pages. |
-| 6 | **Global `<a>` tags hardcoded `#0645ad`** | `style.css:309` | Not theme-aware. Affects sidebar, forum, profile links. |
-| 7 | **5 different input styling approaches** | Login, forum, wiki, admin, editor | Transparent, `#ccc` bordered, `#757575` bordered, semi-white, unstyled. |
-| 8 | **No unified focus state** | Most inputs | Login uses label animation, wiki suppresses outlines, others have no focus indicator. |
-| 9 | **Pagination hardcoded gray** | Forum + wiki comments | `#f0f0f0` / `#ccc` — no theme variables. |
-| 10 | **Profile buttons hardcoded white** | `profilepage.css` | `background: #fff` instead of theme accent color. |
+```typescript
+export const fetchActiveStyle = (): Promise<StyleModel> =>          // GET /api/Style
+export const fetchSystemPresets = (): Promise<StyleModel[]> =>       // GET /api/Style/presets
+export const fetchUserThemes = (userId: string): Promise<StyleModel[]> // GET /api/Style/user-themes/:userId
+export const saveUserTheme = (theme: Partial<StyleModel>, token: string): Promise<StyleModel> // POST /api/Style/user-themes
+export const updateUserTheme = (id: number, theme: Partial<StyleModel>, token: string): Promise<void> // PUT /api/Style/user-themes/:id
+export const deleteUserTheme = (id: number, token: string): Promise<void> // DELETE /api/Style/user-themes/:id
+export const activateTheme = (id: number, token: string): Promise<void> // PUT /api/Style/activate/:id
+```
 
-### Completed: Login/Register re-styled to wiki pattern
-- Gradient background replaced with `.article` container using `styles.articleColor`
-- Rounded pill buttons replaced with flat themed buttons
-- Transparent underlined inputs replaced with `#ccc` bordered inputs
-- Text colors changed from white to dark text
-- Old CSS files (`login.css`, `register.css`) cleared
+### 3B. Frontend Types — models.ts
 
-### Completed
-- [x] Standardize all buttons across editor, admin, categories, and style pages
-- [x] Add `.article` wrapper to Style Edit page
-- [x] Fix wiki comment link colors from hardcoded `black` to theme var
-- [x] Make global `<a>` tag color theme-aware
-- [x] Unify input border styles across the app (use `#ccc` with border-radius)
-- [x] Add focus indicators to all inputs
-- [x] Make pagination buttons theme-aware
-- [x] Profile button backgrounds: `#fff` → theme accent color
+```typescript
+export interface StyleModel {
+  id?: number;
+  isActive?: boolean;
+  isSystemPreset?: boolean;
+  userId?: string;
+  themeName?: string;
+  interfaceEra?: 'wikipedia' | 'glass' | 'modern' | 'frutiger';
+  borderRadius?: string;
+  borderStyle?: string;
+  logo?: string;
+  wikiName?: string;
+  bodyColor?: string;
+  articleColor?: string;
+  articleRightColor?: string;
+  articleRightInnerColor?: string;
+  footerListLinkTextColor?: string;
+  footerListTextColor?: string;
+  fontFamily?: string;
+  glassBgOpacity?: number;
+  glassBlurRadius?: number;
+  glassBorderReflection?: number;
+  bgMeshGradient?: string;
+}
+```
+
+### 3C. StyleContext.tsx — Era Fallback Presets
+
+```typescript
+const ERA_PRESETS: Record<string, Omit<StyleModel, 'id' | 'isSystemPreset' | 'userId' | 'themeName'>> = {
+  wikipedia: {
+    interfaceEra: 'wikipedia',
+    bodyColor: '#f8f9fa',
+    articleColor: '#ffffff',
+    articleRightColor: '#f8f9fa',
+    articleRightInnerColor: '#eaecf0',
+    footerListTextColor: '#202122',
+    footerListLinkTextColor: '#0645ad',
+    fontFamily: "'Linux Libertine', Georgia, serif",
+    glassBgOpacity: 1.0,
+    glassBlurRadius: 0,
+    glassBorderReflection: 0,
+    bgMeshGradient: 'none',
+    borderRadius: '0px',
+    borderStyle: '1px solid #a2a9b1',
+    logo: 'logo_pfp.png',
+    wikiName: 'Your Wiki',
+  },
+  glass: { /* ... full glass config ... */ },
+  modern: { /* ... full modern config ... */ },
+  frutiger: { /* ... full frutiger config ... */ },
+};
+
+// Context value expands to include:
+interface StyleContextType {
+  styles: StyleModel;
+  setStyles: Dispatch<SetStateAction<StyleModel>>;
+  updateStyles: (styles: StyleModel, logo?: File | null, jwtToken?: string) => void;
+  systemPresets: StyleModel[];      // loaded on mount
+  userThemes: StyleModel[];          // loaded when user is logged in
+  refreshUserThemes: () => void;    // re-fetch after save/delete
+  loadTheme: (theme: StyleModel) => void; // populate editor + set active
+  setActiveTheme: (id: number, token: string) => void; // activate + reload
+}
+```
+
+On mount, `StyleProvider` fetches:
+1. `GET /api/Style` → active theme → set as `styles`
+2. `GET /api/Style/presets` → all 4 system presets → `systemPresets`
+3. If user logged in, `GET /api/Style/user-themes/{userId}` → `userThemes`
 
 ---
 
-## 8. Other Observations
+## 4. EditStylePage — The Theme Engine Dashboard
 
-- **`.wrapAll` inline override**: `MainPage.tsx:50` sets `width: 100vw`
-  inline — this overrides the CSS `width: 90%` and should be removed.
-  Note: this line also sets `minHeight: "100vh"` and `fontWeight: "bold"`
-  inline — keep those, just remove `width`. `[VERIFIED]`
+### 4A. Layout Structure
 
-- **Empty media query blocks** at `style.css:216,218` — clean them up.
+```
++----------------------------------------------------+
+| [System Eras]  [My Custom Themes]  [Manual Edit]   |  ← tab bar
++----------------------------------------------------+
+|                                                    |
+|  SYSTEM ERAS TAB (default):                        |
+|  +------------------+  +------------------+        |
+|  | Wikipedia Classic|  |  Liquid Glass    |        |
+|  | Utilitarian      |  |  Ambient Frosted |        |
+|  | Minimalist — 2001|  |  — 2023          |        |
+|  | [swatch] [LOAD]  |  | [swatch] [LOAD]  |        |
+|  +------------------+  +------------------+        |
+|  +------------------+  +------------------+        |
+|  | Modern Sleek     |  |  Frutiger Aero   |        |
+|  | Dark Geometric   |  |  Hyper-Gloss     |        |
+|  | — 2025           |  |  Retro — 2006    |        |
+|  | [swatch] [LOAD]  |  | [swatch] [LOAD]  |        |
+|  +------------------+  +------------------+        |
+|                                                    |
+|  MY CUSTOM THEMES TAB:                             |
+|  [My Wiki v2] [delete] [activate]                  |
+|  [DarkGreen] [delete] [activate]                    |
+|  (empty state: "No custom themes yet. Adjust       |
+|   the sliders and click Save as Custom Theme.")    |
+|                                                    |
+|  MANUAL EDIT TAB:                                  |
+|  (all existing sliders + border radius +           |
+|    border style + era dropdown)                    |
+|  [Save as Custom Theme] [Delete Theme]             |
++----------------------------------------------------+
+```
 
-- **`.sidebar` has both `float: left` and `position: absolute`** —
-  these are contradictory. `position: absolute` takes the element out of
-  flow, making `float: left` meaningless. The `float` declaration should
-  be removed as dead CSS. `[NEW]`
+### 4B. PresetsComponent.tsx — System Presets
 
-- **Zebra striping** on forum grids uses `rgba(0,0,0,0.03)` — invisible
-  on small screens due to compressed layout; may need a different
-  approach on mobile.
+Renders 4 premium cards. Each card shows:
 
-- **`div.articleRight` CSS was already removed** in legacy cleanup,
-  but `stylepage.css` still has `.article-right-preset` and
-  `.article-right-inner-preset` classes (lines 32-55) that reference
-  the removed naming convention — these are used by the style preview
-  cards, not the article rendering. Not a responsive issue, just
-  potential confusion. `[NEW]`
+- A 5-color swatch strip (body → article → right → right-inner → link)
+- Theme name + era tagline
+- A "Load" button that calls `loadTheme(preset)`, which populates the editor sliders AND sets the active preview
 
-- **`style.css` has both `.wrapAll { width: 90% }` and a comment that
-  says the file is based on the HTML5 Wikipedia template** — the
-  template's responsive intent was never fully implemented. The empty
-  `@media` blocks at lines 216 and 218 are remnants of this. `[NEW]`
+```tsx
+interface PresetCardProps {
+  preset: StyleModel;
+  onLoad: (preset: StyleModel) => void;
+  isActive: boolean;
+}
+```
+
+### 4C. UserThemesList.tsx (new component)
+
+Fetches and lists `userThemes` from context. Each row shows:
+
+- Theme name
+- Era badge (small colored pill)
+- "Load" button → calls `loadTheme(theme)`
+- "Delete" button → `deleteUserTheme(id, token)` + `refreshUserThemes()`
+
+Empty state: friendly message with a link to the manual edit tab.
+
+### 4D. ManualEditStylesComponent.tsx — Save Action
+
+The existing sliders gain a "Save as Custom Theme" button:
+
+```tsx
+<button onClick={handleSaveCustomTheme}>
+  Save as Custom Theme
+</button>
+```
+
+When clicked:
+
+1. Prompt for theme name (inline prompt or modal)
+2. Build `StyleModel` object from current `newStyles` + `interfaceEra` from dropdown
+3. Set `isSystemPreset = false`
+4. Set `userId` from `decodedTokenContext`
+5. Call `saveUserTheme(theme, jwtToken)`
+6. Show success notification
+7. Refresh user themes list
+
+If the current editor state matches one of the user's existing themes (by Id), show "Update Theme" and "Delete Theme" buttons instead:
+
+```tsx
+{editingUserThemeId ? (
+  <>
+    <button onClick={handleUpdateTheme}>Update Theme</button>
+    <button onClick={handleDeleteTheme} className="danger">Delete Theme</button>
+  </>
+) : (
+  <button onClick={handleSaveCustomTheme}>Save as Custom Theme</button>
+)}
+```
 
 ---
 
-## 7. Revision Log
+## 5. Era-Specific CSS Architecture
 
-| Date | Changes |
-|------|---------|
-| Initial | First draft from codebase analysis |
-| Review pass | Verified all CSS-file claims against source; corrected login/register file paths (`src/Styles/` not `LoginPage/`); added `height` and `margin-top` issues for profile/login/register; added missing areas (header, categories, style page, breadcrumbs, article navbar, forum reply popup); added `float: left` dead CSS note on sidebar; reordered P1 tasks (sidebar before root cap); added 2 new open questions |
-| Decision pass | Resolved open questions #6 (header: slim bar with logo only on mobile) and #7 (login/register: full-height form on mobile, no card box) |
-| User decision pass | Resolved remaining open questions #1-4 with user input: sidebar → hamburger drawer (new component), forum author info → inline "Posted by Username" line, editor preview → toggle button, ultra-wide cap → flat `max-width: 1200px` on `.wrapAll`. Updated P1/P2 task list wording to match these concrete decisions. |
-| Implemented P1 | All 5 P1 tasks completed: hamburger drawer + sidebar collapse, root layout cap (1200px), fixed-width containers (profile/login/register), login/register margin-top fix, header slim bar. Also added wiki name in mobile header, hamburger slide animation. |
-| Quick wins | Thumbnail responsive sizing, forum+editor popup max-width fix, categories flex-wrap + mobile font. Added new findings from testing: forum grid header alignment, popup Quill toolbar trim, delete button as X, hamburger theme styling, category input clear bug. |
-| Implemented batch | Category input clear after submit, long name truncation + heading centering on categories page, forum grid header alignment, forum reply Quill toolbar trimmed to header+font+image, hamburger drawer themed with backend colors. Category input/add-row styling reverted after test feedback. |
-| Wiki comment analysis | Added full responsive audit of wiki comment section (section 5). Found zero media queries, fixed 64px avatar, no mobile adaptation. Added P2 tasks for fixes. |
-| Comment fixes batch | Reply bug fix (EF relationship + re-fetch pattern), comments tab nesting fix, 64px→2em avatar on mobile, reply textarea resize enabled, footer gap reduction, comment pagination (5/page) with sort dropdown, focused reply view with fade animation. Admin compare-update 50/50 stacking also included. |
-| Login/register audit + Profile plan | Added sections 6 (login/register style consistency) and 7 (profile page refinement) with detailed fixes. |
-| Design consistency audit | Added section 8 with full audit of buttons, backgrounds, inputs, links across the entire frontend. Login/register re-styled to wiki `.article` pattern (gradient → flat, pills → flat buttons, white text → dark). Old CSS cleared. Added remaining tasks to list. |
+### 5A. Bootstrap Specificity Conflict — Analysis
+
+**Problem:** `App.tsx` imports Bootstrap BEFORE our custom styles. Bootstrap uses high-specificity selectors (e.g. `.form-control`, `.btn`, `table`, `a`, `input[type="text"]`) that can override our era CSS variables. This causes:
+
+- Glass panel backgrounds getting overwritten by Bootstrap's solid white `#fff`
+- Form input backgrounds staying white instead of transparent glass
+- Button colors not matching the active era
+- Link colors falling back to Bootstrap's `$link-color` instead of `var(--footer-link-color)`
+
+**Strategy:** Enforce a **specificity ladder** — every era selector chain must be at least as specific as Bootstrap's equivalent. The chain always starts with `.era-*` on the `.wrapAll` ancestor plus at least one class or element selector.
+
+| Bootstrap Selector | Specificity | Our Counter |
+|--------------------|-------------|-------------|
+| `.form-control` | 0,1,0 | `.era-glass .form-control` (0,2,0) |
+| `.btn` | 0,1,0 | `.era-glass .btn` (0,2,0) |
+| `a` | 0,0,1 | `.era-glass a` (0,1,1) |
+| `input[type="text"]` | 0,1,1 | `.era-glass input[type="text"]` (0,2,1) |
+| `table` | 0,0,1 | `.era-glass table` (0,1,1) |
+| `table td` | 0,0,2 | `.era-glass table td` (0,1,2) |
+| `.navbar` | 0,1,0 | `.era-glass .navbar` (0,2,0) |
+| `.dropdown-menu` | 0,1,0 | `.era-glass .dropdown-menu` (0,2,0) |
+
+**When to use `!important`:**
+- Only on properties that Bootstrap sets with `!important` itself (e.g. `.btn` background, `.form-control` border-color)
+- Only on top-level structural properties (panel backgrounds, border radii)
+- Never on text color or typography — use the specificity chain instead
+
+### 5B. Root CSS Variable Injection (MainPage.tsx)
+
+```tsx
+<div className={`wrapAll clearfix era-${styles.interfaceEra || 'wikipedia'}`}
+  style={{
+    '--glass-bg-opacity': styles.glassBgOpacity,
+    '--glass-blur-radius': (styles.glassBlurRadius || 0) + 'px',
+    '--glass-border-reflection': styles.glassBorderReflection || 0,
+    '--bg-mesh-gradient': styles.bgMeshGradient,
+    '--custom-border-radius': styles.borderRadius || '0px',
+    '--custom-border-style': styles.borderStyle || '1px solid #a2a9b1',
+    '--glass-text-color': styles.footerListTextColor,
+    '--glass-link-color': styles.footerListLinkTextColor,
+    '--glass-bg': styles.interfaceEra === 'wikipedia'
+      ? styles.bodyColor
+      : `color-mix(in srgb, ${styles.bodyColor} calc(100% * (${styles.glassBgOpacity || 1})), transparent)`,
+    '--glass-panel': styles.interfaceEra === 'wikipedia'
+      ? styles.articleColor
+      : `color-mix(in srgb, ${styles.articleColor} calc(100% * (${styles.glassBgOpacity || 1})), transparent)`,
+    '--glass-panel-accent': styles.interfaceEra === 'wikipedia'
+      ? styles.articleRightColor
+      : `color-mix(in srgb, ${styles.articleRightColor} calc(100% * (${styles.glassBgOpacity || 1})), transparent)`,
+  }}
+>
+```
+
+### 5C. style.css — Era Root Overrides with Bootstrap Hardening
+
+```css
+/* === GLOBAL DESIGN TOKENS (lowest specificity, overridden by inline vars) === */
+:root {
+  --custom-border-radius: 0px;
+  --custom-border-style: 1px solid #a2a9b1;
+  --glass-bg-opacity: 1;
+  --glass-blur-radius: 0px;
+  --glass-border-reflection: 0;
+  --glass-bg: transparent;
+  --glass-panel: transparent;
+  --glass-panel-accent: transparent;
+  --glass-text-color: #202122;
+  --glass-link-color: #0645ad;
+}
+
+/* === BOOTSTRAP RESET — force all bootstrap components to inherit our glass vars === */
+
+/* Forms: override Bootstrap's white background on inputs */
+.era-wikipedia input[type="text"],
+.era-wikipedia input[type="email"],
+.era-wikipedia input[type="password"],
+.era-wikipedia input[type="color"],
+.era-wikipedia input[type="file"],
+.era-wikipedia select,
+.era-wikipedia textarea,
+.era-wikipedia .form-control {
+  background: #ffffff !important;
+  color: #202122 !important;
+  border-color: #a2a9b1 !important;
+}
+
+.era-glass input[type="text"],
+.era-glass input[type="email"],
+.era-glass input[type="password"],
+.era-glass input[type="color"],
+.era-glass input[type="file"],
+.era-glass select,
+.era-glass textarea,
+.era-glass .form-control {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--glass-text-color, #233a71) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.era-modern input[type="text"],
+.era-modern input[type="email"],
+.era-modern input[type="password"],
+.era-modern input[type="color"],
+.era-modern input[type="file"],
+.era-modern select,
+.era-modern textarea,
+.era-modern .form-control {
+  background: rgba(26, 29, 39, 0.95) !important;
+  color: #e0e0e0 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.era-frutiger input[type="text"],
+.era-frutiger input[type="email"],
+.era-frutiger input[type="password"],
+.era-frutiger input[type="color"],
+.era-frutiger input[type="file"],
+.era-frutiger select,
+.era-frutiger textarea,
+.era-frutiger .form-control {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #1b5e20 !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  border-radius: 12px !important;
+}
+
+/* Buttons: override Bootstrap .btn defaults */
+.era-wikipedia .btn,
+.era-wikipedia .comment-button {
+  background: #f8f9fa !important;
+  border: 1px solid #a2a9b1 !important;
+  color: #202122 !important;
+  border-radius: 0 !important;
+}
+
+.era-glass .btn,
+.era-glass .comment-button,
+.era-glass .fp-comment-button {
+  background: var(--glass-panel-accent, rgba(60, 95, 184, 0.5)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border-radius: var(--custom-border-radius, 6px) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.era-modern .btn,
+.era-modern .comment-button {
+  background: rgba(108, 99, 255, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: #ffffff !important;
+  border-radius: 4px !important;
+}
+
+.era-frutiger .btn,
+.era-frutiger .comment-button {
+  background: linear-gradient(180deg, #66bb6a, #43a047) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+  border-radius: 24px !important;
+  box-shadow: 0 4px 16px rgba(27, 94, 32, 0.3) !important;
+}
+
+/* Links: force era link colors over Bootstrap defaults */
+.era-glass a,
+.era-modern a,
+.era-frutiger a {
+  color: var(--glass-link-color, #0645ad);
+}
+.era-glass a:hover,
+.era-modern a:hover,
+.era-frutiger a:hover {
+  color: color-mix(in srgb, var(--glass-link-color, #0645ad) 80%, black);
+}
+
+/* === ERA: WIKIPEDIA CLASSIC === */
+.era-wikipedia .sidebar {
+  background: transparent;
+  backdrop-filter: none;
+  border-right: 1px solid #a2a9b1;
+  border-radius: 0;
+}
+.era-wikipedia .article {
+  border: 1px solid #a2a9b1;
+}
+.era-wikipedia .top-header {
+  background: #f8f9fa !important;
+  backdrop-filter: none !important;
+  border-bottom: 1px solid #a2a9b1 !important;
+  box-shadow: none !important;
+}
+
+/* === ERA: GLASS === */
+.era-glass .sidebar {
+  background: var(--glass-panel, rgba(82, 108, 173, 0.3));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-right: 1px solid rgba(255, 255, 255, var(--glass-border-reflection, 0.1));
+}
+
+/* === ERA: MODERN SLEEK === */
+.era-modern .sidebar {
+  background: rgba(26, 29, 39, 0.95);
+  backdrop-filter: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+.era-modern .top-header {
+  background: rgba(15, 17, 23, 0.98) !important;
+  backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+/* === ERA: FRUTIGER AERO === */
+.era-frutiger .frutiger-gloss-effect {
+  position: relative;
+  overflow: hidden;
+}
+.era-frutiger .frutiger-gloss-effect::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.15) 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+}
+.era-frutiger .top-header {
+  border-radius: 0 0 24px 24px !important;
+  box-shadow: 0 8px 32px rgba(27, 94, 32, 0.3) !important;
+}
+.era-frutiger .sidebar {
+  border-radius: 0 24px 24px 0;
+  background: rgba(232, 245, 233, 0.9);
+  box-shadow: 4px 0 24px rgba(27, 94, 32, 0.15);
+  backdrop-filter: none;
+}
+.era-frutiger .glass-card,
+.era-frutiger .fp-custom-popup {
+  box-shadow: 0 8px 32px rgba(27, 94, 32, 0.2),
+              0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  border: var(--custom-border-style, 1px solid rgba(255, 255, 255, 0.35)) !important;
+  border-radius: var(--custom-border-radius, 24px) !important;
+}
+.era-frutiger .glass-card:hover {
+  box-shadow: 0 12px 48px rgba(27, 94, 32, 0.3),
+              0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-2px);
+}
+
+/* === BOOTSTRAP `table` OVERRIDES === */
+.era-glass table,
+.era-modern table,
+.era-frutiger table {
+  background: var(--glass-panel, transparent);
+  color: var(--glass-text-color, inherit);
+  border-color: var(--custom-border-style, inherit);
+}
+.era-glass table td,
+.era-modern table td,
+.era-frutiger table td {
+  border-color: color-mix(in srgb, var(--glass-text-color, #202122) 20%, transparent);
+}
+```
+
+### 5D. glass-card.css — Era-Aware Comment Card with Bootstrap Protection
+
+```css
+/* === BOOTSTRAP RESET for cards === */
+.era-wikipedia .glass-card,
+.era-glass .glass-card,
+.era-modern .glass-card,
+.era-frutiger .glass-card {
+  box-sizing: border-box;  /* prevent Bootstrap box-sizing interference */
+}
+
+/* === BASE GLASS CARD === */
+.glass-card {
+  background: var(--glass-panel, rgba(82, 108, 173, 0.25));
+  backdrop-filter: blur(var(--glass-blur-radius, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-radius, 0px));
+  border: var(--custom-border-style, 1px solid rgba(255, 255, 255, 0.12));
+  border-radius: var(--custom-border-radius, 8px);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.glass-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Nested depth */
+.glass-card.depth-1 {
+  background: color-mix(in srgb, var(--glass-panel, #526cad) 70%, transparent);
+  backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.6));
+  margin-left: 1.5rem;
+}
+.glass-card.depth-2 {
+  background: color-mix(in srgb, var(--glass-panel, #526cad) 50%, transparent);
+  backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.4));
+  margin-left: 3rem;
+}
+.glass-card.quote {
+  background: color-mix(in srgb, var(--article-right-color, #3c5fb8) 15%, transparent);
+  border-left: 3px solid var(--article-right-color, #3c5fb8);
+  backdrop-filter: blur(4px);
+  margin: 0.5rem 0 0.5rem 1rem;
+  padding: 0.6rem;
+  border-radius: 0 6px 6px 0;
+}
+
+/* Wikipedia override — bootstrap-proof */
+.era-wikipedia .glass-card {
+  background: var(--article-color, #ffffff) !important;
+  backdrop-filter: none !important;
+  border: 1px solid #a2a9b1 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.era-wikipedia .glass-card.depth-1 {
+  background: #f8f9fa !important;
+  backdrop-filter: none !important;
+}
+.era-wikipedia .glass-card.depth-2 {
+  background: #f0f2f5 !important;
+  backdrop-filter: none !important;
+}
+
+/* Modern override */
+.era-modern .glass-card {
+  background: rgba(26, 29, 39, 0.95) !important;
+  backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Frutiger override */
+.era-frutiger .glass-card {
+  border-radius: 24px !important;
+  box-shadow: 0 8px 32px rgba(27, 94, 32, 0.2) !important;
+}
+```
+
+### 5E. Header + Hamburger — Era-Aware
+
+**`headercomponent.css`**:
+
+```css
+.top-header {
+  display: flex;
+  height: 10em;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2em;
+  background: var(--glass-panel, rgba(82, 108, 173, 0.35)) !important;
+  backdrop-filter: blur(var(--glass-blur-radius, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-radius, 0px));
+  border-bottom: var(--custom-border-style, 1px solid rgba(255, 255, 255, 0.12));
+  border-radius: var(--custom-border-radius, 0);
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Specular highlight — only for glass and frutiger eras */
+.era-glass .top-header::after,
+.era-frutiger .top-header::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+/* Wikipedia override — beat Bootstrap navbar specificity */
+.era-wikipedia .top-header {
+  background: #f8f9fa !important;
+  backdrop-filter: none !important;
+  border-bottom: 1px solid #a2a9b1 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Modern override */
+.era-modern .top-header {
+  background: rgba(15, 17, 23, 0.98) !important;
+  backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+@media (max-width: 768px) {
+  .top-header { height: 2.5em; padding: 0 0.5em; border-radius: 0 !important; }
+}
+```
+
+**`hamburgermenu.css`**:
+
+```css
+.hamburger-drawer {
+  background: var(--glass-panel, rgba(82, 108, 173, 0.4));
+  backdrop-filter: blur(var(--glass-blur-radius, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-radius, 0px));
+  border-right: var(--custom-border-style, 1px solid rgba(255, 255, 255, 0.15));
+  border-radius: 0 var(--custom-border-radius, 0) var(--custom-border-radius, 0) 0;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+}
+
+.era-wikipedia .hamburger-drawer {
+  background: #f8f9fa !important;
+  backdrop-filter: none !important;
+  border-right: 1px solid #a2a9b1 !important;
+}
+
+.era-modern .hamburger-drawer {
+  background: rgba(26, 29, 39, 0.98) !important;
+  backdrop-filter: none !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+.era-frutiger .hamburger-drawer {
+  border-radius: 0 24px 24px 0 !important;
+}
+```
+
+### 5F. Body Background (MainPage.tsx)
+
+```tsx
+useEffect(() => {
+  const era = styles.interfaceEra || 'wikipedia';
+  if (era === 'wikipedia' || !styles.bgMeshGradient || styles.bgMeshGradient === 'none') {
+    document.body.style.background = styles.bodyColor || '#f8f9fa';
+    document.body.style.backgroundAttachment = 'scroll';
+    document.body.style.backgroundSize = 'auto';
+  } else {
+    document.body.style.background = styles.bgMeshGradient;
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.backgroundSize = 'cover';
+  }
+}, [styles.bgMeshGradient, styles.bodyColor, styles.interfaceEra]);
+```
+
+### 5G. Bootstrap Import Order — Required Pattern
+
+In `App.tsx`, the import order must be:
+
+```typescript
+// 1. Bootstrap first (lowest priority — our overrides win)
+import 'bootstrap/dist/css/bootstrap.css';
+
+// 2. Our global styles (override Bootstrap with .era-* specificity)
+import '../Styles/style.css';
+
+// 3. Component CSS files are imported inside individual components
+```
+
+Our `.era-*` selectors in section 5C have specificity `0,2,0` minimum, which beats Bootstrap's `0,1,0` class selectors. The `!important` flags are used only where Bootstrap itself uses `!important` (form controls, buttons).
+
+---
+
+## 6. Integration — Glass Card + Gloss in Comment Components
+
+### 6A. ForumCommentComponent.tsx
+
+Wrap each comment with `.glass-card` and conditionally `.frutiger-gloss-effect`:
+
+```tsx
+<div className={`glass-card${styles.interfaceEra === 'frutiger' ? ' frutiger-gloss-effect' : ''}`}>
+  <div className="fp-grid-row">
+    {/* ... existing comment content ... */}
+  </div>
+</div>
+
+{/* Quote rendering */}
+<div className="glass-card quote">
+  <p>{replyComment.userProfile.displayName} wrote:</p>
+  <div dangerouslySetInnerHTML={{ __html: replyComment.content }} />
+</div>
+```
+
+### 6B. UserCommentComponent.tsx
+
+```tsx
+<div className={`glass-card${styles.interfaceEra === 'frutiger' ? ' frutiger-gloss-effect' : ''}`}>
+  {/* ... existing comment content ... */}
+</div>
+
+{/* Nested replies */}
+<div className="glass-card depth-1">
+  {/* reply content */}
+</div>
+```
+
+### 6C. Top Header + Hamburger Drawer
+
+The `.top-header` and `.hamburger-drawer` elements already exist. Add the gloss class:
+
+```tsx
+// In MainPage.tsx, around the header:
+<HeaderComponent
+  className={styles.interfaceEra === 'frutiger' ? 'frutiger-gloss-effect' : ''}
+  ...
+>
+```
+
+Add `frutiger-gloss-effect` to the drawer div in `HamburgerMenu.tsx`:
+
+```tsx
+<div className={`hamburger-drawer${isOpen ? ' open' : ''}${styles.interfaceEra === 'frutiger' ? ' frutiger-gloss-effect' : ''}`}>
+```
+
+---
+
+## 7. Implementation Order
+
+| Phase | What to Do | Files Affected |
+|-------|-----------|---------------|
+| 1 | Add new fields to `StyleModel.cs` | 1 backend file |
+| 2 | Add new methods to `IStyleRepository.cs` + `StyleRepository.cs` | 2 backend files |
+| 3 | Add new endpoints to `StyleController.cs` | 1 backend file |
+| 4 | Update `DbInitializer.cs` to seed all 4 system presets | 1 backend file |
+| 5 | Run EF migration | CLI |
+| 6 | Extend frontend `StyleModel` type in `models.ts` | 1 frontend file |
+| 7 | Add era fallback presets + new API functions to `StyleContext.tsx` + `wikiApi.ts` | 2 frontend files |
+| 8 | Build `PresetsComponent.tsx` with 4 system era cards | 1 frontend file (rewrite) |
+| 9 | Build `UserThemesList.tsx` for My Custom Themes zone | 1 new frontend file |
+| 10 | Add save/update/delete actions to `ManualEditStylesComponent.tsx` | 1 frontend file |
+| 11 | Add `era-*` class + `frutiger-gloss-effect` to `MainPage.tsx`, inject all glass CSS vars | 1 frontend file |
+| 12 | Replace body background with era-aware mesh | 1 frontend file |
+| 13 | Remove inline `background` from `HeaderComponent.tsx` | 1 frontend file |
+| 14 | Write `glass-card.css` with all era overrides | 1 new CSS file |
+| 15 | Update `headercomponent.css` with era overrides | 1 CSS file |
+| 16 | Update `hamburgermenu.css` with era overrides | 1 CSS file |
+| 17 | Add era + `.frutiger-gloss-effect` overrides to `style.css` | 1 CSS file |
+| 18 | Add Bootstrap input/button/link reset selectors to `style.css` (section 5C) | 1 CSS file |
+| 19 | Apply `.glass-card` + `.frutiger-gloss-effect` to `ForumCommentComponent.tsx` and `UserCommentComponent.tsx` | 2 frontend files |
+| 20 | Apply `.frutiger-gloss-effect` to header and drawer | 2 frontend files |
+| 21 | Update `forumsubmintcommentcomponent.css` + `articleeditor.css` to use `var(--custom-*)` | 2 CSS files |
+| 22 | Audit all CSS files for Bootstrap specificity gaps; add `!important` where Bootstrap forces a value | All CSS files |
+
+---
+
+## 8. Risk Mitigation
+
+| Risk | Mitigation |
+|------|-----------|
+| User creates 100+ custom themes cluttering the DB | Add a per-user limit (e.g. 25 themes). Show warning near the Save button. |
+| Custom theme save fails if user loses JWT mid-edit | All save calls require a fresh token. The Editor page already redirects on 401. Add autosave draft to localStorage as future enhancement. |
+| Frutiger gloss overlay breaks click targets | `pointer-events: none` on `::before`; z-index stack: overlay at 1, content at 2+. |
+| Wikipedia era sliders are confusing | When `interfaceEra === 'wikipedia'`, the glass/blur/border sliders still work but have no visible effect. Users can still save custom themes — the wikipedia era just uses opaque values. |
+| Dark modern theme fails WCAG contrast | Text colors were chosen for AA compliance on dark backgrounds. The custom theme system lets users override, but the preset itself is validated. |
+| Multiple users share the same active theme | Only admins can call `activateTheme`. User-created themes are personal until an admin promotes one. |
+| Bootstrap !important overrides break glass transparency | Every Bootstrap-affected element (`.form-control`, `.btn`, `a`, `table`, `input`) gets a `.era-* .element` reset with `!important`. The specificity table in section 5A documents the minimum chain required. |
+| ActivateThemeAsync transaction fails mid-way | Wrapped in `BeginTransactionAsync` + `CommitAsync`. On exception, `RollbackAsync` restores all rows to their previous `IsActive` state. No partial activation. |
+| No active theme after seed (fresh DB) | `GetActiveStylesAsync()` throws `InvalidOperationException`. Frontend `StyleContext` catches the error and falls back to hardcoded Wikipedia era defaults. |

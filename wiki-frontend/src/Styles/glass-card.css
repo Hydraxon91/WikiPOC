@@ -1,0 +1,113 @@
+/* === SHARED GLASS CARD (Forum + Wiki comment engines) === */
+
+.glass-card {
+	padding: 1rem;
+	margin-bottom: 0.75rem;
+	transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.glass-card:hover {
+	transform: translateY(-1px);
+}
+
+/* === ERA: WIKIPEDIA === */
+.era-wikipedia .glass-card {
+	background: var(--article-color, #ffffff) !important;
+	backdrop-filter: none !important;
+	border: var(--custom-border-style, 1px solid #a2a9b1) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+.era-wikipedia .glass-card.depth-1 {
+	background: var(--article-right-color, #f8f9fa) !important;
+}
+.era-wikipedia .glass-card.depth-2 {
+	background: var(--article-right-inner-color, #f0f2f5) !important;
+}
+
+/* === ERA: LIQUID GLASS === */
+.era-glass .glass-card {
+	background: rgba(255, 255, 255, var(--glass-bg-opacity, 0.12)) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, 20px)) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, 20px)) saturate(160%) !important;
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, 0.18)) !important;
+	border-radius: var(--custom-border-radius, 12px) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
+}
+.era-glass .glass-card.depth-1 {
+	backdrop-filter: blur(calc(var(--glass-blur-radius, 20px) * 0.6)) saturate(140%) !important;
+	-webkit-backdrop-filter: blur(calc(var(--glass-blur-radius, 20px) * 0.6)) saturate(140%) !important;
+	margin-left: 1.5rem;
+}
+.era-glass .glass-card.depth-2 {
+	backdrop-filter: blur(calc(var(--glass-blur-radius, 20px) * 0.4)) saturate(120%) !important;
+	-webkit-backdrop-filter: blur(calc(var(--glass-blur-radius, 20px) * 0.4)) saturate(120%) !important;
+	margin-left: 3rem;
+}
+.era-glass .glass-card.quote {
+	background: rgba(255, 255, 255, calc(var(--glass-bg-opacity, 0.12) - 0.05)) !important;
+	border-left: 3px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* === ERA: MODERN SLEEK === */
+.era-modern .glass-card {
+	background: var(--custom-body-color, #18181b) !important;
+	backdrop-filter: none !important;
+	border: 1px solid #27272a !important;
+	border-left: 4px solid var(--footer-link-color, #6366f1) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	letter-spacing: 0.025em;
+}
+.era-modern .glass-card:hover {
+	box-shadow: none !important;
+}
+
+/* === ERA: FRUTIGER AERO === */
+.era-frutiger .glass-card {
+	background: var(--custom-body-color, rgba(255, 255, 255, 0.82)) !important;
+	color: #111827 !important;
+	border-radius: 24px !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	box-shadow: 0 12px 24px rgba(0, 64, 128, 0.2), inset 0 2px 4px #ffffff !important;
+}
+.era-frutiger .glass-card:hover {
+	box-shadow: 0 16px 32px rgba(0, 64, 128, 0.3), inset 0 2px 4px #ffffff !important;
+	transform: translateY(-2px);
+}
+
+/* === QUOTE (shared fallback) === */
+.quoted-comment {
+	background: rgba(255, 255, 255, 0.08);
+	border-left: 3px solid rgba(255, 255, 255, 0.2);
+	margin: 0.5rem 0 0.5rem 1rem;
+	padding: 0.6rem;
+	border-radius: 0 6px 6px 0;
+}
+
+/* === TEXT INHERITANCE (all eras) === */
+.era-wikipedia .glass-card,
+.era-wikipedia .glass-card * {
+	color: var(--footer-text-color, #202122) !important;
+}
+.era-glass .glass-card,
+.era-glass .glass-card * {
+	color: var(--footer-text-color, #233a71) !important;
+}
+.era-modern .glass-card,
+.era-modern .glass-card * {
+	color: var(--footer-text-color, #ffffff) !important;
+}
+.era-frutiger .glass-card,
+.era-frutiger .glass-card * {
+	color: var(--footer-text-color, #111827) !important;
+}
+.era-frutiger .glass-card h1,
+.era-frutiger .glass-card h2,
+.era-frutiger .glass-card h3,
+.era-frutiger .glass-card strong {
+	color: #0f2d59 !important;
+}
+.era-glass .glass-card {
+	overflow: hidden !important;
+}

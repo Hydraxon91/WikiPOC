@@ -3,12 +3,14 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import EditPage from "./Pages/CreateEditArticle/EditPage";
 import EditStylePage from "./Pages/EditStylePage/EditStylePage";
+import SiteSettingsPage from "./Pages/SiteSettingsPage/SiteSettingsPage";
 import MainPage from "./Pages/MainPage/MainPage";
 import HomeComponent from "./Pages/MainPage/Components/HomeComponent";
 import { StyleProvider  } from "./Components/contexts/StyleContext";
+import { SiteSettingsProvider } from "./Components/contexts/SiteSettingsContext";
 import { createWikiPage, updateWikiPage, getWikiPageBySlug, fetchCategories } from "./Api/wikiApi";
 import LoginPageComponent from "./Pages/LoginLogoutPages/LoginPageComponent";
-import { CookiesProvider, useCookies } from "react-cookie";
+import { useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
 import { useNotification } from './Components/NotificationProvider';
 import { UserContextProvider } from "./Components/contexts/UserContextProvider";
@@ -159,9 +161,9 @@ function App() {
   };
 
    return (
-    <CookiesProvider>
       <UserContextProvider>
         <Router>
+          <SiteSettingsProvider>
           <StyleProvider>
             <Routes>
               <Route path="/" element={<MainPage decodedToken={decodedToken} handleLogout={handleLogout} jwtToken={cookies} setWikiPageTitles={setWikiPageTitles} categories={categories} />}>
@@ -182,6 +184,11 @@ function App() {
                 <Route path="/edit-wiki" element={
                   <ProtectedRoute roles={['Owner']} >
                     <EditStylePage jwtToken={cookies["jwt_token"]}/>
+                  </ProtectedRoute>
+                } />
+                <Route path="/site-settings" element={
+                  <ProtectedRoute roles={['Owner']} >
+                    <SiteSettingsPage jwtToken={cookies["jwt_token"]}/>
                   </ProtectedRoute>
                 } />
                 <Route path="/login" element={
@@ -256,9 +263,9 @@ function App() {
               </Route>
             </Routes>
           </StyleProvider>
+          </SiteSettingsProvider>
         </Router>
       </UserContextProvider>
-    </CookiesProvider>
   );
 }
 

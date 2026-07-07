@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using wiki_backend.DatabaseServices;
 
@@ -11,9 +12,11 @@ using wiki_backend.DatabaseServices;
 namespace wiki_backend.Migrations
 {
     [DbContext(typeof(WikiDbContext))]
-    partial class WikiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260707123033_AddMultiEraThemeEngine")]
+    partial class AddMultiEraThemeEngine
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -375,25 +378,6 @@ namespace wiki_backend.Migrations
                     b.ToTable("Paragraphs");
                 });
 
-            modelBuilder.Entity("wiki_backend.Models.SiteSettings", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Logo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WikiName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SiteSettings");
-                });
-
             modelBuilder.Entity("wiki_backend.Models.StyleModel", b =>
                 {
                     b.Property<int>("Id")
@@ -451,10 +435,16 @@ namespace wiki_backend.Migrations
                     b.Property<bool>("IsSystemPreset")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Logo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ThemeName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WikiName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

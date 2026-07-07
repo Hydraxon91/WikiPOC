@@ -2,6 +2,479 @@
 	font-family: "Linux Libertine";
 	src: url("fonts/LinLibertine_RZ.woff") format('woff');
 }
+
+/* === LIQUID GLASS DESIGN TOKENS === */
+:root {
+	--custom-body-color: #f8f9fa;
+	--custom-header-color: #ffffff;
+	--custom-sidebar-color: #ffffff;
+	--custom-border-radius: 0px;
+	--custom-border-style: 1px solid #a2a9b1;
+	--glass-bg-opacity: 1;
+	--glass-blur-radius: 0px;
+	--glass-border-reflection: 0;
+	--bg-mesh-gradient: none;
+}
+
+/* === GLOBAL TEXT & LINK VARIABLE BINDING (all eras) === */
+.era-wikipedia p,
+.era-wikipedia span,
+.era-wikipedia label,
+.era-wikipedia li,
+.era-wikipedia .sidebar *,
+.era-wikipedia .article *,
+.era-wikipedia .glass-card * {
+	color: var(--footer-text-color, #202122) !important;
+}
+.era-wikipedia a,
+.era-wikipedia .sidebar p,
+.era-wikipedia .sidebar a,
+.era-wikipedia .article a,
+.era-wikipedia .logout-button { color: var(--footer-link-color, #0645ad) !important; }
+
+.era-glass p,
+.era-glass span,
+.era-glass label,
+.era-glass li,
+.era-glass .sidebar *,
+.era-glass .article *,
+.era-glass .glass-card * {
+	color: var(--footer-text-color, #233a71) !important;
+}
+.era-glass a,
+.era-glass .sidebar p,
+.era-glass .sidebar a,
+.era-glass .article a,
+.era-glass .logout-button { color: var(--footer-link-color, #1d305e) !important; }
+
+.era-modern p,
+.era-modern span,
+.era-modern label,
+.era-modern li,
+.era-modern .sidebar *,
+.era-modern .article *,
+.era-modern .glass-card * {
+	color: var(--footer-text-color, #ffffff) !important;
+}
+.era-modern a,
+.era-modern .sidebar p,
+.era-modern .sidebar a,
+.era-modern .article a,
+.era-modern .logout-button { color: var(--footer-link-color, #6366f1) !important; }
+.era-modern h1,
+.era-modern h2,
+.era-modern h3,
+.era-modern h4,
+.era-modern .card-title,
+.era-modern strong { color: #ffffff !important; }
+.era-modern p,
+.era-modern span,
+.era-modern .text-muted { color: var(--footer-text-color, #a1a1aa) !important; }
+
+.era-frutiger p,
+.era-frutiger span,
+.era-frutiger label,
+.era-frutiger li,
+.era-frutiger .sidebar *,
+.era-frutiger .article *,
+.era-frutiger .glass-card * {
+	color: var(--footer-text-color, #111827) !important;
+}
+.era-frutiger a,
+.era-frutiger .sidebar p,
+.era-frutiger .sidebar a,
+.era-frutiger .article a,
+.era-frutiger .logout-button { color: var(--footer-link-color, #1565c0) !important; }
+.era-frutiger h1,
+.era-frutiger h2,
+.era-frutiger h3,
+.era-frutiger .card-title,
+.era-frutiger strong { color: #0f2d59 !important; }
+
+/* === ERA: WIKIPEDIA CLASSIC === */
+.era-wikipedia .form-control,
+.era-wikipedia .btn,
+.era-wikipedia input,
+.era-wikipedia select,
+.era-wikipedia textarea {
+	background: #ffffff !important;
+	color: #202122 !important;
+	border: 1px solid #a2a9b1 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	backdrop-filter: none !important;
+}
+.era-wikipedia table {
+	background: #ffffff !important;
+}
+.era-wikipedia a { color: var(--footer-link-color, #0645ad); }
+.era-wikipedia .sidebar {
+	background: var(--custom-sidebar-color, transparent);
+	backdrop-filter: none;
+	border-right: 1px solid #a2a9b1;
+	border-radius: 0;
+}
+.era-wikipedia .article {
+	background: var(--article-color, #ffffff) !important;
+}
+.era-wikipedia .wiki-navbar {
+	background: var(--article-right-inner-color, #eaecf0);
+	color: var(--footer-text-color, #202122);
+	border-radius: 0;
+	display: flex;
+	width: 100%;
+}
+.era-wikipedia .wiki-navbar-button {
+	background: var(--article-right-inner-color, #eaecf0);
+	color: var(--footer-text-color, #202122);
+	padding: 0.3em 1em;
+}
+.era-wikipedia .wiki-navbar-button-active {
+	background: color-mix(in srgb, var(--article-right-inner-color, #eaecf0) 85%, black);
+}
+.era-wikipedia body {
+	background: var(--custom-body-color, #f8f9fa) !important;
+}
+
+/* === ERA: LIQUID GLASS === */
+.era-glass body {
+	background: var(--custom-body-color, radial-gradient(at 0% 0%, #1e1b4b 0px, transparent 50%), radial-gradient(at 100% 0%, #311042 0px, transparent 50%), radial-gradient(at 100% 100%, #0f172a 0px, transparent 50%), radial-gradient(at 0% 100%, #172554 0px, transparent 50%)) !important;
+	background-color: #0f172a !important;
+}
+/* Panels use colored glass: article/sidebar color mixed with opacity */
+.era-glass .top-header {
+	background: color-mix(in srgb, var(--custom-header-color, #526cad) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, var(--border-reflection, 0.18))) !important;
+	border-radius: var(--custom-border-radius, 12px) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
+}
+.era-glass .sidebar {
+	background: color-mix(in srgb, var(--custom-sidebar-color, #3c5fb8) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, var(--border-reflection, 0.18))) !important;
+	border-radius: var(--custom-border-radius, 12px) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
+	box-sizing: border-box !important;
+	overflow: hidden !important;
+	margin-top: 1.5rem !important;
+}
+.era-glass .article {
+	background: color-mix(in srgb, var(--article-color, #526cad) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, var(--border-reflection, 0.18))) !important;
+	border-radius: var(--custom-border-radius, 12px) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
+	box-sizing: border-box !important;
+	overflow: hidden !important;
+	margin-top: 1.5rem !important;
+}
+.era-glass .glass-card {
+	background: color-mix(in srgb, var(--article-color, #526cad) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+}
+/* Form controls stay white-frosted */
+.era-glass .form-control,
+.era-glass input,
+.era-glass select,
+.era-glass textarea {
+	background: rgba(255, 255, 255, var(--glass-bg-opacity, 0.12)) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, var(--border-reflection, 0.18))) !important;
+	border-radius: var(--custom-border-radius, 12px) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
+	box-sizing: border-box !important;
+	overflow: hidden !important;
+}
+.era-glass a { color: var(--footer-link-color, #1d305e); }
+.era-glass .wiki-navbar {
+	background: color-mix(in srgb, var(--article-right-inner-color, #2b4ea6) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border-radius: var(--custom-border-radius, 12px) var(--custom-border-radius, 12px) 0 0 !important;
+	display: flex;
+	width: 100%;
+}
+.era-glass .wiki-navbar-button {
+	background: transparent;
+	color: var(--footer-text-color, #233a71);
+	padding: 0.3em 1em;
+}
+.era-glass .wiki-navbar-button-active {
+	background: rgba(255, 255, 255, 0.15) !important;
+	border-bottom: 2px solid var(--footer-link-color, #1d305e);
+}
+
+/* === ERA: MODERN SLEEK === */
+.era-modern body {
+	background: var(--custom-body-color, #09090b) !important;
+}
+.era-modern .top-header {
+	background: var(--custom-header-color, #121214) !important;
+	color: var(--footer-text-color, #ffffff) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	backdrop-filter: none !important;
+	border: none !important;
+	border-bottom: 1px solid #27272a !important;
+	letter-spacing: 0.025em;
+}
+.era-modern .article {
+	background: var(--article-color, #18181b) !important;
+	color: var(--footer-text-color, #ffffff) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	backdrop-filter: none !important;
+	border: 1px solid #27272a !important;
+	border-left: 4px solid var(--footer-link-color, #6366f1) !important;
+	letter-spacing: 0.025em;
+	padding: 1.25em !important;
+	margin-top: 1.5rem !important;
+}
+.era-modern a { color: var(--footer-link-color, #6366f1); }
+.era-modern .wiki-navbar {
+	background: var(--article-right-inner-color, #2a2f45);
+	color: var(--footer-text-color, #ffffff);
+	display: flex;
+	width: 100%;
+	border-bottom: 1px solid var(--footer-link-color, #6366f1) !important;
+	border-radius: 0;
+}
+.era-modern .wiki-navbar-button {
+	background: transparent;
+	color: var(--footer-text-color, #ffffff);
+	padding: 0.3em 1em;
+}
+.era-modern .wiki-navbar-button-active {
+	background: rgba(99, 102, 241, 0.15) !important;
+	border-bottom: 2px solid var(--footer-link-color, #6366f1);
+}
+.era-modern .sidebar {
+	background: var(--custom-sidebar-color, #121214) !important;
+	border: none !important;
+	border-right: 1px solid #27272a !important;
+	border-left: none !important;
+	margin-top: 1.5rem !important;
+}
+.era-modern .btn {
+	background: #6366f1 !important;
+	border: none !important;
+	color: #ffffff !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+.era-modern .form-control:not([type="color"]),
+.era-modern input:not([type="color"]),
+.era-modern select,
+.era-modern textarea {
+	background: #09090b !important;
+	border: 1px solid #27272a !important;
+	color: var(--footer-text-color, #ffffff) !important;
+	padding: 0.5rem 0.75rem !important;
+	height: 38px !important;
+	box-sizing: border-box !important;
+	border-left: none !important;
+}
+.era-modern input[type="color"] {
+	background: transparent !important;
+	border: 1px solid #27272a !important;
+	cursor: pointer !important;
+	padding: 0 !important;
+	width: 44px !important;
+	height: 32px !important;
+	border-radius: 4px !important;
+	box-sizing: border-box !important;
+}
+.era-modern input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0 !important;
+}
+.era-modern input[type="color"]::-webkit-color-swatch {
+	border: none !important;
+	border-radius: 3px !important;
+}
+.era-modern h1,
+.era-modern h2,
+.era-modern h3,
+.era-modern h4,
+.era-modern .card-title,
+.era-modern strong { color: #ffffff !important; }
+.era-modern p,
+.era-modern span,
+.era-modern .text-muted { color: var(--footer-text-color, #a1a1aa) !important; }
+
+/* === ERA: FRUTIGER AERO === */
+.era-frutiger body {
+	background: var(--custom-body-color, linear-gradient(180deg, #2b7cd3 0%, #51a7e9 35%, #8fd3f4 60%, #bbf2f6 100%)) !important;
+}
+.era-frutiger .top-header {
+	background: var(--custom-header-color, rgba(255, 255, 255, 0.82)) !important;
+	color: #111827 !important;
+	border-radius: 24px !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	box-shadow: 0 12px 24px rgba(0, 64, 128, 0.2), inset 0 2px 4px #ffffff !important;
+}
+.era-frutiger .sidebar {
+	background: var(--custom-sidebar-color, #c8e6c9) !important;
+	color: #111827 !important;
+	border-radius: 24px !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	box-shadow: 0 12px 24px rgba(0, 64, 128, 0.2), inset 0 2px 4px #ffffff !important;
+	margin-top: 1.5rem !important;
+}
+.era-frutiger .article {
+	background: var(--article-color, rgba(255, 255, 255, 0.82)) !important;
+	color: #111827 !important;
+	border-radius: 24px !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	box-shadow: 0 12px 24px rgba(0, 64, 128, 0.2), inset 0 2px 4px #ffffff !important;
+	margin-top: 1.5rem !important;
+}
+.era-frutiger a { color: var(--footer-link-color, #1565c0); }
+.era-frutiger .wiki-navbar {
+	background: linear-gradient(to bottom, var(--article-right-inner-color, #66bb6a), color-mix(in srgb, var(--article-right-inner-color, #66bb6a) 80%, #000)) !important;
+	color: #ffffff !important;
+	display: flex;
+	width: 100%;
+	border-radius: 24px 24px 0 0 !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+.era-frutiger .wiki-navbar-button {
+	background: transparent;
+	color: #ffffff;
+	padding: 0.3em 1em;
+}
+.era-frutiger .wiki-navbar-button-active {
+	background: rgba(255, 255, 255, 0.25) !important;
+	border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+}
+.era-frutiger .btn {
+	background: linear-gradient(to bottom, #7cd97c 0%, #4caf50 40%, #2e7d32 100%) !important;
+	color: #ffffff !important;
+	border: 1px solid #a5d6a7 !important;
+	border-radius: 30px !important;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), inset 0 2px 3px #fff !important;
+}
+.era-frutiger .form-control,
+.era-frutiger input {
+	background: rgba(255, 255, 255, 0.85) !important;
+	color: #111827 !important;
+	border-radius: 24px !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	box-sizing: border-box !important;
+	height: 40px !important;
+	padding: 0.5rem 1rem !important;
+	overflow: hidden !important;
+}
+.era-frutiger h1,
+.era-frutiger h2,
+.era-frutiger h3,
+.era-frutiger .card-title,
+.era-frutiger strong { color: #0f2d59 !important; }
+
+/* === FRUTIGER AERO GLOSS EFFECT === */
+.era-frutiger .frutiger-gloss-effect {
+	position: relative;
+	overflow: hidden;
+}
+.era-frutiger .frutiger-gloss-effect::before {
+	content: '';
+	position: absolute;
+	top: 0; left: 0; right: 0;
+	height: 50%;
+	background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%) !important;
+	pointer-events: none;
+	z-index: 1;
+	border-radius: inherit;
+}
+
+
+
+/* === GLOBAL ARTICLE PADDING === */
+.article {
+	padding: 2.25rem !important;
+}
+.article > *:first-child {
+	margin-top: 0 !important;
+}
+
+/* === NESTED ARTICLE CONTENT (inside the main article) === */
+.wiki-article-content {
+	height: fit-content;
+	width: 100%;
+	box-sizing: border-box;
+}
+.era-glass .form-control,
+.era-glass input {
+	box-sizing: border-box !important;
+	overflow: hidden !important;
+}
+
+/* === CUSTOM FILE UPLOAD BUTTON === */
+.era-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5em 1.2em;
+	cursor: pointer;
+	font-size: 0.9em;
+	font-weight: 500;
+	transition: background 0.2s;
+}
+.era-wikipedia .era-button {
+	background: #f8f9fa !important;
+	border: 1px solid #a2a9b1 !important;
+	color: #202122 !important;
+	border-radius: 0 !important;
+}
+.era-glass .era-button {
+	background: rgba(255, 255, 255, 0.12) !important;
+	backdrop-filter: blur(8px) !important;
+	-webkit-backdrop-filter: blur(8px) !important;
+	border: 1px solid rgba(255, 255, 255, 0.18) !important;
+	color: #fff !important;
+	border-radius: 6px !important;
+}
+.era-modern .era-button {
+	background: #6366f1 !important;
+	border: none !important;
+	color: #fff !important;
+	border-radius: 0 !important;
+}
+.era-frutiger .era-button {
+	background: linear-gradient(to bottom, #7cd97c 0%, #4caf50 40%, #2e7d32 100%) !important;
+	border: 1px solid #a5d6a7 !important;
+	color: #ffffff !important;
+	border-radius: 30px !important;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), inset 0 2px 3px #fff !important;
+}
+
+/* === EDITOR CONTROL GRID ALIGNMENT === */
+.color-picker-row,
+.editor-control-group,
+.form-group {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	gap: 1rem !important;
+	margin-bottom: 0.85rem !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
+.form-group label,
+.color-picker-row label {
+	margin-bottom: 0 !important;
+	white-space: nowrap !important;
+	text-align: left !important;
+	flex-grow: 1 !important;
+}
+.form-group input,
+.color-picker-row input {
+	flex-shrink: 0 !important;
+}
+
 html {
 	font-family: sans-serif;
 	-ms-text-size-adjust: 100%;
@@ -455,7 +928,7 @@ a:hover {
 	border-top: 1px solid #f3f3f3;
 	border-bottom: 1px solid #f3f3f3;
 	height: fit-content;
-	width: 98%;
+	/* width: 98%; */
 }
 .article p {
 	line-height: inherit;
@@ -592,7 +1065,7 @@ span.user {
 	background: none;
 	border: none;
 	font-weight: bold;
-	color: #1d305e;
+	color: var(--footer-link-color, #1d305e);
 	cursor: pointer;
 	padding-left: 0vw;
   }

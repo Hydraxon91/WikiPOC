@@ -19,10 +19,56 @@ public class StyleController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<StyleModel>> GetStyles()
+    public async Task<ActionResult<StyleModel>> GetActiveStyles()
     {
-        var styles = await _styleRepository.GetStylesAsync();
-        return Ok(styles);
+        try
+        {
+            var styles = await _styleRepository.GetActiveStylesAsync();
+            return Ok(styles);
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound("No active theme configured.");
+        }
+    }
+
+    [HttpGet("presets")]
+    public async Task<ActionResult<List<StyleModel>>> GetSystemPresets()
+    {
+        var presets = await _styleRepository.GetSystemPresetsAsync();
+        return Ok(presets);
+    }
+
+    [HttpGet("user-themes/{userId}")]
+    [Authorize]
+    public async Task<ActionResult<List<StyleModel>>> GetUserThemes(string userId)
+    {
+        var themes = await _styleRepository.GetUserThemesAsync(userId);
+        return Ok(themes);
+    }
+
+    [HttpPost("user-themes")]
+    [Authorize]
+    public async Task<ActionResult<StyleModel>> CreateUserTheme([FromBody] StyleModel theme)
+    {
+        var created = await _styleRepository.CreateUserThemeAsync(theme);
+        return CreatedAtAction(nameof(GetActiveStyles), new { id = created.Id }, created);
+    }
+
+    [HttpDelete("user-themes/{id}")]
+    [Authorize]
+    public async Task<IActionResult> DeleteUserTheme(int id)
+    {
+        await _styleRepository.DeleteUserThemeAsync(id);
+        return NoContent();
+    }
+
+    [HttpPut("activate/{id}")]
+    [Authorize(Policy = IdentityData.AdminUserPolicyName)]
+    public async Task<IActionResult> ActivateTheme(int id)
+    {
+        await _styleRepository.ActivateThemeAsync(id);
+        return Ok(new { Message = "Theme activated" });
     }
 
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]

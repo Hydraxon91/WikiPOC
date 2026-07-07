@@ -116,15 +116,11 @@
 
 ## Project Overview
 
-WikiPOC is a **customizable, Wikipedia-style wiki platform**. The core
-feature is backend-driven theming: the wiki owner can customize colors,
-fonts, logo, and layout through an admin interface (`/edit-wiki`), saved
-to the database as a `StyleModel` and served via `StyleContext`.
+WikiPOC is a **customizable, multi-era Wikipedia-style wiki platform**. The core feature is backend-driven theming: the wiki owner can customize colors, layout tokens, and choose between distinct visual eras (Glassmorphic, Frutiger Aero, Wikipedia, Modern) through an admin interface (`/edit-wiki`), saved to the database as an expanded `StyleModel` and served via `StyleContext`.
 
-**This means inline `style={{...}}` props throughout the frontend are
-intentional** — they reflect dynamic values from the backend, not sloppy
-code. Only hardcoded static values (e.g. `marginLeft: "0.5rem"` repeated
-7 times) should be extracted to CSS classes.
+**This means styling uses a hybrid architecture:** 
+1. Inline `style={{...}}` props throughout the frontend are intentional for serving dynamic, raw database values (like specific brand accent colors).
+2. Global layout configurations and era-specific aesthetics (like gloss overlays or glass blurs) are applied by appending an era class wrapper (e.g., `.era-glass`, `.era-frutiger`) to the application container, utilizing modern CSS variables and native features like `color-mix()`.
 
 Tech stack:
 - **.NET 10 ASP.NET Core backend** (wiki-backend/)
@@ -391,9 +387,9 @@ npm start  # node dist/index.js (stdio, no output until called)
 - Served via `/api/Image/{filename}` endpoint
 
 ### Style Customization
-- Admin-only feature at `/edit-wiki`
-- Controls: wiki name, colors, fonts, logo
-- Stored in database, fetched by frontend on load
+- Admin-only feature managed at `/edit-wiki`.
+- Controls: wiki name, brand colors, fonts, logo, layout spacing tokens, and structural design era selections.
+- **Database Activation Constraint:** Active styles are tracked via a dedicated `IsActive` boolean column in the database. Activating a theme must invoke a unified repository transaction that sets `IsActive = false` globally across all rows before setting `IsActive = true` on the targeted row. Row order or ID sequences must never be used to infer which theme is active.
 
 ## Testing Notes
 
@@ -420,6 +416,12 @@ npm start  # node dist/index.js (stdio, no output until called)
 5. **CORS**: Configured for `http://localhost:3000` and `http://localhost:3001`. Override via `AllowedOrigins` env var (semicolon-separated). Update `Program.cs:AddCors()` if using different ports.
 
 6. **Profile pictures path**: Ensure `PICTURES_PATH` directory exists on host machine before starting Docker.
+
+7. **Bootstrap Overrides & Specificity Walls:** The app imports standard Bootstrap styles globally before applying the custom theme layer. When writing or modifying styles for buttons, input fields, select groups, or textareas, you must explicitly wrap your selectors using era scoped blocks (e.g., `.era-glass .form-control`, `.era-modern .btn`) or use context-safe overrides to prevent Bootstrap's base styles from squashing translucent glass surfaces, dynamic fonts, or border aesthetics.
+
+8. **Volumetric Reflection Blockers:** When implementing the Frutiger Aero or Glassmorphic glossy overlays via layout pseudo-elements (`::before` / `::after`), you must apply `pointer-events: none` to the overlay layers. If omitted, these structural gloss fields act as an invisible barrier, preventing users from selecting text, clicking links, or submitting forum comments.
+
+9. **Proportional Nested Blurs:** When working with deeply nested comment layout containers (e.g., nested forum discussion threads), avoid hardcoded recursive backdrop filters. Scale down nested container blurs proportionally using fractional CSS multipliers (`calc(var(--glass-blur-radius) * 0.6)`) to preserve clean textual legibility on high-density user displays.
 
 ## Files of Interest
 

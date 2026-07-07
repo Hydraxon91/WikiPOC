@@ -4,13 +4,16 @@ import './index.css';
 import App from './App';
 import ErrorBoundary from './Components/ErrorBoundary';
 import { NotificationProvider } from './Components/NotificationProvider';
+import { CookiesProvider } from 'react-cookie';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <NotificationProvider>
-        <App />
+        <CookiesProvider>
+          <App />
+        </CookiesProvider>
       </NotificationProvider>
     </ErrorBoundary>
   </React.StrictMode>

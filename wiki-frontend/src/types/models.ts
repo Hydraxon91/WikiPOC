@@ -53,6 +53,11 @@ export interface UserComment {
 
 export interface StyleModel {
   id?: number;
+  isActive?: boolean;
+  isSystemPreset?: boolean;
+  userId?: string;
+  interfaceEra?: string;
+  themeName?: string;
   logo?: string;
   wikiName?: string;
   bodyColor?: string;
@@ -62,4 +67,10 @@ export interface StyleModel {
   footerListLinkTextColor?: string;
   footerListTextColor?: string;
   fontFamily?: string;
+  glassBgOpacity?: number;
+  glassBlurRadius?: number;
+  glassBorderReflection?: number;
+  bgMeshGradient?: string;
+  borderRadius?: string;
+  borderStyle?: string;
 }

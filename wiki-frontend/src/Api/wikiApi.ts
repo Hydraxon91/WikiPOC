@@ -1,4 +1,5 @@
 import { get, post, put, del, postForm, putForm, patch } from './apiClient';
+import { StyleModel } from '../types/models';
 
 export const getWikiPageTitles = async () => {
     return get('/api/WikiPages/GetTitles');
@@ -70,9 +71,32 @@ export const fetchCurrentStyles = async () => {
   return get('/api/Style');
 };
 
+export const fetchSystemPresets = async () => {
+  return get('/api/Style/presets');
+};
+
+export const fetchUserThemes = async (userId: string, token?: string) => {
+  return get(`/api/Style/user-themes/${userId}`, token);
+};
+
+export const saveUserTheme = async (theme: Partial<StyleModel>, token: string): Promise<StyleModel> => {
+  return post('/api/Style/user-themes', theme, token);
+};
+
+export const updateUserTheme = async (id: number, theme: Partial<StyleModel>, token: string): Promise<void> => {
+  return put(`/api/Style/user-themes/${id}`, theme, token);
+};
+
+export const deleteUserTheme = async (id: number, token: string): Promise<void> => {
+  return del(`/api/Style/user-themes/${id}`, token);
+};
+
+export const activateTheme = async (id: number, token: string): Promise<void> => {
+  return put(`/api/Style/activate/${id}`, undefined, token);
+};
+
 export const updateStyles = async (newStyles, logoPictureFile, token) => {
   const formData = new FormData();
-  formData.append('styleUpdateForm.StyleModel.WikiName', newStyles.wikiName);
   formData.append('styleUpdateForm.StyleModel.BodyColor', newStyles.bodyColor);
   formData.append('styleUpdateForm.StyleModel.ArticleRightColor', newStyles.articleRightColor);
   formData.append('styleUpdateForm.StyleModel.ArticleRightInnerColor', newStyles.articleRightInnerColor);
@@ -80,9 +104,26 @@ export const updateStyles = async (newStyles, logoPictureFile, token) => {
   formData.append('styleUpdateForm.StyleModel.FooterListLinkTextColor', newStyles.footerListLinkTextColor);
   formData.append('styleUpdateForm.StyleModel.FooterListTextColor', newStyles.footerListTextColor);
   formData.append('styleUpdateForm.StyleModel.FontFamily', newStyles.fontFamily);
-  formData.append('styleUpdateForm.LogoPictureFile', logoPictureFile);
+  formData.append('styleUpdateForm.StyleModel.InterfaceEra', newStyles.interfaceEra);
+  formData.append('styleUpdateForm.StyleModel.GlassBgOpacity', newStyles.glassBgOpacity ?? '');
+  formData.append('styleUpdateForm.StyleModel.GlassBlurRadius', newStyles.glassBlurRadius ?? '');
+  formData.append('styleUpdateForm.StyleModel.GlassBorderReflection', newStyles.glassBorderReflection ?? '');
+  formData.append('styleUpdateForm.StyleModel.BgMeshGradient', newStyles.bgMeshGradient ?? '');
+  formData.append('styleUpdateForm.StyleModel.BorderRadius', newStyles.borderRadius ?? '');
+  formData.append('styleUpdateForm.StyleModel.BorderStyle', newStyles.borderStyle ?? '');
 
   return putForm('/api/Style', formData, token);
+};
+
+export const fetchSiteSettings = async () => {
+  return get('/api/SiteSettings');
+};
+
+export const updateSiteSettings = async (wikiName: string, logoFile: File | null, token: string) => {
+  const formData = new FormData();
+  formData.append('wikiName', wikiName);
+  if (logoFile) formData.append('logoFile', logoFile);
+  return putForm('/api/SiteSettings', formData, token);
 };
 
 export const getLogo = async(pictureString) => {

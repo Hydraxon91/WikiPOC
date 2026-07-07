@@ -36,6 +36,7 @@ public class DbInitializer : IHostedService
         await SeedCategoriesAsync();
         await SeedWikiPagesAsync();
         await SeedStylesAsync();
+        await SeedSiteSettingsAsync();
         await SeedForumTopicsAsync();
         await SeedCommentsAsync();
     }
@@ -354,19 +355,113 @@ public class DbInitializer : IHostedService
         using var scope = _scopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
 
-        if (!await dbContext.Styles.AnyAsync())
+        if (!await dbContext.Styles.AnyAsync(s => s.IsSystemPreset))
         {
-            dbContext.Styles.Add(new StyleModel
+            // Remove any legacy rows from before the multi-theme migration
+            var legacyRows = await dbContext.Styles
+                .Where(s => !s.IsSystemPreset)
+                .ToListAsync();
+            if (legacyRows.Count > 0)
+                dbContext.Styles.RemoveRange(legacyRows);
+
+            dbContext.Styles.AddRange(new List<StyleModel>
             {
+                new()
+                {
+                    IsActive = true,
+                    IsSystemPreset = true,
+                    InterfaceEra = "wikipedia",
+                    ThemeName = "Wikipedia Classic",
+                    BodyColor = "#f8f9fa",
+                    ArticleColor = "#ffffff",
+                    ArticleRightColor = "#f8f9fa",
+                    ArticleRightInnerColor = "#eaecf0",
+                    FooterListTextColor = "#202122",
+                    FooterListLinkTextColor = "#0645ad",
+                    FontFamily = "'Linux Libertine', Georgia, serif",
+                    GlassBgOpacity = 1.0,
+                    GlassBlurRadius = 0,
+                    GlassBorderReflection = 0,
+                    BgMeshGradient = "none",
+                    BorderRadius = "0px",
+                    BorderStyle = "1px solid #a2a9b1",
+                },
+                new()
+                {
+                    IsActive = false,
+                    IsSystemPreset = true,
+                    InterfaceEra = "glass",
+                    ThemeName = "Liquid Glass",
+                    BodyColor = "#507ced",
+                    ArticleColor = "#526cad",
+                    ArticleRightColor = "#3c5fb8",
+                    ArticleRightInnerColor = "#2b4ea6",
+                    FooterListTextColor = "#233a71",
+                    FooterListLinkTextColor = "#1d305e",
+                    FontFamily = "Arial, sans-serif",
+                    GlassBgOpacity = 0.35,
+                    GlassBlurRadius = 12,
+                    GlassBorderReflection = 0.15,
+                    BgMeshGradient = "radial-gradient(circle at 20% 80%, rgba(80,124,237,0.4) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(82,108,173,0.3) 0%, transparent 50%), linear-gradient(135deg, #1a2a6c, #2b4ea6, #507ced)",
+                    BorderRadius = "12px",
+                    BorderStyle = "1px solid rgba(255,255,255,0.12)",
+                },
+                new()
+                {
+                    IsActive = false,
+                    IsSystemPreset = true,
+                    InterfaceEra = "modern",
+                    ThemeName = "Modern Sleek",
+                    BodyColor = "#0f1117",
+                    ArticleColor = "#1a1d27",
+                    ArticleRightColor = "#222639",
+                    ArticleRightInnerColor = "#2a2f45",
+                    FooterListTextColor = "#8b8fa3",
+                    FooterListLinkTextColor = "#6c63ff",
+                    FontFamily = "Inter, system-ui, sans-serif",
+                    GlassBgOpacity = 0.95,
+                    GlassBlurRadius = 0,
+                    GlassBorderReflection = 0,
+                    BgMeshGradient = "linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #222639 100%)",
+                    BorderRadius = "4px",
+                    BorderStyle = "1px solid rgba(255,255,255,0.06)",
+                },
+                new()
+                {
+                    IsActive = false,
+                    IsSystemPreset = true,
+                    InterfaceEra = "frutiger",
+                    ThemeName = "Frutiger Aero",
+                    BodyColor = "#2b8a3e",
+                    ArticleColor = "#e8f5e9",
+                    ArticleRightColor = "#a5d6a7",
+                    ArticleRightInnerColor = "#66bb6a",
+                    FooterListTextColor = "#1b5e20",
+                    FooterListLinkTextColor = "#1565c0",
+                    FontFamily = "Segoe UI, Tahoma, sans-serif",
+                    GlassBgOpacity = 0.85,
+                    GlassBlurRadius = 0,
+                    GlassBorderReflection = 0.25,
+                    BgMeshGradient = "linear-gradient(135deg, #2b8a3e 0%, #43a047 30%, #1b5e20 70%, #2b8a3e 100%)",
+                    BorderRadius = "24px",
+                    BorderStyle = "1px solid rgba(255,255,255,0.35)",
+                },
+            });
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
+    private async Task SeedSiteSettingsAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+
+        if (!await dbContext.SiteSettings.AnyAsync())
+        {
+            dbContext.SiteSettings.Add(new SiteSettings
+            {
+                WikiName = "WikiPOC",
                 Logo = "logo/logo_pfp.png",
-                WikiName = "Your Wiki",
-                BodyColor = "#507ced",
-                ArticleRightColor = "#3c5fb8",
-                ArticleRightInnerColor = "#2b4ea6",
-                ArticleColor = "#526cad",
-                FooterListLinkTextColor = "#1d305e",
-                FooterListTextColor = "#233a71",
-                FontFamily = "Arial, sans-serif",
             });
             await dbContext.SaveChangesAsync();
         }

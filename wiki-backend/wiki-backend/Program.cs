@@ -197,6 +197,7 @@ void AddServices()
 {
     builder.Services.AddScoped<IWikiPageRepository, WikiPageRepository>();
     builder.Services.AddScoped<IStyleRepository, StyleRepository>();
+    builder.Services.AddScoped<ISiteSettingsRepository, SiteSettingsRepository>();
     builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
     builder.Services.AddScoped<IUserCommentRepository, UserCommentRepository>();
     builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
