@@ -132,14 +132,13 @@
 .era-wikipedia .wiki-navbar-button-active {
 	background: color-mix(in srgb, var(--article-right-inner-color, #eaecf0) 85%, black);
 }
-.era-wikipedia body {
+body.era-wikipedia {
 	background: var(--custom-body-color, #f8f9fa) !important;
 }
 
 /* === ERA: LIQUID GLASS === */
-.era-glass body {
+body.era-glass {
 	background: var(--custom-body-color, radial-gradient(at 0% 0%, #1e1b4b 0px, transparent 50%), radial-gradient(at 100% 0%, #311042 0px, transparent 50%), radial-gradient(at 100% 100%, #0f172a 0px, transparent 50%), radial-gradient(at 0% 100%, #172554 0px, transparent 50%)) !important;
-	background-color: #0f172a !important;
 }
 /* Panels use colored glass: article/sidebar color mixed with opacity */
 .era-glass .top-header {
@@ -209,7 +208,7 @@
 }
 
 /* === ERA: MODERN SLEEK === */
-.era-modern body {
+body.era-modern {
 	background: var(--custom-body-color, #09090b) !important;
 }
 .era-modern .top-header {
@@ -306,7 +305,7 @@
 .era-modern .text-muted { color: var(--footer-text-color, #a1a1aa) !important; }
 
 /* === ERA: FRUTIGER AERO === */
-.era-frutiger body {
+body.era-frutiger {
 	background: var(--custom-body-color, linear-gradient(180deg, #2b7cd3 0%, #51a7e9 35%, #8fd3f4 60%, #bbf2f6 100%)) !important;
 }
 .era-frutiger .top-header {
