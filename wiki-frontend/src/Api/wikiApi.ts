@@ -75,8 +75,8 @@ export const fetchSystemPresets = async () => {
   return get('/api/Style/presets');
 };
 
-export const fetchUserThemes = async (userId: string) => {
-  return get(`/api/Style/user-themes/${userId}`);
+export const fetchUserThemes = async (userId: string, token?: string) => {
+  return get(`/api/Style/user-themes/${userId}`, token);
 };
 
 export const saveUserTheme = async (theme: Partial<StyleModel>, token: string): Promise<StyleModel> => {

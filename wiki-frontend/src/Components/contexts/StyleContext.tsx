@@ -3,6 +3,7 @@ import { fetchCurrentStyles, fetchSystemPresets, fetchUserThemes, updateStyles }
 import { StyleModel } from '../../types/models';
 import { StyleContextType } from '../../types/contexts';
 import { useUserContext } from './UserContextProvider';
+import { useCookies } from 'react-cookie';
 
 const StyleContext = createContext<StyleContextType>({} as StyleContextType);
 
@@ -91,6 +92,7 @@ export const StyleProvider = ({ children }: { children: React.ReactNode }) => {
   const [styles, setStyles] = useState<StyleModel>(ERA_FALLBACKS.wikipedia as StyleModel);
   const [systemPresets, setSystemPresets] = useState<StyleModel[]>([]);
   const [userThemes, setUserThemes] = useState<StyleModel[]>([]);
+  const [cookies] = useCookies(["jwt_token"]);
   const { decodedTokenContext } = useUserContext();
 
   // Fetch active theme on mount
@@ -110,14 +112,15 @@ export const StyleProvider = ({ children }: { children: React.ReactNode }) => {
   // Fetch user themes when user changes
   const refreshUserThemes = useCallback(() => {
     const userId = decodedTokenContext?.sub;
-    if (!userId) {
+    const token = cookies["jwt_token"];
+    if (!userId || !token) {
       setUserThemes([]);
       return;
     }
-    fetchUserThemes(userId)
+    fetchUserThemes(userId, token)
       .then(data => setUserThemes(data))
       .catch(() => {});
-  }, [decodedTokenContext]);
+  }, [decodedTokenContext, cookies]);
 
   useEffect(() => {
     refreshUserThemes();
