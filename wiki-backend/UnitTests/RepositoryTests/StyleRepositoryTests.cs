@@ -47,8 +47,6 @@ public class StyleRepositoryTests
         _wikiDbContext.Styles.Add(new StyleModel
         {
             IsActive = true,
-            Logo = "default_logo.png",
-            WikiName = "Test Wiki",
             BodyColor = "#ffffff",
             ArticleRightColor = "#eeeeee",
             ArticleRightInnerColor = "#cccccc",
@@ -69,7 +67,6 @@ public class StyleRepositoryTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.IsActive, Is.True);
-        Assert.That(result.WikiName, Is.EqualTo("Test Wiki"));
     }
 
     [Test]
@@ -141,8 +138,6 @@ public class StyleRepositoryTests
         _wikiDbContext.Styles.Add(new StyleModel
         {
             IsActive = true,
-            Logo = "default_logo.png",
-            WikiName = "Test Wiki",
             BodyColor = "#ffffff",
             ArticleRightColor = "#eeeeee",
             ArticleRightInnerColor = "#cccccc",
@@ -162,8 +157,6 @@ public class StyleRepositoryTests
         var updatedStyles = new StyleModel
         {
             Id = 1,
-            Logo = "new_logo.png",
-            WikiName = "New Wiki",
             BodyColor = "#000000",
             ArticleRightColor = "#111111",
             ArticleRightInnerColor = "#222222",
@@ -186,8 +179,6 @@ public class StyleRepositoryTests
         // Assert
         var result = await _wikiDbContext.Styles.SingleOrDefaultAsync();
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Logo, Is.EqualTo(updatedStyles.Logo));
-        Assert.That(result.WikiName, Is.EqualTo(updatedStyles.WikiName));
         Assert.That(result.BodyColor, Is.EqualTo(updatedStyles.BodyColor));
         Assert.That(result.ArticleRightColor, Is.EqualTo(updatedStyles.ArticleRightColor));
         Assert.That(result.ArticleRightInnerColor, Is.EqualTo(updatedStyles.ArticleRightInnerColor));
@@ -210,8 +201,6 @@ public class StyleRepositoryTests
         var updatedStyles = new StyleModel
         {
             Id = 1,
-            Logo = "new_logo.png",
-            WikiName = "New Wiki",
             BodyColor = "#000000",
             ArticleRightColor = "#111111",
             ArticleRightInnerColor = "#222222",
@@ -228,8 +217,6 @@ public class StyleRepositoryTests
         // Assert
         var result = await _wikiDbContext.Styles.SingleOrDefaultAsync();
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Logo, Is.EqualTo(updatedStyles.Logo));
-        Assert.That(result.WikiName, Is.EqualTo(updatedStyles.WikiName));
         Assert.That(result.BodyColor, Is.EqualTo(updatedStyles.BodyColor));
         Assert.That(result.ArticleRightColor, Is.EqualTo(updatedStyles.ArticleRightColor));
         Assert.That(result.ArticleRightInnerColor, Is.EqualTo(updatedStyles.ArticleRightInnerColor));

@@ -8,8 +8,6 @@ public class StyleModel
     public string? UserId { get; set; }
     public string InterfaceEra { get; set; } = "wikipedia";
     public string? ThemeName { get; set; }
-    public string? Logo { get; set; }
-    public string? WikiName { get; set; }
     public string? BodyColor { get; set; }
     public string? ArticleRightColor { get; set; }
     public string? ArticleRightInnerColor { get; set; }

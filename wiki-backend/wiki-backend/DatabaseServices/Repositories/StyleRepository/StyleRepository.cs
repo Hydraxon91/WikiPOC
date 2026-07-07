@@ -50,22 +50,6 @@ public class StyleRepository : IStyleRepository
     public async Task UpdateStylesAsync(StyleModel updatedStyles, IFormFile? logoPictureFile)
     {
         var existingStyles = await _dbContext.Styles.SingleOrDefaultAsync(s => s.IsActive);
-        if (logoPictureFile != null)
-        {
-            if (!ImageStorageService.IsValidFileType(logoPictureFile.FileName))
-                throw new InvalidOperationException("Invalid logo file type. Allowed: png, jpg, jpeg, gif, webp.");
-
-            var fileName = $"logo/logo{Path.GetExtension(logoPictureFile.FileName)}";
-            var filePath = Path.Combine(_picturesPath, fileName);
-            var dir = Path.GetDirectoryName(filePath);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await logoPictureFile.CopyToAsync(fileStream);
-            }
-            updatedStyles.Logo = fileName;
-        }
 
         if (existingStyles != null)
         {
@@ -73,11 +57,9 @@ public class StyleRepository : IStyleRepository
             existingStyles.BodyColor = updatedStyles.BodyColor;
             existingStyles.ArticleRightColor = updatedStyles.ArticleRightColor;
             existingStyles.ArticleRightInnerColor = updatedStyles.ArticleRightInnerColor;
-            existingStyles.WikiName = updatedStyles.WikiName;
             existingStyles.FooterListLinkTextColor = updatedStyles.FooterListLinkTextColor;
             existingStyles.FooterListTextColor = updatedStyles.FooterListTextColor;
             existingStyles.FontFamily = updatedStyles.FontFamily;
-            existingStyles.Logo = updatedStyles.Logo ?? existingStyles.Logo;
             existingStyles.InterfaceEra = updatedStyles.InterfaceEra;
             existingStyles.ThemeName = updatedStyles.ThemeName;
             existingStyles.GlassBgOpacity = updatedStyles.GlassBgOpacity;

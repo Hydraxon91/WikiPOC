@@ -97,7 +97,6 @@ export const activateTheme = async (id: number, token: string): Promise<void> =>
 
 export const updateStyles = async (newStyles, logoPictureFile, token) => {
   const formData = new FormData();
-  formData.append('styleUpdateForm.StyleModel.WikiName', newStyles.wikiName);
   formData.append('styleUpdateForm.StyleModel.BodyColor', newStyles.bodyColor);
   formData.append('styleUpdateForm.StyleModel.ArticleRightColor', newStyles.articleRightColor);
   formData.append('styleUpdateForm.StyleModel.ArticleRightInnerColor', newStyles.articleRightInnerColor);
@@ -112,9 +111,19 @@ export const updateStyles = async (newStyles, logoPictureFile, token) => {
   formData.append('styleUpdateForm.StyleModel.BgMeshGradient', newStyles.bgMeshGradient ?? '');
   formData.append('styleUpdateForm.StyleModel.BorderRadius', newStyles.borderRadius ?? '');
   formData.append('styleUpdateForm.StyleModel.BorderStyle', newStyles.borderStyle ?? '');
-  formData.append('styleUpdateForm.LogoPictureFile', logoPictureFile);
 
   return putForm('/api/Style', formData, token);
+};
+
+export const fetchSiteSettings = async () => {
+  return get('/api/SiteSettings');
+};
+
+export const updateSiteSettings = async (wikiName: string, logoFile: File | null, token: string) => {
+  const formData = new FormData();
+  formData.append('wikiName', wikiName);
+  if (logoFile) formData.append('logoFile', logoFile);
+  return putForm('/api/SiteSettings', formData, token);
 };
 
 export const getLogo = async(pictureString) => {

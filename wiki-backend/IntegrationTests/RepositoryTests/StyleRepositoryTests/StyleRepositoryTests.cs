@@ -29,8 +29,6 @@ namespace IntegrationTests.Repositories
                 IsActive = true,
                 IsSystemPreset = true,
                 InterfaceEra = "wikipedia",
-                Logo = "logo/logo_pfp.png",
-                WikiName = "Your Wiki",
                 BodyColor = "#507ced",
                 ArticleRightColor = "#3c5fb8",
                 ArticleRightInnerColor = "#2b4ea6",
@@ -67,8 +65,7 @@ namespace IntegrationTests.Repositories
             {
                 IsActive = true,
                 InterfaceEra = "wikipedia",
-                Logo = "logo/logo_pfp.png",
-                WikiName = "Your Wiki",
+
                 BodyColor = "#507ced",
                 ArticleRightColor = "#3c5fb8",
                 ArticleRightInnerColor = "#2b4ea6",
@@ -90,8 +87,7 @@ namespace IntegrationTests.Repositories
             var updatedStyles = new StyleModel
             {
                 InterfaceEra = "glass",
-                Logo = "logo/logo_pfp.png",
-                WikiName = "Your Wiki",
+
                 BodyColor = "#527ced",
                 ArticleRightColor = "#3c5fb8",
                 ArticleRightInnerColor = "#2b4ea6",

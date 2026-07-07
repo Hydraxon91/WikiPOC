@@ -117,6 +117,21 @@
 .era-wikipedia .article {
 	background: var(--article-color, #ffffff) !important;
 }
+.era-wikipedia .wiki-navbar {
+	background: var(--article-right-inner-color, #eaecf0);
+	color: var(--footer-text-color, #202122);
+	border-radius: 0;
+	display: flex;
+	width: 100%;
+}
+.era-wikipedia .wiki-navbar-button {
+	background: var(--article-right-inner-color, #eaecf0);
+	color: var(--footer-text-color, #202122);
+	padding: 0.3em 1em;
+}
+.era-wikipedia .wiki-navbar-button-active {
+	background: color-mix(in srgb, var(--article-right-inner-color, #eaecf0) 85%, black);
+}
 .era-wikipedia body {
 	background: var(--custom-body-color, #f8f9fa) !important;
 }
@@ -175,6 +190,23 @@
 	overflow: hidden !important;
 }
 .era-glass a { color: var(--footer-link-color, #1d305e); }
+.era-glass .wiki-navbar {
+	background: color-mix(in srgb, var(--article-right-inner-color, #2b4ea6) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border-radius: var(--custom-border-radius, 12px) var(--custom-border-radius, 12px) 0 0 !important;
+	display: flex;
+	width: 100%;
+}
+.era-glass .wiki-navbar-button {
+	background: transparent;
+	color: var(--footer-text-color, #233a71);
+	padding: 0.3em 1em;
+}
+.era-glass .wiki-navbar-button-active {
+	background: rgba(255, 255, 255, 0.15) !important;
+	border-bottom: 2px solid var(--footer-link-color, #1d305e);
+}
 
 /* === ERA: MODERN SLEEK === */
 .era-modern body {
@@ -203,6 +235,23 @@
 	margin-top: 1.5rem !important;
 }
 .era-modern a { color: var(--footer-link-color, #6366f1); }
+.era-modern .wiki-navbar {
+	background: var(--article-right-inner-color, #2a2f45);
+	color: var(--footer-text-color, #ffffff);
+	display: flex;
+	width: 100%;
+	border-bottom: 1px solid var(--footer-link-color, #6366f1) !important;
+	border-radius: 0;
+}
+.era-modern .wiki-navbar-button {
+	background: transparent;
+	color: var(--footer-text-color, #ffffff);
+	padding: 0.3em 1em;
+}
+.era-modern .wiki-navbar-button-active {
+	background: rgba(99, 102, 241, 0.15) !important;
+	border-bottom: 2px solid var(--footer-link-color, #6366f1);
+}
 .era-modern .sidebar {
 	background: var(--custom-sidebar-color, #121214) !important;
 	border: none !important;
@@ -284,6 +333,23 @@
 	margin-top: 1.5rem !important;
 }
 .era-frutiger a { color: var(--footer-link-color, #1565c0); }
+.era-frutiger .wiki-navbar {
+	background: linear-gradient(to bottom, var(--article-right-inner-color, #66bb6a), color-mix(in srgb, var(--article-right-inner-color, #66bb6a) 80%, #000)) !important;
+	color: #ffffff !important;
+	display: flex;
+	width: 100%;
+	border-radius: 24px 24px 0 0 !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+.era-frutiger .wiki-navbar-button {
+	background: transparent;
+	color: #ffffff;
+	padding: 0.3em 1em;
+}
+.era-frutiger .wiki-navbar-button-active {
+	background: rgba(255, 255, 255, 0.25) !important;
+	border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+}
 .era-frutiger .btn {
 	background: linear-gradient(to bottom, #7cd97c 0%, #4caf50 40%, #2e7d32 100%) !important;
 	color: #ffffff !important;
@@ -332,6 +398,13 @@
 }
 .article > *:first-child {
 	margin-top: 0 !important;
+}
+
+/* === NESTED ARTICLE CONTENT (inside the main article) === */
+.wiki-article-content {
+	height: fit-content;
+	width: 100%;
+	box-sizing: border-box;
 }
 .era-glass .form-control,
 .era-glass input {
@@ -855,7 +928,7 @@ a:hover {
 	border-top: 1px solid #f3f3f3;
 	border-bottom: 1px solid #f3f3f3;
 	height: fit-content;
-	width: 98%;
+	/* width: 98%; */
 }
 .article p {
 	line-height: inherit;

@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from 'react-router-dom';
-import { useStyleContext } from '../../../Components/contexts/StyleContext';
+import { useSiteSettings } from '../../../Components/contexts/SiteSettingsContext';
 import { getLogo } from "../../../Api/wikiApi";
 import '../Styles/headercomponent.css';
 const HeaderComponent = ({userName, userRole, children}) => { 
-    const { styles }  = useStyleContext();
+    const { settings } = useSiteSettings();
     const [imageSrc, setImageSrc] = useState("/img/logo.png");
     const [title, setTitle] = useState("Default Title");
     const blobUrlRef = useRef(null);
 
     useEffect(()=>{
-        if (styles && styles.logo) {
-            setTitle(styles.wikiName);
-            getLogo(styles.logo)
+        if (settings?.logo) {
+            setTitle(settings.wikiName || 'WikiPOC');
+            getLogo(settings.logo)
                 .then(data => {
                     if (data instanceof Blob) {
                         if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
@@ -31,7 +31,7 @@ const HeaderComponent = ({userName, userRole, children}) => {
                     setImageSrc("/img/logo.png");
                 });
         }
-    },[styles.logo])
+    },[settings?.logo, settings?.wikiName])
 
     return (
         <div className="top-header">

@@ -32,8 +32,6 @@ public class StyleControllerTests : IntegrationTestBase
                 IsActive = true,
                 IsSystemPreset = true,
                 InterfaceEra = "wikipedia",
-                Logo = "logo/logo_pfp.png",
-                WikiName = "Your Wiki",
                 BodyColor = "#507ced",
                 ArticleRightColor = "#3c5fb8",
                 ArticleRightInnerColor = "#2b4ea6",
@@ -112,8 +110,6 @@ public class StyleControllerTests : IntegrationTestBase
         // Prepare the update model with the same Id
         var updatedStyle = new StyleModel
         {
-            WikiName = "NewStyle",
-            Logo = "newlogo.png",
             BodyColor = "#000000"
         };
 
@@ -130,7 +126,6 @@ public class StyleControllerTests : IntegrationTestBase
         Assert.That(result, Is.InstanceOf<OkObjectResult>());
         var updatedStyleInDb = await DbContext.Styles.FindAsync(style!.Id);
         
-        Assert.That(updatedStyleInDb!.WikiName, Is.EqualTo("NewStyle"));
         Assert.That(updatedStyleInDb!.BodyColor, Is.EqualTo("#000000"));
     }
 

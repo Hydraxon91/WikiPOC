@@ -24,29 +24,11 @@ const rgbToHex = (color: string) => {
 const ManualEditStylesComponent = ({
   handleChange,
   newStyles,
-  handleLogoPictureChange,
 }) => {
   return (
     <div>
-      {/* === CORE CONFIG === */}
-      <h3 style={{ marginTop: 0 }}>Core Configuration</h3>
-
-      <div className="form-group edit_logo">
-        <p>Logo Picture:</p>
-        <label htmlFor="logo-upload" className="era-button">
-          <input id="logo-upload" type="file" accept="image/*" onChange={handleLogoPictureChange} hidden />
-          Choose Logo
-        </label>
-      </div>
-
-      <div className="form-group">
-        <label>Wiki Name:</label>
-        <input
-          type="text"
-          value={newStyles.wikiName || ""}
-          onChange={(e) => handleChange("wikiName", e.target.value)}
-        />
-      </div>
+      {/* === FONT CONFIG === */}
+      <h3 style={{ marginTop: 0 }}>Font Family</h3>
 
       <div className="form-group font-change">
         <label>Font Family:</label>

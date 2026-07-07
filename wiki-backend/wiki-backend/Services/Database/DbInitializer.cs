@@ -36,6 +36,7 @@ public class DbInitializer : IHostedService
         await SeedCategoriesAsync();
         await SeedWikiPagesAsync();
         await SeedStylesAsync();
+        await SeedSiteSettingsAsync();
         await SeedForumTopicsAsync();
         await SeedCommentsAsync();
     }
@@ -371,8 +372,6 @@ public class DbInitializer : IHostedService
                     IsSystemPreset = true,
                     InterfaceEra = "wikipedia",
                     ThemeName = "Wikipedia Classic",
-                    Logo = "logo/logo_pfp.png",
-                    WikiName = "Your Wiki",
                     BodyColor = "#f8f9fa",
                     ArticleColor = "#ffffff",
                     ArticleRightColor = "#f8f9fa",
@@ -447,6 +446,22 @@ public class DbInitializer : IHostedService
                     BorderRadius = "24px",
                     BorderStyle = "1px solid rgba(255,255,255,0.35)",
                 },
+            });
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
+    private async Task SeedSiteSettingsAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
+
+        if (!await dbContext.SiteSettings.AnyAsync())
+        {
+            dbContext.SiteSettings.Add(new SiteSettings
+            {
+                WikiName = "WikiPOC",
+                Logo = "logo/logo_pfp.png",
             });
             await dbContext.SaveChangesAsync();
         }

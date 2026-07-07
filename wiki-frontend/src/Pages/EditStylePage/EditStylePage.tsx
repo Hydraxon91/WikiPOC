@@ -17,7 +17,6 @@ const EditStylePage = ({ jwtToken }) => {
   const { decodedTokenContext } = useUserContext();
   const { showNotification } = useNotification();
 
-  const [logoPicture, setLogoPicture] = useState(null);
   const [newStyles, setNewStyles] = useState(styles);
   const [backUpStyles, setBackupStyles] = useState(styles);
   const [activeTab, setActiveTab] = useState<"presets" | "manual">("presets");
@@ -36,9 +35,6 @@ const EditStylePage = ({ jwtToken }) => {
   // Load theme into both editor state and live preview
   const handleLoadTheme = (theme: StyleModel) => {
     const merged = applyEraFallbacks(theme);
-    // Preserve the user's wiki name and logo when switching presets
-    merged.wikiName = merged.wikiName || newStyles.wikiName;
-    merged.logo = merged.logo || newStyles.logo;
     setNewStyles(merged);
     setStyles(merged);
   };
@@ -59,10 +55,6 @@ const EditStylePage = ({ jwtToken }) => {
 
   const handleChange = (field: string, value: any) => {
     setNewStyles((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleLogoPictureChange = (event: any) => {
-    setLogoPicture(event.target.files[0]);
   };
 
   // Save as custom theme
@@ -118,7 +110,7 @@ const EditStylePage = ({ jwtToken }) => {
     setSaving(true);
     try {
       console.log("Updating styles with token:", jwtToken.substring(0, 20) + "...");
-      await updateStyles(newStyles, logoPicture, jwtToken);
+      await updateStyles(newStyles, null, jwtToken);
       setBackupStyles(prev => ({ ...prev, ...newStyles }));
       const fresh = await fetchCurrentStyles();
       setStyles(fresh);
@@ -168,6 +160,10 @@ const EditStylePage = ({ jwtToken }) => {
           </button>
         </div>
 
+        <div style={{ marginBottom: '1em', padding: '0.5em', background: 'rgba(255,255,255,0.06)', borderRadius: 6 }}>
+          Wiki name &amp; logo are managed on the <a href="/site-settings" style={{ color: styles.footerListLinkTextColor }}>Site Settings</a> page.
+        </div>
+
         {/* Tab content */}
         {activeTab === "presets" && (
           <>
@@ -180,7 +176,6 @@ const EditStylePage = ({ jwtToken }) => {
           <ManualEditStylesComponent
             handleChange={handleChange}
             newStyles={newStyles}
-            handleLogoPictureChange={handleLogoPictureChange}
           />
         )}
 
