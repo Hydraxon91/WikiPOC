@@ -109,6 +109,7 @@ public class StyleRepository : IStyleRepository
                         .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsActive, true));
 
                     await transaction.CommitAsync();
+                    _dbContext.ChangeTracker.Clear();
                 }
                 catch
                 {
