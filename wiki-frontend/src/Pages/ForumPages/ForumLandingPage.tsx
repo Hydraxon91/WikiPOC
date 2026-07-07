@@ -3,6 +3,7 @@ import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { Link } from 'react-router-dom';
 import { getForumTopics } from '../../Api/forumApi';
+import { searchForumTopics } from '../../Api/wikiSearch';
 import { formatDate } from '../../utils/formatDate';
 import Breadcrumbs from './Components/Breadcrumbs';
 import LoadingSpinner from '../../Components/LoadingSpinner';
@@ -15,10 +16,28 @@ const ForumLandingPage = () => {
     const { decodedTokenContext } = useUserContext();
     const role = decodedTokenContext?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
     const canCreateTopic = role === 'Admin' || role === 'Owner' || role === 'Moderator';
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState(null);
 
     useEffect(() => {
         fetchForumTopics();
     }, []);
+
+    useEffect(() => {
+        if (!searchQuery.trim()) {
+            setSearchResults(null);
+            return;
+        }
+        const timer = setTimeout(async () => {
+            try {
+                const results = await searchForumTopics(searchQuery);
+                setSearchResults(results);
+            } catch {
+                setSearchResults([]);
+            }
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     
     const getCommentsLength = (topic) =>{
@@ -85,6 +104,13 @@ const ForumLandingPage = () => {
     return (
         <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}> 
         <Breadcrumbs/>
+        <input
+            type="text"
+            placeholder="Search forum topics..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ width: '100%', padding: '0.5em', marginBottom: '0.5em', fontSize: '1em', border: '1px solid ' + styles.footerListLinkTextColor, borderRadius: '4px', backgroundColor: styles.bodyColor, color: '#fff', fontFamily: styles.fontFamily, boxSizing: 'border-box', outline: 'none' }}
+        />
         {canCreateTopic && (
           <div style={{ textAlign: 'right', marginBottom: '8px' }}>
             <Link to="/forum/create-topic" className="modular-button" style={{ backgroundColor: styles.articleColor, padding: '8px 16px', borderRadius: '4px', color: '#fff', textDecoration: 'none' }}>
@@ -99,7 +125,7 @@ const ForumLandingPage = () => {
                 <div className="header-cell">Posts</div>
                 <div className="header-cell">Last Post</div>
             </div>
-            {topics.map(topic => (
+            {(searchResults !== null ? searchResults : topics).map(topic => (
                 <div className="grid-row" key={topic.id}>
                     <div className="grid-cell title">
                         <span className="topic-status read"></span>
