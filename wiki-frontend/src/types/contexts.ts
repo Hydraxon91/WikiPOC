@@ -1,10 +1,14 @@
-import { ReactNode, Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { StyleModel } from './models';
 
 export interface StyleContextType {
   styles: StyleModel;
   setStyles: Dispatch<SetStateAction<StyleModel>>;
   updateStyles: (styles: StyleModel, logo?: File | null, jwtToken?: string) => void;
+  systemPresets: StyleModel[];
+  userThemes: StyleModel[];
+  refreshUserThemes: () => void;
+  loadTheme: (theme: StyleModel) => void;
 }
 
 export interface DecodedToken {

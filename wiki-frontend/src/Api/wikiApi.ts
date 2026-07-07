@@ -70,6 +70,14 @@ export const fetchCurrentStyles = async () => {
   return get('/api/Style');
 };
 
+export const fetchSystemPresets = async () => {
+  return get('/api/Style/presets');
+};
+
+export const fetchUserThemes = async (userId: string) => {
+  return get(`/api/Style/user-themes/${userId}`);
+};
+
 export const updateStyles = async (newStyles, logoPictureFile, token) => {
   const formData = new FormData();
   formData.append('styleUpdateForm.StyleModel.WikiName', newStyles.wikiName);

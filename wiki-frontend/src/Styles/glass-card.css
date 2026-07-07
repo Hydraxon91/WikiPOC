@@ -1,0 +1,85 @@
+/* === SHARED GLASS CARD (Forum + Wiki comment engines) === */
+
+.glass-card {
+	background: var(--glass-panel, rgba(82, 108, 173, 0.25));
+	backdrop-filter: blur(var(--glass-blur-radius, 0px));
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, 0px));
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, 0.12));
+	border-radius: var(--custom-border-radius, 8px);
+	padding: 1rem;
+	margin-bottom: 0.75rem;
+	transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.glass-card:hover {
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* === NESTED THREAD DEPTH (proportional blur) === */
+.glass-card.depth-1 {
+	background: color-mix(in srgb, var(--glass-panel, #526cad) 70%, transparent);
+	backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.6));
+	-webkit-backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.6));
+	margin-left: 1.5rem;
+}
+
+.glass-card.depth-2 {
+	background: color-mix(in srgb, var(--glass-panel, #526cad) 50%, transparent);
+	backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.4));
+	-webkit-backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.4));
+	margin-left: 3rem;
+}
+
+/* === QUOTE / BLOCKQUOTE STYLING === */
+.glass-card.quote,
+.quoted-comment {
+	background: color-mix(in srgb, var(--article-right-color, #3c5fb8) 15%, transparent);
+	border-left: 3px solid var(--article-right-color, #3c5fb8);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	margin: 0.5rem 0 0.5rem 1rem;
+	padding: 0.6rem;
+	border-radius: 0 6px 6px 0;
+}
+
+/* === ERA-SCOPED OVERRIDES === */
+
+/* Wikipedia — flat, opaque, sharp */
+.era-wikipedia .glass-card {
+	background: var(--article-color, #ffffff) !important;
+	backdrop-filter: none !important;
+	border: 1px solid #a2a9b1 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+}
+.era-wikipedia .glass-card.depth-1 {
+	background: #f8f9fa !important;
+	backdrop-filter: none !important;
+}
+.era-wikipedia .glass-card.depth-2 {
+	background: #f0f2f5 !important;
+	backdrop-filter: none !important;
+}
+
+/* Modern — dark, crisp, thin borders */
+.era-modern .glass-card {
+	background: rgba(26, 29, 39, 0.95) !important;
+	backdrop-filter: none !important;
+	border: 1px solid rgba(255, 255, 255, 0.04) !important;
+	border-radius: 4px !important;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+.era-modern .glass-card:hover {
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Frutiger — gloss overlay, deep shadows, large radius */
+.era-frutiger .glass-card {
+	border-radius: 24px !important;
+	box-shadow: 0 8px 32px rgba(27, 94, 32, 0.2) !important;
+}
+.era-frutiger .glass-card:hover {
+	box-shadow: 0 12px 48px rgba(27, 94, 32, 0.3),
+		0 4px 12px rgba(0, 0, 0, 0.15) !important;
+	transform: translateY(-2px);
+}

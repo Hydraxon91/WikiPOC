@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using wiki_backend.Contracts;
 using wiki_backend.Controllers;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.Models;
@@ -27,11 +24,14 @@ public class StyleControllerTests : IntegrationTestBase
         _controller = new StyleController(_styleRepository);
         ResetDatabase();
         await EnsureUserRoleExistsAsync();
-        // Seed a default style (was previously provided by HasData in OnModelCreating)
+        // Seed a default active style
         if (!await DbContext.Styles.AnyAsync())
         {
             DbContext.Styles.Add(new StyleModel
             {
+                IsActive = true,
+                IsSystemPreset = true,
+                InterfaceEra = "wikipedia",
                 Logo = "logo/logo_pfp.png",
                 WikiName = "Your Wiki",
                 BodyColor = "#507ced",
@@ -41,18 +41,24 @@ public class StyleControllerTests : IntegrationTestBase
                 FooterListLinkTextColor = "#1d305e",
                 FooterListTextColor = "#233a71",
                 FontFamily = "Arial, sans-serif",
+                GlassBgOpacity = 1.0,
+                GlassBlurRadius = 0,
+                GlassBorderReflection = 0,
+                BgMeshGradient = "none",
+                BorderRadius = "0px",
+                BorderStyle = "1px solid #a2a9b1",
             });
             await DbContext.SaveChangesAsync();
         }
     }
 
     [Test]
-    public async Task GetStyles_ShouldReturnStyles()
+    public async Task GetActiveStyles_ShouldReturnActiveStyle()
     {
         // Arrange
         var style = await DbContext.Styles.FirstOrDefaultAsync();
         // Act
-        var result = await _controller.GetStyles();
+        var result = await _controller.GetActiveStyles();
 
         // Assert
         Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
@@ -61,6 +67,29 @@ public class StyleControllerTests : IntegrationTestBase
         
         Assert.That(returnedStyle, Is.Not.Null);
         Assert.That(returnedStyle, Is.EqualTo(style));
+    }
+
+    [Test]
+    public async Task GetSystemPresets_ShouldReturnPresets()
+    {
+        // Arrange — seed 4 system presets
+        DbContext.Styles.RemoveRange(await DbContext.Styles.ToListAsync());
+        DbContext.Styles.AddRange(
+            new StyleModel { IsSystemPreset = true, InterfaceEra = "wikipedia", IsActive = true, ThemeName = "Wikipedia Classic" },
+            new StyleModel { IsSystemPreset = true, InterfaceEra = "glass", IsActive = false, ThemeName = "Liquid Glass" },
+            new StyleModel { IsSystemPreset = true, InterfaceEra = "modern", IsActive = false, ThemeName = "Modern Sleek" },
+            new StyleModel { IsSystemPreset = true, InterfaceEra = "frutiger", IsActive = false, ThemeName = "Frutiger Aero" }
+        );
+        await DbContext.SaveChangesAsync();
+
+        // Act
+        var result = await _controller.GetSystemPresets();
+
+        // Assert
+        Assert.That(result.Result, Is.InstanceOf<OkObjectResult>());
+        var okResult = result.Result as OkObjectResult;
+        var presets = okResult!.Value as List<StyleModel>;
+        Assert.That(presets, Has.Count.EqualTo(4));
     }
 
     [Test]
@@ -103,5 +132,40 @@ public class StyleControllerTests : IntegrationTestBase
         
         Assert.That(updatedStyleInDb!.WikiName, Is.EqualTo("NewStyle"));
         Assert.That(updatedStyleInDb!.BodyColor, Is.EqualTo("#000000"));
+    }
+
+    [Test]
+    public async Task ActivateTheme_ShouldSwapActiveTheme()
+    {
+        // Arrange
+        var email = "admin_activate@example.com";
+        var username = "activate_admin";
+        var password = "@AdminPassword123";
+        await CreateAdminUserAsync(email, username, password);
+        var token = await GetValidUserToken(email, username, password);
+
+        _controller.ControllerContext.HttpContext = new DefaultHttpContext
+        {
+            Request = { Headers = { ["Authorization"] = $"Bearer {token}" } }
+        };
+
+        // Seed two themes
+        DbContext.Styles.RemoveRange(await DbContext.Styles.ToListAsync());
+        DbContext.Styles.AddRange(
+            new StyleModel { InterfaceEra = "wikipedia", IsActive = true, IsSystemPreset = true, ThemeName = "Wikipedia Classic" },
+            new StyleModel { InterfaceEra = "glass", IsActive = false, IsSystemPreset = true, ThemeName = "Liquid Glass" }
+        );
+        await DbContext.SaveChangesAsync();
+        var glassTheme = await DbContext.Styles.FirstAsync(s => s.InterfaceEra == "glass");
+
+        // Act
+        var result = await _controller.ActivateTheme(glassTheme.Id);
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<OkObjectResult>());
+        var wikipediaTheme = await DbContext.Styles.FirstAsync(s => s.InterfaceEra == "wikipedia");
+        var glassThemeAfter = await DbContext.Styles.FirstAsync(s => s.InterfaceEra == "glass");
+        Assert.That(wikipediaTheme.IsActive, Is.False);
+        Assert.That(glassThemeAfter.IsActive, Is.True);
     }
 }

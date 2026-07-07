@@ -34,7 +34,7 @@ const HeaderComponent = ({userName, userRole, children}) => {
     },[styles.logo])
 
     return (
-        <div className="top-header" style={{ background: styles.bodyColor ? `linear-gradient(to bottom, ${styles.bodyColor}, ${styles.articleColor})` : '' }}>
+        <div className="top-header">
             {children}
             <div className="logo-container">
                 <Link to="/"><img src={imageSrc} alt="logo" className="site-logo"/></Link>

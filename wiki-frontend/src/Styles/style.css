@@ -2,6 +2,193 @@
 	font-family: "Linux Libertine";
 	src: url("fonts/LinLibertine_RZ.woff") format('woff');
 }
+
+/* === LIQUID GLASS DESIGN TOKENS === */
+:root {
+	--custom-body-color: #f8f9fa;
+	--custom-header-color: #ffffff;
+	--custom-sidebar-color: #ffffff;
+	--custom-border-radius: 0px;
+	--custom-border-style: 1px solid #a2a9b1;
+	--glass-bg-opacity: 1;
+	--glass-blur-radius: 0px;
+	--glass-border-reflection: 0;
+	--bg-mesh-gradient: none;
+}
+
+/* === BOOTSTRAP SPECIFICITY SHIELDS === */
+.era-wikipedia input[type="text"],
+.era-wikipedia input[type="email"],
+.era-wikipedia input[type="password"],
+.era-wikipedia input[type="color"],
+.era-wikipedia input[type="file"],
+.era-wikipedia select,
+.era-wikipedia textarea,
+.era-wikipedia .form-control {
+	background: #ffffff !important;
+	color: #202122 !important;
+	border: var(--custom-border-style, 1px solid #a2a9b1) !important;
+	border-radius: 0 !important;
+}
+.era-wikipedia .btn,
+.era-wikipedia .comment-button {
+	background: #f8f9fa !important;
+	border: 1px solid #a2a9b1 !important;
+	color: #202122 !important;
+	border-radius: 0 !important;
+}
+.era-wikipedia a {
+	color: #0645ad;
+}
+
+.era-glass input[type="text"],
+.era-glass input[type="email"],
+.era-glass input[type="password"],
+.era-glass input[type="color"],
+.era-glass input[type="file"],
+.era-glass select,
+.era-glass textarea,
+.era-glass .form-control {
+	background: rgba(255, 255, 255, 0.08) !important;
+	color: var(--footer-list-text-color, #233a71) !important;
+	border: 1px solid rgba(255, 255, 255, 0.15) !important;
+	border-radius: var(--custom-border-radius, 6px) !important;
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+}
+.era-glass .btn,
+.era-glass .comment-button,
+.era-glass .fp-comment-button {
+	background: rgba(60, 95, 184, 0.5) !important;
+	border: 1px solid rgba(255, 255, 255, 0.15) !important;
+	color: #ffffff !important;
+	border-radius: var(--custom-border-radius, 6px) !important;
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+}
+.era-glass a {
+	color: var(--footer-link-color, #1d305e);
+}
+.era-glass a:hover {
+	color: color-mix(in srgb, var(--footer-link-color, #1d305e) 80%, black);
+}
+
+.era-modern input[type="text"],
+.era-modern input[type="email"],
+.era-modern input[type="password"],
+.era-modern input[type="color"],
+.era-modern input[type="file"],
+.era-modern select,
+.era-modern textarea,
+.era-modern .form-control {
+	background: rgba(26, 29, 39, 0.95) !important;
+	color: #e0e0e0 !important;
+	border: 1px solid rgba(255, 255, 255, 0.08) !important;
+	border-radius: 4px !important;
+}
+.era-modern .btn,
+.era-modern .comment-button {
+	background: rgba(108, 99, 255, 0.9) !important;
+	border: 1px solid rgba(255, 255, 255, 0.06) !important;
+	color: #ffffff !important;
+	border-radius: 4px !important;
+}
+.era-modern a {
+	color: #6c63ff;
+}
+
+.era-frutiger input[type="text"],
+.era-frutiger input[type="email"],
+.era-frutiger input[type="password"],
+.era-frutiger input[type="color"],
+.era-frutiger input[type="file"],
+.era-frutiger select,
+.era-frutiger textarea,
+.era-frutiger .form-control {
+	background: rgba(255, 255, 255, 0.15) !important;
+	color: #1b5e20 !important;
+	border: 1px solid rgba(255, 255, 255, 0.35) !important;
+	border-radius: 12px !important;
+}
+.era-frutiger .btn,
+.era-frutiger .comment-button {
+	background: linear-gradient(180deg, #66bb6a, #43a047) !important;
+	border: 1px solid rgba(255, 255, 255, 0.35) !important;
+	color: #ffffff !important;
+	border-radius: 24px !important;
+	box-shadow: 0 4px 16px rgba(27, 94, 32, 0.3) !important;
+}
+.era-frutiger a {
+	color: #1565c0;
+}
+
+/* === ERA-SCOPED LAYOUT OVERRIDES === */
+.era-wikipedia .sidebar {
+	background: transparent;
+	backdrop-filter: none;
+	border-right: 1px solid #a2a9b1;
+	border-radius: 0;
+}
+.era-wikipedia .article {
+	border: 1px solid #a2a9b1;
+}
+
+.era-glass .sidebar {
+	background: rgba(82, 108, 173, 0.3) !important;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	border-right: 1px solid rgba(255, 255, 255, var(--glass-border-reflection, 0.1));
+}
+.era-glass table td {
+	border-color: color-mix(in srgb, var(--footer-text-color, #233a71) 20%, transparent);
+}
+
+.era-modern .sidebar {
+	background: rgba(26, 29, 39, 0.95) !important;
+	backdrop-filter: none;
+	border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+.era-modern table td {
+	border-color: rgba(255, 255, 255, 0.06);
+}
+
+.era-frutiger .sidebar {
+	border-radius: 0 24px 24px 0;
+	background: rgba(232, 245, 233, 0.9) !important;
+	box-shadow: 4px 0 24px rgba(27, 94, 32, 0.15);
+	backdrop-filter: none;
+}
+
+/* === FRUTIGER AERO GLOSS EFFECT === */
+.era-frutiger .frutiger-gloss-effect {
+	position: relative;
+	overflow: hidden;
+}
+.era-frutiger .frutiger-gloss-effect::before {
+	content: '';
+	position: absolute;
+	top: 0; left: 0; right: 0;
+	height: 50%;
+	background: linear-gradient(180deg,
+		rgba(255, 255, 255, 0.35) 0%,
+		rgba(255, 255, 255, 0.15) 40%,
+		transparent 100%
+	);
+	pointer-events: none;
+	z-index: 1;
+	border-radius: inherit;
+}
+
+/* === PROPORTIONAL NESTED BLUR (AGENTS.md rule #9) === */
+.era-glass .glass-card.depth-1 {
+	backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.6));
+	-webkit-backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.6));
+}
+.era-glass .glass-card.depth-2 {
+	backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.4));
+	-webkit-backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.4));
+}
+
 html {
 	font-family: sans-serif;
 	-ms-text-size-adjust: 100%;

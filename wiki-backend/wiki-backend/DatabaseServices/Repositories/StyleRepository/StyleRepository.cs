@@ -11,15 +11,40 @@ public class StyleRepository : IStyleRepository
     private readonly WikiDbContext _dbContext;
     private readonly string _picturesPath;
 
-    public StyleRepository(WikiDbContext dbContext, IOptions<StorageSettings> storageSettings) 
+    public StyleRepository(WikiDbContext dbContext, IOptions<StorageSettings> storageSettings)
     {
         _dbContext = dbContext;
         _picturesPath = storageSettings.Value.PicturesPath;
     }
 
-    public async Task<StyleModel> GetStylesAsync()
+    public async Task<StyleModel> GetActiveStylesAsync()
     {
-        return (await _dbContext.Styles.SingleOrDefaultAsync())!;
+        return await _dbContext.Styles
+            .SingleOrDefaultAsync(s => s.IsActive)
+            ?? throw new InvalidOperationException("No active theme configured.");
+    }
+
+    public async Task<List<StyleModel>> GetSystemPresetsAsync()
+    {
+        return await _dbContext.Styles
+            .Where(s => s.IsSystemPreset)
+            .ToListAsync();
+    }
+
+    public async Task<List<StyleModel>> GetUserThemesAsync(string userId)
+    {
+        return await _dbContext.Styles
+            .Where(s => s.UserId == userId)
+            .ToListAsync();
+    }
+
+    public async Task<StyleModel> CreateUserThemeAsync(StyleModel theme)
+    {
+        theme.IsSystemPreset = false;
+        theme.IsActive = false;
+        _dbContext.Styles.Add(theme);
+        await _dbContext.SaveChangesAsync();
+        return theme;
     }
 
     public async Task UpdateStylesAsync(StyleModel updatedStyles, IFormFile? logoPictureFile)
@@ -38,7 +63,7 @@ public class StyleRepository : IStyleRepository
             }
             updatedStyles.Logo = fileName;
         }
-        
+
         if (existingStyles != null)
         {
             existingStyles.ArticleColor = updatedStyles.ArticleColor;
@@ -50,11 +75,53 @@ public class StyleRepository : IStyleRepository
             existingStyles.FooterListTextColor = updatedStyles.FooterListTextColor;
             existingStyles.FontFamily = updatedStyles.FontFamily;
             existingStyles.Logo = updatedStyles.Logo ?? existingStyles.Logo;
+            existingStyles.InterfaceEra = updatedStyles.InterfaceEra;
+            existingStyles.ThemeName = updatedStyles.ThemeName;
+            existingStyles.GlassBgOpacity = updatedStyles.GlassBgOpacity;
+            existingStyles.GlassBlurRadius = updatedStyles.GlassBlurRadius;
+            existingStyles.GlassBorderReflection = updatedStyles.GlassBorderReflection;
+            existingStyles.BgMeshGradient = updatedStyles.BgMeshGradient;
+            existingStyles.BorderRadius = updatedStyles.BorderRadius;
+            existingStyles.BorderStyle = updatedStyles.BorderStyle;
         }
         else
         {
             _dbContext.Styles.Add(updatedStyles);
         }
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task ActivateThemeAsync(int id)
+    {
+        if (_dbContext.Database.IsRelational())
+        {
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                await _dbContext.Styles
+                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsActive, false));
+
+                await _dbContext.Styles
+                    .Where(s => s.Id == id)
+                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsActive, true));
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        else
+        {
+            var allStyles = await _dbContext.Styles.ToListAsync();
+            foreach (var style in allStyles)
+                style.IsActive = false;
+            var target = allStyles.FirstOrDefault(s => s.Id == id);
+            if (target != null)
+                target.IsActive = true;
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
