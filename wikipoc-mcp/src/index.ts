@@ -12,7 +12,7 @@ dotenv.config({ path: resolve(__dirname, "..", "..", ".env") });
 
 const BASE_URL = process.env.WIKIPOC_API_URL ?? process.env.VITE_API_URL ?? "http://localhost:5050";
 
-const server: any = new McpServer({ name: "wikipoc-mcp", version: "1.0.0" });
+const server = new McpServer({ name: "wikipoc-mcp", version: "1.0.0" });
 
 // --- Helpers ---
 
@@ -54,7 +54,7 @@ async function authFetch(path: string, init: RequestInit & { token?: string }, r
 }
 
 async function getJson(path: string, token?: string) {
-  const data = await authFetch(path, { method: "GET", token } as any, false);
+  const data = await authFetch(path, { method: "GET", token }, false);
   return JSON.stringify(data, null, 2);
 }
 
@@ -92,7 +92,7 @@ function wrap(fn: (...args: any[]) => any) {
 server.tool(
   "login",
   "Log in to the wiki and store an auth token for write operations.",
-  { email: z.string(), password: z.string() } as any,
+  { email: z.string(), password: z.string() },
   wrap(async (args: any) => {
     const data = await postJson("/api/Auth/login", { email: args.email, password: args.password });
     setToken(data.token);
@@ -104,7 +104,7 @@ server.tool(
 server.tool(
   "register",
   "Create a new wiki account and log in automatically",
-  { email: z.string(), username: z.string(), password: z.string() } as any,
+  { email: z.string(), username: z.string(), password: z.string() },
   wrap(async (args: any) => {
     const data = await postJson("/api/Auth/register", { email: args.email, username: args.username, password: args.password });
     setToken(data.token);
@@ -118,7 +118,7 @@ server.tool(
 server.tool(
   "get_wiki_articles",
   "List all wiki article titles with their slugs and categories",
-  {} as any,
+  {},
   wrap(async () => {
     return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetTitles") }] };
   }),
@@ -127,7 +127,7 @@ server.tool(
 server.tool(
   "get_wiki_article",
   "Get a full wiki article by its slug",
-  { slug: z.string().describe("The URL slug of the article (e.g. 'example-page-1')") } as any,
+  { slug: z.string().describe("The URL slug of the article (e.g. 'example-page-1')") },
   wrap(async (args: any) => {
     return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetBySlug/" + encodeURIComponent(args.slug)) }] };
   }),
@@ -136,7 +136,7 @@ server.tool(
 server.tool(
   "search_wiki_articles",
   "Search wiki articles by title and content",
-  { query: z.string().describe("The search query") } as any,
+  { query: z.string().describe("The search query") },
   wrap(async (args: any) => {
     return { content: [{ type: "text", text: await getJson("/api/WikiPages/Search/" + encodeURIComponent(args.query)) }] };
   }),
@@ -145,7 +145,7 @@ server.tool(
 server.tool(
   "list_forum_topics",
   "List all forum topics (boards) with their slugs",
-  {} as any,
+  {},
   wrap(async () => {
     return { content: [{ type: "text", text: await getJson("/api/ForumTopic") }] };
   }),
@@ -154,7 +154,7 @@ server.tool(
 server.tool(
   "get_forum_topic",
   "Get a single forum topic (board) with its posts, by slug",
-  { slug: z.string().describe("The slug of the forum topic (e.g. 'main-forum')") } as any,
+  { slug: z.string().describe("The slug of the forum topic (e.g. 'main-forum')") },
   wrap(async (args: any) => {
     return { content: [{ type: "text", text: await getJson("/api/ForumTopic/" + encodeURIComponent(args.slug)) }] };
   }),
@@ -163,7 +163,7 @@ server.tool(
 server.tool(
   "get_forum_post",
   "Get a single forum post with its comments, by slug",
-  { slug: z.string().describe("The slug of the forum post") } as any,
+  { slug: z.string().describe("The slug of the forum post") },
   wrap(async (args: any) => {
     return { content: [{ type: "text", text: await getJson("/api/ForumPost/" + encodeURIComponent(args.slug)) }] };
   }),
@@ -172,7 +172,7 @@ server.tool(
 server.tool(
   "list_categories",
   "List all categories",
-  {} as any,
+  {},
   wrap(async () => {
     return { content: [{ type: "text", text: await getJson("/api/Category") }] };
   }),
@@ -181,7 +181,7 @@ server.tool(
 server.tool(
   "search_forum_topics",
   "Search forum topics by title and description",
-  { query: z.string().describe("The search query") } as any,
+  { query: z.string().describe("The search query") },
   wrap(async (args: any) => {
     return { content: [{ type: "text", text: await getJson("/api/ForumTopic/Search/" + encodeURIComponent(args.query)) }] };
   }),
@@ -190,7 +190,7 @@ server.tool(
 server.tool(
   "search_forum_posts",
   "Search forum posts by title and content within a specific topic",
-  { topicId: z.string(), query: z.string() } as any,
+  { topicId: z.string(), query: z.string() },
   wrap(async (args: any) => {
     return { content: [{ type: "text", text: await getJson("/api/ForumPost/Search/" + encodeURIComponent(args.topicId) + "/" + encodeURIComponent(args.query)) }] };
   }),
@@ -201,7 +201,7 @@ server.tool(
 server.tool(
   "get_users",
   "List all wiki users with their IDs, usernames, emails, and roles. Requires admin login.",
-  {} as any,
+  {},
   wrap(async () => {
     const token = requireToken();
     return { content: [{ type: "text", text: await getJson("/api/Users/GetUsers", token) }] };
@@ -211,7 +211,7 @@ server.tool(
 server.tool(
   "get_submitted_pages",
   "List all submitted new wiki pages awaiting approval. Requires moderator+ login.",
-  {} as any,
+  {},
   wrap(async () => {
     return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetSubmittedPageTitles", requireToken()) }] };
   }),
@@ -220,7 +220,7 @@ server.tool(
 server.tool(
   "get_submitted_updates",
   "List all submitted wiki page updates awaiting approval. Requires moderator+ login.",
-  {} as any,
+  {},
   wrap(async () => {
     return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetSubmittedUpdates", requireToken()) }] };
   }),
@@ -229,7 +229,7 @@ server.tool(
 server.tool(
   "get_submitted_page_by_id",
   "Get a submitted new wiki page by ID, with full content. Requires moderator+ login.",
-  { id: z.string() } as any,
+  { id: z.string() },
   wrap(async (args: any) => {
     return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetSubmittedPageById/" + args.id, requireToken()) }] };
   }),
@@ -238,7 +238,7 @@ server.tool(
 server.tool(
   "get_submitted_update_by_id",
   "Get a submitted wiki page update by ID, with full content. Requires moderator+ login.",
-  { id: z.string() } as any,
+  { id: z.string() },
   wrap(async (args: any) => {
     return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetSubmittedUpdateById/" + args.id, requireToken()) }] };
   }),
@@ -247,7 +247,7 @@ server.tool(
 server.tool(
   "create_forum_topic",
   "Create a new forum topic (board). Requires admin login.",
-  { title: z.string(), description: z.string() } as any,
+  { title: z.string(), description: z.string() },
   wrap(async (args: any) => {
     const data = await postJson("/api/ForumTopic", { title: args.title, description: args.description }, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -257,7 +257,7 @@ server.tool(
 server.tool(
   "post_forum_comment",
   "Post a comment on a forum post. Requires login.",
-  { content: z.string(), forumPostId: z.string(), userProfileId: z.string() } as any,
+  { content: z.string(), forumPostId: z.string(), userProfileId: z.string() },
   wrap(async (args: any) => {
     const data = await postJson("/api/ForumComment/comment/", {
       content: args.content, forumPostId: args.forumPostId,
@@ -270,7 +270,7 @@ server.tool(
 server.tool(
   "post_wiki_comment",
   "Post a comment on a wiki article. Requires login.",
-  { content: z.string(), wikiPageId: z.string(), userProfileId: z.string() } as any,
+  { content: z.string(), wikiPageId: z.string(), userProfileId: z.string() },
   wrap(async (args: any) => {
     const data = await postJson("/api/UserComment/comment/", {
       content: args.content, wikiPageId: args.wikiPageId,
@@ -283,7 +283,7 @@ server.tool(
 server.tool(
   "approve_submitted_page",
   "Approve a user-submitted wiki page (new page). Requires moderator+ login.",
-  { id: z.string() } as any,
+  { id: z.string() },
   wrap(async (args: any) => {
     const data = await postJson("/api/WikiPages/AdminAccept", args.id, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -293,7 +293,7 @@ server.tool(
 server.tool(
   "approve_submitted_update",
   "Approve a user-submitted wiki page update. Requires moderator+ login.",
-  { id: z.string() } as any,
+  { id: z.string() },
   wrap(async (args: any) => {
     const data = await patchJson("/api/WikiPages/AdminAccept/" + args.id, undefined, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -303,7 +303,7 @@ server.tool(
 server.tool(
   "decline_submitted_page",
   "Decline a user-submitted wiki page (new page). Requires moderator+ login.",
-  { id: z.string() } as any,
+  { id: z.string() },
   wrap(async (args: any) => {
     const data = await del("/api/WikiPages/AdminDecline/" + args.id, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -313,7 +313,7 @@ server.tool(
 server.tool(
   "update_user_role",
   "Change a user's role. Requires admin login.",
-  { userId: z.string(), role: z.string() } as any,
+  { userId: z.string(), role: z.string() },
   wrap(async (args: any) => {
     const data = await patchJson("/api/Users/UpdateRole/" + args.userId, { role: args.role }, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -323,7 +323,7 @@ server.tool(
 server.tool(
   "delete_wiki_page",
   "Delete a wiki page. Requires moderator+ login.",
-  { id: z.string() } as any,
+  { id: z.string() },
   wrap(async (args: any) => {
     const data = await del("/api/WikiPages/admin/" + args.id, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -333,7 +333,7 @@ server.tool(
 server.tool(
   "delete_forum_post",
   "Delete a forum post. Requires login.",
-  { id: z.string() } as any,
+  { id: z.string() },
   wrap(async (args: any) => {
     const data = await del("/api/ForumPost/" + args.id, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -343,7 +343,7 @@ server.tool(
 server.tool(
   "create_wiki_page",
   "Create a new wiki page. Requires moderator+ login.",
-  { title: z.string(), content: z.string().optional(), siteSub: z.string().optional(), roleNote: z.string().optional(), categoryId: z.string().optional() } as any,
+  { title: z.string(), content: z.string().optional(), siteSub: z.string().optional(), roleNote: z.string().optional(), categoryId: z.string().optional() },
   wrap(async (args: any) => {
     const data = await postJson("/api/WikiPages/admin-json", {
       title: args.title, content: args.content, siteSub: args.siteSub,
@@ -356,7 +356,7 @@ server.tool(
 server.tool(
   "update_wiki_page",
   "Update a wiki page. Requires moderator+ login.",
-  { id: z.string(), title: z.string().optional(), content: z.string().optional(), siteSub: z.string().optional(), roleNote: z.string().optional(), categoryId: z.string().optional() } as any,
+  { id: z.string(), title: z.string().optional(), content: z.string().optional(), siteSub: z.string().optional(), roleNote: z.string().optional(), categoryId: z.string().optional() },
   wrap(async (args: any) => {
     const data = await putJson("/api/WikiPages/admin-json/" + args.id, args, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -366,7 +366,7 @@ server.tool(
 server.tool(
   "create_forum_post",
   "Create a new forum post. Requires login.",
-  { postTitle: z.string(), content: z.string(), forumTopicId: z.string(), userId: z.string(), userName: z.string() } as any,
+  { postTitle: z.string(), content: z.string(), forumTopicId: z.string(), userId: z.string(), userName: z.string() },
   wrap(async (args: any) => {
     const data = await postJson("/api/ForumPost/postTopic-json", {
       postTitle: args.postTitle, content: args.content,
@@ -381,15 +381,19 @@ server.tool(
 server.tool(
   "update_forum_post",
   "Update a forum post. Requires login.",
-  { id: z.string(), postTitle: z.string().optional(), content: z.string().optional() } as any,
+  { id: z.string(), postTitle: z.string().optional(), content: z.string().optional() },
   wrap(async (args: any) => {
     const token = requireToken();
-    const existing = await authFetch(BASE_URL + "/api/ForumPost/" + encodeURIComponent(args.id), { method: "GET", token } as any, false);
-    const data = await putJson("/api/ForumPost/" + args.id, {
-      id: args.id, postTitle: args.postTitle || existing.postTitle,
-      content: args.content || existing.content, forumTopicId: existing.forumTopicId,
-      userId: existing.userId, userName: existing.userName,
-    }, token);
+    const existing = await authFetch(BASE_URL + "/api/ForumPost/" + encodeURIComponent(args.id), { method: "GET", token }, false);
+    const merged = {
+      id: args.id,
+      postTitle: args.postTitle ?? existing.postTitle ?? "",
+      content: args.content ?? existing.content ?? "",
+      forumTopicId: existing.forumTopicId ?? "",
+      userId: existing.userId ?? "",
+      userName: existing.userName ?? "",
+    };
+    const data = await putJson("/api/ForumPost/" + args.id, merged, token);
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
   }),
 );
@@ -397,7 +401,7 @@ server.tool(
 server.tool(
   "edit_forum_comment",
   "Edit a forum comment. Requires login.",
-  { id: z.string(), content: z.string() } as any,
+  { id: z.string(), content: z.string() },
   wrap(async (args: any) => {
     const data = await putJson("/api/ForumComment/comment/" + args.id, args.content, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -407,7 +411,7 @@ server.tool(
 server.tool(
   "delete_forum_comment",
   "Delete a forum comment. Requires login.",
-  { id: z.string() } as any,
+  { id: z.string() },
   wrap(async (args: any) => {
     const data = await del("/api/ForumComment/comment/" + args.id, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -417,7 +421,7 @@ server.tool(
 server.tool(
   "edit_wiki_comment",
   "Edit a comment on a wiki article. Requires login.",
-  { id: z.string(), content: z.string() } as any,
+  { id: z.string(), content: z.string() },
   wrap(async (args: any) => {
     const data = await putJson("/api/UserComment/comment/" + args.id, args.content, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -427,7 +431,7 @@ server.tool(
 server.tool(
   "delete_wiki_comment",
   "Delete a comment on a wiki article. Requires login.",
-  { id: z.string() } as any,
+  { id: z.string() },
   wrap(async (args: any) => {
     const data = await del("/api/UserComment/comment/" + args.id, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -437,7 +441,7 @@ server.tool(
 server.tool(
   "create_category",
   "Create a new category. Requires admin login.",
-  { name: z.string() } as any,
+  { name: z.string() },
   wrap(async (args: any) => {
     const data = await postJson("/api/Category", args.name, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -447,14 +451,14 @@ server.tool(
 server.tool(
   "ensure_agent_notes_category",
   "Ensure a category named 'Agent Notes' exists. Creates it if missing. Requires admin login.",
-  {} as any,
+  {},
   wrap(async () => {
     const token = requireToken();
     const catsText = await getJson("/api/Category", token);
     const cats = JSON.parse(catsText);
-    const existing = cats.find((c: any) => c.categoryName === "Any agents notes");
+    const existing = cats.find((c: any) => c.categoryName === "Agent Notes");
     if (existing) return { content: [{ type: "text", text: "Category 'Agent Notes' already exists with ID: " + existing.id }] };
-    const data = await postJson("/api/Category", "Any agents notes", token);
+    const data = await postJson("/api/Category", "Agent Notes", token);
     return { content: [{ type: "text", text: "Created category 'Agent Notes': " + JSON.stringify(data) }] };
   }),
 );

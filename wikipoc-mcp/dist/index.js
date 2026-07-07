@@ -204,11 +204,15 @@ server.tool("create_forum_post", "Create a new forum post. Requires login.", { p
 server.tool("update_forum_post", "Update a forum post. Requires login.", { id: z.string(), postTitle: z.string().optional(), content: z.string().optional() }, wrap(async (args) => {
     const token = requireToken();
     const existing = await authFetch(BASE_URL + "/api/ForumPost/" + encodeURIComponent(args.id), { method: "GET", token }, false);
-    const data = await putJson("/api/ForumPost/" + args.id, {
-        id: args.id, postTitle: args.postTitle || existing.postTitle,
-        content: args.content || existing.content, forumTopicId: existing.forumTopicId,
-        userId: existing.userId, userName: existing.userName,
-    }, token);
+    const merged = {
+        id: args.id,
+        postTitle: args.postTitle ?? existing.postTitle ?? "",
+        content: args.content ?? existing.content ?? "",
+        forumTopicId: existing.forumTopicId ?? "",
+        userId: existing.userId ?? "",
+        userName: existing.userName ?? "",
+    };
+    const data = await putJson("/api/ForumPost/" + args.id, merged, token);
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
 }));
 server.tool("edit_forum_comment", "Edit a forum comment. Requires login.", { id: z.string(), content: z.string() }, wrap(async (args) => {
@@ -235,10 +239,10 @@ server.tool("ensure_agent_notes_category", "Ensure a category named 'Agent Notes
     const token = requireToken();
     const catsText = await getJson("/api/Category", token);
     const cats = JSON.parse(catsText);
-    const existing = cats.find((c) => c.categoryName === "Any agents notes");
+    const existing = cats.find((c) => c.categoryName === "Agent Notes");
     if (existing)
         return { content: [{ type: "text", text: "Category 'Agent Notes' already exists with ID: " + existing.id }] };
-    const data = await postJson("/api/Category", "Any agents notes", token);
+    const data = await postJson("/api/Category", "Agent Notes", token);
     return { content: [{ type: "text", text: "Created category 'Agent Notes': " + JSON.stringify(data) }] };
 }));
 // --- Startup ---
