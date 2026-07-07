@@ -136,6 +136,29 @@ server.tool(
 );
 
 server.tool(
+  "search_forum_topics",
+  "Search forum topics by title and description",
+  { query: z.string().describe("The search query") } as any,
+  wrap(async (args: any) => {
+    const text = await getJson("/api/ForumTopic/Search/" + encodeURIComponent(args.query));
+    return { content: [{ type: "text", text }] };
+  }),
+);
+
+server.tool(
+  "search_forum_posts",
+  "Search forum posts by title and content within a specific topic",
+  {
+    topicId: z.string().describe("The forum topic ID (GUID)"),
+    query: z.string().describe("The search query"),
+  } as any,
+  wrap(async (args: any) => {
+    const text = await getJson("/api/ForumPost/Search/" + encodeURIComponent(args.topicId) + "/" + encodeURIComponent(args.query));
+    return { content: [{ type: "text", text }] };
+  }),
+);
+
+server.tool(
   "list_forum_topics",
   "List all forum topics (boards) with their slugs",
   {} as any,

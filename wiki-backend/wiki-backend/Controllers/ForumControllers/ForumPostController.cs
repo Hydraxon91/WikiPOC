@@ -39,6 +39,13 @@ public class ForumPostController : ControllerBase
         }
         return Ok(forumPost);
     }
+
+    [HttpGet("Search/{topicId:guid}/{query}")]
+    public async Task<ActionResult<List<ForumPost>>> SearchForumPosts(Guid topicId, string query)
+    {
+        var results = await _forumPostRepository.SearchByTopicAsync(topicId, query);
+        return Ok(results);
+    }
     
     [HttpPost("postTopic")]
     [Authorize]

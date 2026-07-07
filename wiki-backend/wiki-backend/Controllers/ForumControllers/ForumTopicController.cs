@@ -44,7 +44,13 @@ public class ForumTopicController : ControllerBase
         return Ok(forumTopic);
     }
 
-    
+    [HttpGet("Search/{query}")]
+    public async Task<ActionResult<List<ForumTopic>>> SearchForumTopics(string query)
+    {
+        var results = await _forumTopicRepository.SearchAsync(query);
+        return Ok(results);
+    }
+
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     [HttpPost]
     public async Task<ActionResult<ForumTopic>> AddForumTopic([FromBody] ForumTopic forumTopic)

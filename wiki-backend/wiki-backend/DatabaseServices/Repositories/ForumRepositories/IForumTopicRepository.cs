@@ -7,6 +7,7 @@ public interface IForumTopicRepository
     Task<IEnumerable<ForumTopic>> GetAllForumTopicsAsync();
     Task<ForumTopic?> GetForumTopicBySlugAsync(string slug);
     Task AddForumTopicAsync(ForumTopic topic);
+    Task<List<ForumTopic>> SearchAsync(string query);
     Task UpdateForumTopicAsync(ForumTopic topic);
     Task DeleteForumTopicAsync(Guid id);
 }

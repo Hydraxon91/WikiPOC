@@ -104,6 +104,17 @@ server.tool("search_wiki_articles", "Search wiki articles by title and content",
     const text = await getJson("/api/WikiPages/Search/" + encodeURIComponent(args.query));
     return { content: [{ type: "text", text }] };
 }));
+server.tool("search_forum_topics", "Search forum topics by title and description", { query: z.string().describe("The search query") }, wrap(async (args) => {
+    const text = await getJson("/api/ForumTopic/Search/" + encodeURIComponent(args.query));
+    return { content: [{ type: "text", text }] };
+}));
+server.tool("search_forum_posts", "Search forum posts by title and content within a specific topic", {
+    topicId: z.string().describe("The forum topic ID (GUID)"),
+    query: z.string().describe("The search query"),
+}, wrap(async (args) => {
+    const text = await getJson("/api/ForumPost/Search/" + encodeURIComponent(args.topicId) + "/" + encodeURIComponent(args.query));
+    return { content: [{ type: "text", text }] };
+}));
 server.tool("list_forum_topics", "List all forum topics (boards) with their slugs", {}, wrap(async () => {
     const text = await getJson("/api/ForumTopic");
     return { content: [{ type: "text", text }] };
