@@ -18,14 +18,15 @@ const EditStylePage = ({ jwtToken }) => {
   const { showNotification } = useNotification();
 
   const [newStyles, setNewStyles] = useState(styles);
-  const [backUpStyles, setBackupStyles] = useState(styles);
   const [activeTab, setActiveTab] = useState<"presets" | "manual">("presets");
   const [saveName, setSaveName] = useState("");
   const [showSavePrompt, setShowSavePrompt] = useState(false);
   const [activating, setActivating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [hasSaved, setHasSaved] = useState(false);
   const themeNameRef = useRef<HTMLInputElement>(null);
   const initialSync = useRef(true);
+  const initialStylesRef = useRef(styles);
 
   const role = decodedTokenContext?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
   const userId = decodedTokenContext?.sub;
@@ -48,10 +49,16 @@ const EditStylePage = ({ jwtToken }) => {
   useEffect(() => {
     if (initialSync.current && styles.interfaceEra) {
       setNewStyles(styles);
-      setBackupStyles(styles);
       initialSync.current = false;
     }
   }, [styles]);
+
+  // Restore pre-edit state on unmount if user didn't save
+  useEffect(() => {
+    return () => {
+      if (!hasSaved) setStyles(initialStylesRef.current);
+    };
+  }, [hasSaved]);
 
   const handleChange = (field: string, value: any) => {
     setNewStyles((prev) => ({ ...prev, [field]: value }));
@@ -111,9 +118,9 @@ const EditStylePage = ({ jwtToken }) => {
     try {
       console.log("Updating styles with token:", jwtToken.substring(0, 20) + "...");
       await updateStyles(newStyles, null, jwtToken);
-      setBackupStyles(prev => ({ ...prev, ...newStyles }));
       const fresh = await fetchCurrentStyles();
       setStyles(fresh);
+      setHasSaved(true);
       showNotification("Active theme updated!");
     } catch (err: any) {
       console.error("UpdateStyles failed:", err);

@@ -26,17 +26,17 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
   }, [decodedToken]);
 
   useEffect(() => {
-    const era = styles.interfaceEra || 'wikipedia';
-    if (era === 'wikipedia' || !styles.bgMeshGradient || styles.bgMeshGradient === 'none') {
-      document.body.style.background = styles.bodyColor || '#f8f9fa';
+    if (styles.bodyColor) {
+      document.body.style.background = styles.bodyColor;
       document.body.style.backgroundAttachment = 'scroll';
       document.body.style.backgroundSize = 'auto';
-    } else {
-      document.body.style.background = styles.bgMeshGradient;
-      document.body.style.backgroundAttachment = 'fixed';
-      document.body.style.backgroundSize = 'cover';
     }
-  }, [styles.bgMeshGradient, styles.bodyColor, styles.interfaceEra]);
+  }, [styles.bodyColor]);
+
+  useEffect(() => {
+    document.body.classList.remove('era-wikipedia', 'era-glass', 'era-modern', 'era-frutiger');
+    if (styles.interfaceEra) document.body.classList.add(`era-${styles.interfaceEra}`);
+  }, [styles.interfaceEra]);
 
   useEffect(() => {
     fetchWikiPageTitles();
