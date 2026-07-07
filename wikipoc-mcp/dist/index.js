@@ -53,7 +53,8 @@ async function authFetch(path, init, retry = true) {
     return res.json();
 }
 async function getJson(path, token) {
-    return authFetch(path, { method: "GET", token }, false);
+    const data = await authFetch(path, { method: "GET", token }, false);
+    return JSON.stringify(data, null, 2);
 }
 async function postJson(path, body, token) {
     return authFetch(path, { method: "POST", token, body: JSON.stringify(body) });

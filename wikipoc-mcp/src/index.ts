@@ -54,7 +54,8 @@ async function authFetch(path: string, init: RequestInit & { token?: string }, r
 }
 
 async function getJson(path: string, token?: string) {
-  return authFetch(path, { method: "GET", token } as any, false);
+  const data = await authFetch(path, { method: "GET", token } as any, false);
+  return JSON.stringify(data, null, 2);
 }
 
 async function postJson(path: string, body: any, token?: string) {
