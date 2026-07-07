@@ -227,6 +227,24 @@ server.tool(
 );
 
 server.tool(
+  "get_submitted_page_by_id",
+  "Get a submitted new wiki page by ID, with full content. Requires moderator+ login.",
+  { id: z.string() } as any,
+  wrap(async (args: any) => {
+    return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetSubmittedPageById/" + args.id, requireToken()) }] };
+  }),
+);
+
+server.tool(
+  "get_submitted_update_by_id",
+  "Get a submitted wiki page update by ID, with full content. Requires moderator+ login.",
+  { id: z.string() } as any,
+  wrap(async (args: any) => {
+    return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetSubmittedUpdateById/" + args.id, requireToken()) }] };
+  }),
+);
+
+server.tool(
   "create_forum_topic",
   "Create a new forum topic (board). Requires admin login.",
   { title: z.string(), description: z.string() } as any,
@@ -278,6 +296,16 @@ server.tool(
   { id: z.string() } as any,
   wrap(async (args: any) => {
     const data = await patchJson("/api/WikiPages/AdminAccept/" + args.id, undefined, requireToken());
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+  }),
+);
+
+server.tool(
+  "decline_submitted_page",
+  "Decline a user-submitted wiki page (new page). Requires moderator+ login.",
+  { id: z.string() } as any,
+  wrap(async (args: any) => {
+    const data = await del("/api/WikiPages/AdminDecline/" + args.id, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
   }),
 );

@@ -134,6 +134,12 @@ server.tool("get_submitted_pages", "List all submitted new wiki pages awaiting a
 server.tool("get_submitted_updates", "List all submitted wiki page updates awaiting approval. Requires moderator+ login.", {}, wrap(async () => {
     return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetSubmittedUpdates", requireToken()) }] };
 }));
+server.tool("get_submitted_page_by_id", "Get a submitted new wiki page by ID, with full content. Requires moderator+ login.", { id: z.string() }, wrap(async (args) => {
+    return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetSubmittedPageById/" + args.id, requireToken()) }] };
+}));
+server.tool("get_submitted_update_by_id", "Get a submitted wiki page update by ID, with full content. Requires moderator+ login.", { id: z.string() }, wrap(async (args) => {
+    return { content: [{ type: "text", text: await getJson("/api/WikiPages/GetSubmittedUpdateById/" + args.id, requireToken()) }] };
+}));
 server.tool("create_forum_topic", "Create a new forum topic (board). Requires admin login.", { title: z.string(), description: z.string() }, wrap(async (args) => {
     const data = await postJson("/api/ForumTopic", { title: args.title, description: args.description }, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
@@ -158,6 +164,10 @@ server.tool("approve_submitted_page", "Approve a user-submitted wiki page (new p
 }));
 server.tool("approve_submitted_update", "Approve a user-submitted wiki page update. Requires moderator+ login.", { id: z.string() }, wrap(async (args) => {
     const data = await patchJson("/api/WikiPages/AdminAccept/" + args.id, undefined, requireToken());
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("decline_submitted_page", "Decline a user-submitted wiki page (new page). Requires moderator+ login.", { id: z.string() }, wrap(async (args) => {
+    const data = await del("/api/WikiPages/AdminDecline/" + args.id, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
 }));
 server.tool("update_user_role", "Change a user's role. Requires admin login.", { userId: z.string(), role: z.string() }, wrap(async (args) => {
