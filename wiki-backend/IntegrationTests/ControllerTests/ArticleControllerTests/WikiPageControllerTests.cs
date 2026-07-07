@@ -1,3 +1,4 @@
+using System.Net;
 using DotNetEnv;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -583,5 +584,18 @@ public class WikiPageControllerTests : IntegrationTestBase
         var titlesAndIds = result.Result as ActionResult;
         Assert.That(titlesAndIds, Is.Not.Null);
         // Assert.IsTrue(titlesAndIds.Value.Any());
+    }
+
+    [Test]
+    public async Task SearchWikiPages_ShouldReturnMatchingPages()
+    {
+        var result = await _controller.SearchWikiPages("Example");
+        var okResult = result.Result as OkObjectResult;
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+        var pages = okResult.Value as List<TitleAndCategory>;
+        Assert.That(pages, Is.Not.Null);
+        Assert.That(pages.Count > 0, Is.True);
+        Assert.That(pages.Any(p => p.Title.Contains("Example")), Is.True);
     }
 }

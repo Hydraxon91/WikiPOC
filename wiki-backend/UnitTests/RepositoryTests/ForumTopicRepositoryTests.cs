@@ -146,5 +146,19 @@ namespace UnitTests.RepositoryTests
             Assert.That(topics.First().Slug, Is.EqualTo("duplicate-title"));
             Assert.That(topics.Last().Slug, Is.EqualTo("duplicate-title-1"));
         }
+
+        [Test]
+        public async Task SearchAsync_ShouldReturnMatchingTopics()
+        {
+            await _forumTopicRepository.AddForumTopicAsync(new ForumTopic { Id = Guid.NewGuid(), Title = "Main Forum", Description = "General discussion" });
+            await _forumTopicRepository.AddForumTopicAsync(new ForumTopic { Id = Guid.NewGuid(), Title = "Off Topic", Description = "Random chat" });
+
+            var results = await _forumTopicRepository.SearchAsync("Main");
+            Assert.That(results.Count, Is.EqualTo(1));
+            Assert.That(results[0].Title, Is.EqualTo("Main Forum"));
+
+            var noResults = await _forumTopicRepository.SearchAsync("NonExistent");
+            Assert.That(noResults.Count, Is.EqualTo(0));
+        }
     }
 }

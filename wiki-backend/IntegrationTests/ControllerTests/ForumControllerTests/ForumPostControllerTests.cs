@@ -183,6 +183,36 @@ public class ForumPostControllerTests : IntegrationTestBase
             Assert.That(deletedPostInDb, Is.Null);
         }
 
+        [Test]
+        public async Task SearchForumPosts_ShouldReturnMatchingPosts()
+        {
+            var userProfileId = await AddUserProfile();
+            var forumTopicId = await AddForumTopic(userProfileId);
+
+            var forumPostId = Guid.NewGuid();
+            var forumPost = new ForumPost
+            {
+                Id = forumPostId,
+                UserId = userProfileId,
+                Content = "Searchable content",
+                PostTitle = "Search Test Post",
+                Slug = "search-test-post",
+                UserName = _userName!,
+                ForumTopicId = forumTopicId,
+            };
+            await DbContext.ForumPosts.AddAsync(forumPost);
+            await DbContext.SaveChangesAsync();
+
+            var result = await _controller.SearchForumPosts(forumTopicId, "Searchable");
+            var okResult = result.Result as OkObjectResult;
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.StatusCode, Is.EqualTo(200));
+            var posts = okResult.Value as List<ForumPost>;
+            Assert.That(posts, Is.Not.Null);
+            Assert.That(posts.Count, Is.EqualTo(1));
+            Assert.That(posts[0].PostTitle, Is.EqualTo("Search Test Post"));
+        }
+
         private async Task<Guid> AddUserProfile()
         {
             var userProfileId = Guid.NewGuid();

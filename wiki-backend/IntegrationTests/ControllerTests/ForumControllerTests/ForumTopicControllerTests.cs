@@ -108,4 +108,20 @@ public class ForumTopicControllerTests : IntegrationTestBase
         var deletedForumTopic = await _forumTopicRepository.GetForumTopicBySlugAsync(forumTopic.Slug);
         Assert.That(deletedForumTopic, Is.Null);
     }
+
+    [Test]
+    public async Task SearchForumTopics_ShouldReturnMatchingTopics()
+    {
+        var forumTopic = new ForumTopic { Title = "Search Topic", Description = "Description for search", Slug = "search-topic" };
+        await _forumTopicRepository.AddForumTopicAsync(forumTopic);
+
+        var result = await _controller.SearchForumTopics("Search");
+        var okResult = result.Result as OkObjectResult;
+        Assert.That(okResult, Is.Not.Null);
+        Assert.That(okResult.StatusCode, Is.EqualTo(200));
+        var topics = okResult.Value as List<ForumTopic>;
+        Assert.That(topics, Is.Not.Null);
+        Assert.That(topics.Count, Is.EqualTo(1));
+        Assert.That(topics[0].Title, Is.EqualTo("Search Topic"));
+    }
 }

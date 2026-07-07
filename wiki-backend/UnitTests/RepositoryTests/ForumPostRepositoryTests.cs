@@ -253,5 +253,24 @@ namespace UnitTests.RepositoryTests
             Assert.That(postInDb2.PostTitle, Is.EqualTo("Duplicate Title"));
             Assert.That(postInDb2.Content, Is.EqualTo("Content 2"));
         }
+
+        [Test]
+        public async Task SearchByTopicAsync_ShouldReturnMatchingPosts()
+        {
+            var topicId = Guid.NewGuid();
+            var post1 = new ForumPost { Id = Guid.NewGuid(), PostTitle = "Important Update", Content = "Content about updates", Slug = "important-update", ForumTopicId = topicId, UserId = Guid.NewGuid(), UserName = "User1" };
+            var post2 = new ForumPost { Id = Guid.NewGuid(), PostTitle = "Random Chat", Content = "Casual talk", Slug = "random-chat", ForumTopicId = topicId, UserId = Guid.NewGuid(), UserName = "User2" };
+
+            _wikiDbContext.ForumPosts.Add(post1);
+            _wikiDbContext.ForumPosts.Add(post2);
+            await _wikiDbContext.SaveChangesAsync();
+
+            var results = await _forumPostRepository.SearchByTopicAsync(topicId, "Important");
+            Assert.That(results.Count, Is.EqualTo(1));
+            Assert.That(results[0].PostTitle, Is.EqualTo("Important Update"));
+
+            var noResults = await _forumPostRepository.SearchByTopicAsync(topicId, "NonExistent");
+            Assert.That(noResults.Count, Is.EqualTo(0));
+        }
     }
 }
