@@ -33,10 +33,10 @@ const SiteSettingsPage = ({ jwtToken }) => {
     <div className="article" style={{ backgroundColor: styles.articleColor, padding: '1.5em' }}>
       <h2>Site Settings</h2>
 
-      <div className="form-group">
-        <label>Wiki Name:</label>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5em', marginBottom: '0.85rem' }}>
+        <label style={{ whiteSpace: 'nowrap' }}>Wiki Name:</label>
         <input type="text" value={wikiName} onChange={e => setWikiName(e.target.value)}
-          style={{ padding: '0.5em', fontSize: '1em', width: '100%', boxSizing: 'border-box' }} />
+          style={{ padding: '0.5em', fontSize: '1em', flex: '1 1 200px', minWidth: 0, boxSizing: 'border-box' }} />
       </div>
 
       <div className="form-group edit_logo">
