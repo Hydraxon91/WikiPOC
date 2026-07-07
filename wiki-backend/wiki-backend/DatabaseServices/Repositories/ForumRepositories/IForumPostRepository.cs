@@ -9,5 +9,6 @@ public interface IForumPostRepository
     Task<ForumPost?> GetForumPostBySlugAsync(string slug);
     Task AddForumPostAsync(ForumPost post);
     Task UpdateForumPostAsync(ForumPost post, ForumPost updatedPost);
+    Task<List<ForumPost>> SearchByTopicAsync(Guid topicId, string query);
     Task DeleteForumPostAsync(Guid id);
 }

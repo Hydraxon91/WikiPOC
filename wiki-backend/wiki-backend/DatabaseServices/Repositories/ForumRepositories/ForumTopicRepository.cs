@@ -93,6 +93,13 @@ public class ForumTopicRepository : IForumTopicRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<List<ForumTopic>> SearchAsync(string query)
+    {
+        return await _context.ForumTopics
+            .Where(ft => ft.Title.Contains(query) || ft.Description.Contains(query))
+            .ToListAsync();
+    }
+
     public async Task DeleteForumTopicAsync(Guid id)
     {
         var topic = await _context.ForumTopics.FindAsync(id);

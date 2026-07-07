@@ -39,6 +39,13 @@ public class ForumPostController : ControllerBase
         }
         return Ok(forumPost);
     }
+
+    [HttpGet("Search/{topicId:guid}/{query}")]
+    public async Task<ActionResult<List<ForumPost>>> SearchForumPosts(Guid topicId, string query)
+    {
+        var results = await _forumPostRepository.SearchByTopicAsync(topicId, query);
+        return Ok(results);
+    }
     
     [HttpPost("postTopic")]
     [Authorize]
@@ -54,6 +61,25 @@ public class ForumPostController : ControllerBase
             Content = forumPostForm.Content,
             ForumTopicId = Guid.Parse(forumPostForm.ForumTopicId),
             UserId = Guid.Parse(forumPostForm.UserId), 
+            UserName = forumPostForm.UserName,
+        };
+        await _forumPostRepository.AddForumPostAsync(forumPost);
+        return CreatedAtAction(nameof(GetForumPostBySlug), new { slug = forumPost.Slug }, forumPost);
+    }
+
+    [HttpPost("postTopic-json")]
+    [Authorize]
+    public async Task<ActionResult<ForumPost>> AddForumPostJson([FromBody] ForumPostForm forumPostForm)
+    {
+        var forumPostId = Guid.NewGuid();
+        var forumPost = new ForumPost
+        {
+            Id = forumPostId,
+            PostTitle = forumPostForm.PostTitle,
+            PostDate = forumPostForm.PostDate,
+            Content = forumPostForm.Content,
+            ForumTopicId = Guid.Parse(forumPostForm.ForumTopicId),
+            UserId = Guid.Parse(forumPostForm.UserId),
             UserName = forumPostForm.UserName,
         };
         await _forumPostRepository.AddForumPostAsync(forumPost);

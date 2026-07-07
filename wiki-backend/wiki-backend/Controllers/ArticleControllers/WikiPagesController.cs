@@ -44,7 +44,14 @@ public class WikiPagesController : ControllerBase
 
         return Ok(wikiPage);
     }
-    
+
+    [HttpGet("Search/{query}")]
+    public async Task<ActionResult<List<TitleAndCategory>>> SearchWikiPages(string query)
+    {
+        var results = await _wikiPageRepository.SearchAsync(query);
+        return Ok(results);
+    }
+
     [HttpGet("GetBySlug/{slug}")]
     public async Task<ActionResult<WPWithImagesOutputModel>> GetWikiPageBySlug(string slug)
     {
@@ -89,6 +96,25 @@ public class WikiPagesController : ControllerBase
         {
             return StatusCode(500, "An error occurred while submitting the article.");
         }
+    }
+
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
+    [HttpPost("admin-json")]
+    public async Task<ActionResult<WikiPage>> CreateWikiPageForAdminJson([FromBody] WikiPageWithImagesInputModel model)
+    {
+        if (model.Title == null) return BadRequest("Invalid request. Title is null.");
+        var newWikiPage = new WikiPage
+        {
+            Id = Guid.NewGuid(),
+            Title = model.Title,
+            SiteSub = model.SiteSub,
+            RoleNote = model.RoleNote,
+            Content = model.Content,
+            Paragraphs = model.Paragraphs ?? new List<Paragraph>(),
+            CategoryId = model.CategoryId
+        };
+        await _wikiPageRepository.AddAsync(newWikiPage, new List<ImageFormModel>());
+        return Ok(newWikiPage);
     }
     
     [Authorize(Policy = IdentityData.UserPolicyName)]
@@ -175,6 +201,26 @@ public class WikiPagesController : ControllerBase
         var images = wikiPageWithImagesInputModel.Images ?? new List<ImageFormModel>();
         await _wikiPageRepository.UpdateAsync(existingWikiPageOutputModel.WikiPage!, updatedWikiPage, images);
 
+        return Ok(new { Message = "WikiPage updated successfully" });
+    }
+
+    [Authorize(Policy = IdentityData.ModeratorPolicyName)]
+    [HttpPut("admin-json/{id:guid}")]
+    public async Task<IActionResult> UpdateWikiPageForAdminJson(Guid id, [FromBody] WikiPageWithImagesInputModel model)
+    {
+        var existing = await _wikiPageRepository.GetByIdAsync(id);
+        if (existing == null) return NotFound();
+
+        var updated = new WikiPage
+        {
+            Title = model.Title,
+            SiteSub = model.SiteSub,
+            RoleNote = model.RoleNote,
+            Content = model.Content,
+            Paragraphs = model.Paragraphs ?? new List<Paragraph>(),
+            CategoryId = model.CategoryId
+        };
+        await _wikiPageRepository.UpdateAsync(existing.WikiPage!, updated, new List<ImageFormModel>());
         return Ok(new { Message = "WikiPage updated successfully" });
     }
 
