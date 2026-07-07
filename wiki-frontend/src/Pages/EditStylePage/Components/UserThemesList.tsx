@@ -3,7 +3,7 @@ import { useStyleContext } from "../../../Components/contexts/StyleContext";
 import { deleteUserTheme } from "../../../Api/wikiApi";
 import { useNotification } from "../../../Components/NotificationProvider";
 
-const UserThemesList = ({ jwtToken }) => {
+const UserThemesList = ({ jwtToken, onLoad }: { jwtToken: any; onLoad?: (theme: any) => void }) => {
   const { userThemes, refreshUserThemes, loadTheme } = useStyleContext();
   const { showNotification } = useNotification();
   const [deleting, setDeleting] = useState<number | null>(null);
@@ -69,7 +69,7 @@ const UserThemesList = ({ jwtToken }) => {
             {theme.interfaceEra}
           </span>
           <button
-            onClick={() => loadTheme(theme)}
+            onClick={() => (onLoad || loadTheme)(theme)}
             style={{
               background: "rgba(255,255,255,0.12)",
               border: "1px solid rgba(255,255,255,0.15)",

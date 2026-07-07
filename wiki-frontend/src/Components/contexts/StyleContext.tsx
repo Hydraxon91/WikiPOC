@@ -82,7 +82,7 @@ const ERA_FALLBACKS: Record<string, Partial<StyleModel>> = {
   },
 };
 
-function applyEraFallbacks(styles: Partial<StyleModel>): StyleModel {
+export function applyEraFallbacks(styles: Partial<StyleModel>): StyleModel {
   const era = styles.interfaceEra || 'wikipedia';
   const fallback = ERA_FALLBACKS[era] || ERA_FALLBACKS.wikipedia;
   return { ...fallback, ...styles } as StyleModel;

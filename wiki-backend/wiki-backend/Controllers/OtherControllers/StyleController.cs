@@ -55,6 +55,14 @@ public class StyleController : ControllerBase
         return CreatedAtAction(nameof(GetActiveStyles), new { id = created.Id }, created);
     }
 
+    [HttpDelete("user-themes/{id}")]
+    [Authorize]
+    public async Task<IActionResult> DeleteUserTheme(int id)
+    {
+        await _styleRepository.DeleteUserThemeAsync(id);
+        return NoContent();
+    }
+
     [HttpPut("activate/{id}")]
     [Authorize(Policy = IdentityData.AdminUserPolicyName)]
     public async Task<IActionResult> ActivateTheme(int id)

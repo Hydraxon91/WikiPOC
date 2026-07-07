@@ -95,23 +95,27 @@ public class StyleRepository : IStyleRepository
     {
         if (_dbContext.Database.IsRelational())
         {
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
-            try
+            var strategy = _dbContext.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () =>
             {
-                await _dbContext.Styles
-                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsActive, false));
+                await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+                try
+                {
+                    await _dbContext.Styles
+                        .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsActive, false));
 
-                await _dbContext.Styles
-                    .Where(s => s.Id == id)
-                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsActive, true));
+                    await _dbContext.Styles
+                        .Where(s => s.Id == id)
+                        .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsActive, true));
 
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
+                    await transaction.CommitAsync();
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            });
         }
         else
         {
@@ -121,6 +125,16 @@ public class StyleRepository : IStyleRepository
             var target = allStyles.FirstOrDefault(s => s.Id == id);
             if (target != null)
                 target.IsActive = true;
+            await _dbContext.SaveChangesAsync();
+        }
+    }
+
+    public async Task DeleteUserThemeAsync(int id)
+    {
+        var theme = await _dbContext.Styles.FindAsync(id);
+        if (theme != null)
+        {
+            _dbContext.Styles.Remove(theme);
             await _dbContext.SaveChangesAsync();
         }
     }

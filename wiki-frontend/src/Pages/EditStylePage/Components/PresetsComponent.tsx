@@ -7,7 +7,7 @@ const ERA_TAGS: Record<string, string> = {
   frutiger: "Hyper-Gloss Retro — 2006",
 };
 
-const PresetsComponent = () => {
+const PresetsComponent = ({ onLoad }: { onLoad?: (theme: any) => void }) => {
   const { systemPresets, loadTheme, styles } = useStyleContext();
 
   return (
@@ -39,7 +39,7 @@ const PresetsComponent = () => {
               </p>
               <button
                 className="btn"
-                onClick={() => loadTheme(preset)}
+                onClick={() => (onLoad || loadTheme)(preset)}
                 style={{
                   background: preset.articleRightInnerColor,
                   color: "#fff",

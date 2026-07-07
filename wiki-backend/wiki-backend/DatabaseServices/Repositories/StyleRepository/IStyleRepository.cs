@@ -10,4 +10,5 @@ public interface IStyleRepository
     Task<StyleModel> CreateUserThemeAsync(StyleModel theme);
     Task UpdateStylesAsync(StyleModel updatedStyles, IFormFile? logoPictureFile);
     Task ActivateThemeAsync(int id);
+    Task DeleteUserThemeAsync(int id);
 }

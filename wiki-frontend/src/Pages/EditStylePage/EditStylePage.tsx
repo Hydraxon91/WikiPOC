@@ -8,6 +8,8 @@ import { useStyleContext } from "../../Components/contexts/StyleContext";
 import { useUserContext } from "../../Components/contexts/UserContextProvider";
 import { useNotification } from "../../Components/NotificationProvider";
 import { saveUserTheme, activateTheme } from "../../Api/wikiApi";
+import { applyEraFallbacks } from "../../Components/contexts/StyleContext";
+import { StyleModel } from "../../types/models";
 
 const EditStylePage = ({ jwtToken }) => {
   const navigate = useNavigate();
@@ -28,6 +30,13 @@ const EditStylePage = ({ jwtToken }) => {
   const userId = decodedTokenContext?.sub;
   const isAdmin = role === "Admin" || role === "Owner";
   const isWikipedia = newStyles.interfaceEra === "wikipedia";
+
+  // Load theme into both editor state and live preview
+  const handleLoadTheme = (theme: StyleModel) => {
+    const merged = applyEraFallbacks(theme);
+    setNewStyles(merged);
+    setStyles(merged);
+  };
 
   // Sync editor state to live preview
   useEffect(() => {
@@ -61,8 +70,9 @@ const EditStylePage = ({ jwtToken }) => {
       return;
     }
     try {
+      const { id, isActive, ...themeData } = newStyles;
       await saveUserTheme(
-        { ...newStyles, userId, themeName: saveName.trim(), isSystemPreset: false },
+        { ...themeData, userId, themeName: saveName.trim(), isSystemPreset: false },
         jwtToken
       );
       showNotification("Theme saved!");
@@ -131,8 +141,8 @@ const EditStylePage = ({ jwtToken }) => {
         {/* Tab content */}
         {activeTab === "presets" && (
           <>
-            <PresetsComponent />
-            <UserThemesList jwtToken={jwtToken} />
+            <PresetsComponent onLoad={handleLoadTheme} />
+            <UserThemesList jwtToken={jwtToken} onLoad={handleLoadTheme} />
           </>
         )}
 
