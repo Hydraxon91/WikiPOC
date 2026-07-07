@@ -49,7 +49,7 @@ public class StyleRepository : IStyleRepository
 
     public async Task UpdateStylesAsync(StyleModel updatedStyles, IFormFile? logoPictureFile)
     {
-        var existingStyles = await _dbContext.Styles.SingleOrDefaultAsync();
+        var existingStyles = await _dbContext.Styles.SingleOrDefaultAsync(s => s.IsActive);
         if (logoPictureFile != null)
         {
             if (!ImageStorageService.IsValidFileType(logoPictureFile.FileName))
@@ -57,6 +57,9 @@ public class StyleRepository : IStyleRepository
 
             var fileName = $"logo/logo{Path.GetExtension(logoPictureFile.FileName)}";
             var filePath = Path.Combine(_picturesPath, fileName);
+            var dir = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await logoPictureFile.CopyToAsync(fileStream);

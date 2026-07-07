@@ -16,148 +16,297 @@
 	--bg-mesh-gradient: none;
 }
 
-/* === BOOTSTRAP SPECIFICITY SHIELDS === */
-.era-wikipedia input[type="text"],
-.era-wikipedia input[type="email"],
-.era-wikipedia input[type="password"],
-.era-wikipedia input[type="color"],
-.era-wikipedia input[type="file"],
+/* === GLOBAL TEXT & LINK VARIABLE BINDING (all eras) === */
+.era-wikipedia p,
+.era-wikipedia span,
+.era-wikipedia label,
+.era-wikipedia li,
+.era-wikipedia .sidebar *,
+.era-wikipedia .article *,
+.era-wikipedia .glass-card * {
+	color: var(--footer-text-color, #202122) !important;
+}
+.era-wikipedia a,
+.era-wikipedia .sidebar p,
+.era-wikipedia .sidebar a,
+.era-wikipedia .article a,
+.era-wikipedia .logout-button { color: var(--footer-link-color, #0645ad) !important; }
+
+.era-glass p,
+.era-glass span,
+.era-glass label,
+.era-glass li,
+.era-glass .sidebar *,
+.era-glass .article *,
+.era-glass .glass-card * {
+	color: var(--footer-text-color, #233a71) !important;
+}
+.era-glass a,
+.era-glass .sidebar p,
+.era-glass .sidebar a,
+.era-glass .article a,
+.era-glass .logout-button { color: var(--footer-link-color, #1d305e) !important; }
+
+.era-modern p,
+.era-modern span,
+.era-modern label,
+.era-modern li,
+.era-modern .sidebar *,
+.era-modern .article *,
+.era-modern .glass-card * {
+	color: var(--footer-text-color, #ffffff) !important;
+}
+.era-modern a,
+.era-modern .sidebar p,
+.era-modern .sidebar a,
+.era-modern .article a,
+.era-modern .logout-button { color: var(--footer-link-color, #6366f1) !important; }
+.era-modern h1,
+.era-modern h2,
+.era-modern h3,
+.era-modern h4,
+.era-modern .card-title,
+.era-modern strong { color: #ffffff !important; }
+.era-modern p,
+.era-modern span,
+.era-modern .text-muted { color: var(--footer-text-color, #a1a1aa) !important; }
+
+.era-frutiger p,
+.era-frutiger span,
+.era-frutiger label,
+.era-frutiger li,
+.era-frutiger .sidebar *,
+.era-frutiger .article *,
+.era-frutiger .glass-card * {
+	color: var(--footer-text-color, #111827) !important;
+}
+.era-frutiger a,
+.era-frutiger .sidebar p,
+.era-frutiger .sidebar a,
+.era-frutiger .article a,
+.era-frutiger .logout-button { color: var(--footer-link-color, #1565c0) !important; }
+.era-frutiger h1,
+.era-frutiger h2,
+.era-frutiger h3,
+.era-frutiger .card-title,
+.era-frutiger strong { color: #0f2d59 !important; }
+
+/* === ERA: WIKIPEDIA CLASSIC === */
+.era-wikipedia .form-control,
+.era-wikipedia .btn,
+.era-wikipedia input,
 .era-wikipedia select,
-.era-wikipedia textarea,
-.era-wikipedia .form-control {
+.era-wikipedia textarea {
 	background: #ffffff !important;
 	color: #202122 !important;
-	border: var(--custom-border-style, 1px solid #a2a9b1) !important;
-	border-radius: 0 !important;
-}
-.era-wikipedia .btn,
-.era-wikipedia .comment-button {
-	background: #f8f9fa !important;
 	border: 1px solid #a2a9b1 !important;
-	color: #202122 !important;
 	border-radius: 0 !important;
+	box-shadow: none !important;
+	backdrop-filter: none !important;
 }
-.era-wikipedia a {
-	color: #0645ad;
+.era-wikipedia table {
+	background: #ffffff !important;
 }
-
-.era-glass input[type="text"],
-.era-glass input[type="email"],
-.era-glass input[type="password"],
-.era-glass input[type="color"],
-.era-glass input[type="file"],
-.era-glass select,
-.era-glass textarea,
-.era-glass .form-control {
-	background: rgba(255, 255, 255, 0.08) !important;
-	color: var(--footer-list-text-color, #233a71) !important;
-	border: 1px solid rgba(255, 255, 255, 0.15) !important;
-	border-radius: var(--custom-border-radius, 6px) !important;
-	backdrop-filter: blur(4px);
-	-webkit-backdrop-filter: blur(4px);
-}
-.era-glass .btn,
-.era-glass .comment-button,
-.era-glass .fp-comment-button {
-	background: rgba(60, 95, 184, 0.5) !important;
-	border: 1px solid rgba(255, 255, 255, 0.15) !important;
-	color: #ffffff !important;
-	border-radius: var(--custom-border-radius, 6px) !important;
-	backdrop-filter: blur(4px);
-	-webkit-backdrop-filter: blur(4px);
-}
-.era-glass a {
-	color: var(--footer-link-color, #1d305e);
-}
-.era-glass a:hover {
-	color: color-mix(in srgb, var(--footer-link-color, #1d305e) 80%, black);
-}
-
-.era-modern input[type="text"],
-.era-modern input[type="email"],
-.era-modern input[type="password"],
-.era-modern input[type="color"],
-.era-modern input[type="file"],
-.era-modern select,
-.era-modern textarea,
-.era-modern .form-control {
-	background: rgba(26, 29, 39, 0.95) !important;
-	color: #e0e0e0 !important;
-	border: 1px solid rgba(255, 255, 255, 0.08) !important;
-	border-radius: 4px !important;
-}
-.era-modern .btn,
-.era-modern .comment-button {
-	background: rgba(108, 99, 255, 0.9) !important;
-	border: 1px solid rgba(255, 255, 255, 0.06) !important;
-	color: #ffffff !important;
-	border-radius: 4px !important;
-}
-.era-modern a {
-	color: #6c63ff;
-}
-
-.era-frutiger input[type="text"],
-.era-frutiger input[type="email"],
-.era-frutiger input[type="password"],
-.era-frutiger input[type="color"],
-.era-frutiger input[type="file"],
-.era-frutiger select,
-.era-frutiger textarea,
-.era-frutiger .form-control {
-	background: rgba(255, 255, 255, 0.15) !important;
-	color: #1b5e20 !important;
-	border: 1px solid rgba(255, 255, 255, 0.35) !important;
-	border-radius: 12px !important;
-}
-.era-frutiger .btn,
-.era-frutiger .comment-button {
-	background: linear-gradient(180deg, #66bb6a, #43a047) !important;
-	border: 1px solid rgba(255, 255, 255, 0.35) !important;
-	color: #ffffff !important;
-	border-radius: 24px !important;
-	box-shadow: 0 4px 16px rgba(27, 94, 32, 0.3) !important;
-}
-.era-frutiger a {
-	color: #1565c0;
-}
-
-/* === ERA-SCOPED LAYOUT OVERRIDES === */
+.era-wikipedia a { color: var(--footer-link-color, #0645ad); }
 .era-wikipedia .sidebar {
-	background: transparent;
+	background: var(--custom-sidebar-color, transparent);
 	backdrop-filter: none;
 	border-right: 1px solid #a2a9b1;
 	border-radius: 0;
 }
 .era-wikipedia .article {
-	border: 1px solid #a2a9b1;
+	background: var(--article-color, #ffffff) !important;
+}
+.era-wikipedia body {
+	background: var(--custom-body-color, #f8f9fa) !important;
 }
 
+/* === ERA: LIQUID GLASS === */
+.era-glass body {
+	background: var(--custom-body-color, radial-gradient(at 0% 0%, #1e1b4b 0px, transparent 50%), radial-gradient(at 100% 0%, #311042 0px, transparent 50%), radial-gradient(at 100% 100%, #0f172a 0px, transparent 50%), radial-gradient(at 0% 100%, #172554 0px, transparent 50%)) !important;
+	background-color: #0f172a !important;
+}
+/* Panels use colored glass: article/sidebar color mixed with opacity */
+.era-glass .top-header {
+	background: color-mix(in srgb, var(--custom-header-color, #526cad) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, var(--border-reflection, 0.18))) !important;
+	border-radius: var(--custom-border-radius, 12px) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
+}
 .era-glass .sidebar {
-	background: rgba(82, 108, 173, 0.3) !important;
-	backdrop-filter: blur(8px);
-	-webkit-backdrop-filter: blur(8px);
-	border-right: 1px solid rgba(255, 255, 255, var(--glass-border-reflection, 0.1));
+	background: color-mix(in srgb, var(--custom-sidebar-color, #3c5fb8) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, var(--border-reflection, 0.18))) !important;
+	border-radius: var(--custom-border-radius, 12px) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
+	box-sizing: border-box !important;
+	overflow: hidden !important;
+	margin-top: 1.5rem !important;
 }
-.era-glass table td {
-	border-color: color-mix(in srgb, var(--footer-text-color, #233a71) 20%, transparent);
+.era-glass .article {
+	background: color-mix(in srgb, var(--article-color, #526cad) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, var(--border-reflection, 0.18))) !important;
+	border-radius: var(--custom-border-radius, 12px) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
+	box-sizing: border-box !important;
+	overflow: hidden !important;
+	margin-top: 1.5rem !important;
 }
+.era-glass .glass-card {
+	background: color-mix(in srgb, var(--article-color, #526cad) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+}
+/* Form controls stay white-frosted */
+.era-glass .form-control,
+.era-glass input,
+.era-glass select,
+.era-glass textarea {
+	background: rgba(255, 255, 255, var(--glass-bg-opacity, 0.12)) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, var(--border-reflection, 0.18))) !important;
+	border-radius: var(--custom-border-radius, 12px) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
+	box-sizing: border-box !important;
+	overflow: hidden !important;
+}
+.era-glass a { color: var(--footer-link-color, #1d305e); }
 
+/* === ERA: MODERN SLEEK === */
+.era-modern body {
+	background: var(--custom-body-color, #09090b) !important;
+}
+.era-modern .top-header {
+	background: var(--custom-header-color, #121214) !important;
+	color: var(--footer-text-color, #ffffff) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	backdrop-filter: none !important;
+	border: none !important;
+	border-bottom: 1px solid #27272a !important;
+	letter-spacing: 0.025em;
+}
+.era-modern .article {
+	background: var(--article-color, #18181b) !important;
+	color: var(--footer-text-color, #ffffff) !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	backdrop-filter: none !important;
+	border: 1px solid #27272a !important;
+	border-left: 4px solid var(--footer-link-color, #6366f1) !important;
+	letter-spacing: 0.025em;
+	padding: 1.25em !important;
+	margin-top: 1.5rem !important;
+}
+.era-modern a { color: var(--footer-link-color, #6366f1); }
 .era-modern .sidebar {
-	background: rgba(26, 29, 39, 0.95) !important;
-	backdrop-filter: none;
-	border-right: 1px solid rgba(255, 255, 255, 0.04);
+	background: var(--custom-sidebar-color, #121214) !important;
+	border: none !important;
+	border-right: 1px solid #27272a !important;
+	border-left: none !important;
+	margin-top: 1.5rem !important;
 }
-.era-modern table td {
-	border-color: rgba(255, 255, 255, 0.06);
+.era-modern .btn {
+	background: #6366f1 !important;
+	border: none !important;
+	color: #ffffff !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
 }
+.era-modern .form-control:not([type="color"]),
+.era-modern input:not([type="color"]),
+.era-modern select,
+.era-modern textarea {
+	background: #09090b !important;
+	border: 1px solid #27272a !important;
+	color: var(--footer-text-color, #ffffff) !important;
+	padding: 0.5rem 0.75rem !important;
+	height: 38px !important;
+	box-sizing: border-box !important;
+	border-left: none !important;
+}
+.era-modern input[type="color"] {
+	background: transparent !important;
+	border: 1px solid #27272a !important;
+	cursor: pointer !important;
+	padding: 0 !important;
+	width: 44px !important;
+	height: 32px !important;
+	border-radius: 4px !important;
+	box-sizing: border-box !important;
+}
+.era-modern input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0 !important;
+}
+.era-modern input[type="color"]::-webkit-color-swatch {
+	border: none !important;
+	border-radius: 3px !important;
+}
+.era-modern h1,
+.era-modern h2,
+.era-modern h3,
+.era-modern h4,
+.era-modern .card-title,
+.era-modern strong { color: #ffffff !important; }
+.era-modern p,
+.era-modern span,
+.era-modern .text-muted { color: var(--footer-text-color, #a1a1aa) !important; }
 
-.era-frutiger .sidebar {
-	border-radius: 0 24px 24px 0;
-	background: rgba(232, 245, 233, 0.9) !important;
-	box-shadow: 4px 0 24px rgba(27, 94, 32, 0.15);
-	backdrop-filter: none;
+/* === ERA: FRUTIGER AERO === */
+.era-frutiger body {
+	background: var(--custom-body-color, linear-gradient(180deg, #2b7cd3 0%, #51a7e9 35%, #8fd3f4 60%, #bbf2f6 100%)) !important;
 }
+.era-frutiger .top-header {
+	background: var(--custom-header-color, rgba(255, 255, 255, 0.82)) !important;
+	color: #111827 !important;
+	border-radius: 24px !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	box-shadow: 0 12px 24px rgba(0, 64, 128, 0.2), inset 0 2px 4px #ffffff !important;
+}
+.era-frutiger .sidebar {
+	background: var(--custom-sidebar-color, #c8e6c9) !important;
+	color: #111827 !important;
+	border-radius: 24px !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	box-shadow: 0 12px 24px rgba(0, 64, 128, 0.2), inset 0 2px 4px #ffffff !important;
+	margin-top: 1.5rem !important;
+}
+.era-frutiger .article {
+	background: var(--article-color, rgba(255, 255, 255, 0.82)) !important;
+	color: #111827 !important;
+	border-radius: 24px !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	box-shadow: 0 12px 24px rgba(0, 64, 128, 0.2), inset 0 2px 4px #ffffff !important;
+	margin-top: 1.5rem !important;
+}
+.era-frutiger a { color: var(--footer-link-color, #1565c0); }
+.era-frutiger .btn {
+	background: linear-gradient(to bottom, #7cd97c 0%, #4caf50 40%, #2e7d32 100%) !important;
+	color: #ffffff !important;
+	border: 1px solid #a5d6a7 !important;
+	border-radius: 30px !important;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), inset 0 2px 3px #fff !important;
+}
+.era-frutiger .form-control,
+.era-frutiger input {
+	background: rgba(255, 255, 255, 0.85) !important;
+	color: #111827 !important;
+	border-radius: 24px !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	box-sizing: border-box !important;
+	height: 40px !important;
+	padding: 0.5rem 1rem !important;
+	overflow: hidden !important;
+}
+.era-frutiger h1,
+.era-frutiger h2,
+.era-frutiger h3,
+.era-frutiger .card-title,
+.era-frutiger strong { color: #0f2d59 !important; }
 
 /* === FRUTIGER AERO GLOSS EFFECT === */
 .era-frutiger .frutiger-gloss-effect {
@@ -169,24 +318,88 @@
 	position: absolute;
 	top: 0; left: 0; right: 0;
 	height: 50%;
-	background: linear-gradient(180deg,
-		rgba(255, 255, 255, 0.35) 0%,
-		rgba(255, 255, 255, 0.15) 40%,
-		transparent 100%
-	);
+	background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%) !important;
 	pointer-events: none;
 	z-index: 1;
 	border-radius: inherit;
 }
 
-/* === PROPORTIONAL NESTED BLUR (AGENTS.md rule #9) === */
-.era-glass .glass-card.depth-1 {
-	backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.6));
-	-webkit-backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.6));
+
+
+/* === GLOBAL ARTICLE PADDING === */
+.article {
+	padding: 2.25rem !important;
 }
-.era-glass .glass-card.depth-2 {
-	backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.4));
-	-webkit-backdrop-filter: blur(calc(var(--glass-blur-radius, 12px) * 0.4));
+.article > *:first-child {
+	margin-top: 0 !important;
+}
+.era-glass .form-control,
+.era-glass input {
+	box-sizing: border-box !important;
+	overflow: hidden !important;
+}
+
+/* === CUSTOM FILE UPLOAD BUTTON === */
+.era-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5em 1.2em;
+	cursor: pointer;
+	font-size: 0.9em;
+	font-weight: 500;
+	transition: background 0.2s;
+}
+.era-wikipedia .era-button {
+	background: #f8f9fa !important;
+	border: 1px solid #a2a9b1 !important;
+	color: #202122 !important;
+	border-radius: 0 !important;
+}
+.era-glass .era-button {
+	background: rgba(255, 255, 255, 0.12) !important;
+	backdrop-filter: blur(8px) !important;
+	-webkit-backdrop-filter: blur(8px) !important;
+	border: 1px solid rgba(255, 255, 255, 0.18) !important;
+	color: #fff !important;
+	border-radius: 6px !important;
+}
+.era-modern .era-button {
+	background: #6366f1 !important;
+	border: none !important;
+	color: #fff !important;
+	border-radius: 0 !important;
+}
+.era-frutiger .era-button {
+	background: linear-gradient(to bottom, #7cd97c 0%, #4caf50 40%, #2e7d32 100%) !important;
+	border: 1px solid #a5d6a7 !important;
+	color: #ffffff !important;
+	border-radius: 30px !important;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), inset 0 2px 3px #fff !important;
+}
+
+/* === EDITOR CONTROL GRID ALIGNMENT === */
+.color-picker-row,
+.editor-control-group,
+.form-group {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	gap: 1rem !important;
+	margin-bottom: 0.85rem !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
+.form-group label,
+.color-picker-row label {
+	margin-bottom: 0 !important;
+	white-space: nowrap !important;
+	text-align: left !important;
+	flex-grow: 1 !important;
+}
+.form-group input,
+.color-picker-row input {
+	flex-shrink: 0 !important;
 }
 
 html {
@@ -779,7 +992,7 @@ span.user {
 	background: none;
 	border: none;
 	font-weight: bold;
-	color: #1d305e;
+	color: var(--footer-link-color, #1d305e);
 	cursor: pointer;
 	padding-left: 0vw;
   }

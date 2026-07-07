@@ -67,6 +67,9 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
       '--bg-mesh-gradient': styles.bgMeshGradient,
       '--custom-border-radius': styles.borderRadius || '0px',
       '--custom-border-style': styles.borderStyle || '1px solid #a2a9b1',
+      '--custom-header-color': styles.articleColor,
+      '--custom-sidebar-color': styles.articleRightColor,
+      '--panel-opacity': styles.glassBgOpacity ?? 0.12,
     } as any}>
       <div>
         <HeaderComponent userName={userName} userRole={userRole}>

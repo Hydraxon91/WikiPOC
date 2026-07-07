@@ -25,7 +25,6 @@ const ManualEditStylesComponent = ({
   handleChange,
   newStyles,
   handleLogoPictureChange,
-  isWikipedia,
 }) => {
   return (
     <div>
@@ -34,7 +33,10 @@ const ManualEditStylesComponent = ({
 
       <div className="form-group edit_logo">
         <p>Logo Picture:</p>
-        <input type="file" accept="image/*" onChange={handleLogoPictureChange} />
+        <label htmlFor="logo-upload" className="era-button">
+          <input id="logo-upload" type="file" accept="image/*" onChange={handleLogoPictureChange} hidden />
+          Choose Logo
+        </label>
       </div>
 
       <div className="form-group">
@@ -103,73 +105,58 @@ const ManualEditStylesComponent = ({
         </div>
       ))}
 
-      {/* === AESTHETIC MODIFIERS === */}
-      <h3>Aesthetic Modifiers</h3>
+      {/* === AESTHETIC MODIFIERS — Liquid Glass only === */}
+      {newStyles.interfaceEra === "glass" && (
+        <>
+          <h3>Aesthetic Modifiers</h3>
 
-      <div
-        className="form-group"
-        style={{ opacity: isWikipedia ? 0.4 : 1, transition: "opacity 0.2s" }}
-        title={
-          isWikipedia
-            ? "Glass/blur settings are saved but visually bypassed in Wikipedia era."
-            : ""
-        }
-      >
-        <label>Glass Opacity ({Math.round((newStyles.glassBgOpacity ?? 1) * 100)}%):</label>
-        <input
-          type="range"
-          min="0.05"
-          max="1.0"
-          step="0.05"
-          value={newStyles.glassBgOpacity ?? 1}
-          onChange={(e) => handleChange("glassBgOpacity", parseFloat(e.target.value))}
-          disabled={isWikipedia}
-        />
-      </div>
+          <div className="form-group">
+            <label>Glass Opacity ({Math.round((newStyles.glassBgOpacity ?? 1) * 100)}%):</label>
+            <input
+              type="range"
+              min="0.05"
+              max="1.0"
+              step="0.05"
+              value={newStyles.glassBgOpacity ?? 1}
+              onChange={(e) => handleChange("glassBgOpacity", parseFloat(e.target.value))}
+            />
+          </div>
 
-      <div
-        className="form-group"
-        style={{ opacity: isWikipedia ? 0.4 : 1, transition: "opacity 0.2s" }}
-        title={isWikipedia ? "Bypassed in Wikipedia era — values saved for later use." : ""}
-      >
-        <label>Blur Radius ({(newStyles.glassBlurRadius || 0)}px):</label>
-        <input
-          type="range"
-          min="0"
-          max="30"
-          step="1"
-          value={newStyles.glassBlurRadius || 0}
-          onChange={(e) => handleChange("glassBlurRadius", parseInt(e.target.value))}
-          disabled={isWikipedia}
-        />
-      </div>
+          <div className="form-group">
+            <label>Blur Radius ({(newStyles.glassBlurRadius || 0)}px):</label>
+            <input
+              type="range"
+              min="0"
+              max="30"
+              step="1"
+              value={newStyles.glassBlurRadius || 0}
+              onChange={(e) => handleChange("glassBlurRadius", parseInt(e.target.value))}
+            />
+          </div>
 
-      <div
-        className="form-group"
-        style={{ opacity: isWikipedia ? 0.4 : 1, transition: "opacity 0.2s" }}
-        title={isWikipedia ? "Bypassed in Wikipedia era — values saved for later use." : ""}
-      >
-        <label>Border Reflection:</label>
-        <input
-          type="range"
-          min="0"
-          max="0.4"
-          step="0.05"
-          value={newStyles.glassBorderReflection || 0}
-          onChange={(e) => handleChange("glassBorderReflection", parseFloat(e.target.value))}
-          disabled={isWikipedia}
-        />
-      </div>
+          <div className="form-group">
+            <label>Border Reflection:</label>
+            <input
+              type="range"
+              min="0"
+              max="0.4"
+              step="0.05"
+              value={newStyles.glassBorderReflection || 0}
+              onChange={(e) => handleChange("glassBorderReflection", parseFloat(e.target.value))}
+            />
+          </div>
 
-      <div className="form-group">
-        <label>Background Mesh (CSS gradient):</label>
-        <textarea
-          rows={3}
-          style={{ width: "100%", fontFamily: "monospace", fontSize: "0.85em" }}
-          value={newStyles.bgMeshGradient || ""}
-          onChange={(e) => handleChange("bgMeshGradient", e.target.value)}
-        />
-      </div>
+          <div className="form-group">
+            <label>Background Mesh (CSS gradient):</label>
+            <textarea
+              rows={3}
+              style={{ width: "100%", fontFamily: "monospace", fontSize: "0.85em" }}
+              value={newStyles.bgMeshGradient || ""}
+              onChange={(e) => handleChange("bgMeshGradient", e.target.value)}
+            />
+          </div>
+        </>
+      )}
 
       {/* === BORDER CONFIG === */}
       <h3>Border & Radius</h3>

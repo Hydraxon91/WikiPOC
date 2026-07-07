@@ -105,6 +105,13 @@ export const updateStyles = async (newStyles, logoPictureFile, token) => {
   formData.append('styleUpdateForm.StyleModel.FooterListLinkTextColor', newStyles.footerListLinkTextColor);
   formData.append('styleUpdateForm.StyleModel.FooterListTextColor', newStyles.footerListTextColor);
   formData.append('styleUpdateForm.StyleModel.FontFamily', newStyles.fontFamily);
+  formData.append('styleUpdateForm.StyleModel.InterfaceEra', newStyles.interfaceEra);
+  formData.append('styleUpdateForm.StyleModel.GlassBgOpacity', newStyles.glassBgOpacity ?? '');
+  formData.append('styleUpdateForm.StyleModel.GlassBlurRadius', newStyles.glassBlurRadius ?? '');
+  formData.append('styleUpdateForm.StyleModel.GlassBorderReflection', newStyles.glassBorderReflection ?? '');
+  formData.append('styleUpdateForm.StyleModel.BgMeshGradient', newStyles.bgMeshGradient ?? '');
+  formData.append('styleUpdateForm.StyleModel.BorderRadius', newStyles.borderRadius ?? '');
+  formData.append('styleUpdateForm.StyleModel.BorderStyle', newStyles.borderStyle ?? '');
   formData.append('styleUpdateForm.LogoPictureFile', logoPictureFile);
 
   return putForm('/api/Style', formData, token);

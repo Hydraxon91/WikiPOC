@@ -110,18 +110,21 @@
 .edit-profile-navlink{
     text-align: center;
     text-decoration: none;
-    color: black;
-    font-family: serif;
-    transform: translateY(180%);
+    color: var(--footer-link-color, #0645ad) !important;
+    font-family: var(--font-family, serif);
     width: 100%;
     height: 40px;
-    /* border-radius: 40px; */
-    background: #fff;
-    border: none;
+    border-radius: 6px;
+    background: var(--glass-panel, rgba(255, 255, 255, 0.1)) !important;
+    border: var(--custom-border-style, 1px solid rgba(255, 255, 255, 0.12)) !important;
     outline: none;
     cursor: pointer;
     font-size: 1.6em;
     font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .edit-profile-button{

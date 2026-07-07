@@ -2,18 +2,18 @@ import ManualEditStylesComponent from "./Components/ManualEditStylesComponent";
 import PresetsComponent from "./Components/PresetsComponent";
 import UserThemesList from "./Components/UserThemesList";
 import "../../Styles/stylepage.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStyleContext } from "../../Components/contexts/StyleContext";
 import { useUserContext } from "../../Components/contexts/UserContextProvider";
 import { useNotification } from "../../Components/NotificationProvider";
-import { saveUserTheme, activateTheme } from "../../Api/wikiApi";
+import { saveUserTheme, activateTheme, fetchCurrentStyles } from "../../Api/wikiApi";
 import { applyEraFallbacks } from "../../Components/contexts/StyleContext";
 import { StyleModel } from "../../types/models";
 
 const EditStylePage = ({ jwtToken }) => {
   const navigate = useNavigate();
-  const { styles, setStyles, refreshUserThemes } = useStyleContext();
+  const { styles, setStyles, refreshUserThemes, updateStyles } = useStyleContext();
   const { decodedTokenContext } = useUserContext();
   const { showNotification } = useNotification();
 
@@ -24,7 +24,9 @@ const EditStylePage = ({ jwtToken }) => {
   const [saveName, setSaveName] = useState("");
   const [showSavePrompt, setShowSavePrompt] = useState(false);
   const [activating, setActivating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const themeNameRef = useRef<HTMLInputElement>(null);
+  const initialSync = useRef(true);
 
   const role = decodedTokenContext?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
   const userId = decodedTokenContext?.sub;
@@ -34,6 +36,9 @@ const EditStylePage = ({ jwtToken }) => {
   // Load theme into both editor state and live preview
   const handleLoadTheme = (theme: StyleModel) => {
     const merged = applyEraFallbacks(theme);
+    // Preserve the user's wiki name and logo when switching presets
+    merged.wikiName = merged.wikiName || newStyles.wikiName;
+    merged.logo = merged.logo || newStyles.logo;
     setNewStyles(merged);
     setStyles(merged);
   };
@@ -43,12 +48,14 @@ const EditStylePage = ({ jwtToken }) => {
     setStyles(newStyles);
   }, [newStyles, setStyles]);
 
-  // Restore backup on unmount
+  // Sync initial styles from context into editor (after API fetch completes)
   useEffect(() => {
-    return () => {
-      setStyles(backUpStyles);
-    };
-  }, [backUpStyles, setStyles]);
+    if (initialSync.current && styles.interfaceEra) {
+      setNewStyles(styles);
+      setBackupStyles(styles);
+      initialSync.current = false;
+    }
+  }, [styles]);
 
   const handleChange = (field: string, value: any) => {
     setNewStyles((prev) => ({ ...prev, [field]: value }));
@@ -98,6 +105,29 @@ const EditStylePage = ({ jwtToken }) => {
       showNotification("Failed to activate: " + (err?.message || "Unknown error"));
     } finally {
       setActivating(false);
+    }
+  };
+
+  // Update the global active theme directly
+  const handleSaveActiveTheme = async () => {
+    if (!jwtToken) {
+      showNotification("No auth token — please log in again.");
+      console.error("UpdateStyles called without jwtToken");
+      return;
+    }
+    setSaving(true);
+    try {
+      console.log("Updating styles with token:", jwtToken.substring(0, 20) + "...");
+      await updateStyles(newStyles, logoPicture, jwtToken);
+      setBackupStyles(prev => ({ ...prev, ...newStyles }));
+      const fresh = await fetchCurrentStyles();
+      setStyles(fresh);
+      showNotification("Active theme updated!");
+    } catch (err: any) {
+      console.error("UpdateStyles failed:", err);
+      showNotification("Failed to update: " + (err?.message || "Unknown error"));
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -151,7 +181,6 @@ const EditStylePage = ({ jwtToken }) => {
             handleChange={handleChange}
             newStyles={newStyles}
             handleLogoPictureChange={handleLogoPictureChange}
-            isWikipedia={isWikipedia}
           />
         )}
 
@@ -228,6 +257,21 @@ const EditStylePage = ({ jwtToken }) => {
               </button>
             </div>
           )}
+
+          <button
+            onClick={handleSaveActiveTheme}
+            disabled={saving}
+            style={{
+              padding: "0.5em 1.2em",
+              border: "1px solid rgba(255,255,255,0.2)",
+              borderRadius: 6,
+              background: saving ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.08)",
+              color: saving ? "#666" : "#fff",
+              cursor: saving ? "not-allowed" : "pointer",
+            }}
+          >
+            {saving ? "Saving..." : "Apply to Active Theme"}
+          </button>
 
           {isAdmin && (
             <button
