@@ -81,15 +81,12 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
             <Outlet />
           </div>
           <div className="pagefooter" style={{ color: styles.footerListTextColor }}>
-            This is a footer | Template by <a href="http://html5-templates.com/" target="_blank" rel="nofollow" style={{ color: styles.footerListLinkTextColor }}>HTML5 Templates</a>
+            Created by <a href="https://github.com/Hydraxon91" target="_blank" rel="nofollow" style={{ color: styles.footerListLinkTextColor }}>Hydraxon</a>
             <div className="footerlinks">
-              <a href="#" style={{ color: styles.footerListLinkTextColor }}>Privacy policy</a>
-              <a href="#" style={{ color: styles.footerListLinkTextColor }}>About</a>
-              <a href="#" style={{ color: styles.footerListLinkTextColor }}>Terms and conditions</a>
-              <a href="#" style={{ color: styles.footerListLinkTextColor }}>Cookie statement</a>
-              <a href="#" style={{ color: styles.footerListLinkTextColor }}>Developers</a>
+              <a href="https://github.com/Hydraxon91" target="_blank" rel="nofollow" style={{ color: styles.footerListLinkTextColor }}>GitHub</a>
+              <a href="https://www.linkedin.com/in/bence-szabo961213/" target="_blank" rel="nofollow" style={{ color: styles.footerListLinkTextColor }}>LinkedIn</a>
             </div>
-          </div>
+        </div>
         </div>
       </div>
     </div>
