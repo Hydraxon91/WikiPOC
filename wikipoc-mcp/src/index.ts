@@ -57,6 +57,17 @@ async function patchJson(path: string, body: any, token?: string) {
   return res.json();
 }
 
+async function putJson(path: string, body: any, token?: string) {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = "Bearer " + token;
+  const res = await fetch(BASE_URL + path, { method: "PUT", headers, body: JSON.stringify(body) });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || res.statusText);
+  }
+  return res.json();
+}
+
 async function del(path: string, token?: string) {
   const headers: Record<string, string> = {};
   if (token) headers["Authorization"] = "Bearer " + token;
@@ -110,6 +121,16 @@ server.tool(
   wrap(async (args: any) => {
     const slug = encodeURIComponent(args.slug as string);
     const text = await getJson("/api/WikiPages/GetBySlug/" + slug);
+    return { content: [{ type: "text", text }] };
+  }),
+);
+
+server.tool(
+  "search_wiki_articles",
+  "Search wiki articles by title and content",
+  { query: z.string().describe("The search query") } as any,
+  wrap(async (args: any) => {
+    const text = await getJson("/api/WikiPages/Search/" + encodeURIComponent(args.query));
     return { content: [{ type: "text", text }] };
   }),
 );
@@ -296,6 +317,72 @@ server.tool(
   wrap(async (args: any) => {
     const token = requireToken();
     const data = await del("/api/ForumPost/" + args.id, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+  }),
+);
+
+server.tool(
+  "create_wiki_page",
+  "Create a new wiki page. Requires moderator+ login.",
+  {
+    title: z.string().describe("Page title"),
+    content: z.string().optional().describe("Page content (HTML)"),
+    siteSub: z.string().optional().describe("Subtitle"),
+    roleNote: z.string().optional().describe("Role note"),
+    categoryId: z.string().optional().describe("Category ID (GUID)"),
+  } as any,
+  wrap(async (args: any) => {
+    const token = requireToken();
+    const data = await postJson("/api/WikiPages/admin-json", {
+      title: args.title,
+      content: args.content,
+      siteSub: args.siteSub,
+      roleNote: args.roleNote,
+      categoryId: args.categoryId,
+      paragraphs: [],
+      images: [],
+    }, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+  }),
+);
+
+server.tool(
+  "update_wiki_page",
+  "Update a wiki page. Requires moderator+ login.",
+  {
+    id: z.string().describe("The page ID (GUID)"),
+    title: z.string().optional().describe("New title"),
+    content: z.string().optional().describe("New content (HTML)"),
+    siteSub: z.string().optional().describe("New subtitle"),
+    roleNote: z.string().optional().describe("New role note"),
+    categoryId: z.string().optional().describe("New category ID (GUID)"),
+  } as any,
+  wrap(async (args: any) => {
+    const token = requireToken();
+    const data = await putJson("/api/WikiPages/admin-json/" + args.id, args, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+  }),
+);
+
+server.tool(
+  "create_forum_post",
+  "Create a new forum post. Requires login.",
+  {
+    postTitle: z.string().describe("Post title"),
+    content: z.string().describe("Post content (HTML)"),
+    forumTopicId: z.string().describe("Forum topic ID (GUID)"),
+    userId: z.string().describe("Your user profile ID (GUID)"),
+    userName: z.string().describe("Your display name"),
+  } as any,
+  wrap(async (args: any) => {
+    const token = requireToken();
+    const data = await postJson("/api/ForumPost/postTopic-json", {
+      postTitle: args.postTitle,
+      content: args.content,
+      forumTopicId: args.forumTopicId,
+      userId: args.userId,
+      userName: args.userName,
+    }, token);
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
   }),
 );

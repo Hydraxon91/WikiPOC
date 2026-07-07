@@ -55,6 +55,17 @@ async function patchJson(path, body, token) {
     }
     return res.json();
 }
+async function putJson(path, body, token) {
+    const headers = { "Content-Type": "application/json" };
+    if (token)
+        headers["Authorization"] = "Bearer " + token;
+    const res = await fetch(BASE_URL + path, { method: "PUT", headers, body: JSON.stringify(body) });
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || res.statusText);
+    }
+    return res.json();
+}
 async function del(path, token) {
     const headers = {};
     if (token)
@@ -87,6 +98,10 @@ server.tool("get_wiki_articles", "List all wiki article titles with their slugs 
 server.tool("get_wiki_article", "Get a full wiki article by its slug", { slug: z.string().describe("The URL slug of the article (e.g. 'example-page-1')") }, wrap(async (args) => {
     const slug = encodeURIComponent(args.slug);
     const text = await getJson("/api/WikiPages/GetBySlug/" + slug);
+    return { content: [{ type: "text", text }] };
+}));
+server.tool("search_wiki_articles", "Search wiki articles by title and content", { query: z.string().describe("The search query") }, wrap(async (args) => {
+    const text = await getJson("/api/WikiPages/Search/" + encodeURIComponent(args.query));
     return { content: [{ type: "text", text }] };
 }));
 server.tool("list_forum_topics", "List all forum topics (boards) with their slugs", {}, wrap(async () => {
@@ -183,6 +198,54 @@ server.tool("delete_wiki_page", "Delete a wiki page. Requires moderator+ login."
 server.tool("delete_forum_post", "Delete a forum post. Requires login.", { id: z.string().describe("The ID (GUID) of the forum post to delete") }, wrap(async (args) => {
     const token = requireToken();
     const data = await del("/api/ForumPost/" + args.id, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("create_wiki_page", "Create a new wiki page. Requires moderator+ login.", {
+    title: z.string().describe("Page title"),
+    content: z.string().optional().describe("Page content (HTML)"),
+    siteSub: z.string().optional().describe("Subtitle"),
+    roleNote: z.string().optional().describe("Role note"),
+    categoryId: z.string().optional().describe("Category ID (GUID)"),
+}, wrap(async (args) => {
+    const token = requireToken();
+    const data = await postJson("/api/WikiPages/admin-json", {
+        title: args.title,
+        content: args.content,
+        siteSub: args.siteSub,
+        roleNote: args.roleNote,
+        categoryId: args.categoryId,
+        paragraphs: [],
+        images: [],
+    }, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("update_wiki_page", "Update a wiki page. Requires moderator+ login.", {
+    id: z.string().describe("The page ID (GUID)"),
+    title: z.string().optional().describe("New title"),
+    content: z.string().optional().describe("New content (HTML)"),
+    siteSub: z.string().optional().describe("New subtitle"),
+    roleNote: z.string().optional().describe("New role note"),
+    categoryId: z.string().optional().describe("New category ID (GUID)"),
+}, wrap(async (args) => {
+    const token = requireToken();
+    const data = await putJson("/api/WikiPages/admin-json/" + args.id, args, token);
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+}));
+server.tool("create_forum_post", "Create a new forum post. Requires login.", {
+    postTitle: z.string().describe("Post title"),
+    content: z.string().describe("Post content (HTML)"),
+    forumTopicId: z.string().describe("Forum topic ID (GUID)"),
+    userId: z.string().describe("Your user profile ID (GUID)"),
+    userName: z.string().describe("Your display name"),
+}, wrap(async (args) => {
+    const token = requireToken();
+    const data = await postJson("/api/ForumPost/postTopic-json", {
+        postTitle: args.postTitle,
+        content: args.content,
+        forumTopicId: args.forumTopicId,
+        userId: args.userId,
+        userName: args.userName,
+    }, token);
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
 }));
 const transport = new StdioServerTransport();

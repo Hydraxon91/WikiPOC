@@ -40,6 +40,22 @@ public class WikiPageRepository : IWikiPageRepository
         return titlesAndCategories;
     }
 
+    public async Task<List<TitleAndCategory>> SearchAsync(string query)
+    {
+        return await _context.WikiPages
+            .Where(page => !(page is UserSubmittedWikiPage) ||
+                           _context.UserSubmittedWikiPages.Any(userPage => page.Id == userPage.Id && userPage.Approved))
+            .Where(page => (page.Title != null && page.Title.Contains(query)) ||
+                           (page.Content != null && page.Content.Contains(query)))
+            .Select(page => new TitleAndCategory
+            {
+                Title = page.Title ?? "Untitled",
+                Slug = page.Slug,
+                Category = page.Category!.CategoryName ?? "Uncategorized"
+            })
+            .ToListAsync();
+    }
+
     public async Task<IEnumerable<WikiPage>> GetAllAsync()
     {
         return await _context.WikiPages

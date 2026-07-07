@@ -8,6 +8,7 @@ public interface IWikiPageRepository
     Task<List<TitleAndCategory>> GetAllTitlesAndCategoriesAsync();
     Task<WPWithImagesOutputModel?> GetByIdAsync(Guid id);
     Task<WPWithImagesOutputModel?> GetBySlugAsync(string slug);
+    Task<List<TitleAndCategory>> SearchAsync(string query);
     Task AddAsync(WikiPage wikiPage, ICollection<ImageFormModel> images);
     Task AddUserSubmittedPageAsync(UserSubmittedWikiPage wikiPage, ICollection<ImageFormModel> images);
     Task AcceptUserSubmittedWikiPage(UserSubmittedWikiPage userSubmittedWikiPage);
