@@ -1,69 +1,245 @@
 import ManualEditStylesComponent from "./Components/ManualEditStylesComponent";
 import PresetsComponent from "./Components/PresetsComponent";
+import UserThemesList from "./Components/UserThemesList";
 import "../../Styles/stylepage.css";
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useStyleContext } from "../../Components/contexts/StyleContext";
-import { useNotification } from '../../Components/NotificationProvider';
+import { useUserContext } from "../../Components/contexts/UserContextProvider";
+import { useNotification } from "../../Components/NotificationProvider";
+import { saveUserTheme, activateTheme } from "../../Api/wikiApi";
 
-const EditStylePage = ({jwtToken}) =>{
-    const navigate = useNavigate();
-    const { styles, updateStyles, setStyles } = useStyleContext();
-    const { showNotification } = useNotification();
+const EditStylePage = ({ jwtToken }) => {
+  const navigate = useNavigate();
+  const { styles, setStyles, refreshUserThemes } = useStyleContext();
+  const { decodedTokenContext } = useUserContext();
+  const { showNotification } = useNotification();
 
-    const[logoPicture, setLogoPicture] = useState(null);
-    const [newStyles, setNewStyles] = useState(styles);
-    const [backUpStyles, setBackupStyles] = useState(styles);
-    const [manualEdit, setManualEdit] = useState(false);
-    const [leave, setLeave] = useState(false);
-    
-    useEffect(()=>{
-        setStyles(newStyles)
-    }, [newStyles, setStyles]);
+  const [logoPicture, setLogoPicture] = useState(null);
+  const [newStyles, setNewStyles] = useState(styles);
+  const [backUpStyles, setBackupStyles] = useState(styles);
+  const [activeTab, setActiveTab] = useState<"presets" | "manual">("presets");
+  const [saveName, setSaveName] = useState("");
+  const [showSavePrompt, setShowSavePrompt] = useState(false);
+  const [activating, setActivating] = useState(false);
+  const themeNameRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        return () => {
-            setStyles(backUpStyles);
-        };
-    }, [backUpStyles, setStyles]);
+  const role = decodedTokenContext?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+  const userId = decodedTokenContext?.sub;
+  const isAdmin = role === "Admin" || role === "Owner";
+  const isWikipedia = newStyles.interfaceEra === "wikipedia";
 
-    useEffect(()=>{
-        leave && navigate("/");
-    },[leave])
+  // Sync editor state to live preview
+  useEffect(() => {
+    setStyles(newStyles);
+  }, [newStyles, setStyles]);
 
-    const handleChange = (field, value) => {
-        setNewStyles((prevStyles) => ({ ...prevStyles, [field]: value }));
+  // Restore backup on unmount
+  useEffect(() => {
+    return () => {
+      setStyles(backUpStyles);
     };
+  }, [backUpStyles, setStyles]);
 
-    const handleLogoPictureChange = (event) => {
-        const file = event.target.files[0];
-        setLogoPicture(file);
-      };
+  const handleChange = (field: string, value: any) => {
+    setNewStyles((prev) => ({ ...prev, [field]: value }));
+  };
 
-    const handleUpdate = async () => {
-        try {
-            await updateStyles(newStyles, logoPicture, jwtToken);
-            setStyles(newStyles);
-            setBackupStyles(prevStyles => ({ ...prevStyles, ...newStyles }));
-            setLeave(true);
-        } catch (err) {
-            showNotification('Failed to save styles: ' + err.message);
-        }
-    };
+  const handleLogoPictureChange = (event: any) => {
+    setLogoPicture(event.target.files[0]);
+  };
 
-    return (
-        <div className="article" style={{backgroundColor: styles.articleColor, padding: '1.5em'}}>
-        <div className="stylepage">
-            {manualEdit ? 
-                <ManualEditStylesComponent handleChange={handleChange} newStyles={newStyles} handleLogoPictureChange={handleLogoPictureChange}/>
-                :
-                <PresetsComponent handleChange={handleChange} logo={styles.logo}></PresetsComponent>    
-            }
-            <button onClick={handleUpdate}>Update</button>
-            <button onClick={()=>setManualEdit(!manualEdit)}>{manualEdit ? "Presets" : "Manual Edit"}</button>
+  // Save as custom theme
+  const handleSaveCustomTheme = async () => {
+    if (!userId) {
+      showNotification("You must be logged in to save a theme.");
+      return;
+    }
+    if (!saveName.trim()) {
+      showNotification("Please enter a theme name.");
+      themeNameRef.current?.focus();
+      return;
+    }
+    try {
+      await saveUserTheme(
+        { ...newStyles, userId, themeName: saveName.trim(), isSystemPreset: false },
+        jwtToken
+      );
+      showNotification("Theme saved!");
+      setSaveName("");
+      setShowSavePrompt(false);
+      refreshUserThemes();
+    } catch (err: any) {
+      showNotification("Failed to save theme: " + (err?.message || "Unknown error"));
+    }
+  };
+
+  // Activate globally (admin only)
+  const handleActivateGlobal = async () => {
+    if (!newStyles.id) {
+      showNotification("Select a theme to activate.");
+      return;
+    }
+    setActivating(true);
+    try {
+      await activateTheme(newStyles.id, jwtToken);
+      showNotification("Theme activated globally!");
+    } catch (err: any) {
+      showNotification("Failed to activate: " + (err?.message || "Unknown error"));
+    } finally {
+      setActivating(false);
+    }
+  };
+
+  return (
+    <div className="article" style={{ backgroundColor: styles.articleColor, padding: "1.5em" }}>
+      <div className="stylepage">
+        <h2>Theme Editor Dashboard</h2>
+
+        {/* Tab bar */}
+        <div style={{ display: "flex", gap: "0.5em", marginBottom: "1.5em" }}>
+          <button
+            onClick={() => setActiveTab("presets")}
+            style={{
+              padding: "0.5em 1.2em",
+              border: "none",
+              borderRadius: 6,
+              background: activeTab === "presets" ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.05)",
+              color: "#fff",
+              cursor: "pointer",
+              fontWeight: activeTab === "presets" ? "bold" : "normal",
+            }}
+          >
+            System Presets
+          </button>
+          <button
+            onClick={() => setActiveTab("manual")}
+            style={{
+              padding: "0.5em 1.2em",
+              border: "none",
+              borderRadius: 6,
+              background: activeTab === "manual" ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.05)",
+              color: "#fff",
+              cursor: "pointer",
+              fontWeight: activeTab === "manual" ? "bold" : "normal",
+            }}
+          >
+            Manual Edit
+          </button>
         </div>
-        </div>    
-    )
-}
+
+        {/* Tab content */}
+        {activeTab === "presets" && (
+          <>
+            <PresetsComponent />
+            <UserThemesList jwtToken={jwtToken} />
+          </>
+        )}
+
+        {activeTab === "manual" && (
+          <ManualEditStylesComponent
+            handleChange={handleChange}
+            newStyles={newStyles}
+            handleLogoPictureChange={handleLogoPictureChange}
+            isWikipedia={isWikipedia}
+          />
+        )}
+
+        {/* Action buttons */}
+        <div
+          style={{
+            marginTop: "2em",
+            paddingTop: "1.5em",
+            borderTop: "1px solid rgba(255,255,255,0.1)",
+            display: "flex",
+            gap: "0.75em",
+            flexWrap: "wrap",
+            alignItems: "center",
+          }}
+        >
+          {!showSavePrompt ? (
+            <button
+              onClick={() => setShowSavePrompt(true)}
+              style={{
+                padding: "0.5em 1.2em",
+                border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: 6,
+                background: "rgba(255,255,255,0.08)",
+                color: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              Save as Custom Theme
+            </button>
+          ) : (
+            <div style={{ display: "flex", gap: "0.5em", alignItems: "center" }}>
+              <input
+                ref={themeNameRef}
+                type="text"
+                placeholder="Theme name..."
+                value={saveName}
+                onChange={(e) => setSaveName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSaveCustomTheme()}
+                style={{
+                  padding: "0.4em 0.6em",
+                  borderRadius: 4,
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  background: "rgba(255,255,255,0.08)",
+                  color: "#fff",
+                  fontSize: "0.9em",
+                }}
+                autoFocus
+              />
+              <button
+                onClick={handleSaveCustomTheme}
+                style={{
+                  padding: "0.5em 1.2em",
+                  border: "1px solid rgba(100,200,100,0.4)",
+                  borderRadius: 6,
+                  background: "rgba(100,200,100,0.15)",
+                  color: "#8f8",
+                  cursor: "pointer",
+                }}
+              >
+                Save
+              </button>
+              <button
+                onClick={() => { setShowSavePrompt(false); setSaveName(""); }}
+                style={{
+                  padding: "0.5em 1.2em",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 6,
+                  background: "transparent",
+                  color: "#aaa",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
+          {isAdmin && (
+            <button
+              onClick={handleActivateGlobal}
+              disabled={activating || !newStyles.id}
+              style={{
+                padding: "0.5em 1.2em",
+                border: "1px solid rgba(255,200,100,0.4)",
+                borderRadius: 6,
+                background: activating ? "rgba(255,200,100,0.08)" : "rgba(255,200,100,0.15)",
+                color: activating ? "#888" : "#ffd700",
+                cursor: activating ? "not-allowed" : "pointer",
+                marginLeft: "auto",
+              }}
+            >
+              {activating ? "Activating..." : "Activate Globally"}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default EditStylePage;

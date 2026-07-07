@@ -1,4 +1,5 @@
 import { get, post, put, del, postForm, putForm, patch } from './apiClient';
+import { StyleModel } from '../types/models';
 
 export const getWikiPageTitles = async () => {
     return get('/api/WikiPages/GetTitles');
@@ -76,6 +77,22 @@ export const fetchSystemPresets = async () => {
 
 export const fetchUserThemes = async (userId: string) => {
   return get(`/api/Style/user-themes/${userId}`);
+};
+
+export const saveUserTheme = async (theme: Partial<StyleModel>, token: string): Promise<StyleModel> => {
+  return post('/api/Style/user-themes', theme, token);
+};
+
+export const updateUserTheme = async (id: number, theme: Partial<StyleModel>, token: string): Promise<void> => {
+  return put(`/api/Style/user-themes/${id}`, theme, token);
+};
+
+export const deleteUserTheme = async (id: number, token: string): Promise<void> => {
+  return del(`/api/Style/user-themes/${id}`, token);
+};
+
+export const activateTheme = async (id: number, token: string): Promise<void> => {
+  return put(`/api/Style/activate/${id}`, undefined, token);
 };
 
 export const updateStyles = async (newStyles, logoPictureFile, token) => {

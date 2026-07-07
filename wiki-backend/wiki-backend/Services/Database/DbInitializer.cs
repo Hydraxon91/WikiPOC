@@ -354,8 +354,15 @@ public class DbInitializer : IHostedService
         using var scope = _scopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<WikiDbContext>();
 
-        if (!await dbContext.Styles.AnyAsync())
+        if (!await dbContext.Styles.AnyAsync(s => s.IsSystemPreset))
         {
+            // Remove any legacy rows from before the multi-theme migration
+            var legacyRows = await dbContext.Styles
+                .Where(s => !s.IsSystemPreset)
+                .ToListAsync();
+            if (legacyRows.Count > 0)
+                dbContext.Styles.RemoveRange(legacyRows);
+
             dbContext.Styles.AddRange(new List<StyleModel>
             {
                 new()
