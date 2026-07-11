@@ -9,6 +9,9 @@
 
 ## Agent Behavior Guidelines
 
+- **Load the `wikipoc-mcp` skill first thing in every session.** This loads
+  the MCP tool reference and triggers the proactive session start workflow
+  (checking for handoff notes and persistent context in WikiPOC).
 - **Avoid over-deliberation.** Plan once, then act. Do not re-plan or second-guess
   a chosen approach more than once before executing, unless new information
   (e.g. a build error) genuinely changes the picture.

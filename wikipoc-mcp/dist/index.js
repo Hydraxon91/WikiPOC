@@ -193,10 +193,10 @@ server.tool("update_wiki_page", "Update a wiki page. Requires moderator+ login."
     const data = await putJson("/api/WikiPages/admin-json/" + args.id, args, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
 }));
-server.tool("create_forum_post", "Create a new forum post. Requires login.", { postTitle: z.string(), content: z.string(), forumTopicId: z.string(), userId: z.string(), userName: z.string() }, wrap(async (args) => {
+server.tool("create_forum_post", "Create a new forum post. Requires login.", { postTitle: z.string(), content: z.string(), forumTopicId: z.string(), userProfileId: z.string(), userName: z.string() }, wrap(async (args) => {
     const data = await postJson("/api/ForumPost/postTopic-json", {
         postTitle: args.postTitle, content: args.content,
-        forumTopicId: args.forumTopicId, userId: args.userId, userName: args.userName,
+        forumTopicId: args.forumTopicId, userId: args.userProfileId, userName: args.userName,
     }, requireToken());
     return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
 }));
