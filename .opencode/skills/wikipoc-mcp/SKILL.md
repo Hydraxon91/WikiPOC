@@ -107,9 +107,10 @@ Use MCP tools to verify fixes rather than just reading code when:
 4. If it doesn't, report the discrepancy rather than silently
    assuming it's a test environment issue
 
-**Test credentials to use** (from .env — do not hardcode in MCP):
-- Admin/Owner: `admin@admin.com` / `AdminPass123`
-- Regular user: `test@test.com` / `TestPass123`
+**Credentials:**
+- Admin/Owner: `admin@admin.com` / `AdminPass123` (from `ADMINUSER_*` env vars)
+- The `TESTUSER_*` env vars may not match the actual seeded user — check `GET /api/Users/GetUsers` for real usernames and register a fresh user if needed
+- The seeded test user's UserProfile ID (not Identity ID) must be used for `userProfileId` params in comment/post tools — fetch it via `GET /api/UserProfile/GetByUserId/{identityUserId}`
 
 **Do not use MCP live testing as a substitute for the NUnit test
 suite.** MCP testing is for smoke-testing specific fixes end-to-end.
