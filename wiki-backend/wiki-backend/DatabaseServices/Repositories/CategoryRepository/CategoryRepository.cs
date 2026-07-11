@@ -72,12 +72,14 @@ public class CategoryRepository : ICategoryRepository
         {
             category.WikiPages ??= new List<WikiPage>();
             wikiPage.CategoryId = categoryId;
-            if (_context.Entry(wikiPage).State == EntityState.Detached)
-            {
-                _context.WikiPages.Add(wikiPage);
-            }
-            await _context.SaveChangesAsync();
         }
+
+        if (_context.Entry(wikiPage).State == EntityState.Detached)
+        {
+            _context.WikiPages.Add(wikiPage);
+        }
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task RemoveArticleFromCategoryAsync(Guid categoryId, Guid wikiPageId)

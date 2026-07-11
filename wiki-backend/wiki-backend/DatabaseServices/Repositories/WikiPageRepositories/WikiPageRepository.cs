@@ -126,7 +126,12 @@ public class WikiPageRepository : IWikiPageRepository
             paragraph.WikiPageId = wikiPage.Id;
         }
 
-        await _categoryRepository.AddArticleToCategoryAsync(wikiPage.CategoryId!.Value, wikiPage);
+        _context.WikiPages.Add(wikiPage);
+
+        if (wikiPage.CategoryId.HasValue)
+        {
+            await _categoryRepository.AddArticleToCategoryAsync(wikiPage.CategoryId.Value, wikiPage);
+        }
 
         await _context.SaveChangesAsync();
     }
