@@ -7,6 +7,8 @@ import { getWikiPageBySlug } from '../../Api/wikiApi';
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import '../../Styles/wikipage.css';
 
+import { usePageMeta } from '../../hooks/usePageMeta';
+
 const WikiPage = ({page: wikipage, setDecodedSlug, jwtToken, disableNavbar = false, pageError = false }) => {
     const { styles } = useStyleContext();
     const { slug } = useParams();
@@ -14,6 +16,17 @@ const WikiPage = ({page: wikipage, setDecodedSlug, jwtToken, disableNavbar = fal
     const [activeTab, setActiveTab] = useState("wiki");
     const [page, setPage] = useState(null);
     const [images, setImages] = useState(null);
+
+    const stripHtml = (html) => {
+        if (!html) return '';
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || '';
+    };
+
+    usePageMeta(
+        page?.title || decodedSlug || undefined,
+        page?.content ? stripHtml(page.content).substring(0, 200) : undefined
+    );
 
 
     useEffect(()=>{

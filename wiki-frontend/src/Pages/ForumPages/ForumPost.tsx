@@ -5,6 +5,7 @@ import ForumCommentComponent from './Components/ForumCommentComponent';
 import Breadcrumbs from './Components/Breadcrumbs';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useNotification } from '../../Components/NotificationProvider';
+import { usePageMeta } from '../../hooks/usePageMeta';
 import "./Styles/forumpost.css"
 
 const ForumPost = ({jwtToken}) => {
@@ -13,6 +14,17 @@ const ForumPost = ({jwtToken}) => {
     const {styles} = useStyleContext();
     const [quotedPostId, setQuotedPostId] = useState(null);
     const { showNotification } = useNotification();
+
+    const stripHtml = (html) => {
+        if (!html) return '';
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || '';
+    };
+
+    usePageMeta(
+        post?.postTitle || undefined,
+        post?.content ? stripHtml(post.content).substring(0, 200) : undefined
+    );
 
     const fetchForumPost = async () => {
         try {

@@ -32,6 +32,7 @@ public class ForumPostRepository : IForumPostRepository
             .Include(post => post.Comments.OrderBy(c => c.PostDate).ThenBy(c => c.Id))
                 .ThenInclude(comment => comment.UserProfile)
             .Include(post => post.User)
+            .Include(post => post.ForumTopic)
             .FirstOrDefaultAsync(post => post.Slug == slug);
 
         if (post != null)
