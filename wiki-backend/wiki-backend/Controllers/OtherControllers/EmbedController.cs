@@ -16,6 +16,8 @@ public class EmbedController : ControllerBase
     private readonly ISiteSettingsRepository _siteSettingsRepo;
     private readonly WikiDbContext _db;
 
+    private string? _frontendUrl;
+
     public EmbedController(
         IWikiPageRepository wikiPageRepo,
         IForumPostRepository forumPostRepo,
@@ -26,6 +28,7 @@ public class EmbedController : ControllerBase
         _forumPostRepo = forumPostRepo;
         _siteSettingsRepo = siteSettingsRepo;
         _db = db;
+        _frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
     }
 
     [HttpGet("wiki/{slug}")]
@@ -73,18 +76,26 @@ public class EmbedController : ControllerBase
 
     private string BuildImageUrl(string logo)
     {
-        return $"{Request.Scheme}://{Request.Host}/api/Image/{logo}";
+        var scheme = Request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? "https";
+        return $"{scheme}://{Request.Host}/api/Image/{logo}";
     }
 
     private string BuildPageUrl(string path)
     {
-        return $"{Request.Scheme}://{Request.Host}{path}";
+        if (!string.IsNullOrEmpty(_frontendUrl))
+            return $"{_frontendUrl.TrimEnd('/')}{path}";
+
+        var scheme = Request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? "https";
+        return $"{scheme}://{Request.Host}{path}";
     }
 
     private static string StripHtml(string? html)
     {
         if (string.IsNullOrWhiteSpace(html)) return "";
-        return Regex.Replace(html, "<[^>]+>", "").Trim();
+        html = Regex.Replace(html, "</?(p|h[1-6]|li|div|br|tr|td|th|blockquote|pre)[^>]*>", " ");
+        html = Regex.Replace(html, "<[^>]+>", "");
+        html = Regex.Replace(html, @"\s+", " ");
+        return html.Trim();
     }
 
     private static string Truncate(string text, int maxLength)
