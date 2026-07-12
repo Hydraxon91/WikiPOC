@@ -6,6 +6,7 @@ import HeaderComponent from './Components/HeaderComponent';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { getWikiPageTitles } from '../../Api/wikiApi';
+import { usePageMeta } from '../../hooks/usePageMeta';
 
 const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, categories }) => {
   const location = useLocation();
@@ -41,6 +42,8 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
   useEffect(() => {
     fetchWikiPageTitles();
   }, [location]);
+
+  usePageMeta();
 
   const fetchWikiPageTitles = async () => {
     try {
