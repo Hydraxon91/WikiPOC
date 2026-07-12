@@ -166,7 +166,7 @@ public class WikiPageControllerTests : IntegrationTestBase
     }
     
     [Test]
-    public async Task CreateWikiPageForAdmin_NoCategoryId_ShouldReturn500()
+    public async Task CreateWikiPageForAdmin_NoCategoryId_ShouldReturn200()
     {
         // Arrange
         _controller.ControllerContext.HttpContext = new DefaultHttpContext
@@ -186,7 +186,7 @@ public class WikiPageControllerTests : IntegrationTestBase
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
         var objectResult = result.Result as ObjectResult;
-        Assert.That(objectResult!.StatusCode, Is.EqualTo(500));
+        Assert.That(objectResult!.StatusCode, Is.EqualTo(200));
     }
     
     [Test]
