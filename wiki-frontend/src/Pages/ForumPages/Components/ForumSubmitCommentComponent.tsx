@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import { useNotification } from '../../../Components/NotificationProvider';
+import EraAwareButton from '../../../Components/LiquidGlassButton/EraAwareButton';
 import "../Styles/forumsubmintcommentcomponent.css"
 
 const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, quotedPostId, resetQuotedPostId, inline }) => {
@@ -69,7 +70,7 @@ const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit
                         </div>
                     </div>
                     <div className="fp-inline-buttons">
-                        <button className="fp-comment-button" type="submit">Submit Comment</button>
+                        <EraAwareButton type="submit">Submit Comment</EraAwareButton>
                     </div>
                 </form>
             </div>
@@ -91,8 +92,8 @@ const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit
                             />
                         </div>
                     </div>
-                    <button className="fp-comment-button" type="submit">Submit Comment</button>
-                    <button className='fp-comment-button right' onClick={() => resetQuotedPostId && resetQuotedPostId()}>Cancel</button>
+                    <EraAwareButton type="submit">Submit Comment</EraAwareButton>
+                    <EraAwareButton className='fp-comment-button right' onClick={() => resetQuotedPostId && resetQuotedPostId()}>Cancel</EraAwareButton>
                 </form>
             </div>
         </div>
