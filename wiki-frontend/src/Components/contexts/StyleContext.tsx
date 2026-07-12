@@ -126,8 +126,10 @@ export const StyleProvider = ({ children }: { children: React.ReactNode }) => {
   // Inject CSS custom properties on document root whenever styles change
   useEffect(() => {
     const root = document.documentElement;
-    const textColor = styles.footerListTextColor || deriveContrastText(styles.bodyColor);
-    const linkColor = styles.footerListLinkTextColor || deriveContrastLink(styles.bodyColor, textColor);
+    const autoText = deriveContrastText(styles.bodyColor);
+    const autoLink = deriveContrastLink(styles.bodyColor, autoText);
+    const textColor = styles.footerListTextColor || autoText;
+    const linkColor = styles.footerListLinkTextColor || autoLink;
     root.style.setProperty('--custom-body-color', styles.bodyColor || '#f8f9fa');
     root.style.setProperty('--custom-header-color', styles.articleColor || '#ffffff');
     root.style.setProperty('--custom-sidebar-color', styles.articleRightColor || '#ffffff');
@@ -139,6 +141,8 @@ export const StyleProvider = ({ children }: { children: React.ReactNode }) => {
     root.style.setProperty('--custom-border-radius', styles.borderRadius || '0px');
     root.style.setProperty('--custom-border-style', styles.borderStyle || '1px solid #a2a9b1');
     root.style.setProperty('--panel-opacity', String(styles.glassBgOpacity ?? 0.12));
+    root.style.setProperty('--footer-text-color-auto', autoText);
+    root.style.setProperty('--footer-link-color-auto', autoLink);
     root.style.setProperty('--footer-text-color', textColor);
     root.style.setProperty('--footer-link-color', linkColor);
   }, [styles]);
