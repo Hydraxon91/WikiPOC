@@ -87,6 +87,81 @@ const ManualEditStylesComponent = ({
         </div>
       ))}
 
+      {/* === LEGIBILITY PREVIEW === */}
+      <h3>Text Legibility Preview</h3>
+      <p style={{ fontSize: "0.8em", opacity: 0.7, margin: "0 0 0.5em 0" }}>
+        See how your text color reads against the current body and glass
+        opacity. Adjust until it feels comfortable.
+      </p>
+      <div
+        style={{
+          background: newStyles.bodyColor || "#f8f9fa",
+          borderRadius: newStyles.borderRadius || "0px",
+          border: newStyles.borderStyle || "1px solid #a2a9b1",
+          padding: "1.5em",
+          marginBottom: "1.5em",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: newStyles.articleColor || "#ffffff",
+            opacity: 1 - (newStyles.glassBgOpacity ?? 1),
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "relative",
+            backdropFilter: `blur(${newStyles.glassBlurRadius || 0}px)`,
+            WebkitBackdropFilter: `blur(${newStyles.glassBlurRadius || 0}px)`,
+            padding: "1em",
+            borderRadius: (newStyles.borderRadius ? parseInt(newStyles.borderRadius) / 2 : 0) + "px",
+            background: "transparent",
+          }}
+        >
+          <p
+            style={{
+              color: newStyles.footerListTextColor || "#202122",
+              fontFamily: newStyles.fontFamily,
+              margin: 0,
+              lineHeight: 1.6,
+              fontSize: "0.95em",
+            }}
+          >
+            This is how your <a
+              href="#"
+              style={{ color: newStyles.footerListLinkTextColor || "#0645ad" }}
+            >links</a> and body text will look. The text color{" "}
+            <code style={{ background: "rgba(0,0,0,0.06)", padding: "0 0.2em", borderRadius: 3 }}>
+              {newStyles.footerListTextColor || "auto"}
+            </code>{" "}
+            is set against the body{" "}
+            <code style={{ background: "rgba(0,0,0,0.06)", padding: "0 0.2em", borderRadius: 3 }}>
+              {newStyles.bodyColor || "#f8f9fa"}
+            </code>{" "}
+            with glass opacity{" "}
+            <strong>{Math.round((newStyles.glassBgOpacity ?? 1) * 100)}%</strong>.
+          </p>
+          <p
+            style={{
+              color: newStyles.footerListTextColor || "#202122",
+              fontFamily: newStyles.fontFamily,
+              fontSize: "0.85em",
+              margin: "0.5em 0 0 0",
+              opacity: 0.85,
+            }}
+          >
+            <strong>Bold text</strong>, <em>italic text</em>, and{" "}
+            <span style={{ textDecoration: "underline" }}>underlined text</span>{" "}
+            should all remain readable.
+          </p>
+        </div>
+      </div>
+
       {/* === AESTHETIC MODIFIERS — Liquid Glass only === */}
       {newStyles.interfaceEra === "glass" && (
         <>
