@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createForumTopic } from '../../Api/forumApi';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
+import EraAwareButton from '../../Components/LiquidGlassButton/EraAwareButton';
 import "./Styles/createforumtopic.css"
 import Breadcrumbs from './Components/Breadcrumbs';
 
@@ -55,7 +56,7 @@ const CreateTopicPage = ({ jwtToken }) => {
                     />
                 </div>
                 {error && <div className="error">{error}</div>}
-                <button className="fp-comment-button" type="submit">Create Forum</button>
+                <EraAwareButton className="fp-comment-button" type="submit">Create Forum</EraAwareButton>
             </form>
         </div>
         </>

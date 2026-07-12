@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import { useNotification } from '../../../Components/NotificationProvider';
+import EraAwareButton from '../../../Components/LiquidGlassButton/EraAwareButton';
 
 const WikiPageSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment }) => {
     const [commentText, setCommentText] = useState('');
@@ -49,13 +50,9 @@ const WikiPageSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSub
                     </p>
                 </div>
             </div>
-            <button className="comment-button" type="submit">
-                <span className="btn-left"></span>
-                <span className="btn-center">
-                    <span>Send</span>
-                </span>
-                <span className="btn-right"></span>
-            </button>
+            <EraAwareButton type="submit">
+                Send
+            </EraAwareButton>
         </form>
     );
 };

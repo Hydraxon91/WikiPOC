@@ -6,6 +6,7 @@ import Breadcrumbs from './Components/Breadcrumbs';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useNotification } from '../../Components/NotificationProvider';
 import { usePageMeta } from '../../hooks/usePageMeta';
+import EraAwareButton from '../../Components/LiquidGlassButton/EraAwareButton';
 import "./Styles/forumpost.css"
 
 const ForumPost = ({jwtToken}) => {
@@ -68,9 +69,12 @@ const ForumPost = ({jwtToken}) => {
     return (
         <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
             <Breadcrumbs/>
-            <button className="modular-button" style={{backgroundColor: styles.articleColor}} onClick={scrollToReplyForm}>
+            <EraAwareButton
+                onClick={scrollToReplyForm}
+                style={{ backgroundColor: styles.articleColor }}
+            >
                 Post Reply
-            </button>
+            </EraAwareButton>
             <ForumCommentComponent post={post} jwtToken={jwtToken}
                 quotedPostId={quotedPostId} setQuotedPostMethod={setQuotedPostMethod}
                 resetQuotedPostId={() => setQuotedPostId(null)} refreshPost={fetchForumPost}

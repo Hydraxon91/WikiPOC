@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { useNotification } from '../../../Components/NotificationProvider';
-import '../Styles/modularbutton.css';
+import EraAwareButton from '../../../Components/LiquidGlassButton/EraAwareButton';
 
 const ForumPostButton = ({ buttonTitle, linkTo, jwtToken }) => {
     const { styles } = useStyleContext();
@@ -10,7 +10,7 @@ const ForumPostButton = ({ buttonTitle, linkTo, jwtToken }) => {
     const navigate = useNavigate()
 
     const handleClick = () => {
-        if (!jwtToken) { // Assuming `jwtToken.user` is null when the user is not logged in
+        if (!jwtToken) {
             showNotification('You need to log in to perform this action.');
         } else {
             navigate(linkTo)
@@ -18,9 +18,12 @@ const ForumPostButton = ({ buttonTitle, linkTo, jwtToken }) => {
     };
 
     return (
-        <button onClick={handleClick} className="modular-button" style={{ backgroundColor: styles.articleColor }}>
+        <EraAwareButton
+            onClick={handleClick}
+            style={{ backgroundColor: styles.articleColor }}
+        >
             {buttonTitle}
-        </button>
+        </EraAwareButton>
     );
 };
 

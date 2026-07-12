@@ -126,6 +126,10 @@ export const StyleProvider = ({ children }: { children: React.ReactNode }) => {
   // Inject CSS custom properties on document root whenever styles change
   useEffect(() => {
     const root = document.documentElement;
+    const autoText = deriveContrastText(styles.bodyColor);
+    const autoLink = deriveContrastLink(styles.bodyColor, autoText);
+    const textColor = styles.footerListTextColor || autoText;
+    const linkColor = styles.footerListLinkTextColor || autoLink;
     root.style.setProperty('--custom-body-color', styles.bodyColor || '#f8f9fa');
     root.style.setProperty('--custom-header-color', styles.articleColor || '#ffffff');
     root.style.setProperty('--custom-sidebar-color', styles.articleRightColor || '#ffffff');
@@ -137,6 +141,10 @@ export const StyleProvider = ({ children }: { children: React.ReactNode }) => {
     root.style.setProperty('--custom-border-radius', styles.borderRadius || '0px');
     root.style.setProperty('--custom-border-style', styles.borderStyle || '1px solid #a2a9b1');
     root.style.setProperty('--panel-opacity', String(styles.glassBgOpacity ?? 0.12));
+    root.style.setProperty('--footer-text-color-auto', autoText);
+    root.style.setProperty('--footer-link-color-auto', autoLink);
+    root.style.setProperty('--footer-text-color', textColor);
+    root.style.setProperty('--footer-link-color', linkColor);
   }, [styles]);
 
   const loadTheme = useCallback((theme: StyleModel) => {
@@ -160,3 +168,43 @@ export const useStyleContext = () => {
   }
   return context;
 };
+
+const hexToRgb = (hex: string): [number, number, number] | null => {
+  if (!hex) return null;
+  const cleaned = hex.replace('#', '').trim();
+  if (cleaned.length !== 3 && cleaned.length !== 6) return null;
+  const full = cleaned.length === 3
+    ? cleaned.split('').map((c) => c + c).join('')
+    : cleaned;
+  const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(full);
+  if (!result) return null;
+  return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
+};
+
+const relativeLuminance = (rgb: [number, number, number]): number => {
+  const [r, g, b] = rgb.map((v) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+const rgbToHex = (rgb: [number, number, number]): string =>
+  '#' + rgb.map((c) => Math.round(c).toString(16).padStart(2, '0')).join('');
+
+const isLight = (rgb: [number, number, number]): boolean =>
+  relativeLuminance(rgb) > 0.5;
+
+const deriveContrastText = (bodyColor: string | undefined, fallback = '#202122'): string => {
+  const rgb = bodyColor ? hexToRgb(bodyColor) : null;
+  if (!rgb) return fallback;
+  return isLight(rgb) ? '#1a1a1a' : '#f5f5f5';
+};
+
+const deriveContrastLink = (bodyColor: string | undefined, textColor: string): string => {
+  const rgb = bodyColor ? hexToRgb(bodyColor) : null;
+  if (!rgb) return textColor === '#f5f5f5' ? '#7cb9ff' : '#1d4ed8';
+  return isLight(rgb) ? '#0d3fc4' : '#82b6ff';
+};
+
+export { deriveContrastText, deriveContrastLink, relativeLuminance, isLight };

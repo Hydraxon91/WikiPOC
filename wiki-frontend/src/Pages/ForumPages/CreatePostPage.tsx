@@ -6,6 +6,7 @@ import { createForumPost, getForumTopicBySlug } from '../../Api/forumApi';
 import { getUserProfileByUsername } from '../../Api/wikiUserApi';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
+import EraAwareButton from '../../Components/LiquidGlassButton/EraAwareButton';
 import "./Styles/createforumtopic.css"
 import Breadcrumbs from './Components/Breadcrumbs';
 
@@ -97,7 +98,7 @@ const CreatePostPage = ({ jwtToken }) => {
                     </div>
                 </div>
                 {error && <div className="error">{error}</div>}
-                <button className="fp-comment-button" type="submit">Create Post</button>
+                <EraAwareButton className="fp-comment-button" type="submit">Create Post</EraAwareButton>
             </form>
         </div>
         </>

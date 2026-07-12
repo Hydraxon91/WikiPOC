@@ -389,6 +389,39 @@ body.era-frutiger {
 	border-radius: inherit;
 }
 
+/* === FRUTIGER GLASS CARDS (softer glassiness via SVG displacement) === */
+.era-frutiger .glass-card {
+	position: relative;
+	overflow: hidden;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(140%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(140%) !important;
+	background: color-mix(in srgb, var(--article-color, #e8f5e9) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, 0.35)) !important;
+	border-radius: var(--custom-border-radius, 24px) !important;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12) !important;
+}
+.era-frutiger .glass-card::before {
+	content: '';
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	background:
+		radial-gradient(ellipse at 20% 0%, rgba(255, 255, 255, 0.45) 0%, transparent 50%),
+		radial-gradient(ellipse at 80% 100%, rgba(124, 217, 124, 0.2) 0%, transparent 50%);
+	pointer-events: none;
+	border-radius: inherit;
+	z-index: 0;
+}
+.era-frutiger .glass-card > * {
+	position: relative;
+	z-index: 1;
+}
+
+/* === GLASS ERA BUTTON ACCOMMODATION === */
+.era-glass .liquid-glass-button,
+.era-frutiger .liquid-glass-button {
+	min-height: 2.4em;
+}
+
 
 
 /* === GLOBAL ARTICLE PADDING === */
@@ -404,6 +437,28 @@ body.era-frutiger {
 	height: fit-content;
 	width: 100%;
 	box-sizing: border-box;
+}
+.era-glass .wiki-article-content {
+	background: color-mix(in srgb, var(--article-color, #526cad) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
+	border-radius: var(--custom-border-radius, 12px) !important;
+	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2) !important;
+	padding: 1.5em !important;
+	margin: 0.5em 0 !important;
+	box-sizing: border-box !important;
+}
+.era-frutiger .wiki-article-content {
+	background:
+		linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 50%, rgba(220, 240, 255, 0.85) 100%) !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	border-radius: var(--custom-border-radius, 24px) !important;
+	box-shadow:
+		0 8px 24px rgba(0, 64, 128, 0.2),
+		inset 0 2px 4px rgba(255, 255, 255, 0.9) !important;
+	padding: 1.5em !important;
+	margin: 0.5em 0 !important;
+	box-sizing: border-box !important;
 }
 .era-glass .form-control,
 .era-glass input {
@@ -1138,4 +1193,335 @@ span.user {
 	#simpleSearch {
 		display: none;
 	}
+}
+
+/* === AERO POP: ANIMATED BACKGROUNDS, ORBS & GLOSSY EFFECTS === */
+/* These enhance the Frutiger Aero and Liquid Glass eras with the signature
+   "Aero" aesthetic — aurora gradients, floating orbs, sky light leaks,
+   and animated reflections. Wikipedia/Modern are NOT touched. */
+
+/* Define the @property for the animated angle so it works in keyframes */
+@property --aero-angle {
+	syntax: '<angle>';
+	initial-value: 0deg;
+	inherits: false;
+}
+@property --aurora-shift {
+	syntax: '<percentage>';
+	initial-value: 0%;
+	inherits: false;
+}
+
+/* === FRUTIGER AERO: FULL AURORA SKY BACKGROUND === */
+body.era-frutiger {
+	background:
+		/* Light leak blobs floating across the sky */
+		radial-gradient(ellipse 800px 600px at 15% 20%, rgba(255, 220, 180, 0.45) 0%, transparent 60%),
+		radial-gradient(ellipse 700px 500px at 85% 30%, rgba(180, 220, 255, 0.4) 0%, transparent 60%),
+		radial-gradient(ellipse 600px 600px at 50% 90%, rgba(200, 255, 220, 0.3) 0%, transparent 65%),
+		/* Aurora layer that animates */
+		conic-gradient(
+			from var(--aero-angle, 0deg) at 50% 50%,
+			#2b7cd3 0%,
+			#51a7e9 15%,
+			#8fd3f4 28%,
+			#bbf2f6 40%,
+			#c8e6c9 52%,
+			#a5d6a7 64%,
+			#66bb6a 76%,
+			#2e7d32 88%,
+			#1b5e20 100%
+		),
+		linear-gradient(180deg, #2b7cd3 0%, #51a7e9 35%, #8fd3f4 60%, #bbf2f6 100%) !important;
+	background-attachment: fixed !important;
+	background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%, 100% 100% !important;
+	animation: aero-aurora-rotate 30s linear infinite, aero-aurora-rotate 30s linear infinite, aero-aurora-rotate 30s linear infinite, none, none !important;
+	position: relative !important;
+	overflow-x: hidden !important;
+}
+
+/* Floating orbs that drift across the screen — ::before and ::after on body */
+body.era-frutiger::before {
+	content: '';
+	position: fixed;
+	top: 10%;
+	left: -10%;
+	width: 50vmax;
+	height: 50vmax;
+	background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6) 0%, rgba(180, 220, 255, 0.3) 30%, transparent 70%);
+	filter: blur(40px);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	animation: aero-orb-drift-1 25s ease-in-out infinite;
+}
+body.era-frutiger::after {
+	content: '';
+	position: fixed;
+	bottom: -20%;
+	right: -10%;
+	width: 60vmax;
+	height: 60vmax;
+	background: radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.45) 0%, rgba(180, 255, 200, 0.25) 35%, transparent 70%);
+	filter: blur(50px);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	animation: aero-orb-drift-2 35s ease-in-out infinite;
+}
+
+/* Make the content layer sit above the orbs */
+.era-frutiger .top-header,
+.era-frutiger .sidebar,
+.era-frutiger .article,
+.era-frutiger .glass-card {
+	position: relative;
+	z-index: 2;
+}
+
+/* === FRUTIGER AERO: SKY CLOUDS PARALLAX OVERLAY === */
+.era-frutiger .article::before {
+	content: '';
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	background:
+		radial-gradient(ellipse 300px 80px at 20% 15%, rgba(255, 255, 255, 0.5) 0%, transparent 70%),
+		radial-gradient(ellipse 250px 70px at 70% 25%, rgba(255, 255, 255, 0.4) 0%, transparent 70%),
+		radial-gradient(ellipse 200px 60px at 45% 80%, rgba(255, 255, 255, 0.35) 0%, transparent 70%);
+	pointer-events: none;
+	border-radius: inherit;
+	z-index: 1;
+	animation: aero-clouds-drift 20s ease-in-out infinite;
+}
+.era-frutiger .article > * {
+	position: relative;
+	z-index: 2;
+}
+
+/* === FRUTIGER AERO: GLOSSY CARDS WITH FLOATING BUBBLES === */
+.era-frutiger .glass-card {
+	position: relative;
+	overflow: hidden;
+	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(140%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(140%) !important;
+	background:
+		linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 50%, rgba(255, 255, 255, 0.75) 100%) !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	border-radius: var(--custom-border-radius, 24px) !important;
+	box-shadow:
+		0 12px 32px rgba(0, 64, 128, 0.25),
+		inset 0 2px 4px rgba(255, 255, 255, 0.9),
+		inset 0 -2px 4px rgba(0, 100, 200, 0.1) !important;
+}
+.era-frutiger .glass-card::before {
+	content: '';
+	position: absolute;
+	top: -20%;
+	left: -10%;
+	width: 80px;
+	height: 80px;
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 40%, transparent 70%);
+	border-radius: 50%;
+	filter: blur(8px);
+	pointer-events: none;
+	z-index: 0;
+	animation: aero-bubble-float 8s ease-in-out infinite;
+}
+.era-frutiger .glass-card::after {
+	content: '';
+	position: absolute;
+	bottom: 5%;
+	right: 8%;
+	width: 40px;
+	height: 40px;
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+	border-radius: 50%;
+	filter: blur(5px);
+	pointer-events: none;
+	z-index: 0;
+	animation: aero-bubble-float 11s ease-in-out infinite 2s;
+}
+.era-frutiger .glass-card > * {
+	position: relative;
+	z-index: 1;
+}
+
+/* === FRUTIGER AERO: HEADER GLOSSY SHEEN === */
+.era-frutiger .top-header {
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(220, 240, 255, 0.85) 100%) !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	border-radius: var(--custom-border-radius, 24px) !important;
+	box-shadow:
+		0 12px 32px rgba(0, 64, 128, 0.25),
+		inset 0 3px 6px rgba(255, 255, 255, 0.95),
+		inset 0 -2px 4px rgba(0, 100, 200, 0.1) !important;
+	position: relative;
+	overflow: hidden;
+}
+.era-frutiger .top-header::before {
+	content: '';
+	position: absolute;
+	top: 0; left: 0; right: 0;
+	height: 40%;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, transparent 100%) !important;
+	pointer-events: none;
+	z-index: 1;
+}
+
+/* === FRUTIGER AERO: SIDEBAR WITH AURORA EDGE === */
+.era-frutiger .sidebar {
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(200, 230, 255, 0.78) 100%) !important;
+	border: var(--custom-border-style, 2px solid #4a90e2) !important;
+	border-radius: var(--custom-border-radius, 24px) !important;
+	box-shadow:
+		0 12px 32px rgba(0, 64, 128, 0.2),
+		inset 0 2px 4px rgba(255, 255, 255, 0.9) !important;
+	position: relative;
+	overflow: hidden;
+}
+.era-frutiger .sidebar::before {
+	content: '';
+	position: absolute;
+	left: 0; top: 0; bottom: 0;
+	width: 4px;
+	background: linear-gradient(180deg, #4a90e2 0%, #66bb6a 33%, #bbf2f6 66%, #4a90e2 100%);
+	background-size: 100% 200%;
+	animation: aero-aurora-rotate 8s linear infinite;
+}
+
+/* === FRUTIGER AERO: VIBRANT BUTTONS WITH AURORA GRADIENT === */
+.era-frutiger .liquid-glass-button {
+	background:
+		linear-gradient(135deg, rgba(124, 217, 124, 0.9) 0%, rgba(76, 175, 80, 0.9) 50%, rgba(46, 125, 50, 0.9) 100%) !important;
+	box-shadow:
+		0 6px 20px rgba(46, 125, 50, 0.4),
+		inset 0 2px 4px rgba(255, 255, 255, 0.5),
+		inset 0 -2px 4px rgba(0, 80, 0, 0.2) !important;
+	border: 2px solid rgba(255, 255, 255, 0.4) !important;
+	font-weight: 700 !important;
+}
+.era-frutiger .liquid-glass-button:hover {
+	background:
+		linear-gradient(135deg, rgba(144, 238, 144, 0.95) 0%, rgba(102, 187, 106, 0.95) 50%, rgba(76, 175, 80, 0.95) 100%) !important;
+	transform: translateY(-2px) scale(1.02) !important;
+	box-shadow:
+		0 10px 28px rgba(46, 125, 50, 0.5),
+		inset 0 2px 4px rgba(255, 255, 255, 0.6) !important;
+}
+
+/* === AERO KEYFRAMES === */
+@keyframes aero-aurora-rotate {
+	from { --aero-angle: 0deg; }
+	to { --aero-angle: 360deg; }
+}
+@keyframes aero-orb-drift-1 {
+	0%   { transform: translate(0, 0) scale(1); }
+	25%  { transform: translate(40vw, 10vh) scale(1.1); }
+	50%  { transform: translate(70vw, 30vh) scale(0.9); }
+	75%  { transform: translate(30vw, 50vh) scale(1.15); }
+	100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes aero-orb-drift-2 {
+	0%   { transform: translate(0, 0) scale(1); }
+	33%  { transform: translate(-50vw, -20vh) scale(1.2); }
+	66%  { transform: translate(-20vw, 20vh) scale(0.85); }
+	100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes aero-clouds-drift {
+	0%   { transform: translate(0, 0); opacity: 0.7; }
+	50%  { transform: translate(20px, -10px); opacity: 1; }
+	100% { transform: translate(0, 0); opacity: 0.7; }
+}
+@keyframes aero-bubble-float {
+	0%   { transform: translate(0, 0) scale(1); opacity: 0.8; }
+	50%  { transform: translate(15px, -20px) scale(1.2); opacity: 1; }
+	100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+}
+
+/* === GLASS ERA: ANIMATED MESH GRADIENT AURORA === */
+body.era-glass {
+	background:
+		/* Animated mesh blobs */
+		radial-gradient(ellipse 600px 400px at 20% 30%, rgba(120, 100, 255, 0.35) 0%, transparent 60%),
+		radial-gradient(ellipse 500px 500px at 80% 70%, rgba(100, 200, 255, 0.35) 0%, transparent 60%),
+		radial-gradient(ellipse 700px 500px at 50% 100%, rgba(180, 100, 255, 0.25) 0%, transparent 60%),
+		conic-gradient(
+			from var(--aero-angle, 0deg) at 30% 30%,
+			#1e1b4b 0%,
+			#311042 20%,
+			#172554 40%,
+			#0f172a 60%,
+			#1e1b4b 80%,
+			#311042 100%
+		) !important;
+	background-attachment: fixed !important;
+	background-size: 100% 100%, 100% 100%, 100% 100%, 200% 200% !important;
+	animation: aero-aurora-rotate 60s linear infinite !important;
+}
+
+/* Glass floating orbs */
+body.era-glass::before {
+	content: '';
+	position: fixed;
+	top: 15%;
+	right: 10%;
+	width: 40vmax;
+	height: 40vmax;
+	background: radial-gradient(circle, rgba(160, 180, 255, 0.25) 0%, rgba(120, 100, 255, 0.1) 40%, transparent 70%);
+	filter: blur(60px);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	animation: aero-orb-drift-1 40s ease-in-out infinite;
+}
+body.era-glass::after {
+	content: '';
+	position: fixed;
+	bottom: 10%;
+	left: 5%;
+	width: 50vmax;
+	height: 50vmax;
+	background: radial-gradient(circle, rgba(100, 200, 255, 0.2) 0%, rgba(80, 100, 200, 0.1) 40%, transparent 70%);
+	filter: blur(60px);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 0;
+	animation: aero-orb-drift-2 50s ease-in-out infinite;
+}
+.era-glass .top-header,
+.era-glass .sidebar,
+.era-glass .article,
+.era-glass .glass-card {
+	position: relative;
+	z-index: 2;
+}
+
+/* Glass article has a subtle light leak at top */
+.era-glass .article::before {
+	content: '';
+	position: absolute;
+	top: 0; left: 0; right: 0;
+	height: 30%;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%) !important;
+	pointer-events: none;
+	border-radius: inherit;
+	z-index: 1;
+}
+.era-glass .article > * {
+	position: relative;
+	z-index: 2;
+}
+
+/* Glass era button: subtle aurora on hover */
+.era-glass .liquid-glass-button {
+	box-shadow:
+		0 8px 32px rgba(80, 100, 200, 0.4),
+		inset 0 1px 2px rgba(255, 255, 255, 0.4) !important;
+}
+.era-glass .liquid-glass-button:hover {
+	box-shadow:
+		0 12px 40px rgba(120, 140, 240, 0.6),
+		inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
 }
