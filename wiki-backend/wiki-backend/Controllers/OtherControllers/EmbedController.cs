@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 
@@ -12,15 +14,18 @@ public class EmbedController : ControllerBase
     private readonly IWikiPageRepository _wikiPageRepo;
     private readonly IForumPostRepository _forumPostRepo;
     private readonly ISiteSettingsRepository _siteSettingsRepo;
+    private readonly WikiDbContext _db;
 
     public EmbedController(
         IWikiPageRepository wikiPageRepo,
         IForumPostRepository forumPostRepo,
-        ISiteSettingsRepository siteSettingsRepo)
+        ISiteSettingsRepository siteSettingsRepo,
+        WikiDbContext db)
     {
         _wikiPageRepo = wikiPageRepo;
         _forumPostRepo = forumPostRepo;
         _siteSettingsRepo = siteSettingsRepo;
+        _db = db;
     }
 
     [HttpGet("wiki/{slug}")]
@@ -46,11 +51,14 @@ public class EmbedController : ControllerBase
         var post = await _forumPostRepo.GetForumPostBySlugAsync(postSlug);
         if (post == null) return NotFound();
 
+        var topic = await _db.ForumTopics.FirstOrDefaultAsync(t => t.Id == post.ForumTopicId);
+        var topicSlug = topic?.Slug ?? "topic";
+
         var title = post.PostTitle ?? "Forum Post";
         var description = Truncate(StripHtml(post.Content), 200);
         var (wikiName, logo) = await GetIdentityAsync();
         var logoUrl = BuildImageUrl(logo);
-        var pageUrl = BuildPageUrl($"/forum/{post.ForumTopic?.Slug ?? "topic"}/{postSlug}");
+        var pageUrl = BuildPageUrl($"/forum/{topicSlug}/{postSlug}");
 
         return Content(BuildHtml(title, wikiName, description, logoUrl, pageUrl), "text/html; charset=utf-8");
     }
