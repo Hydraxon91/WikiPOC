@@ -65,8 +65,6 @@ const LiquidGlassButton = ({
 
   const reactId = useId();
   const filterId = `lg-filter-${reactId.replace(/:/g, '')}`;
-  const lensId = `lg-lens-${reactId.replace(/:/g, '')}`;
-  const patternId = `lg-pattern-${reactId.replace(/:/g, '')}`;
 
   const cssBlurPx = frost ?? 12;
   const cssOpacity = styles.glassBgOpacity ?? 0.35;
