@@ -100,3 +100,9 @@ All read, auth, and write tools are implemented. Full list:
 - [ ] **LOW** `search_forum_topics` — search forum topics
 - [ ] **LOW** `search_forum_posts` — search forum posts
 - [ ] **LOW** `ensure_agent_notes_category` — create or verify Agent Notes category
+
+---
+
+## UI Issues
+
+- [ ] **LOW** Frutiger Aero era: sidebar background doesn't use `--custom-body-color` CSS variable (`.era-frutiger .sidebar` is hardcoded; unlike `.era-modern .sidebar` which references the variable). Update to respect theme color.
