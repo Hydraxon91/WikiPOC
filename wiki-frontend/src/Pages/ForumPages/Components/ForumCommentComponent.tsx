@@ -32,7 +32,7 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
     }, [post]);
 
     const handleCommentSubmit = () => {
-        refreshPost && refreshPost();
+        if (refreshPost) refreshPost();
     };
 
     const handleContentClick = (e) => {

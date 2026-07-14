@@ -60,7 +60,7 @@ export const updateWikiPage = async (updatedPage, token, decodedToken, images) =
     formData.append(`wikiPageWithImagesInputModel.RoleNote`, updatedPage.roleNote ?? '');
     formData.append(`wikiPageWithImagesInputModel.Content`, updatedPage.content);
     formData.append(`model.Paragraphs`, updatedPage.paragraphs);
-    images && images.forEach((image, index) => {
+    if (images) images.forEach((image, index) => {
       formData.append(`wikiPageWithImagesInputModel.Images[${index}].FileName`, image.name);
       formData.append(`wikiPageWithImagesInputModel.Images[${index}].DataURL`, image.dataURL);
     });

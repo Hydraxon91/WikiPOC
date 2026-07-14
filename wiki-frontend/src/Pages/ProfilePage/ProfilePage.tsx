@@ -28,7 +28,7 @@ const ProfilePage = () => {
 
     useEffect(() => {
         const decodedTokenName = decodedTokenContext?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-        decodedTokenName && (username === decodedTokenName && setIsYourProfile(true));
+        if (decodedTokenName && username === decodedTokenName) setIsYourProfile(true);
     }, [decodedTokenContext, username]);
 
     return (

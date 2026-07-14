@@ -15,7 +15,7 @@ export function resizeImage(
         const ctx = canvas.getContext('2d')!;
         ctx.drawImage(img, 0, 0);
         canvas.toBlob(blob => {
-          blob ? resolve(blob) : reject(new Error('Canvas toBlob failed'));
+          if (blob) resolve(blob); else reject(new Error('Canvas toBlob failed'));
         }, file.type || 'image/jpeg', quality);
         return;
       }
@@ -30,7 +30,7 @@ export function resizeImage(
       const ctx = canvas.getContext('2d')!;
       ctx.drawImage(img, 0, 0, width, height);
       canvas.toBlob(blob => {
-        blob ? resolve(blob) : reject(new Error('Canvas toBlob failed'));
+        if (blob) resolve(blob); else reject(new Error('Canvas toBlob failed'));
       }, file.type || 'image/jpeg', quality);
     };
     img.onerror = () => reject(new Error('Failed to load image'));
