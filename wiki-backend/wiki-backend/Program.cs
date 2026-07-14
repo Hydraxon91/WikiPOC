@@ -18,7 +18,9 @@ using wiki_backend.Services;
 using wiki_backend.Services.Authentication;
 using wiki_backend.Services.Settings;
 using Serilog;
+using Microsoft.Extensions.Caching.Memory;
 using wiki_backend.Middleware;
+using wiki_backend.Controllers;
 using wiki_backend.Services.Database;
 using wiki_backend.Services.Storage;
 
@@ -156,19 +158,56 @@ app.Use(async (context, next) =>
         return;
     }
 
-    // TEMPORARY: inline rewrite to bypass ScraperEmbedMiddleware
+    // TEMPORARY: inline embed generation to bypass routing
     if (context.Request.Method is "GET" or "HEAD")
     {
         var ua = context.Request.Headers.UserAgent.ToString();
         if (!string.IsNullOrEmpty(ua) && BotPatterns.ScraperUserAgentRegex.IsMatch(ua))
         {
             var path = context.Request.Path.Value ?? "";
+
+            // Wiki page embeds
             if (path.StartsWith("/page/") && path.Length > 6)
             {
                 var slug = path[6..];
-                context.Request.Path = $"/embed/wiki/{slug}";
-                await next();
-                return;
+
+                var cache = context.RequestServices.GetRequiredService<IMemoryCache>();
+                var html = await cache.GetOrCreateAsync($"embed:wiki:{slug}", async entry =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60);
+
+                    var pageRepo = context.RequestServices.GetRequiredService<IWikiPageRepository>();
+                    var page = await pageRepo.GetBySlugAsync(slug);
+                    if (page?.WikiPage == null) return null;
+
+                    var title = page.WikiPage.Title ?? "WikiPOC";
+                    var description = EmbedController.Truncate(EmbedController.StripHtml(page.WikiPage.Content), 200);
+
+                    var siteSettingsRepo = context.RequestServices.GetRequiredService<ISiteSettingsRepository>();
+                    var siteSettings = await siteSettingsRepo.GetAsync();
+                    var wikiName = siteSettings?.WikiName ?? "WikiPOC";
+                    var logo = siteSettings?.Logo ?? "logo_pfp.png";
+
+                    var scheme = context.Request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? "https";
+                    var imageUrl = $"{scheme}://{context.Request.Host}/api/Image/{page.Images?.FirstOrDefault()?.FileName ?? logo}";
+
+                    var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
+                    string pageUrl;
+                    if (!string.IsNullOrEmpty(frontendUrl))
+                        pageUrl = $"{frontendUrl.TrimEnd('/')}/page/{slug}";
+                    else
+                        pageUrl = $"{scheme}://{context.Request.Host}/page/{slug}";
+
+                    return EmbedController.BuildHtml(title, wikiName, description, imageUrl, pageUrl, ogType: "article");
+                });
+
+                if (html != null)
+                {
+                    context.Response.StatusCode = 200;
+                    context.Response.ContentType = "text/html; charset=utf-8";
+                    await context.Response.WriteAsync(html);
+                    return;
+                }
             }
         }
     }
