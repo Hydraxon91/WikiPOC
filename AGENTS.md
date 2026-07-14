@@ -73,9 +73,9 @@
   it succeeded.
 - **For frontend-only changes:**
   ```bash
-  docker-compose up -d --build wiki-frontend
+  docker-compose up -d --build wiki-backend
   ```
-  (single command, no chaining needed for this one)
+  (single command; the multi-stage Dockerfile rebuilds the SPA and backend)
 - **If a full rebuild is genuinely needed**, run each step separately and
   confirm it completed before the next:
   ```bash
@@ -141,11 +141,11 @@ Tech stack:
 ```
 WikiPOC/
 ├── wiki-backend/
-│   ├── wiki-backend/         # Main ASP.NET Core app
+│   ├── wiki-backend/         # Main ASP.NET Core app (serves both API + SPA)
 │   ├── UnitTests/            # NUnit unit tests
 │   └── IntegrationTests/     # NUnit integration tests
-├── wiki-frontend/            # React SPA (Vite + TypeScript)
-└── docker-compose.yml        # Orchestrates backend, frontend, SQL Server
+├── wiki-frontend/            # React SPA (Vite + TypeScript, built into backend wwwroot/)
+└── docker-compose.yml        # Orchestrates backend + SQL Server
 ```
 
 ## Quick Start
@@ -160,7 +160,7 @@ WikiPOC/
 # Create .env file with required variables (see Environment section)
 docker-compose up --build
 ```
-- Frontend: http://localhost:3000
+- Frontend: http://localhost:5050
 - Backend API: http://localhost:5050
 - SQL Server: localhost:1433
 
