@@ -32,7 +32,7 @@ export default function RegisterPageComponent(){
             navigate('/');
         }
         
-    },[response])
+    },[response, navigate, showNotification])
 
     return(
         <div className="article" style={{backgroundColor: styles.articleColor, padding: '2rem', maxWidth: '500px', margin: '2rem auto'}}>

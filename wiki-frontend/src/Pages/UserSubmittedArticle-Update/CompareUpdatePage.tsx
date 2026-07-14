@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { getUpdatePageById, getWikiPageById, acceptUserSubmittedUpdate, declineUserSubmittedWikiPage } from '../../Api/wikiApi';
@@ -16,37 +16,37 @@ const CompareUpdatePage = () => {
     const { showNotification } = useNotification();
 
     useEffect(() => {
+        const fetchUpdatePage = async (id) => {
+            try {
+                const data = await getUpdatePageById(id, cookies['jwt_token'])
+                setUpdatePage(data)
+            } catch (error) {
+              console.error('Error fetching page:', error);
+            }
+        };
         const match = location.pathname.match(/\/([a-f\d-]+)$/i);
         const numberAtEnd = match ? match[1] : null;
         fetchUpdatePage(numberAtEnd);
-    }, [location.pathname]);
+    }, [location.pathname, cookies]);
 
-    useEffect(()=>{
-        if (updatePage && (updatePage as any).userSubmittedWikiPage?.wikiPageId) {
-            fetchOriginalPage((updatePage as any).userSubmittedWikiPage.wikiPageId);
-        }
-    },[updatePage])
-
-    const fetchUpdatePage = async (id) => {
-        try {
-            const data = await getUpdatePageById(id, cookies['jwt_token'])
-            setUpdatePage(data)
-        } catch (error) {
-          console.error('Error fetching page:', error);
-        }
-      };
-
-      const fetchOriginalPage = async (title) => {
+    const fetchOriginalPage = useCallback(async (title) => {
         try {
             const data = await getWikiPageById(title)
             setOriginalPage(data)
         } catch (error) {
           console.error('Error fetching page:', error);
         }
-      };
+    }, []);
+
+    useEffect(()=>{
+        const updateData = updatePage as { userSubmittedWikiPage?: { wikiPageId: string } } | undefined;
+        if (updateData?.userSubmittedWikiPage?.wikiPageId) {
+            fetchOriginalPage(updateData.userSubmittedWikiPage.wikiPageId);
+        }
+    },[updatePage, fetchOriginalPage])
 
       const handleAccept = () => {
-        acceptUserSubmittedUpdate((updatePage as any).userSubmittedWikiPage.id, cookies["jwt_token"])
+        acceptUserSubmittedUpdate((updatePage as { userSubmittedWikiPage: { id: string } }).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             showNotification("Succesfully updated page");
             navigate(`/user-updates`);
@@ -57,7 +57,7 @@ const CompareUpdatePage = () => {
       };
 
       const handleDecline = () => {
-        declineUserSubmittedWikiPage((updatePage as any).userSubmittedWikiPage.id, cookies["jwt_token"])
+        declineUserSubmittedWikiPage((updatePage as { userSubmittedWikiPage: { id: string } }).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             showNotification("Declined Change");
             navigate(`/user-updates`);

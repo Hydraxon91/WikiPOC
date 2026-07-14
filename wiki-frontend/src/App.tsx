@@ -14,10 +14,11 @@ import { useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
 import { useNotification } from './Components/NotificationProvider';
 import { UserContextProvider } from "./Components/contexts/UserContextProvider";
+import type { DecodedToken } from "./types/contexts";
 
-const decodeToken = (token: string) => {
+const decodeToken = (token: string): DecodedToken | null => {
   try {
-    const decoded: any = jwtDecode(token);
+    const decoded = jwtDecode<DecodedToken>(token);
     if (decoded.exp && Date.now() >= decoded.exp * 1000) {
       return null;
     }
@@ -60,17 +61,18 @@ function App() {
   });
   const { showNotification } = useNotification();
 
+  const jwtToken = cookies["jwt_token"];
+
   useEffect(() => {
-    if (cookies["jwt_token"]) {
-      setDecodedToken(decodeToken(cookies["jwt_token"]));
+    if (jwtToken) {
+      setDecodedToken(decodeToken(jwtToken));
     }
-  }, [cookies["jwt_token"]]); // Trigger the effect when the token changes
+  }, [jwtToken]);
 
   useEffect(() => {
     if (cookies["jwt_token"]) {
       setDecodedToken(decodeToken(cookies["jwt_token"]));
     }
-    // Fetch categories
     fetchCategories()
       .then(categories => {
         const categoryNames = categories.map(category => category.categoryName);
@@ -81,7 +83,7 @@ function App() {
         console.error('Error fetching categories:', error);
         showNotification('Failed to load categories.');
       });
-  }, []); // Trigger the effect when just loading
+  }, [cookies, showNotification]);
 
   // On page load, silently refresh the token so role changes take effect immediately
   useEffect(() => {
@@ -98,30 +100,28 @@ function App() {
         setCookie("jwt_token", data.token, { path: "/" });
       }
     });
-  }, []);
-
-  const fetchPage = async () => {
-    try {
-      setCurrentWikiPage(null);
-      setPageError(false);
-      const data = await getWikiPageBySlug(decodedSlug);
-      if (!data) {
-        setPageError(true);
-        return;
-      }
-      setCurrentWikiPage(data);
-    } catch (error) {
-      console.error('Error fetching page:', error);
-      setPageError(true);
-      showNotification('Failed to load page.');
-    }
-  };
+  }, [cookies, setCookie]);
 
   useEffect(() => {
-    if (decodedSlug) {
-      fetchPage();
-    }
-  }, [decodedSlug]);
+    if (!decodedSlug) return;
+    const fetchPage = async () => {
+      try {
+        setCurrentWikiPage(null);
+        setPageError(false);
+        const data = await getWikiPageBySlug(decodedSlug);
+        if (!data) {
+          setPageError(true);
+          return;
+        }
+        setCurrentWikiPage(data);
+      } catch (error) {
+        console.error('Error fetching page:', error);
+        setPageError(true);
+        showNotification('Failed to load page.');
+      }
+    };
+    fetchPage();
+  }, [decodedSlug, showNotification]);
 
 
   const handleCreate = (newPage, images) => {

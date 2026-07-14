@@ -23,7 +23,7 @@ const EditProfilePage = ({jwtToken}) => {
                 navigate("/");
             }
         }
-    }, [decodedTokenContext, username]);
+    }, [decodedTokenContext, username, navigate]);
 
     return (
         <div className="profilepage article" style={{backgroundColor: styles.articleColor}}>

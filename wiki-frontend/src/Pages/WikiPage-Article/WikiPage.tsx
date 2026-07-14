@@ -44,7 +44,7 @@ const WikiPage = ({page: wikipage, setDecodedSlug, jwtToken, disableNavbar = fal
         if (setDecodedSlug && decodedSlug) {
             setDecodedSlug(decodedSlug);
         }
-    }, [decodedSlug]);
+    }, [decodedSlug, setDecodedSlug]);
 
     const handleTabClick = (tab) =>{
         setActiveTab(tab);

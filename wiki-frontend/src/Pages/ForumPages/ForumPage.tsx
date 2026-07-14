@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, CSSProperties } from 'react';
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { getForumTopicBySlug } from '../../Api/forumApi';
 import { searchForumPosts } from '../../Api/wikiSearch';
+import type { ForumTopic } from '../../types/models';
 import { formatDate } from '../../utils/formatDate';
 import ForumPostButton from './Components/ForumPostButton';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
@@ -11,7 +12,7 @@ import LoadingSpinner from '../../Components/LoadingSpinner';
 import './Styles/forumlandingpage.css';
 
 const ForumPage = ({ jwtToken }) => {
-    const [topic, setTopic] = useState<any>(null);
+    const [topic, setTopic] = useState<ForumTopic | null>(null);
     const [loading, setLoading] = useState(true);
     const { slug } = useParams();
     const { styles } = useStyleContext();
@@ -21,8 +22,19 @@ const ForumPage = ({ jwtToken }) => {
     const [searchResults, setSearchResults] = useState(null);
 
     useEffect(() => {
+        const fetchForumTopic = async () => {
+            setLoading(true);
+            try {
+                const fetchedTopic = await getForumTopicBySlug(slug);
+                setTopic(fetchedTopic);
+            } catch (error) {
+                console.error("Error fetching Topics:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
         fetchForumTopic();
-    }, []);
+    }, [slug]);
 
     useEffect(() => {
         if (!searchQuery.trim() || !topic) {
@@ -39,19 +51,6 @@ const ForumPage = ({ jwtToken }) => {
         }, 300);
         return () => clearTimeout(timer);
     }, [searchQuery, topic]);
-
-    const fetchForumTopic = async () => {
-        setLoading(true);
-        try {
-            const fetchedTopic = await getForumTopicBySlug(slug);
-            setTopic(fetchedTopic);
-        } catch (error) {
-            console.error("Error fetching Topics:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const getLatestComment = (post) => {
         let latestComment = null;
         if (!latestComment || (post.postDate && new Date(post.postDate) > new Date(latestComment.postDate))) {
@@ -112,7 +111,7 @@ const ForumPage = ({ jwtToken }) => {
     if (loading) return <LoadingSpinner text="Loading forum topic..." />;
 
     return (
-        <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
+        <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as CSSProperties}>
             <Breadcrumbs />
             <ForumPostButton buttonTitle="Create Post" linkTo={`/forum/${slug}/create-post`} jwtToken={jwtToken} />
             <input

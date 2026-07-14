@@ -20,7 +20,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
         fetchUpdatePageTitles(jwtToken["jwt_token"]);
       }
     }
-  }, [decodedTokenContext, location]);
+  }, [decodedTokenContext, location, jwtToken]);
 
 
   const fetchNewPageTitles = async (token) => {
