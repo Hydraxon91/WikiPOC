@@ -43,6 +43,13 @@
 - [x] **MEDIUM** Add release tagging / changelog automation
 - [x] **MEDIUM** Add GitHub Environments (staging vs prod)
 
+### Tech Debt (CI/CD accommodations)
+- [ ] **MEDIUM** Update Microsoft.OpenApi / Swashbuckle to remove NU1903 suppression
+- [ ] **MEDIUM** Enable TreatWarningsAsErrors on test projects after NU1903 fix
+- [ ] **MEDIUM** Refactor `var` → `let`/`const` across frontend (13 auto-fixable)
+- [ ] **LOW** Fix `@typescript-eslint/no-unused-expressions` violations (6 files)
+- [ ] **LOW** Fix `no-explicit-any`, `no-unused-vars`, `react-hooks/exhaustive-deps` across frontend
+
 ---
 
 ## MCP Server (`wikipoc-mcp/`)
