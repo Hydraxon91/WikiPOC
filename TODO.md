@@ -50,6 +50,10 @@
 - [ ] **LOW** Fix `@typescript-eslint/no-unused-expressions` violations (6 files)
 - [ ] **LOW** Fix `no-explicit-any`, `no-unused-vars`, `react-hooks/exhaustive-deps` across frontend
 
+### Code Scanning Alerts (ci/cicd-tightening)
+- [ ] **HIGH** Fix path injection in `ImageController.cs` (4 alerts) — validate filename after `Path.GetFileName`
+- [ ] **LOW** Fix XSS-through-DOM in `DisplayProfileImageElement.tsx` — validate blob URL source
+
 ---
 
 ## MCP Server (`wikipoc-mcp/`)
