@@ -43,7 +43,7 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
     };
 
     const renderQuote = (comment, currentDepth, maxDepth) => {
-        var replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
+        const replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
         if (!replyComment || currentDepth >= maxDepth) {
             return null;
         }

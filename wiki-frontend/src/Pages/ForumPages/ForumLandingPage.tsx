@@ -41,7 +41,7 @@ const ForumLandingPage = () => {
 
     
     const getCommentsLength = (topic) =>{
-        var counter = 0;
+        let counter = 0;
         (topic.forumPosts || []).forEach(post => {
             counter += post.comments.length;
         });

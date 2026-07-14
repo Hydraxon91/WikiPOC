@@ -14,11 +14,11 @@ export const getWikiPageById = async (id) => {
   };
 
 export const createWikiPage = async (newPage, token, decodedToken, images) => {
-  var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-  var roles = Array.isArray(role) ? role : [role];
-  var canDirectPublish = roles.includes("Admin") || roles.includes("Owner") || roles.includes("Moderator");
-  var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-  var url = canDirectPublish ? `/api/WikiPages/admin` : `/api/WikiPages/user`;
+  const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+  const roles = Array.isArray(role) ? role : [role];
+  const canDirectPublish = roles.includes("Admin") || roles.includes("Owner") || roles.includes("Moderator");
+  const userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+  const url = canDirectPublish ? `/api/WikiPages/admin` : `/api/WikiPages/user`;
 
   const formData = new FormData();
   if (!canDirectPublish) {
@@ -44,11 +44,11 @@ export const createWikiPage = async (newPage, token, decodedToken, images) => {
 
 
 export const updateWikiPage = async (updatedPage, token, decodedToken, images) => {
-    var role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-    var roles = Array.isArray(role) ? role : [role];
-    var canDirectPublish = roles.includes("Admin") || roles.includes("Owner") || roles.includes("Moderator");
-    var userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-    var url = canDirectPublish ? `/api/WikiPages/admin/${updatedPage.id}` : `/api/WikiPages/userUpdate/${updatedPage.id}`;
+    const role = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    const roles = Array.isArray(role) ? role : [role];
+    const canDirectPublish = roles.includes("Admin") || roles.includes("Owner") || roles.includes("Moderator");
+    const userName = decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+    const url = canDirectPublish ? `/api/WikiPages/admin/${updatedPage.id}` : `/api/WikiPages/userUpdate/${updatedPage.id}`;
     const formData = new FormData();
     if (!canDirectPublish) {
       formData.append('wikiPageWithImagesInputModel.WikiPageId', updatedPage.id)

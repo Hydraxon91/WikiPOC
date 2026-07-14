@@ -13,7 +13,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
 
   useEffect(() => {
     if (decodedTokenContext) {
-      var role = decodedTokenContext["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      const role = decodedTokenContext["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
       setRole(role);
       if (role === "Admin" || role === "Owner" || role === "Moderator") {
         fetchNewPageTitles(jwtToken["jwt_token"]);
