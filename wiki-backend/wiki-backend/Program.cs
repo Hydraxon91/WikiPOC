@@ -18,6 +18,7 @@ using wiki_backend.Services;
 using wiki_backend.Services.Authentication;
 using wiki_backend.Services.Settings;
 using Serilog;
+using wiki_backend.Middleware;
 using wiki_backend.Services.Database;
 using wiki_backend.Services.Storage;
 
@@ -108,6 +109,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<ScraperEmbedMiddleware>();
+
 app.UseExceptionHandler(exceptionHandlerApp =>
 {
     exceptionHandlerApp.Run(async context =>
@@ -122,6 +125,8 @@ app.UseExceptionHandler(exceptionHandlerApp =>
         });
     });
 });
+
+app.UseStaticFiles();
 
 app.UseCors();
 
@@ -165,6 +170,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/health");
+app.MapFallbackToFile("index.html");
 
 app.Run();
 
