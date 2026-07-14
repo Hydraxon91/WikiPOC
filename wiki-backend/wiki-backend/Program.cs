@@ -176,7 +176,7 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseMiddleware<ScraperEmbedMiddleware>();
+// app.UseMiddleware<ScraperEmbedMiddleware>();
 
 app.UseExceptionHandler(exceptionHandlerApp =>
 {
