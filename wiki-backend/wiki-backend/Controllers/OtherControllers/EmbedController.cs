@@ -50,7 +50,22 @@ public class EmbedController : ControllerBase
             var title = page.WikiPage.Title ?? "WikiPOC";
             var description = Truncate(StripHtml(page.WikiPage.Content), 200);
             var (wikiName, logo) = await GetIdentityAsync();
-            var imageUrl = BuildImageUrl(page.Images?.FirstOrDefault()?.FileName ?? logo);
+
+            var articleImage = page.Images?.FirstOrDefault()?.FileName;
+            string imageUrl;
+            if (!string.IsNullOrEmpty(articleImage))
+            {
+                imageUrl = BuildImageUrl(articleImage);
+            }
+            else if (!string.IsNullOrEmpty(logo) && logo != "logo/logo_pfp.png")
+            {
+                imageUrl = BuildImageUrl(logo);
+            }
+            else
+            {
+                imageUrl = BuildPageUrl("/img/logo.png");
+            }
+
             var pageUrl = BuildPageUrl($"/page/{slug}");
 
             return BuildHtml(title, wikiName, description, imageUrl, pageUrl, ogType: "article");
@@ -77,7 +92,17 @@ public class EmbedController : ControllerBase
             var title = post.PostTitle ?? "Forum Post";
             var description = Truncate(StripHtml(post.Content), 200);
             var (wikiName, logo) = await GetIdentityAsync();
-            var logoUrl = BuildImageUrl(logo);
+
+            string logoUrl;
+            if (!string.IsNullOrEmpty(logo) && logo != "logo/logo_pfp.png")
+            {
+                logoUrl = BuildImageUrl(logo);
+            }
+            else
+            {
+                logoUrl = BuildPageUrl("/img/logo.png");
+            }
+
             var pageUrl = BuildPageUrl($"/forum/{topicSlug}/{postSlug}");
 
             return BuildHtml(title, wikiName, description, logoUrl, pageUrl);
@@ -91,7 +116,7 @@ public class EmbedController : ControllerBase
     {
         var siteSettings = await _siteSettingsRepo.GetAsync();
         var wikiName = siteSettings?.WikiName ?? "WikiPOC";
-        var logo = siteSettings?.Logo ?? "logo_pfp.png";
+        var logo = siteSettings?.Logo ?? "logo/logo_pfp.png";
         return (wikiName, logo);
     }
 

@@ -186,10 +186,22 @@ app.Use(async (context, next) =>
                     var siteSettingsRepo = context.RequestServices.GetRequiredService<ISiteSettingsRepository>();
                     var siteSettings = await siteSettingsRepo.GetAsync();
                     var wikiName = siteSettings?.WikiName ?? "WikiPOC";
-                    var logo = siteSettings?.Logo ?? "logo_pfp.png";
 
                     var scheme = context.Request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? "https";
-                    var imageUrl = $"{scheme}://{context.Request.Host}/api/Image/{page.Images?.FirstOrDefault()?.FileName ?? logo}";
+                    var articleImage = page.Images?.FirstOrDefault()?.FileName;
+                    string imageUrl;
+                    if (!string.IsNullOrEmpty(articleImage))
+                    {
+                        imageUrl = $"{scheme}://{context.Request.Host}/api/Image/{articleImage}";
+                    }
+                    else if (!string.IsNullOrEmpty(siteSettings?.Logo) && siteSettings.Logo != "logo/logo_pfp.png")
+                    {
+                        imageUrl = $"{scheme}://{context.Request.Host}/api/Image/{siteSettings.Logo}";
+                    }
+                    else
+                    {
+                        imageUrl = $"{scheme}://{context.Request.Host}/img/logo.png";
+                    }
 
                     var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
                     string pageUrl;

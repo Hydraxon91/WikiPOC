@@ -24,8 +24,8 @@ export function usePageMeta(title?: string, description?: string) {
   useEffect(() => {
     const wikiName = settings.wikiName || styles.wikiName || 'WikiPOC';
     const pageTitle = title ? `${title} — ${wikiName}` : wikiName;
-    const logoFile = settings.logo || styles.logo || 'logo_pfp.png';
-    const logoUrl = `${API_URL}/api/Image/${logoFile}`;
+    const logoFile = settings.logo || styles.logo;
+    const logoUrl = logoFile ? `${API_URL}/api/Image/${logoFile}` : '/img/logo.png';
     const desc = description || `Explore articles and discussions on ${wikiName}`;
     const url = window.location.href;
 
