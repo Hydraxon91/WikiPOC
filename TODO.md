@@ -24,12 +24,16 @@
 
 ## CI/CD (DevOps Tier)
 
-### Completed (ci/cicd-tightening)
+### Completed
 - Removed orphaned `wiki-frontend/Dockerfile` (unused nginx-based image, replaced by multi-stage backend Dockerfile)
 - Hardenend backend Dockerfile with non-root `USER`
 - Added ESLint flat config (`eslint.config.js`) with TypeScript + React Hooks rules
 - Enabled Roslyn code-style analyzers (`TreatWarningsAsErrors`, `EnforceCodeStyleInBuild`)
-- Created `.github/workflows/ci.yml` with 6 jobs: lint, build, test+coverage, CodeQL, Docker+Trivy, deploy
+- Created `.github/workflows/ci.yml` with 7 jobs: lint, build, test, CodeQL (C# + JS/TS), Docker build, Docker publish, deploy
+- Switched container registry from GHCR to DockerHub (Azure compatibility)
+- DockerHub push + Trivy scan on main
+- Azure App Service deploy on main
+- Branch protection enabled on `main`
 
 ### Remaining
 - [x] **CRIT** Add immutable image tags (`${{ github.sha }}`) via `docker/metadata-action`
@@ -38,7 +42,7 @@
 - [x] **HIGH** Add PR template, CONTRIBUTING.md
 - [x] **HIGH** Add CodeQL workflow + Trivy image scan
 - [x] **HIGH** Add ESLint + Roslyn analyzers
-- [ ] **HIGH** Enable branch protection on `main`
+- [x] **HIGH** Enable branch protection on `main`
 - [x] **MEDIUM** Add coverage reporting (coverlet + ReportGenerator for .NET)
 - [x] **MEDIUM** Add release tagging / changelog automation
 - [x] **MEDIUM** Add GitHub Environments (staging vs prod)
