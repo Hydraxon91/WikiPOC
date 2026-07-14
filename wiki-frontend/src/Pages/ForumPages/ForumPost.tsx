@@ -1,4 +1,4 @@
-import { useEffect, useState, CSSProperties } from 'react';
+import { useEffect, useState, useCallback, CSSProperties } from 'react';
 import { useParams } from 'react-router-dom';
 import { getForumPostBySlug } from '../../Api/forumApi';
 import ForumCommentComponent from './Components/ForumCommentComponent';
@@ -27,17 +27,18 @@ const ForumPost = ({jwtToken}) => {
         post?.content ? stripHtml(post.content).substring(0, 200) : undefined
     );
 
-    useEffect(() => {
-        const fetchForumPost = async () => {
-            try {
-                const fetchedPost = await getForumPostBySlug(postSlug);
-                setPost(fetchedPost);
-            } catch (error) {
-                console.error("Error fetching post:", error);
-            }
-        };
-        fetchForumPost();
+    const fetchForumPost = useCallback(async () => {
+        try {
+            const fetchedPost = await getForumPostBySlug(postSlug);
+            setPost(fetchedPost);
+        } catch (error) {
+            console.error("Error fetching post:", error);
+        }
     }, [postSlug]);
+
+    useEffect(() => {
+        fetchForumPost();
+    }, [fetchForumPost]);
 
     const scrollToReplyForm = () => {
         if (!jwtToken) {

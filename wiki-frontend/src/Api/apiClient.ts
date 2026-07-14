@@ -35,7 +35,7 @@ async function request<T = any>( // eslint-disable-line @typescript-eslint/no-ex
     headers,
     body: options?.body
       ? options.isFormData
-        ? options.body
+        ? (options.body as BodyInit)
         : JSON.stringify(options.body)
       : undefined,
   });
@@ -57,7 +57,7 @@ async function request<T = any>( // eslint-disable-line @typescript-eslint/no-ex
             headers,
             body: options?.body
               ? options.isFormData
-                ? options.body
+                ? (options.body as BodyInit)
                 : JSON.stringify(options.body)
               : undefined,
           });

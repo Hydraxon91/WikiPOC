@@ -45,7 +45,7 @@ const LiquidGlassButton = ({
   angle = 45,
   gradient,
   repeats = 3,
-  _offset = 0,
+  offset: _offset = 0,
   phase = 0.5,
   evolution = 0.3,
   rounding,
