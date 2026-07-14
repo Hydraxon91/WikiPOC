@@ -1,33 +1,38 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using wiki_backend.DatabaseServices;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Caching.Memory;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
+using wiki_backend.Identity;
 
 namespace wiki_backend.Controllers;
 
 [ApiController]
 [Route("embed")]
+[EnableRateLimiting("EmbedPolicy")]
 public class EmbedController : ControllerBase
 {
     private readonly IWikiPageRepository _wikiPageRepo;
     private readonly IForumPostRepository _forumPostRepo;
+    private readonly IForumTopicRepository _forumTopicRepo;
     private readonly ISiteSettingsRepository _siteSettingsRepo;
-    private readonly WikiDbContext _db;
+    private readonly IMemoryCache _cache;
 
     private string? _frontendUrl;
 
     public EmbedController(
         IWikiPageRepository wikiPageRepo,
         IForumPostRepository forumPostRepo,
+        IForumTopicRepository forumTopicRepo,
         ISiteSettingsRepository siteSettingsRepo,
-        WikiDbContext db)
+        IMemoryCache cache)
     {
         _wikiPageRepo = wikiPageRepo;
         _forumPostRepo = forumPostRepo;
+        _forumTopicRepo = forumTopicRepo;
         _siteSettingsRepo = siteSettingsRepo;
-        _db = db;
+        _cache = cache;
         _frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
     }
 
@@ -35,35 +40,51 @@ public class EmbedController : ControllerBase
     [Produces("text/html")]
     public async Task<IActionResult> WikiEmbed(string slug)
     {
-        var page = await _wikiPageRepo.GetBySlugAsync(slug);
-        if (page?.WikiPage == null) return NotFound();
+        var html = await _cache.GetOrCreateAsync($"embed:wiki:{slug}", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60);
 
-        var title = page.WikiPage.Title ?? "WikiPOC";
-        var description = Truncate(StripHtml(page.WikiPage.Content), 200);
-        var (wikiName, logo) = await GetIdentityAsync();
-        var logoUrl = BuildImageUrl(logo);
-        var pageUrl = BuildPageUrl($"/page/{slug}");
+            var page = await _wikiPageRepo.GetBySlugAsync(slug);
+            if (page?.WikiPage == null) return null;
 
-        return Content(BuildHtml(title, wikiName, description, logoUrl, pageUrl), "text/html; charset=utf-8");
+            var title = page.WikiPage.Title ?? "WikiPOC";
+            var description = Truncate(StripHtml(page.WikiPage.Content), 200);
+            var (wikiName, logo) = await GetIdentityAsync();
+            var imageUrl = BuildImageUrl(page.Images?.FirstOrDefault()?.FileName ?? logo);
+            var pageUrl = BuildPageUrl($"/page/{slug}");
+
+            return BuildHtml(title, wikiName, description, imageUrl, pageUrl, ogType: "article");
+        });
+
+        if (html == null) return NotFound();
+        return Content(html, "text/html; charset=utf-8");
     }
 
     [HttpGet("forum/{postSlug}")]
     [Produces("text/html")]
     public async Task<IActionResult> ForumEmbed(string postSlug)
     {
-        var post = await _forumPostRepo.GetForumPostBySlugAsync(postSlug);
-        if (post == null) return NotFound();
+        var html = await _cache.GetOrCreateAsync($"embed:forum:{postSlug}", async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60);
 
-        var topic = await _db.ForumTopics.FirstOrDefaultAsync(t => t.Id == post.ForumTopicId);
-        var topicSlug = topic?.Slug ?? "topic";
+            var post = await _forumPostRepo.GetForumPostBySlugAsync(postSlug);
+            if (post == null) return null;
 
-        var title = post.PostTitle ?? "Forum Post";
-        var description = Truncate(StripHtml(post.Content), 200);
-        var (wikiName, logo) = await GetIdentityAsync();
-        var logoUrl = BuildImageUrl(logo);
-        var pageUrl = BuildPageUrl($"/forum/{topicSlug}/{postSlug}");
+            var topic = await _forumTopicRepo.GetForumTopicByIdAsync(post.ForumTopicId);
+            var topicSlug = topic?.Slug ?? "topic";
 
-        return Content(BuildHtml(title, wikiName, description, logoUrl, pageUrl), "text/html; charset=utf-8");
+            var title = post.PostTitle ?? "Forum Post";
+            var description = Truncate(StripHtml(post.Content), 200);
+            var (wikiName, logo) = await GetIdentityAsync();
+            var logoUrl = BuildImageUrl(logo);
+            var pageUrl = BuildPageUrl($"/forum/{topicSlug}/{postSlug}");
+
+            return BuildHtml(title, wikiName, description, logoUrl, pageUrl);
+        });
+
+        if (html == null) return NotFound();
+        return Content(html, "text/html; charset=utf-8");
     }
 
     private async Task<(string wikiName, string logo)> GetIdentityAsync()
@@ -74,10 +95,10 @@ public class EmbedController : ControllerBase
         return (wikiName, logo);
     }
 
-    private string BuildImageUrl(string logo)
+    private string BuildImageUrl(string filename)
     {
         var scheme = Request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? "https";
-        return $"{scheme}://{Request.Host}/api/Image/{logo}";
+        return $"{scheme}://{Request.Host}/api/Image/{filename}";
     }
 
     private string BuildPageUrl(string path)
@@ -89,23 +110,24 @@ public class EmbedController : ControllerBase
         return $"{scheme}://{Request.Host}{path}";
     }
 
-    private static string StripHtml(string? html)
+    internal static string StripHtml(string? html)
     {
         if (string.IsNullOrWhiteSpace(html)) return "";
         html = Regex.Replace(html, "</?(p|h[1-6]|li|div|br|tr|td|th|blockquote|pre)[^>]*>", " ");
         html = Regex.Replace(html, "<[^>]+>", "");
         html = Regex.Replace(html, @"\s+", " ");
+        html = System.Net.WebUtility.HtmlDecode(html);
         return html.Trim();
     }
 
-    private static string Truncate(string text, int maxLength)
+    internal static string Truncate(string text, int maxLength)
     {
         if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
             return text;
         return text[..(maxLength - 3)] + "...";
     }
 
-    private static string BuildHtml(string title, string wikiName, string description, string logoUrl, string pageUrl)
+    internal static string BuildHtml(string title, string wikiName, string description, string imageUrl, string pageUrl, string ogType = "website")
     {
         return $@"<!DOCTYPE html>
 <html lang=""en"">
@@ -114,13 +136,13 @@ public class EmbedController : ControllerBase
 <title>{Escape(title)} — {Escape(wikiName)}</title>
 <meta property=""og:title"" content=""{Escape(title)} — {Escape(wikiName)}"">
 <meta property=""og:description"" content=""{Escape(description)}"">
-<meta property=""og:image"" content=""{Escape(logoUrl)}"">
+<meta property=""og:image"" content=""{Escape(imageUrl)}"">
 <meta property=""og:url"" content=""{Escape(pageUrl)}"">
-<meta property=""og:type"" content=""website"">
+<meta property=""og:type"" content=""{ogType}"">
 <meta name=""twitter:card"" content=""summary"">
 <meta name=""twitter:title"" content=""{Escape(title)} — {Escape(wikiName)}"">
 <meta name=""twitter:description"" content=""{Escape(description)}"">
-<meta name=""twitter:image"" content=""{Escape(logoUrl)}"">
+<meta name=""twitter:image"" content=""{Escape(imageUrl)}"">
 <meta http-equiv=""refresh"" content=""0;url={Escape(pageUrl)}"">
 </head>
 <body>

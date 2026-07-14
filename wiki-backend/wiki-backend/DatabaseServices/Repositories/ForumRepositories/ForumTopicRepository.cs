@@ -39,6 +39,12 @@ public class ForumTopicRepository : IForumTopicRepository
         return topics;
     }
     
+    public async Task<ForumTopic?> GetForumTopicByIdAsync(Guid id)
+    {
+        return await _context.ForumTopics
+            .FirstOrDefaultAsync(topic => topic.Id == id);
+    }
+
     public async Task<ForumTopic?> GetForumTopicBySlugAsync(string slug)
     {
         var topic = await _context.ForumTopics

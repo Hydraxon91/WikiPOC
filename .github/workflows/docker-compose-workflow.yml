@@ -30,21 +30,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push backend
+      - name: Build and push backend (includes frontend SPA)
         uses: docker/build-push-action@v6
         with:
-          context: ./wiki-backend/wiki-backend
+          context: .
+          file: ./wiki-backend/wiki-backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/wiki-backend:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build and push frontend
-        uses: docker/build-push-action@v6
-        with:
-          context: ./wiki-frontend
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/wiki-frontend:latest
+          build-args: VITE_API_URL=
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

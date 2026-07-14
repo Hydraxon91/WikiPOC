@@ -73,9 +73,9 @@
   it succeeded.
 - **For frontend-only changes:**
   ```bash
-  docker-compose up -d --build wiki-frontend
+  docker-compose up -d --build wiki-backend
   ```
-  (single command, no chaining needed for this one)
+  (single command; the multi-stage Dockerfile rebuilds the SPA and backend)
 - **If a full rebuild is genuinely needed**, run each step separately and
   confirm it completed before the next:
   ```bash
@@ -141,11 +141,11 @@ Tech stack:
 ```
 WikiPOC/
 ├── wiki-backend/
-│   ├── wiki-backend/         # Main ASP.NET Core app
+│   ├── wiki-backend/         # Main ASP.NET Core app (serves both API + SPA)
 │   ├── UnitTests/            # NUnit unit tests
 │   └── IntegrationTests/     # NUnit integration tests
-├── wiki-frontend/            # React SPA (Vite + TypeScript)
-└── docker-compose.yml        # Orchestrates backend, frontend, SQL Server
+├── wiki-frontend/            # React SPA (Vite + TypeScript, built into backend wwwroot/)
+└── docker-compose.yml        # Orchestrates backend + SQL Server
 ```
 
 ## Quick Start
@@ -160,7 +160,7 @@ WikiPOC/
 # Create .env file with required variables (see Environment section)
 docker-compose up --build
 ```
-- Frontend: http://localhost:3000
+- Frontend: http://localhost:5050
 - Backend API: http://localhost:5050
 - SQL Server: localhost:1433
 
@@ -204,7 +204,14 @@ PICTURES_PATH_CONTAINER=/pictures
 
 # Frontend API URL
 VITE_API_URL=http://localhost:5050
+
+# Frontend URL (for embed OG tags — should point to the public frontend domain)
+FRONTEND_URL=https://your-frontend-domain.com
 ```
+
+> **Note**: Setting `FRONTEND_URL` is required for correct `og:url` meta tags in embed responses. If set to empty, the embed controller falls back to `X-Forwarded-Proto://Request.Host`, which may produce incorrect URLs behind proxies.
+>
+> **When the backend serves the frontend** (current architecture), set `VITE_API_URL` to empty (`""`) in production builds so API calls are same-origin relative paths. This makes the build portable across hosting providers. The `FRONTEND_URL` env var on the backend replaces what `VITE_API_URL` used to provide for embed redirects.
 
 > **CI/CD**: The `JWT_*` secrets above must also be added as GitHub Actions secrets in the repo (Settings → Secrets and Actions) or the integration tests will fail with `IDX10703`.
 

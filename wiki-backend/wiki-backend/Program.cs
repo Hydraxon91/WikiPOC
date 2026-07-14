@@ -18,6 +18,7 @@ using wiki_backend.Services;
 using wiki_backend.Services.Authentication;
 using wiki_backend.Services.Settings;
 using Serilog;
+using wiki_backend.Middleware;
 using wiki_backend.Services.Database;
 using wiki_backend.Services.Storage;
 
@@ -67,12 +68,21 @@ builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
 });
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     options.AddFixedWindowLimiter("LoginPolicy", opt =>
     {
         opt.PermitLimit = 10;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+    options.AddFixedWindowLimiter("EmbedPolicy", opt =>
+    {
+        opt.PermitLimit = 30;
         opt.Window = TimeSpan.FromMinutes(1);
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
         opt.QueueLimit = 0;
@@ -99,6 +109,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<ScraperEmbedMiddleware>();
+
 app.UseExceptionHandler(exceptionHandlerApp =>
 {
     exceptionHandlerApp.Run(async context =>
@@ -113,6 +125,8 @@ app.UseExceptionHandler(exceptionHandlerApp =>
         });
     });
 });
+
+app.UseStaticFiles();
 
 app.UseCors();
 
@@ -156,6 +170,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/health");
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

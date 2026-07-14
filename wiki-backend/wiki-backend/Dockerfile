@@ -1,17 +1,26 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:10.0 as build-env
+﻿# Stage 1: Build frontend
+FROM node:22 AS frontend-build
+WORKDIR /app/frontend
+COPY wiki-frontend/package*.json ./
+RUN npm install --legacy-peer-deps
+COPY wiki-frontend/ .
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+RUN npm run build
+
+# Stage 2: Build backend
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS backend-build
 WORKDIR /src
-COPY *.csproj .
+COPY wiki-backend/wiki-backend/*.csproj .
 RUN dotnet restore
-COPY . .
+COPY wiki-backend/wiki-backend/ .
+COPY --from=frontend-build /app/frontend/dist ./wwwroot/
 RUN dotnet publish -c Release -o /publish
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 as runtime
+
+# Stage 3: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /publish
-COPY --from=build-env /publish .
-
-COPY ./wait-for-it.sh /wait-for-it.sh 
-RUN chmod +x /wait-for-it.sh
-#Uncomment these if your PC is too slow to start the DB before the backend tries to access it, don't forget docker compose.yml
-
+COPY --from=backend-build /publish .
 ENV ASPNETCORE_URLS=http://+:80
 EXPOSE 80
 ENTRYPOINT ["dotnet", "wiki-backend.dll"]

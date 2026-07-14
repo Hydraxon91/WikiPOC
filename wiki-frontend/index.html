@@ -9,7 +9,7 @@
     <meta property="og:title" content="WikiPOC">
     <meta property="og:description" content="Explore articles and discussions on WikiPOC">
     <meta property="og:image" content="/logo192.png">
-    <meta property="og:url">
+    <meta property="og:url" content="/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="WikiPOC">
@@ -22,20 +22,17 @@
   <body>
     <script>
       (function() {
+        if (window.location.hostname !== 'localhost') return;
         var ua = navigator.userAgent || '';
         var isScraper = /Discordbot|Twitterbot|facebookexternalhit|Slackbot|LinkedInBot|WhatsApp|TelegramBot|Pinterest|redditbot|Iframely/i.test(ua);
         if (!isScraper) return;
 
-        var embedBase = window.location.hostname === 'localhost'
-          ? 'http://localhost:5050'
-          : 'https://wikipoc-backend.azurewebsites.net';
-
         var path = window.location.pathname;
         var match;
         if ((match = path.match(/^\/page\/(.+)/))) {
-          window.location.replace(embedBase + '/embed/wiki/' + match[1]);
+          window.location.replace('http://localhost:5050/embed/wiki/' + match[1]);
         } else if ((match = path.match(/^\/forum\/[^/]+\/(.+)/))) {
-          window.location.replace(embedBase + '/embed/forum/' + match[1]);
+          window.location.replace('http://localhost:5050/embed/forum/' + match[1]);
         }
       })();
     </script>
