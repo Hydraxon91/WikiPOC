@@ -60,8 +60,8 @@ jobs:
           name: coverage-results
           path: coverage/
 
-  codeql:
-    name: CodeQL Analysis
+  codeql-csharp:
+    name: CodeQL (C#)
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -69,12 +69,27 @@ jobs:
       - uses: actions/checkout@v4
       - uses: github/codeql-action/init@v4
         with:
-          languages: csharp, javascript-typescript
+          languages: csharp
+          build-mode: manual
+      - name: Build C#
+        run: dotnet restore wiki-backend/wiki-backend.sln && dotnet build wiki-backend/wiki-backend.sln --no-restore
+      - uses: github/codeql-action/analyze@v4
+
+  codeql-javascript:
+    name: CodeQL (JS/TS)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
       - uses: github/codeql-action/analyze@v4
 
   docker-build:
     name: Docker (Validate Build)
-    needs: [frontend-lint, backend-build, backend-test, codeql]
+    needs: [frontend-lint, backend-build, backend-test, codeql-csharp, codeql-javascript]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
