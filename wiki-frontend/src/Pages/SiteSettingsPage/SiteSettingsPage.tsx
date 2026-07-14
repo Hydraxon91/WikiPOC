@@ -22,8 +22,8 @@ const SiteSettingsPage = ({ jwtToken }) => {
       await save(wikiName, logoFile, jwtToken);
       showNotification('Site settings saved!');
       setLogoFile(null);
-    } catch (err: any) {
-      showNotification('Failed: ' + (err?.message || 'Unknown error'));
+    } catch (err: unknown) {
+      showNotification('Failed: ' + ((err instanceof Error ? err.message : null) || 'Unknown error'));
     } finally {
       setSaving(false);
     }

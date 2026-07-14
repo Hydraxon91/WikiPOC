@@ -1,9 +1,21 @@
 import { useState } from 'react';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import { useNotification } from '../../../Components/NotificationProvider';
+import type { UserProfile, UserComment } from '../../../types/models';
 import '../Style/commentreply.css'
 
-const WikiPageReplyComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, replyTo, showReplyBoxRemoveIndex, index }: { user?: any; page?: any; jwtToken?: any; handleCommentSubmit?: any; postComment?: any; replyTo?: any; showReplyBoxRemoveIndex?: any; index?: any }) => {
+interface WikiPageReplyProps {
+  user: UserProfile;
+  page: { id: string };
+  jwtToken: string;
+  handleCommentSubmit: () => void;
+  postComment: (comment: Partial<UserComment>, jwtToken: string, user: UserProfile) => Promise<unknown>;
+  replyTo: { id: string };
+  showReplyBoxRemoveIndex: (index: number) => void;
+  index?: number;
+}
+
+const WikiPageReplyComponent = ({ user, page, jwtToken, handleCommentSubmit, postComment, replyTo, showReplyBoxRemoveIndex, index }: WikiPageReplyProps) => {
     const [commentText, setCommentText] = useState('');
     const { showNotification } = useNotification();
 

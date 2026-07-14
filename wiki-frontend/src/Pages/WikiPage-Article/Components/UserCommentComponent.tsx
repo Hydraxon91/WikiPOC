@@ -3,7 +3,7 @@ import { formatDate } from '../../../utils/formatDate';
 import WikiPageReplyComponent from './WikiPageReplyComponent';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 
-const UserCommentComponent = ({ comment, user, jwtToken, handleCommentSubmit, postComment, postEditedComment, page, index, showRepliesIndex, toggleRepliesIndex, setFocusedCommentId, isFocused = false }) => {
+const UserCommentComponent = ({ comment, user, jwtToken, handleCommentSubmit, postComment, postEditedComment, page, index, showRepliesIndex, toggleRepliesIndex: _toggleRepliesIndex, setFocusedCommentId, isFocused = false }) => {
     const [editingCommentIndex, setEditingCommentIndex] = useState(null);
     const [editedComment, setEditedComment] = useState("");
     const [showReplyBox, setShowReplyBox] = useState(false);

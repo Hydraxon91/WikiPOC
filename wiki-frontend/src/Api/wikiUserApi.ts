@@ -14,7 +14,7 @@ export const postEditedComment = async (commentId: string, editedComment: string
   return put(`/api/UserComment/comment/${commentId}`, editedComment, token);
 };
 
-export const postProfileEdit = async (profile: { id: string; displayName: string; userName: string }, profilePictureFile: any, token: string) => {
+export const postProfileEdit = async (profile: { id: string; displayName: string; userName: string }, profilePictureFile: File | null | undefined, token: string) => {
   const formData = new FormData();
   formData.append('userUpdateForm.UserProfile.Id', profile.id);
   formData.append('userUpdateForm.UserProfile.DisplayName', profile.displayName);

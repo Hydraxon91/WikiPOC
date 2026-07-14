@@ -73,7 +73,9 @@ export function addHeadingIds(htmlContent: string): string {
     .replace(/<h3>/g, () => `<h3 id="sub-${++subParCounter}">`);
 }
 
-export function buildContentFromParagraphs(paragraphs: any[]): string {
+interface Paragraph { title: string; content: string; paragraphImage?: string; paragraphImageText?: string }
+
+export function buildContentFromParagraphs(paragraphs: Paragraph[]): string {
   if (!paragraphs || paragraphs.length === 0) return '';
   return paragraphs.map(p => {
     let html = `<h2>${p.title}</h2>\n<p>${p.content}</p>`;

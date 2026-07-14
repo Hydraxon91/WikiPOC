@@ -11,9 +11,9 @@ const EraAwareButton = (props: EraAwareButtonProps) => {
   const era = styles.interfaceEra || 'wikipedia';
 
   if (era !== 'glass' && era !== 'frutiger') {
-    const { metalEnabled, svgEnabled, light, refraction, depth, dispersion,
-            frost, splay, rgbSplit, scale, stretch, angle, gradient, repeats,
-            offset, phase, evolution, rounding, ...buttonProps } = props;
+    const { metalEnabled: _metalEnabled, svgEnabled: _svgEnabled, light: _light, refraction: _refraction, depth: _depth, dispersion: _dispersion,
+            frost: _frost, splay: _splay, rgbSplit: _rgbSplit, scale: _scale, stretch: _stretch, angle: _angle, gradient: _gradient, repeats: _repeats,
+            offset: _offset, phase: _phase, evolution: _evolution, rounding: _rounding, ...buttonProps } = props;
     return <button {...buttonProps} />;
   }
 

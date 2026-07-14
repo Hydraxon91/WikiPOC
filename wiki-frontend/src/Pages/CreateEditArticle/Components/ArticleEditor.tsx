@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, type CSSProperties } from 'react';
 import ReactQuill from 'react-quill-new';
 import Quill from 'quill';
 import CustomHTMLPopup from './CustomHTMLPopup';
@@ -10,7 +10,7 @@ import ThumbnailBlot from '../../../utils/thumbnailBlot';
 import 'react-quill-new/dist/quill.snow.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css';
 
-(Quill.register as any)(ThumbnailBlot);
+Quill.register('blots/thumbnail', ThumbnailBlot);
 
 
 const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, handleContentChange, handleSave, images, setImages, category }) => {
@@ -44,7 +44,7 @@ const ArticleEditor = ({ title, siteSub, roleNote, content, handleFieldChange, h
     ],
     clipboard: {
       matchers: [
-        ['div.thumbnail', (node, delta) => {
+        ['div.thumbnail', (node, _delta) => {
           const orientation = Array.from(node.classList).find(c => c !== 'thumbnail') || 'mid';
           const content = node.innerHTML;
           const Delta = Quill.import('delta');
@@ -164,7 +164,7 @@ const getCategories = async () => {
 
 
   return (
-    <div className="article article-editor" style={{backgroundColor: styles.articleColor, '--editor-btn-bg': styles.articleColor, '--editor-btn-border': styles.footerListLinkTextColor} as any}>
+    <div className="article article-editor" style={{backgroundColor: styles.articleColor, '--editor-btn-bg': styles.articleColor, '--editor-btn-border': styles.footerListLinkTextColor} as CSSProperties}>
       <div className='editDiv'>
         <label className="editLabel">Article Title:</label>
         <input 

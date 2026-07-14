@@ -8,11 +8,12 @@ import { formatDate } from '../../../utils/formatDate';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
+import type { UserProfile } from '../../../types/models';
 import "../Styles/forumpost.css";
 
 const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMethod, resetQuotedPostId, refreshPost }) => {
     const { decodedTokenContext } = useUserContext();
-    const [user, setUser] = useState<any>();
+    const [user, setUser] = useState<UserProfile | undefined>();
     const [currPost, setCurrPost] = useState(post);
     const { styles } = useStyleContext();
     const maxQuoteDepth = 1;

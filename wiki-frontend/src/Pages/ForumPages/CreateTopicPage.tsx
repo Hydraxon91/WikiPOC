@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createForumTopic } from '../../Api/forumApi';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
@@ -33,7 +33,7 @@ const CreateTopicPage = ({ jwtToken }) => {
     return (
         <>
         <Breadcrumbs/>
-        <div className="create-forum-topic fp-custom-popup"  style={{ backgroundColor: styles.articleRightColor, '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
+        <div className="create-forum-topic fp-custom-popup"  style={{ backgroundColor: styles.articleRightColor, '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as CSSProperties}>
             <h2>Create a New Forum</h2>
             <form onSubmit={handleSubmit}>
                 <div className="fp-comment-write-textarea">

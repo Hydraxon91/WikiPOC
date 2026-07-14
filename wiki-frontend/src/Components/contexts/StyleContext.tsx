@@ -79,7 +79,7 @@ export function applyEraFallbacks(styles: Partial<StyleModel>, preserveIdentity 
   const fallback = ERA_FALLBACKS[era] || ERA_FALLBACKS.wikipedia;
   if (!preserveIdentity) {
     // Strip user identity fields when loading a preset
-    const { wikiName, logo, ...eraOnly } = styles;
+    const { wikiName: _wikiName, logo: _logo, ...eraOnly } = styles;
     return { ...fallback, ...eraOnly } as StyleModel;
   }
   return { ...fallback, ...styles } as StyleModel;
@@ -188,9 +188,6 @@ const relativeLuminance = (rgb: [number, number, number]): number => {
   });
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
-
-const rgbToHex = (rgb: [number, number, number]): string =>
-  '#' + rgb.map((c) => Math.round(c).toString(16).padStart(2, '0')).join('');
 
 const isLight = (rgb: [number, number, number]): boolean =>
   relativeLuminance(rgb) > 0.5;

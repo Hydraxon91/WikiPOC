@@ -1,5 +1,6 @@
 import Quill from 'quill';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BlockEmbed = Quill.import('blots/block/embed') as any;
 
 class ThumbnailBlot extends BlockEmbed {

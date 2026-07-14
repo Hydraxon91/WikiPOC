@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { getUserProfileByUsername, postEditedComment, postComment } from '../../../Api/wikiUserApi';
+import type { UserProfile } from '../../../types/models';
 import WikiPageSubmitCommentComponent from './WikiPageSubmitCommentComponent';
 import UserCommentComponent from './UserCommentComponent';
 
@@ -25,7 +26,7 @@ const useCommentsPerPage = () => {
 const WikiPageCommentsComponent = ({ page, jwtToken, activeTab, refreshPage }) => {
     const { decodedTokenContext } = useUserContext();
     const { styles } = useStyleContext();
-    const [user, setUser] = useState<any>();
+    const [user, setUser] = useState<UserProfile | undefined>();
     const [currPage, setCurrPage] = useState(page);
     const [showRepliesIndex, setShowRepliesIndex] = useState({});
     const [commentPage, setCommentPage] = useState(1);

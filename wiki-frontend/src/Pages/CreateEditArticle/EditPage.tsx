@@ -7,7 +7,7 @@ import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { buildContentFromParagraphs } from '../../utils/articleRenderer';
 import './Style/articleeditor.css';
 
-const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?: any; handleCreate?: any }) => {
+const EditPage = ({ page, handleEdit, handleCreate }: { page?: Record<string, unknown>; handleEdit?: (page: Record<string, unknown>, images: { name: string; dataURL: string }[]) => Promise<Record<string, unknown>>; handleCreate?: (page: Record<string, unknown>, images: { name: string; dataURL: string }[]) => Promise<Record<string, unknown>> }) => {
   const navigate = useNavigate();
   const { decodedTokenContext } = useUserContext();
   const [temporaryPage, setTemporaryPage] = useState(null);
@@ -16,7 +16,7 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
   const [roleNote, setRoleNote] = useState('');
   const [category, setCategory] = useState('');
   const [newPage, setNewPage] = useState(true);
-  const [paragraphs, setParagraphs] = useState([]);
+  const [_paragraphs, setParagraphs] = useState([]);
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const [usedImages, setUsedImages] = useState([]);
