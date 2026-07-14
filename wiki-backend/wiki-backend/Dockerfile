@@ -21,7 +21,7 @@ RUN dotnet publish -c Release -o /publish
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /publish
 COPY --from=backend-build /publish .
-RUN adduser --disabled-password --gecos '' appuser
+RUN useradd --create-home appuser
 USER appuser
 ENV ASPNETCORE_URLS=http://+:80
 EXPOSE 80
