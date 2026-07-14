@@ -155,6 +155,24 @@ app.Use(async (context, next) =>
         });
         return;
     }
+
+    // TEMPORARY: inline rewrite to bypass ScraperEmbedMiddleware
+    if (context.Request.Method is "GET" or "HEAD")
+    {
+        var ua = context.Request.Headers.UserAgent.ToString();
+        if (!string.IsNullOrEmpty(ua) && BotPatterns.ScraperUserAgentRegex.IsMatch(ua))
+        {
+            var path = context.Request.Path.Value ?? "";
+            if (path.StartsWith("/page/") && path.Length > 6)
+            {
+                var slug = path[6..];
+                context.Request.Path = $"/embed/wiki/{slug}";
+                await next(context);
+                return;
+            }
+        }
+    }
+
     await next();
 });
 
