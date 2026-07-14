@@ -2,8 +2,10 @@
   wiki-backend:
     image: wiki-backend:latest
     build:
-      context: ./wiki-backend/wiki-backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: wiki-backend/wiki-backend/Dockerfile
+      args:
+        VITE_API_URL: ""
     volumes:
       - ${PICTURES_PATH}:/pictures
     ports:
@@ -29,6 +31,7 @@
       MODERATOR_PASSWORD: ${MODERATOR_PASSWORD}
       PICTURES_PATH: ${PROFILE_PICTURES_PATH}
       PICTURES_PATH_CONTAINER: ${PICTURES_PATH_CONTAINER}
+      FRONTEND_URL: ${FRONTEND_URL}
 
   sql-server:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -43,14 +46,4 @@
       ACCEPT_EULA: Y
     ports:
       - "1433:1433"
-    restart: unless-stopped
-
-  wiki-frontend:
-    build:
-      context: ./wiki-frontend
-      dockerfile: Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL}
-    ports:
-      - "3000:80"
     restart: unless-stopped

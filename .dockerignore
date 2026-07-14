@@ -1,0 +1,17 @@
+.git
+.env
+.env.*
+*.md
+.gitignore
+*.Development.json
+
+node_modules/
+wiki-frontend/node_modules/
+
+wiki-frontend/dist/
+
+wiki-backend/**/bin/
+wiki-backend/**/obj/
+wiki-backend/**/.env
+wiki-backend/IntegrationTests/
+wiki-backend/UnitTests/
