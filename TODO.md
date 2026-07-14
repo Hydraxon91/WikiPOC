@@ -24,17 +24,24 @@
 
 ## CI/CD (DevOps Tier)
 
+### Completed (ci/cicd-tightening)
+- Removed orphaned `wiki-frontend/Dockerfile` (unused nginx-based image, replaced by multi-stage backend Dockerfile)
+- Hardenend backend Dockerfile with non-root `USER`
+- Added ESLint flat config (`eslint.config.js`) with TypeScript + React Hooks rules
+- Enabled Roslyn code-style analyzers (`TreatWarningsAsErrors`, `EnforceCodeStyleInBuild`)
+- Created `.github/workflows/ci.yml` with 6 jobs: lint, build, test+coverage, CodeQL, Docker+Trivy, deploy
+
 ### Remaining
-- [ ] **CRIT** Add immutable image tags (`${{ github.sha }}`) via `docker/metadata-action`
-- [ ] **CRIT** Add deployment job (staging/prod environments)
-- [ ] **HIGH** Add `USER` directive to Dockerfiles (containers run as root)
-- [ ] **HIGH** Add PR template, CONTRIBUTING.md
-- [ ] **HIGH** Add CodeQL workflow + Trivy image scan
-- [ ] **HIGH** Add ESLint + Roslyn analyzers
+- [x] **CRIT** Add immutable image tags (`${{ github.sha }}`) via `docker/metadata-action`
+- [x] **CRIT** Add deployment job (staging/prod environments)
+- [x] **HIGH** Add `USER` directive to Dockerfiles (containers run as root)
+- [x] **HIGH** Add PR template, CONTRIBUTING.md
+- [x] **HIGH** Add CodeQL workflow + Trivy image scan
+- [x] **HIGH** Add ESLint + Roslyn analyzers
 - [ ] **HIGH** Enable branch protection on `main`
-- [ ] **MEDIUM** Add coverage reporting (coverlet + ReportGenerator for .NET)
-- [ ] **MEDIUM** Add release tagging / changelog automation
-- [ ] **MEDIUM** Add GitHub Environments (staging vs prod)
+- [x] **MEDIUM** Add coverage reporting (coverlet + ReportGenerator for .NET)
+- [x] **MEDIUM** Add release tagging / changelog automation
+- [x] **MEDIUM** Add GitHub Environments (staging vs prod)
 
 ---
 
