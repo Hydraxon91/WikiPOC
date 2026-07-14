@@ -109,6 +109,55 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// TEMPORARY DIAGNOSTIC — remove after debugging
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/debug-middleware"))
+    {
+        var ua = context.Request.Headers.UserAgent.ToString();
+        var path = context.Request.Path.Value ?? "(null)";
+        var scheme = context.Request.Scheme;
+        var host = context.Request.Host.Value;
+        var xForwardedFor = context.Request.Headers["X-Forwarded-For"].ToString();
+        var xForwardedProto = context.Request.Headers["X-Forwarded-Proto"].ToString();
+
+        bool regexNull = BotPatterns.ScraperUserAgentRegex == null;
+        bool isBot = false;
+        string regexError = "";
+        try
+        {
+            isBot = !regexNull && BotPatterns.ScraperUserAgentRegex.IsMatch(ua);
+        }
+        catch (Exception ex)
+        {
+            regexError = ex.GetType().Name + ": " + ex.Message;
+        }
+
+        bool pathMatchesPage = path.StartsWith("/page/",
+            StringComparison.OrdinalIgnoreCase);
+        bool pathMatchesForum = System.Text.RegularExpressions.Regex.IsMatch(
+            path, @"^/forum/[^/]+/([^/]+)$",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        await context.Response.WriteAsJsonAsync(new
+        {
+            ua,
+            path,
+            scheme,
+            host,
+            xForwardedFor,
+            xForwardedProto,
+            regexNull,
+            isBot,
+            regexError,
+            pathMatchesPage,
+            pathMatchesForum
+        });
+        return;
+    }
+    await next();
+});
+
 app.UseMiddleware<ScraperEmbedMiddleware>();
 
 app.UseExceptionHandler(exceptionHandlerApp =>
