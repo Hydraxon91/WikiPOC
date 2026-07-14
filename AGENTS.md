@@ -204,7 +204,14 @@ PICTURES_PATH_CONTAINER=/pictures
 
 # Frontend API URL
 VITE_API_URL=http://localhost:5050
+
+# Frontend URL (for embed OG tags — should point to the public frontend domain)
+FRONTEND_URL=https://your-frontend-domain.com
 ```
+
+> **Note**: Setting `FRONTEND_URL` is required for correct `og:url` meta tags in embed responses. If set to empty, the embed controller falls back to `X-Forwarded-Proto://Request.Host`, which may produce incorrect URLs behind proxies.
+>
+> **When the backend serves the frontend** (current architecture), set `VITE_API_URL` to empty (`""`) in production builds so API calls are same-origin relative paths. This makes the build portable across hosting providers. The `FRONTEND_URL` env var on the backend replaces what `VITE_API_URL` used to provide for embed redirects.
 
 > **CI/CD**: The `JWT_*` secrets above must also be added as GitHub Actions secrets in the repo (Settings → Secrets and Actions) or the integration tests will fail with `IDX10703`.
 

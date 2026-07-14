@@ -1,7 +1,5 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using wiki_backend.DatabaseServices;
 using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 
@@ -13,21 +11,21 @@ public class EmbedController : ControllerBase
 {
     private readonly IWikiPageRepository _wikiPageRepo;
     private readonly IForumPostRepository _forumPostRepo;
+    private readonly IForumTopicRepository _forumTopicRepo;
     private readonly ISiteSettingsRepository _siteSettingsRepo;
-    private readonly WikiDbContext _db;
 
     private string? _frontendUrl;
 
     public EmbedController(
         IWikiPageRepository wikiPageRepo,
         IForumPostRepository forumPostRepo,
-        ISiteSettingsRepository siteSettingsRepo,
-        WikiDbContext db)
+        IForumTopicRepository forumTopicRepo,
+        ISiteSettingsRepository siteSettingsRepo)
     {
         _wikiPageRepo = wikiPageRepo;
         _forumPostRepo = forumPostRepo;
+        _forumTopicRepo = forumTopicRepo;
         _siteSettingsRepo = siteSettingsRepo;
-        _db = db;
         _frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
     }
 
@@ -41,10 +39,10 @@ public class EmbedController : ControllerBase
         var title = page.WikiPage.Title ?? "WikiPOC";
         var description = Truncate(StripHtml(page.WikiPage.Content), 200);
         var (wikiName, logo) = await GetIdentityAsync();
-        var logoUrl = BuildImageUrl(logo);
+        var imageUrl = BuildImageUrl(page.Images?.FirstOrDefault()?.FileName ?? logo);
         var pageUrl = BuildPageUrl($"/page/{slug}");
 
-        return Content(BuildHtml(title, wikiName, description, logoUrl, pageUrl), "text/html; charset=utf-8");
+        return Content(BuildHtml(title, wikiName, description, imageUrl, pageUrl, ogType: "article"), "text/html; charset=utf-8");
     }
 
     [HttpGet("forum/{postSlug}")]
@@ -54,7 +52,7 @@ public class EmbedController : ControllerBase
         var post = await _forumPostRepo.GetForumPostBySlugAsync(postSlug);
         if (post == null) return NotFound();
 
-        var topic = await _db.ForumTopics.FirstOrDefaultAsync(t => t.Id == post.ForumTopicId);
+        var topic = await _forumTopicRepo.GetForumTopicByIdAsync(post.ForumTopicId);
         var topicSlug = topic?.Slug ?? "topic";
 
         var title = post.PostTitle ?? "Forum Post";
@@ -74,10 +72,10 @@ public class EmbedController : ControllerBase
         return (wikiName, logo);
     }
 
-    private string BuildImageUrl(string logo)
+    private string BuildImageUrl(string filename)
     {
         var scheme = Request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? "https";
-        return $"{scheme}://{Request.Host}/api/Image/{logo}";
+        return $"{scheme}://{Request.Host}/api/Image/{filename}";
     }
 
     private string BuildPageUrl(string path)
@@ -95,6 +93,7 @@ public class EmbedController : ControllerBase
         html = Regex.Replace(html, "</?(p|h[1-6]|li|div|br|tr|td|th|blockquote|pre)[^>]*>", " ");
         html = Regex.Replace(html, "<[^>]+>", "");
         html = Regex.Replace(html, @"\s+", " ");
+        html = System.Net.WebUtility.HtmlDecode(html);
         return html.Trim();
     }
 
@@ -105,7 +104,7 @@ public class EmbedController : ControllerBase
         return text[..(maxLength - 3)] + "...";
     }
 
-    private static string BuildHtml(string title, string wikiName, string description, string logoUrl, string pageUrl)
+    private static string BuildHtml(string title, string wikiName, string description, string imageUrl, string pageUrl, string ogType = "website")
     {
         return $@"<!DOCTYPE html>
 <html lang=""en"">
@@ -114,13 +113,13 @@ public class EmbedController : ControllerBase
 <title>{Escape(title)} — {Escape(wikiName)}</title>
 <meta property=""og:title"" content=""{Escape(title)} — {Escape(wikiName)}"">
 <meta property=""og:description"" content=""{Escape(description)}"">
-<meta property=""og:image"" content=""{Escape(logoUrl)}"">
+<meta property=""og:image"" content=""{Escape(imageUrl)}"">
 <meta property=""og:url"" content=""{Escape(pageUrl)}"">
-<meta property=""og:type"" content=""website"">
+<meta property=""og:type"" content=""{ogType}"">
 <meta name=""twitter:card"" content=""summary"">
 <meta name=""twitter:title"" content=""{Escape(title)} — {Escape(wikiName)}"">
 <meta name=""twitter:description"" content=""{Escape(description)}"">
-<meta name=""twitter:image"" content=""{Escape(logoUrl)}"">
+<meta name=""twitter:image"" content=""{Escape(imageUrl)}"">
 <meta http-equiv=""refresh"" content=""0;url={Escape(pageUrl)}"">
 </head>
 <body>
