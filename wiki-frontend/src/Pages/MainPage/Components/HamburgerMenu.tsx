@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
@@ -20,7 +20,7 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
         <span className="hamburger-line"></span>
       </button>
       <div className={`hamburger-overlay${isOpen ? ' open' : ''}`} onClick={closeDrawer}>
-        <div className={`hamburger-drawer${isOpen ? ' open' : ''}`} onClick={e => e.stopPropagation()} style={{ '--drawer-bg': styles.articleColor, '--drawer-text': styles.footerListTextColor, '--drawer-link': styles.footerListLinkTextColor, '--drawer-heading': styles.articleRightColor } as any}>
+        <div className={`hamburger-drawer${isOpen ? ' open' : ''}`} onClick={e => e.stopPropagation()} style={{ '--drawer-bg': styles.articleColor, '--drawer-text': styles.footerListTextColor, '--drawer-link': styles.footerListLinkTextColor, '--drawer-heading': styles.articleRightColor } as CSSProperties}>
           <button className="hamburger-close" onClick={closeDrawer}>×</button>
 
             <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Categories</h3>

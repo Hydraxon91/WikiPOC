@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams} from 'react-router-dom';
+import type { CSSProperties } from 'react';
 import '../../../Styles/style.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css'
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
@@ -24,7 +25,7 @@ const WikiPageComponent = ({page, setDecodedSlug, activeTab, images}) => {
     if (setDecodedSlug) {
       setDecodedSlug(decodedSlug);
     }
-  }, [decodedSlug]);
+  }, [decodedSlug, setDecodedSlug]);
 
   const toggleContentsVisibility = () => {
     setIsContentsVisible(!isContentsVisible);
@@ -51,7 +52,7 @@ const WikiPageComponent = ({page, setDecodedSlug, activeTab, images}) => {
     : '';
 
   return (
-    <div className="wiki-article-content" style={{backgroundColor: styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, display: activeTab !== 'wiki' ? 'none' : undefined} as any}>
+    <div className="wiki-article-content" style={{backgroundColor: styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, display: activeTab !== 'wiki' ? 'none' : undefined} as CSSProperties}>
       {page && (
         <div className={activeTab === 'wiki' ? 'wikipage-component' : 'wikipage-component wikipage-hidden'}>
           <h1>

@@ -45,7 +45,7 @@ const LiquidGlassButton = ({
   angle = 45,
   gradient,
   repeats = 3,
-  offset = 0,
+  offset: _offset = 0,
   phase = 0.5,
   evolution = 0.3,
   rounding,
@@ -97,17 +97,17 @@ const LiquidGlassButton = ({
   const showSvg = svgEnabled && (era === 'glass' || era === 'frutiger');
   const showMetal = metalEnabled && era === 'glass' && webglOk === true;
 
-  const glassVarStyle: CSSProperties = {
-    ['--lg-blur' as any]: `${cssBlurPx}px`,
-    ['--lg-opacity' as any]: String(cssOpacity),
-    ['--lg-radius' as any]: `${cssRadius}px`,
-    ['--lg-refraction' as any]: String(refraction),
-    ['--lg-dispersion' as any]: String(dispersion),
-    ['--lg-light' as any]: String(light),
-    ['--lg-depth' as any]: String(depth),
-    ['--lg-border-color' as any]: `conic-gradient(from var(--lg-angle, 0deg), ${gradientStops.join(', ')}, ${gradientStops[0]})`,
+  const glassVarStyle = {
+    '--lg-blur': `${cssBlurPx}px`,
+    '--lg-opacity': String(cssOpacity),
+    '--lg-radius': `${cssRadius}px`,
+    '--lg-refraction': String(refraction),
+    '--lg-dispersion': String(dispersion),
+    '--lg-light': String(light),
+    '--lg-depth': String(depth),
+    '--lg-border-color': `conic-gradient(from var(--lg-angle, 0deg), ${gradientStops.join(', ')}, ${gradientStops[0]})`,
     ...style,
-  };
+  } as CSSProperties;
 
   return (
     <button

@@ -71,7 +71,7 @@ const HomeComponent = ({ pages, categories }) => {
             <div key={category}>
               <h3>{category}</h3>
               <ul>
-                {(pages as any[]).map((page, index) => (
+                {(pages as { slug: string; title: string; category: string }[]).map((page, index) => (
                   <li key={index}>
                     <Link to={`/page/${encodeURIComponent(page.slug)}`}>
                       {page.title}

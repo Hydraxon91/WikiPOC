@@ -482,17 +482,31 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 - Azure SWA workflow deleted (deprecated)
 - Embed system working: server-side OG tags for Discord/Telegram/Twitter/Facebook/etc.
 - Image fallback: bundled `/img/logo.png` in wwwroot (replaces nonexistent DB-seeded `logo_pfp.png`)
-- 86/86 unit tests passing, frontend builds cleanly
+- **All tech debt items completed** — see TODO.md for full list
+- **0 ESLint warnings**, **0 Roslyn warnings**, both projects build clean
+- CI/CD pipeline includes lint, build, test, CodeQL (C# + JS/TS), Docker build/publish, Trivy scan, Azure deploy
+
+### Tech Debt Resolved (July 2026 Session)
+- Fixed path injection in `ImageController.cs` (CodeQL HIGH) — `Path.GetFullPath()` + `StartsWith()` containment check
+- Fixed XSS-through-DOM in `DisplayProfileImageElement.tsx` — blob URL origin validation
+- Upgraded Swashbuckle 10.0.0→10.2.3, removed NU1903 suppression
+- Enabled `TreatWarningsAsErrors` + `EnforceCodeStyleInBuild` on test projects
+- Replaced 13 `var` → `let`/`const` across frontend
+- Fixed 6 `@typescript-eslint/no-unused-expressions` violations
+- Fixed all `@typescript-eslint/no-explicit-any` (~64 violations), `no-unused-vars`, and `react-hooks/exhaustive-deps` (~29 violations) across frontend
+- Fixed runtime regressions from exhaustive-deps changes (infinite token refresh loop, forum post crash, profile edit revert)
 
 ### Known Issues
 1. `ScraperEmbedMiddleware` is refactored — path rewrite doesn't route to controllers on Azure/ASP.NET Core 10, so middleware generates embed HTML directly at the request path.
 2. `logo_pfp.png` doesn't exist on Azure filesystem — all fallbacks now use `/img/logo.png`
 3. Azure Free Tier has no persistent storage — `PICTURES_PATH` cannot be mounted, so image uploads (including custom logos) don't work. **Unresolved** — requires paid tier, not happening.
+4. Frutiger Aero era: sidebar background doesn't use `--custom-body-color` CSS variable (`.era-frutiger .sidebar` is hardcoded). See `TODO.md` UI Issues section.
+5. Token refresh effect in `App.tsx` intentionally runs once on mount (not in dep array) to avoid refresh loop — role-changed middleware handles token refresh on 401 via `apiClient.ts`.
 
 ### Next Tasks
+- Fix Frutiger Aero era sidebar color to respect theme color
 - Upload a custom logo via `/site-settings` to test custom logo in embeds (blocked: no persistent storage on Azure Free Tier)
 - Verify favicon shows wiki logo (via `usePageMeta.ts`)
-- Merge to main once embed system is production-ready
 - Set `FRONTEND_URL` in Azure App Service Configuration
 
 ## Files of Interest

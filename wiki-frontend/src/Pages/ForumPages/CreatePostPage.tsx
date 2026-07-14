@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, CSSProperties } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css'
 import { useNavigate, useParams } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { createForumPost, getForumTopicBySlug } from '../../Api/forumApi';
 import { getUserProfileByUsername } from '../../Api/wikiUserApi';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
+import type { UserProfile } from '../../types/models';
 import EraAwareButton from '../../Components/LiquidGlassButton/EraAwareButton';
 import "./Styles/createforumtopic.css"
 import Breadcrumbs from './Components/Breadcrumbs';
@@ -13,7 +14,7 @@ import Breadcrumbs from './Components/Breadcrumbs';
 const CreatePostPage = ({ jwtToken }) => {
     const { decodedTokenContext } = useUserContext();
     const { slug } = useParams();
-    const [user, setUser] = useState<any>();
+    const [user, setUser] = useState<UserProfile | undefined>();
     const [postTitle, setPostTitle] = useState('');
     const [content, setContent] = useState('');
     const [error, setError] = useState(null);
@@ -71,7 +72,7 @@ const CreatePostPage = ({ jwtToken }) => {
     return (
         <>
         <Breadcrumbs/>
-        <div className="create-forum-topic fp-custom-popup"  style={{ backgroundColor: styles.articleRightColor, '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
+        <div className="create-forum-topic fp-custom-popup"  style={{ backgroundColor: styles.articleRightColor, '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as CSSProperties}>
             <h2>Create a New Post</h2>
             <form onSubmit={handleSubmit}>
                 <div className="fp-comment-write-textarea">

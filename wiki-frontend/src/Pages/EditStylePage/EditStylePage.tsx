@@ -2,7 +2,7 @@ import ManualEditStylesComponent from "./Components/ManualEditStylesComponent";
 import PresetsComponent from "./Components/PresetsComponent";
 import UserThemesList from "./Components/UserThemesList";
 import "../../Styles/stylepage.css";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStyleContext } from "../../Components/contexts/StyleContext";
 import { useUserContext } from "../../Components/contexts/UserContextProvider";
@@ -12,7 +12,7 @@ import { applyEraFallbacks } from "../../Components/contexts/StyleContext";
 import { StyleModel } from "../../types/models";
 
 const EditStylePage = ({ jwtToken }) => {
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const { styles, setStyles, refreshUserThemes } = useStyleContext();
   const { decodedTokenContext } = useUserContext();
   const { showNotification } = useNotification();
@@ -30,7 +30,7 @@ const EditStylePage = ({ jwtToken }) => {
   const role = decodedTokenContext?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
   const userId = decodedTokenContext?.sub;
   const isAdmin = role === "Admin" || role === "Owner";
-  const isWikipedia = newStyles.interfaceEra === "wikipedia";
+  const _isWikipedia = newStyles.interfaceEra === "wikipedia";
 
   // Load theme into both editor state and live preview
   const handleLoadTheme = (theme: StyleModel) => {
@@ -57,9 +57,9 @@ const EditStylePage = ({ jwtToken }) => {
     return () => {
       if (!hasSavedRef.current) setStyles(initialStylesRef.current);
     };
-  }, []);
+  }, [setStyles]);
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: string | number | boolean) => {
     setNewStyles((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -75,7 +75,7 @@ const EditStylePage = ({ jwtToken }) => {
       return;
     }
     try {
-      const { id, isActive, ...themeData } = newStyles;
+      const { id: _id, isActive: _isActive, ...themeData } = newStyles;
       const created = await saveUserTheme(
         { ...themeData, userId, themeName: saveName.trim(), isSystemPreset: false },
         jwtToken
@@ -85,8 +85,8 @@ const EditStylePage = ({ jwtToken }) => {
       setShowSavePrompt(false);
       refreshUserThemes();
       handleLoadTheme(created);
-    } catch (err: any) {
-      showNotification("Failed to save theme: " + (err?.message || "Unknown error"));
+    } catch (err: unknown) {
+      showNotification("Failed to save theme: " + ((err instanceof Error ? err.message : null) || "Unknown error"));
     }
   };
 
@@ -104,8 +104,8 @@ const EditStylePage = ({ jwtToken }) => {
       hasSavedRef.current = true;
       initialStylesRef.current = fresh;
       showNotification("Theme activated globally!");
-    } catch (err: any) {
-      showNotification("Failed to activate: " + (err?.message || "Unknown error"));
+    } catch (err: unknown) {
+      showNotification("Failed to activate: " + ((err instanceof Error ? err.message : null) || "Unknown error"));
     } finally {
       setActivating(false);
     }

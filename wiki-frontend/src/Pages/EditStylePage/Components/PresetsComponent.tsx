@@ -1,4 +1,5 @@
 import { useStyleContext } from "../../../Components/contexts/StyleContext";
+import type { StyleModel } from "../../../types/models";
 
 const ERA_TAGS: Record<string, string> = {
   wikipedia: "Utilitarian Minimalist — 2001",
@@ -7,7 +8,7 @@ const ERA_TAGS: Record<string, string> = {
   frutiger: "Hyper-Gloss Retro — 2006",
 };
 
-const PresetsComponent = ({ onLoad }: { onLoad?: (theme: any) => void }) => {
+const PresetsComponent = ({ onLoad }: { onLoad?: (theme: StyleModel) => void }) => {
   const { systemPresets, loadTheme, styles } = useStyleContext();
 
   return (

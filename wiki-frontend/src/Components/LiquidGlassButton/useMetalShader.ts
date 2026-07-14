@@ -96,6 +96,13 @@ export const useMetalShader = (
     start: 0,
   });
 
+  const colorA0 = options.colorA[0];
+  const colorA1 = options.colorA[1];
+  const colorA2 = options.colorA[2];
+  const colorB0 = options.colorB[0];
+  const colorB1 = options.colorB[1];
+  const colorB2 = options.colorB[2];
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -205,8 +212,8 @@ export const useMetalShader = (
       gl.uniform1f(uniforms.u_angle, options.angle);
       gl.uniform1f(uniforms.u_rgbSplit, options.rgbSplit);
       gl.uniform1f(uniforms.u_light, options.light);
-      gl.uniform3f(uniforms.u_colorA, options.colorA[0], options.colorA[1], options.colorA[2]);
-      gl.uniform3f(uniforms.u_colorB, options.colorB[0], options.colorB[1], options.colorB[2]);
+      gl.uniform3f(uniforms.u_colorA, colorA0, colorA1, colorA2);
+      gl.uniform3f(uniforms.u_colorB, colorB0, colorB1, colorB2);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       st.rafId = requestAnimationFrame(render);
     };
@@ -231,8 +238,8 @@ export const useMetalShader = (
     options.light,
     options.phase,
     options.evolution,
-    options.colorA[0], options.colorA[1], options.colorA[2],
-    options.colorB[0], options.colorB[1], options.colorB[2],
+    colorA0, colorA1, colorA2,
+    colorB0, colorB1, colorB2,
   ]);
 
   return stateRef;

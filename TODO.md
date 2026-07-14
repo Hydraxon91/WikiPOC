@@ -24,12 +24,16 @@
 
 ## CI/CD (DevOps Tier)
 
-### Completed (ci/cicd-tightening)
+### Completed
 - Removed orphaned `wiki-frontend/Dockerfile` (unused nginx-based image, replaced by multi-stage backend Dockerfile)
 - Hardenend backend Dockerfile with non-root `USER`
 - Added ESLint flat config (`eslint.config.js`) with TypeScript + React Hooks rules
 - Enabled Roslyn code-style analyzers (`TreatWarningsAsErrors`, `EnforceCodeStyleInBuild`)
-- Created `.github/workflows/ci.yml` with 6 jobs: lint, build, test+coverage, CodeQL, Docker+Trivy, deploy
+- Created `.github/workflows/ci.yml` with 7 jobs: lint, build, test, CodeQL (C# + JS/TS), Docker build, Docker publish, deploy
+- Switched container registry from GHCR to DockerHub (Azure compatibility)
+- DockerHub push + Trivy scan on main
+- Azure App Service deploy on main
+- Branch protection enabled on `main`
 
 ### Remaining
 - [x] **CRIT** Add immutable image tags (`${{ github.sha }}`) via `docker/metadata-action`
@@ -38,21 +42,21 @@
 - [x] **HIGH** Add PR template, CONTRIBUTING.md
 - [x] **HIGH** Add CodeQL workflow + Trivy image scan
 - [x] **HIGH** Add ESLint + Roslyn analyzers
-- [ ] **HIGH** Enable branch protection on `main`
+- [x] **HIGH** Enable branch protection on `main`
 - [x] **MEDIUM** Add coverage reporting (coverlet + ReportGenerator for .NET)
 - [x] **MEDIUM** Add release tagging / changelog automation
 - [x] **MEDIUM** Add GitHub Environments (staging vs prod)
 
-### Tech Debt (CI/CD accommodations)
-- [ ] **MEDIUM** Update Microsoft.OpenApi / Swashbuckle to remove NU1903 suppression
-- [ ] **MEDIUM** Enable TreatWarningsAsErrors on test projects after NU1903 fix
-- [ ] **MEDIUM** Refactor `var` → `let`/`const` across frontend (13 auto-fixable)
-- [ ] **LOW** Fix `@typescript-eslint/no-unused-expressions` violations (6 files)
-- [ ] **LOW** Fix `no-explicit-any`, `no-unused-vars`, `react-hooks/exhaustive-deps` across frontend
+### Tech Debt (CI/CD accommodations) — Complete
+- [x] **MEDIUM** Update Microsoft.OpenApi / Swashbuckle to remove NU1903 suppression
+- [x] **MEDIUM** Enable TreatWarningsAsErrors on test projects after NU1903 fix
+- [x] **MEDIUM** Refactor `var` → `let`/`const` across frontend (13 auto-fixable)
+- [x] **LOW** Fix `@typescript-eslint/no-unused-expressions` violations (6 files)
+- [x] **LOW** Fix `no-explicit-any`, `no-unused-vars`, `react-hooks/exhaustive-deps` across frontend
 
-### Code Scanning Alerts (ci/cicd-tightening)
-- [ ] **HIGH** Fix path injection in `ImageController.cs` (4 alerts) — validate filename after `Path.GetFileName`
-- [ ] **LOW** Fix XSS-through-DOM in `DisplayProfileImageElement.tsx` — validate blob URL source
+### Code Scanning Alerts (ci/cicd-tightening) — Complete
+- [x] **HIGH** Fix path injection in `ImageController.cs` (4 alerts) — validate filename after `Path.GetFileName`
+- [x] **LOW** Fix XSS-through-DOM in `DisplayProfileImageElement.tsx` — validate blob URL source
 
 ---
 
@@ -96,3 +100,9 @@ All read, auth, and write tools are implemented. Full list:
 - [ ] **LOW** `search_forum_topics` — search forum topics
 - [ ] **LOW** `search_forum_posts` — search forum posts
 - [ ] **LOW** `ensure_agent_notes_category` — create or verify Agent Notes category
+
+---
+
+## UI Issues
+
+- [ ] **LOW** Frutiger Aero era: sidebar background doesn't use `--custom-body-color` CSS variable (`.era-frutiger .sidebar` is hardcoded; unlike `.era-modern .sidebar` which references the variable). Update to respect theme color.

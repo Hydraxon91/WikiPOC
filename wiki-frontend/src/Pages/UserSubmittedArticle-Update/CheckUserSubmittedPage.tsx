@@ -12,20 +12,18 @@ const CheckUserSubmittedPage = () => {
     const { showNotification } = useNotification();
 
     useEffect(() => {
+        const fetchSubmittedPage = async (id) => {
+            try {
+                const data = await getNewPageById(id, cookies['jwt_token'])
+                setPage(data);
+            } catch (error) {
+              console.error('Error fetching page:', error);
+            }
+        };
         const match = location.pathname.match(/\/([a-f\d-]+)$/i);
         const numberAtEnd = match ? match[1] : null;
         fetchSubmittedPage(numberAtEnd);
-    }, [location.pathname]);
-
-
-    const fetchSubmittedPage = async (id) => {
-        try {
-            const data = await getNewPageById(id, cookies['jwt_token'])
-            setPage(data);
-        } catch (error) {
-          console.error('Error fetching page:', error);
-        }
-      };
+    }, [location.pathname, cookies]);
 
       const handleAccept = () => {
         acceptUserSubmittedPage(page, cookies["jwt_token"])
@@ -39,7 +37,7 @@ const CheckUserSubmittedPage = () => {
       };
 
       const handleDecline = () => {
-        declineUserSubmittedWikiPage((page as any).userSubmittedWikiPage.id, cookies["jwt_token"])
+        declineUserSubmittedWikiPage((page as { userSubmittedWikiPage: { id: string } }).userSubmittedWikiPage.id, cookies["jwt_token"])
           .then(() => {
             showNotification("Declined Submitted Page");
             navigate(`/user-submissions`);

@@ -11,22 +11,22 @@ const UserRequestsPageComponent = () => {
     const [cookies] = useCookies(['jwt_token']);
 
     useEffect(() => {
+        const fetchPage = async () => {
+            try {
+                if (location.pathname === '/user-submissions') {
+                    const data = await getNewPageTitles(cookies['jwt_token']);
+                    setPages(data);
+                }
+                else if (location.pathname === '/user-updates') {
+                    const data = await getUpdatePageTitles(cookies['jwt_token']);
+                    setPages(data);
+                }
+            } catch (error) {
+              console.error('Error fetching page:', error);
+            }
+        };
         fetchPage();
-    }, [location.pathname]);
-    const fetchPage = async () => {
-        try {
-            if (location.pathname === '/user-submissions') {
-                const data = await getNewPageTitles(cookies['jwt_token']);
-                setPages(data);
-            }
-            else if (location.pathname === '/user-updates') {
-                const data = await getUpdatePageTitles(cookies['jwt_token']);
-                setPages(data);
-            }
-        } catch (error) {
-          console.error('Error fetching page:', error);
-        }
-      };
+    }, [location.pathname, cookies]);
 
     return (
     <div className="article" style={{backgroundColor: styles.articleColor}}>

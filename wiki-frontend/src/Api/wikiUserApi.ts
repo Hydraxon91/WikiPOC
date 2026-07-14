@@ -14,7 +14,7 @@ export const postEditedComment = async (commentId: string, editedComment: string
   return put(`/api/UserComment/comment/${commentId}`, editedComment, token);
 };
 
-export const postProfileEdit = async (profile: { id: string; displayName: string; userName: string }, profilePictureFile: any, token: string) => {
+export const postProfileEdit = async (profile: { id: string; displayName: string; userName: string }, profilePictureFile: File | null | undefined, token: string) => {
   const formData = new FormData();
   formData.append('userUpdateForm.UserProfile.Id', profile.id);
   formData.append('userUpdateForm.UserProfile.DisplayName', profile.displayName);
@@ -24,9 +24,6 @@ export const postProfileEdit = async (profile: { id: string; displayName: string
 };
 
 export const getProfilePicture = async (pictureString: string) => {
-  if (pictureString.startsWith('blob:')) {
-    return pictureString;
-  }
   const BASE_URL = import.meta.env.VITE_API_URL;
   const response = await fetch(`${BASE_URL}/api/Image/profile/${pictureString}`);
   if (!response.ok) {

@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useStyleContext } from "../../../Components/contexts/StyleContext";
 import { deleteUserTheme } from "../../../Api/wikiApi";
 import { useNotification } from "../../../Components/NotificationProvider";
+import type { StyleModel } from "../../../types/models";
 
-const UserThemesList = ({ jwtToken, onLoad }: { jwtToken: any; onLoad?: (theme: any) => void }) => {
+const UserThemesList = ({ jwtToken, onLoad }: { jwtToken: string; onLoad?: (theme: StyleModel) => void }) => {
   const { userThemes, refreshUserThemes, loadTheme } = useStyleContext();
   const { showNotification } = useNotification();
   const [deleting, setDeleting] = useState<number | null>(null);

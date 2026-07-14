@@ -15,10 +15,10 @@ class ApiError extends Error {
   }
 }
 
-async function request<T = any>(
+async function request<T = any>( // eslint-disable-line @typescript-eslint/no-explicit-any
   method: string,
   path: string,
-  options?: { body?: any; token?: string; isFormData?: boolean }
+  options?: { body?: unknown; token?: string; isFormData?: boolean }
 ): Promise<T> {
   const headers: Record<string, string> = {};
 
@@ -35,7 +35,7 @@ async function request<T = any>(
     headers,
     body: options?.body
       ? options.isFormData
-        ? options.body
+        ? (options.body as BodyInit)
         : JSON.stringify(options.body)
       : undefined,
   });
@@ -57,7 +57,7 @@ async function request<T = any>(
             headers,
             body: options?.body
               ? options.isFormData
-                ? options.body
+                ? (options.body as BodyInit)
                 : JSON.stringify(options.body)
               : undefined,
           });
@@ -87,30 +87,30 @@ async function request<T = any>(
   return response.json();
 }
 
-export function get<T = any>(path: string, token?: string) {
+export function get<T = any>(path: string, token?: string) { // eslint-disable-line @typescript-eslint/no-explicit-any
   return request<T>('GET', path, { token });
 }
 
-export function post<T = any>(path: string, body?: any, token?: string) {
+export function post<T = any>(path: string, body?: unknown, token?: string) { // eslint-disable-line @typescript-eslint/no-explicit-any
   return request<T>('POST', path, { body, token });
 }
 
-export function put<T = any>(path: string, body?: any, token?: string) {
+export function put<T = any>(path: string, body?: unknown, token?: string) { // eslint-disable-line @typescript-eslint/no-explicit-any
   return request<T>('PUT', path, { body, token });
 }
 
-export function del<T = any>(path: string, token?: string) {
+export function del<T = any>(path: string, token?: string) { // eslint-disable-line @typescript-eslint/no-explicit-any
   return request<T>('DELETE', path, { token });
 }
 
-export function postForm<T = any>(path: string, body: FormData, token?: string) {
+export function postForm<T = any>(path: string, body: FormData, token?: string) { // eslint-disable-line @typescript-eslint/no-explicit-any
   return request<T>('POST', path, { body, token, isFormData: true });
 }
 
-export function putForm<T = any>(path: string, body: FormData, token?: string) {
+export function putForm<T = any>(path: string, body: FormData, token?: string) { // eslint-disable-line @typescript-eslint/no-explicit-any
   return request<T>('PUT', path, { body, token, isFormData: true });
 }
 
-export function patch<T = any>(path: string, body?: any, token?: string) {
+export function patch<T = any>(path: string, body?: unknown, token?: string) { // eslint-disable-line @typescript-eslint/no-explicit-any
   return request<T>('PATCH', path, { body, token });
 }

@@ -8,11 +8,12 @@ import { formatDate } from '../../../utils/formatDate';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
+import type { UserProfile } from '../../../types/models';
 import "../Styles/forumpost.css";
 
 const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMethod, resetQuotedPostId, refreshPost }) => {
     const { decodedTokenContext } = useUserContext();
-    const [user, setUser] = useState<any>();
+    const [user, setUser] = useState<UserProfile | undefined>();
     const [currPost, setCurrPost] = useState(post);
     const { styles } = useStyleContext();
     const maxQuoteDepth = 1;
@@ -32,7 +33,7 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
     }, [post]);
 
     const handleCommentSubmit = () => {
-        refreshPost && refreshPost();
+        if (refreshPost) refreshPost();
     };
 
     const handleContentClick = (e) => {
@@ -43,7 +44,7 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
     };
 
     const renderQuote = (comment, currentDepth, maxDepth) => {
-        var replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
+        const replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
         if (!replyComment || currentDepth >= maxDepth) {
             return null;
         }

@@ -7,6 +7,7 @@ import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { buildContentFromParagraphs } from '../../utils/articleRenderer';
 import './Style/articleeditor.css';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?: any; handleCreate?: any }) => {
   const navigate = useNavigate();
   const { decodedTokenContext } = useUserContext();
@@ -16,7 +17,7 @@ const EditPage = ({ page, handleEdit, handleCreate }: { page?: any; handleEdit?:
   const [roleNote, setRoleNote] = useState('');
   const [category, setCategory] = useState('');
   const [newPage, setNewPage] = useState(true);
-  const [paragraphs, setParagraphs] = useState([]);
+  const [_paragraphs, setParagraphs] = useState([]);
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
   const [usedImages, setUsedImages] = useState([]);

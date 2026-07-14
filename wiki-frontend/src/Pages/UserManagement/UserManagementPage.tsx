@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNotification } from '../../Components/NotificationProvider';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { useStyleContext } from '../../Components/contexts/StyleContext';
@@ -25,7 +25,7 @@ const UserManagementPage = ({ jwtToken }) => {
         return [];
     };
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             const data = await get('/api/Users/GetUsers', jwtToken);
             setUsers(data);
@@ -34,11 +34,11 @@ const UserManagementPage = ({ jwtToken }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [jwtToken]);
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [fetchUsers]);
 
     const handleRoleChange = async (userId, newRole) => {
         try {

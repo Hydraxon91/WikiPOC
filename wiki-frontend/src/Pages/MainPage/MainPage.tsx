@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, CSSProperties } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import WikiList from './Components/WikiList';
 import HamburgerMenu from './Components/HamburgerMenu';
@@ -24,7 +24,7 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
       setUserName(null);
       setUserRole(null);
     }
-  }, [decodedToken]);
+  }, [decodedToken, updateUser]);
 
   useEffect(() => {
     if (styles.bodyColor) {
@@ -40,19 +40,18 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
   }, [styles.interfaceEra]);
 
   useEffect(() => {
+    const fetchWikiPageTitles = async () => {
+      try {
+        const pages = await getWikiPageTitles();
+        setWikiPageTitles(pages);
+      } catch (error) {
+        console.error("Error fetching WikiPages:", error);
+      }
+    };
     fetchWikiPageTitles();
-  }, [location]);
+  }, [location, setWikiPageTitles]);
 
   usePageMeta();
-
-  const fetchWikiPageTitles = async () => {
-    try {
-      const pages = await getWikiPageTitles();
-      setWikiPageTitles(pages);
-    } catch (error) {
-      console.error("Error fetching WikiPages:", error);
-    }
-  };
 
   const era = styles.interfaceEra || 'wikipedia';
 
@@ -73,7 +72,7 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
       '--custom-header-color': styles.articleColor,
       '--custom-sidebar-color': styles.articleRightColor,
       '--panel-opacity': styles.glassBgOpacity ?? 0.12,
-    } as any}>
+    } as CSSProperties}>
       <div>
         <HeaderComponent userName={userName} userRole={userRole}>
           <HamburgerMenu handleLogout={handleLogout} categories={categories} />

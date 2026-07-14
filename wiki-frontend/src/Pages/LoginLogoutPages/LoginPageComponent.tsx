@@ -14,13 +14,6 @@ export default function LoginPageComponent({handleLogin}){
     const navigate = useNavigate();
     const { showNotification } = useNotification();
     
-    const login = (jwt_token) => {
-        const decoded = jwtDecode(jwt_token);
-        const expirationTimestamp = Number(decoded.exp);
-        const expirationDate = new Date(Number(expirationTimestamp) * 1000)
-        handleLogin(jwt_token, expirationDate);
-    }
-
     const HandleSubmit = (e) => {
         e.preventDefault();
         handleLoginSubmit(email, password)
@@ -33,15 +26,15 @@ export default function LoginPageComponent({handleLogin}){
     }
 
     useEffect(()=>{
-        if (response) {
-            if (response?.token) {
-                login(response.token);
-                showNotification('Succesfully logged in!');
-                navigate('/');
-            }
+        if (response?.token) {
+            const decoded = jwtDecode(response.token);
+            const expirationTimestamp = Number(decoded.exp);
+            const expirationDate = new Date(Number(expirationTimestamp) * 1000);
+            handleLogin(response.token, expirationDate);
+            showNotification('Succesfully logged in!');
+            navigate('/');
         }
-        
-    },[response])
+    },[response, handleLogin, navigate, showNotification])
 
     return(
         <div className="article" style={{backgroundColor: styles.articleColor, padding: '2rem', maxWidth: '500px', margin: '2rem auto'}}>

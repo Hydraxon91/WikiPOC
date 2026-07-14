@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, CSSProperties } from 'react';
 import { useParams } from 'react-router-dom';
 import { getForumPostBySlug } from '../../Api/forumApi';
 import ForumCommentComponent from './Components/ForumCommentComponent';
@@ -27,18 +27,18 @@ const ForumPost = ({jwtToken}) => {
         post?.content ? stripHtml(post.content).substring(0, 200) : undefined
     );
 
-    const fetchForumPost = async () => {
+    const fetchForumPost = useCallback(async () => {
         try {
             const fetchedPost = await getForumPostBySlug(postSlug);
             setPost(fetchedPost);
         } catch (error) {
             console.error("Error fetching post:", error);
         }
-    };
+    }, [postSlug]);
 
     useEffect(() => {
         fetchForumPost();
-    }, [postSlug]);
+    }, [fetchForumPost]);
 
     const scrollToReplyForm = () => {
         if (!jwtToken) {
@@ -67,7 +67,7 @@ const ForumPost = ({jwtToken}) => {
     }
 
     return (
-        <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as any}>
+        <div className='forum-mainsection' style={{ '--article-color': styles.articleColor, '--article-right-color': styles.articleRightColor, '--article-right-inner-color': styles.articleRightInnerColor, '--footer-link-color': styles.footerListLinkTextColor, '--footer-text-color': styles.footerListTextColor } as CSSProperties}>
             <Breadcrumbs/>
             <EraAwareButton
                 onClick={scrollToReplyForm}

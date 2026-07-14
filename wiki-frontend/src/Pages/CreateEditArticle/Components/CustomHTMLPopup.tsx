@@ -21,7 +21,7 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
         setImageData(image.dataURL);
       }
     }
-  },[imageUrl])
+  },[imageUrl, images])
 
   const insertImage = (imageData) =>{
     setImageUrl(imageData);
@@ -39,13 +39,6 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
   const handleOrientationChange = (event) => {
     setOrientation(event.target.value);
   };
-  
-  const customModules = {
-    toolbar: [
-        ['link'],
-        ['image'],
-    ],
-  };  
 
   const handleConfirm = () => {
     const thumbnailHtml = `<div class="thumbnail ${orientation}">

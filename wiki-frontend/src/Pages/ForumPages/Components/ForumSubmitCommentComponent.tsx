@@ -27,7 +27,7 @@ const ForumSubmitCommentComponent = ({ user, page, jwtToken, handleCommentSubmit
             await postComment(newComment, jwtToken, user);
             setCommentText('');
             handleCommentSubmit();
-            resetQuotedPostId && resetQuotedPostId();
+            if (resetQuotedPostId) resetQuotedPostId();
             showNotification('Successfully submitted comment');
         } catch (error) {
             console.error('Error posting comment:', error);
