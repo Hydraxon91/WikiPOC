@@ -11,12 +11,12 @@
 ## Embed System
 
 ### Cleanup (tech debt from July 2026)
-- [ ] **MEDIUM** Remove `/debug-middleware` diagnostic endpoint from `Program.cs`
-- [ ] **MEDIUM** Remove temporary inline embed generation comment from `Program.cs`
-- [ ] **MEDIUM** Either fix `ScraperEmbedMiddleware` (routing bypass for Azure) or delete the file
+- [x] **MEDIUM** Remove `/debug-middleware` diagnostic endpoint from `Program.cs`
+- [x] **MEDIUM** Remove temporary inline embed generation comment from `Program.cs`
+- [x] **MEDIUM** Refactor inline embed logic into proper `ScraperEmbedMiddleware` class (direct HTML generation)
 
 ### Known Issues
-- `ScraperEmbedMiddleware` commented out — `context.Request.Path` rewrite doesn't route to controllers on Azure/ASP.NET Core 10
+- `ScraperEmbedMiddleware` generates embed HTML directly (no path rewrite) — `context.Request.Path` rewrite doesn't route to controllers on Azure/ASP.NET Core 10
 - `logo_pfp.png` doesn't exist on Azure — all fallbacks use `/img/logo.png` instead
 - Azure Free Tier has no persistent storage — image uploads (custom logos) don't work
 

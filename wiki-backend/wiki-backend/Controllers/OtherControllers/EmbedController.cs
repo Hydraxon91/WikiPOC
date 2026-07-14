@@ -176,6 +176,6 @@ public class EmbedController : ControllerBase
 </html>";
     }
 
-    private static string Escape(string value) =>
+    internal static string Escape(string value) =>
         System.Net.WebUtility.HtmlEncode(value ?? "");
 }

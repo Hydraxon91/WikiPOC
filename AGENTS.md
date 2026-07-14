@@ -418,7 +418,7 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 
 **Architecture:**
 - **Bot detection**: Centralized compiled regex in `Identity/BotPatterns.cs` matching Discordbot, Twitterbot, TelegramBot, facebookexternalhit, Slackbot, LinkedInBot, WhatsApp, Pinterest, redditbot, Iframely.
-- **Inline embed generation** in `Program.cs`: For scraper UAs hitting `/page/{slug}`, the middleware directly resolves `IWikiPageRepository`, `ISiteSettingsRepository`, and `IMemoryCache` from DI, builds the embed HTML, and writes it to the response — **bypassing the ASP.NET Core routing system entirely**.
+- **`ScraperEmbedMiddleware`** in `Middleware/ScraperEmbedMiddleware.cs`: For scraper UAs hitting `/page/{slug}` or `/forum/{topicSlug}/{postSlug}`, the middleware directly resolves `IWikiPageRepository`, `ISiteSettingsRepository`, `IForumPostRepository`, `IForumTopicRepository`, and `IMemoryCache` from DI, builds the embed HTML, and writes it to the response — **bypassing the ASP.NET Core routing system entirely**.
 - **Why bypass routing?** Setting `context.Request.Path` in middleware does NOT route to controllers on Azure/ASP.NET Core 10. The path rewrite silently falls through to `MapFallbackToFile("index.html")`. Direct embed generation avoids this.
 - **`EmbedController`** at `/embed/wiki/{slug}` and `/embed/forum/{postSlug}` — a reusable controller that works when hit directly but is NOT reachable via middleware path rewrite.
 - **`usePageMeta.ts`** — frontend hook that dynamically sets browser tab title, favicon, and OG meta tags for client-side navigation after the SPA loads.
@@ -429,8 +429,8 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 3. Bundled SPA asset at `/img/logo.png` (copied from `wiki-frontend/public/img/logo.png` to `wwwroot/img/logo.png` during build)
 
 **Key Files:**
-- `wiki-backend/wiki-backend/Program.cs` — inline embed generation in the diagnostic middleware (lines 161-216)
-- `wiki-backend/wiki-backend/Controllers/OtherControllers/EmbedController.cs` — reusable embed endpoint
+- `wiki-backend/wiki-backend/Middleware/ScraperEmbedMiddleware.cs` — inline embed generation for wiki pages and forum posts
+- `wiki-backend/wiki-backend/Controllers/OtherControllers/EmbedController.cs` — reusable embed endpoint (shared helper methods)
 - `wiki-backend/wiki-backend/Identity/BotPatterns.cs` — shared scraper UA regex (`BotPatterns.ScraperUserAgentRegex`)
 - `wiki-frontend/src/hooks/usePageMeta.ts` — client-side meta tag updates
 - `wiki-frontend/src/Components/contexts/SiteSettingsContext.tsx` — wiki name and logo for embeds
@@ -468,17 +468,11 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 
 9. **Proportional Nested Blurs:** When working with deeply nested comment layout containers (e.g., nested forum discussion threads), avoid hardcoded recursive backdrop filters. Scale down nested container blurs proportionally using fractional CSS multipliers (`calc(var(--glass-blur-radius) * 0.6)`) to preserve clean textual legibility on high-density user displays.
 
-10. **ScraperEmbedMiddleware is broken (ASP.NET Core 10 + Azure):** `context.Request.Path` modification in middleware does NOT route to controllers. The path rewrite silently falls through to `MapFallbackToFile("index.html")`. The embed system now uses direct HTML generation in an inline middleware instead.
+10. **ScraperEmbedMiddleware uses direct HTML generation (no path rewrite):** Because `context.Request.Path` modification in middleware does NOT route to controllers on ASP.NET Core 10 + Azure, the middleware generates embed HTML directly inline instead of rewriting the path. Do NOT change it back to a path-rewrite approach.
 
-## Temporary Code (Needs Cleanup)
+## Embed Middleware (Refactored July 2026)
 
-The following code in `Program.cs` is temporary and should be either finalized or removed:
-
-| Code | Status | Action Needed |
-|------|--------|---------------|
-| Inline embed generation (lines 161-216) | Working, deployed | Refactor into a proper middleware or keep as-is if routing fix isn't feasible |
-| `/debug-middleware` diagnostic endpoint (lines 115-157) | Debugging tool | Remove after embed system is stable |
-| `// app.UseMiddleware<ScraperEmbedMiddleware>()` (line 218) | Commented out | Either fix the routing issue or delete the file entirely |
+`ScraperEmbedMiddleware` was refactored from inline Program.cs code into a proper middleware class. The `/debug-middleware` endpoint and the old path-rewrite approach were removed.
 
 ## Session Handoff (July 2026)
 
@@ -491,13 +485,11 @@ The following code in `Program.cs` is temporary and should be either finalized o
 - 86/86 unit tests passing, frontend builds cleanly
 
 ### Known Issues
-1. `ScraperEmbedMiddleware` is commented out — path rewrite doesn't reach controllers on Azure
+1. `ScraperEmbedMiddleware` is refactored — path rewrite doesn't route to controllers on Azure/ASP.NET Core 10, so middleware generates embed HTML directly at the request path.
 2. `logo_pfp.png` doesn't exist on Azure filesystem — all fallbacks now use `/img/logo.png`
-3. Temporary diagnostic middleware in `Program.cs` needs removal/replacement
-4. Azure Free Tier has no persistent storage — `PICTURES_PATH` cannot be mounted, so image uploads (including custom logos) don't work. **Unresolved** — requires paid tier, not happening.
+3. Azure Free Tier has no persistent storage — `PICTURES_PATH` cannot be mounted, so image uploads (including custom logos) don't work. **Unresolved** — requires paid tier, not happening.
 
 ### Next Tasks
-- Clean up temporary code (finalize embed approach vs. routing fix)
 - Upload a custom logo via `/site-settings` to test custom logo in embeds (blocked: no persistent storage on Azure Free Tier)
 - Verify favicon shows wiki logo (via `usePageMeta.ts`)
 - Merge to main once embed system is production-ready
@@ -505,11 +497,11 @@ The following code in `Program.cs` is temporary and should be either finalized o
 
 ## Files of Interest
 
-- `wiki-backend/wiki-backend/Program.cs` - Main entry point, DI setup, seeding inline embed generation
+- `wiki-backend/wiki-backend/Program.cs` - Main entry point, DI setup, seeding
 - `wiki-backend/wiki-backend/Identity/IdentityData.cs` - Role/policy constants
 - `wiki-backend/wiki-backend/Identity/BotPatterns.cs` - Shared scraper UA regex for embeds
 - `wiki-backend/wiki-backend/Controllers/OtherControllers/EmbedController.cs` - Reusable embed endpoint
-- `wiki-backend/wiki-backend/Middleware/ScraperEmbedMiddleware.cs` - Path-rewrite middleware (currently commented out — broken on Azure)
+- `wiki-backend/wiki-backend/Middleware/ScraperEmbedMiddleware.cs` - Inline embed generation for wiki pages and forum posts
 - `wiki-frontend/src/App.tsx` - React router, protected routes
 - `wiki-frontend/src/hooks/usePageMeta.ts` - Dynamic page title, favicon, OG tags
 - `wiki-frontend/src/Api/wikiApi.ts` - API client for wiki operations
