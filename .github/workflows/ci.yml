@@ -67,13 +67,10 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
+      - uses: github/codeql-action/init@v4
         with:
           languages: csharp, javascript-typescript
-          build-mode: manual
-      - name: Build C#
-        run: dotnet restore wiki-backend/wiki-backend.sln && dotnet build wiki-backend/wiki-backend.sln --no-restore
-      - uses: github/codeql-action/analyze@v3
+      - uses: github/codeql-action/analyze@v4
 
   docker-build:
     name: Docker (Validate Build)
@@ -142,7 +139,7 @@ jobs:
           severity: HIGH,CRITICAL
 
       - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy-results.sarif
