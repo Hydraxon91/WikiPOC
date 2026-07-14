@@ -167,7 +167,7 @@ app.Use(async (context, next) =>
             {
                 var slug = path[6..];
                 context.Request.Path = $"/embed/wiki/{slug}";
-                await next(context);
+                await next();
                 return;
             }
         }
