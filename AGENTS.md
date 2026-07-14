@@ -1,5 +1,12 @@
 # AGENTS.md - WikiPOC Development Guide
 
+## Agent Behavioral Rules
+
+- **No Hallucinated Code:** Never write or refactor code you have not explicitly read in the current session. Always search for and read the target file first.
+- **Root-Cause Debugging:** Do not "band-aid" errors (e.g., adding arbitrary null-checks or empty try/catch blocks). You must trace errors back to their origin (e.g., database schemas, incorrect foreign keys) and fix them there.
+- **Style Alignment:** Strictly mirror the syntax, pattern choices, and formatting of the existing codebase. If the file uses arrow functions, use arrow functions. If it uses standard functions, match that.
+- **Hypothesis Verification:** Before proposing a fix, explain the expected behavior, the actual behavior, and the evidence (log line, stack trace, or code block) that proves your theory.
+
 ## Important Rule for AI Agents
 
 **Before performing any destructive actions** (like file deletions, large refactors, or package downgrades), **committing**, **or pushing to remote**, you **must**:
@@ -405,6 +412,30 @@ npm start  # node dist/index.js (stdio, no output until called)
 - Controls: wiki name, brand colors, fonts, logo, layout spacing tokens, and structural design era selections.
 - **Database Activation Constraint:** Active styles are tracked via a dedicated `IsActive` boolean column in the database. Activating a theme must invoke a unified repository transaction that sets `IsActive = false` globally across all rows before setting `IsActive = true` on the targeted row. Row order or ID sequences must never be used to infer which theme is active.
 
+### Embed System (Server-Side OG Tags)
+
+The embed system provides correct OG meta tags (title, description, image, URL, type) for social media scrapers (Discord, Telegram, Twitter, Facebook, etc.) without requiring client-side JavaScript.
+
+**Architecture:**
+- **Bot detection**: Centralized compiled regex in `Identity/BotPatterns.cs` matching Discordbot, Twitterbot, TelegramBot, facebookexternalhit, Slackbot, LinkedInBot, WhatsApp, Pinterest, redditbot, Iframely.
+- **`ScraperEmbedMiddleware`** in `Middleware/ScraperEmbedMiddleware.cs`: For scraper UAs hitting `/page/{slug}` or `/forum/{topicSlug}/{postSlug}`, the middleware directly resolves `IWikiPageRepository`, `ISiteSettingsRepository`, `IForumPostRepository`, `IForumTopicRepository`, and `IMemoryCache` from DI, builds the embed HTML, and writes it to the response — **bypassing the ASP.NET Core routing system entirely**.
+- **Why bypass routing?** Setting `context.Request.Path` in middleware does NOT route to controllers on Azure/ASP.NET Core 10. The path rewrite silently falls through to `MapFallbackToFile("index.html")`. Direct embed generation avoids this.
+- **`EmbedController`** at `/embed/wiki/{slug}` and `/embed/forum/{postSlug}` — a reusable controller that works when hit directly but is NOT reachable via middleware path rewrite.
+- **`usePageMeta.ts`** — frontend hook that dynamically sets browser tab title, favicon, and OG meta tags for client-side navigation after the SPA loads.
+
+**Three-Tier Image Fallback:**
+1. Article-specific image from `page.Images`
+2. Custom site logo from `SiteSettings.Logo` (if not the default placeholder `logo/logo_pfp.png`)
+3. Bundled SPA asset at `/img/logo.png` (copied from `wiki-frontend/public/img/logo.png` to `wwwroot/img/logo.png` during build)
+
+**Key Files:**
+- `wiki-backend/wiki-backend/Middleware/ScraperEmbedMiddleware.cs` — inline embed generation for wiki pages and forum posts
+- `wiki-backend/wiki-backend/Controllers/OtherControllers/EmbedController.cs` — reusable embed endpoint (shared helper methods)
+- `wiki-backend/wiki-backend/Identity/BotPatterns.cs` — shared scraper UA regex (`BotPatterns.ScraperUserAgentRegex`)
+- `wiki-frontend/src/hooks/usePageMeta.ts` — client-side meta tag updates
+- `wiki-frontend/src/Components/contexts/SiteSettingsContext.tsx` — wiki name and logo for embeds
+- `wiki-frontend/public/img/logo.png` — bundled fallback logo in wwwroot
+
 ## Testing Notes
 
 ### Unit Tests
@@ -437,13 +468,46 @@ npm start  # node dist/index.js (stdio, no output until called)
 
 9. **Proportional Nested Blurs:** When working with deeply nested comment layout containers (e.g., nested forum discussion threads), avoid hardcoded recursive backdrop filters. Scale down nested container blurs proportionally using fractional CSS multipliers (`calc(var(--glass-blur-radius) * 0.6)`) to preserve clean textual legibility on high-density user displays.
 
+10. **ScraperEmbedMiddleware uses direct HTML generation (no path rewrite):** Because `context.Request.Path` modification in middleware does NOT route to controllers on ASP.NET Core 10 + Azure, the middleware generates embed HTML directly inline instead of rewriting the path. Do NOT change it back to a path-rewrite approach.
+
+## Embed Middleware (Refactored July 2026)
+
+`ScraperEmbedMiddleware` was refactored from inline Program.cs code into a proper middleware class. The `/debug-middleware` endpoint and the old path-rewrite approach were removed.
+
+## Session Handoff (July 2026)
+
+### Current State
+- Backend serves the SPA via `UseStaticFiles()` + `MapFallbackToFile("index.html")` — single container, one Azure App Service
+- Multi-stage Docker build (Node 22 → .NET SDK → runtime)
+- Azure SWA workflow deleted (deprecated)
+- Embed system working: server-side OG tags for Discord/Telegram/Twitter/Facebook/etc.
+- Image fallback: bundled `/img/logo.png` in wwwroot (replaces nonexistent DB-seeded `logo_pfp.png`)
+- 86/86 unit tests passing, frontend builds cleanly
+
+### Known Issues
+1. `ScraperEmbedMiddleware` is refactored — path rewrite doesn't route to controllers on Azure/ASP.NET Core 10, so middleware generates embed HTML directly at the request path.
+2. `logo_pfp.png` doesn't exist on Azure filesystem — all fallbacks now use `/img/logo.png`
+3. Azure Free Tier has no persistent storage — `PICTURES_PATH` cannot be mounted, so image uploads (including custom logos) don't work. **Unresolved** — requires paid tier, not happening.
+
+### Next Tasks
+- Upload a custom logo via `/site-settings` to test custom logo in embeds (blocked: no persistent storage on Azure Free Tier)
+- Verify favicon shows wiki logo (via `usePageMeta.ts`)
+- Merge to main once embed system is production-ready
+- Set `FRONTEND_URL` in Azure App Service Configuration
+
 ## Files of Interest
 
 - `wiki-backend/wiki-backend/Program.cs` - Main entry point, DI setup, seeding
 - `wiki-backend/wiki-backend/Identity/IdentityData.cs` - Role/policy constants
+- `wiki-backend/wiki-backend/Identity/BotPatterns.cs` - Shared scraper UA regex for embeds
+- `wiki-backend/wiki-backend/Controllers/OtherControllers/EmbedController.cs` - Reusable embed endpoint
+- `wiki-backend/wiki-backend/Middleware/ScraperEmbedMiddleware.cs` - Inline embed generation for wiki pages and forum posts
 - `wiki-frontend/src/App.tsx` - React router, protected routes
+- `wiki-frontend/src/hooks/usePageMeta.ts` - Dynamic page title, favicon, OG tags
 - `wiki-frontend/src/Api/wikiApi.ts` - API client for wiki operations
 - `wiki-frontend/src/Api/apiClient.ts` - Centralized HTTP client
+- `wiki-frontend/src/Components/contexts/SiteSettingsContext.tsx` - Wiki name and logo for embeds
+- `wiki-frontend/public/img/logo.png` - Bundled fallback logo asset (in wwwroot)
 - `docker-compose.yml` - Service orchestration
 - `wikipoc-mcp/src/index.ts` - MCP server entry point (tools, transport, API client)
 - `wikipoc-mcp/README.md` - MCP server documentation and opencode.json config

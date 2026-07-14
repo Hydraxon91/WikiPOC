@@ -33,7 +33,7 @@ A customizable, Wikipedia-style wiki platform. Backend-driven theming, JWT auth 
 
 - Docker & Docker Compose
 - .NET 10 SDK (for local backend dev)
-- Node.js 20+ (for local frontend dev)
+- Node.js 22+ (for local frontend dev)
 
 ### Run with Docker (Recommended)
 
@@ -44,21 +44,26 @@ cd WikiPOC
 docker-compose up --build
 ```
 
-- **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:5050
+- **App (SPA + API):** http://localhost:5050
 - **SQL Server:** localhost:1433
+
+> The multi-stage Docker build compiles the frontend into the backend's `wwwroot/`, so the backend serves both the SPA and API on the same port. During local development (below), the frontend and backend run on separate ports.
 
 ### Local Development
 
 ```bash
-# Backend
-cd wiki-backend/wiki-backend
-dotnet restore && dotnet run
-
-# Frontend
+# Frontend (terminal 1)
 cd wiki-frontend
-npm install && npm run dev
+npm install
+npm run dev           # Dev server at http://localhost:3000
+
+# Backend (terminal 2 — run after frontend dev server is ready)
+cd wiki-backend/wiki-backend
+dotnet restore
+dotnet run            # API at http://localhost:5050
 ```
+
+> The backend serves static frontend files from `wwwroot/` only when they exist (production/Docker). In local development, use the Vite dev server on port 3000 for HMR. The Vite proxy is configured via `VITE_API_URL=http://localhost:5050` to reach the backend API.
 
 ## Environment Variables (.env)
 
@@ -92,11 +97,12 @@ JWT_TOKEN_TIME=60
 
 # File Paths
 PICTURES_PATH=./uploads/profile_pictures
-PICTURES_PATH_CONTAINER=/app/uploads/pictures
+PICTURES_PATH_CONTAINER=/pictures
 PROFILE_PICTURES_PATH=./uploads/pictures
 
 # Frontend
-VITE_API_URL=http://localhost:5050
+VITE_API_URL=http://localhost:5050  # Set to empty ("") in Docker/prod builds for same-origin API calls
+FRONTEND_URL=http://localhost:5050  # Public URL for embed OG tags
 ```
 
 ## Role System
