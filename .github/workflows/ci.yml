@@ -117,6 +117,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Get short SHA
+        id: vars
+        run: echo "sha_short=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -148,7 +152,7 @@ jobs:
       - name: Trivy vulnerability scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ steps.vars.outputs.sha_short }}
           format: sarif
           output: trivy-results.sarif
           severity: HIGH,CRITICAL
