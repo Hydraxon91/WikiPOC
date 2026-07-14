@@ -87,19 +87,20 @@ function App() {
 
   // On page load, silently refresh the token so role changes take effect immediately
   useEffect(() => {
-    if (!jwtToken) return;
+    const token = cookies["jwt_token"];
+    if (!token) return;
     fetch(`${import.meta.env.VITE_API_URL}/api/Users/RefreshToken`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${jwtToken}` }
+      headers: { 'Authorization': `Bearer ${token}` }
     }).then(res => {
       if (res.ok) return res.json();
       return null;
     }).then(data => {
-      if (data?.token && data.token !== jwtToken) {
+      if (data?.token && data.token !== token) {
         setCookie("jwt_token", data.token, { path: "/" });
       }
     });
-  }, [jwtToken, setCookie]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!decodedSlug) return;
