@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework.Internal;
 using wiki_backend.Controllers.ForumControllers;
+using wiki_backend.DatabaseServices.Repositories;
 using wiki_backend.DatabaseServices.Repositories.ForumRepositories;
 using wiki_backend.Models;
 using wiki_backend.Models.ForumModels;
@@ -36,7 +37,7 @@ public class ForumCommentControllerTests : IntegrationTestBase
         
         _commentRepository = new ForumCommentRepository(DbContext);
         _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        _controller = new ForumCommentController(_commentRepository, new UserAuthorizationService(_userManager), null!, null!);
+        _controller = new ForumCommentController(_commentRepository, new UserAuthorizationService(_userManager), new CommentFlagRepository(DbContext), null!);
         ResetDatabase();
         await EnsureUserRoleExistsAsync();
         _userName = $"{GetRandomizedString("testuser")}";
@@ -154,7 +155,9 @@ public class ForumCommentControllerTests : IntegrationTestBase
         Assert.That(okResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
 
         var deletedComment = await DbContext.ForumComments.FirstOrDefaultAsync(fc => fc.Id == comment.Id);
-        Assert.That(deletedComment, Is.Null);
+        Assert.That(deletedComment, Is.Not.Null);
+        Assert.That(deletedComment.IsDeleted, Is.True);
+        Assert.That(deletedComment.Content, Is.Null);
     }
 
     private async Task<Guid> AddUserProfile()

@@ -40,7 +40,8 @@ public class AuthFailureTests : IntegrationTestBase
         DbContext.UserComments.Add(comment);
         await DbContext.SaveChangesAsync();
         var authService = new UserAuthorizationService(userManager);
-        var controller = new UserCommentController(commentRepo, authService, null!, null!);
+        var flagRepo = new CommentFlagRepository(DbContext);
+        var controller = new UserCommentController(commentRepo, authService, flagRepo, null!);
 
         controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
@@ -77,7 +78,8 @@ public class AuthFailureTests : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         var authService = new UserAuthorizationService(userManager);
-        var controller = new UserCommentController(commentRepo, authService, null!, null!);
+        var flagRepo = new CommentFlagRepository(DbContext);
+        var controller = new UserCommentController(commentRepo, authService, flagRepo, null!);
         controller.ControllerContext.HttpContext = new DefaultHttpContext
         {
             User = new ClaimsPrincipal(new ClaimsIdentity(new[]
