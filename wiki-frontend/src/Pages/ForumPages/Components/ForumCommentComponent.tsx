@@ -51,11 +51,11 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
     };
 
     const renderQuote = (comment, currentDepth, maxDepth) => {
-        const replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
-        if (currentDepth >= maxDepth) {
+        if (!comment.replyToCommentId || currentDepth >= maxDepth) {
             return null;
         }
 
+        const replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
         if (!replyComment) {
             return (
                 <div className="quoted-comment">
