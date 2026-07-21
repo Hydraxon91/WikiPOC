@@ -159,7 +159,8 @@ All 35 tools from the original spec are implemented — no remaining future tool
 
 #### Cumulative Layout Shift (0.241)
 - [x] **HIGH** Fix CLS by setting explicit `width` and `height` on all `<img>` elements — logo in HeaderComponent (`100x100`) and edit button in WikiPageComponent (`24x24`).
-- [ ] **MEDIUM** Add `aspect-ratio` CSS property to image containers to reserve space before the image URL resolves.
+- [x] **MEDIUM** Add `aspect-ratio` CSS property to image containers — added `aspect-ratio: 1/1` to `.site-logo`, `aspect-ratio: 16/9` to `.paragraph-image` (already existed on `.profile-picture`).
+- [x] **MEDIUM** Configure Azure App Service caching rules — handled by `StaticFileOptions` in `Program.cs` via application-level cache headers.
 
 #### Fonts
 - [x] **HIGH** Add `font-display: swap` — shares the same 1-line fix as mobile.
@@ -171,7 +172,7 @@ All 35 tools from the original spec are implemented — no remaining future tool
 - [x] **HIGH** Code-split heavy routes — same fix as mobile.
 
 #### Images
-- [ ] **MEDIUM** Serve logo as WebP. Est savings: **33 KiB**.
+- [x] **MEDIUM** Serve logo as WebP — covered by mobile WebP fix (same `<picture>` fallback).
 
 #### Animations
 - [x] **LOW** Fix non-composited animations — same fix as mobile (`will-change: max-height` on `.post-content-area img`).
