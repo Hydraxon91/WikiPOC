@@ -39,7 +39,7 @@ public class UserCommentControllerTests : IntegrationTestBase
     {
         var userCommentRepository = new UserCommentRepository(DbContext);
         var userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        return new UserCommentController(userCommentRepository, new UserAuthorizationService(userManager));
+        return new UserCommentController(userCommentRepository, new UserAuthorizationService(userManager), null!, null!);
     }
     
 

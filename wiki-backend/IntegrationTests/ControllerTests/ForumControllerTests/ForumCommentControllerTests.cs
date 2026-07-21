@@ -36,7 +36,7 @@ public class ForumCommentControllerTests : IntegrationTestBase
         
         _commentRepository = new ForumCommentRepository(DbContext);
         _userManager = ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        _controller = new ForumCommentController(_commentRepository, new UserAuthorizationService(_userManager));
+        _controller = new ForumCommentController(_commentRepository, new UserAuthorizationService(_userManager), null!, null!);
         ResetDatabase();
         await EnsureUserRoleExistsAsync();
         _userName = $"{GetRandomizedString("testuser")}";
