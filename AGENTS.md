@@ -2,7 +2,7 @@
 
 ## Agent Behavioral Rules
 
-- **No Hallucinated Code:** Never write or refactor code you have not explicitly read in the current session. Always search for and read the target file first.
+- **No Hallucinated Code:** Never write or refactor code you have not explicitly read in the current session. Always search for and read the target file first. Do not assume the state of any file based on previous chat memory. If a file has not been printed or searched in the current turn, you must locate and read it before proposing edits.
 - **Root-Cause Debugging:** Do not "band-aid" errors (e.g., adding arbitrary null-checks or empty try/catch blocks). You must trace errors back to their origin (e.g., database schemas, incorrect foreign keys) and fix them there.
 - **Style Alignment:** Strictly mirror the syntax, pattern choices, and formatting of the existing codebase. If the file uses arrow functions, use arrow functions. If it uses standard functions, match that.
 - **Hypothesis Verification:** Before proposing a fix, explain the expected behavior, the actual behavior, and the evidence (log line, stack trace, or code block) that proves your theory.
@@ -12,67 +12,78 @@
 **Before performing any destructive actions** (like file deletions, large refactors, or package downgrades), **committing**, **or pushing to remote**, you **must**:
 1. Explicitly propose the plan
 2. Explain your reasoning
-3. Wait for the user's 'y' confirmation before executing
+3. The only acceptable confirmation is an explicit 'y', 'yes', or direct written approval from the user. Do not treat follow-up questions, clarifications, or silence as implied consent to proceed with the proposed action.
 
-## Agent Behavior Guidelines
+## External Infrastructure & Integration Locks
 
-- **Load the `wikipoc-mcp` and `wikipoc-frontend` skills first thing in every
-  session.** These load the MCP tool reference, frontend conventions, and
-  trigger the proactive session start workflow (checking for handoff notes
-  and persistent context in WikiPOC).
-- **When doing backend work, load `wikipoc-backend` as well.** It covers the
-  .NET stack, repository patterns, entity relationships, auth system, and
-  the critical FK naming gotchas (e.g. `ForumPost.UserId` → `UserProfiles.Id`).
-- **Avoid over-deliberation.** Plan once, then act. Do not re-plan or second-guess
-  a chosen approach more than once before executing, unless new information
-  (e.g. a build error) genuinely changes the picture.
-- **Stop after completing the requested task.** Summarize what you did and
-  what you found, then wait for the next instruction. Do not move on to a
-  new task — commits, cleanup, further refactors, starting the next item on
-  a todo list — unless explicitly asked, even if it seems like the obvious
-  next step.
-- **Bias toward incremental action over exhaustive upfront analysis.** For
-  non-destructive changes (reading code, running tests, small edits), just do it
-  — don't ask for confirmation or produce a lengthy plan first. **This does NOT
-  override the commit discipline below — always ask before committing.**
-- **Reserve deep reasoning for genuinely ambiguous or destructive decisions**
-  (see confirmation rule above), not for routine refactors or migrations with
-  a clear precedent already in this codebase.
+- **Do Not Change External Services:** Never migrate, switch, or replace existing external third-party services, host providers, package managers, or image registries (e.g., Docker Hub, GitHub Packages/GHCR, Azure, NuGet, npm) under any circumstances—even if you believe a build, push, or pull failure is caused by the registry. If a registry-related error occurs, stop immediately, report the error, and await manual instruction.
+- **No Stealth Infrastructure Changes:** Any proposed changes to CI/CD pipelines, environments, secrets, or deployment targets must be explicitly highlighted in your plan. If a plan involves changing where code is published, hosted, or pulled from, you must call this out as a "Major Infrastructure Change" and await explicit confirmation.
 
-## Commit Discipline
+### Dependency & Ecosystem Lock
 
-- **Always ask before committing or pushing, full stop — no exceptions.**
-  This applies to code changes too, not just housekeeping files. Before
-  running `git commit` or `git push`, show me what you're about to commit
-  (`git status` / `git diff --stat` and the proposed commit message) and
-  wait for my confirmation. Do not commit as an automatic last step of
-  finishing a task, even if the fix is small and confirmed working.
-- **Commit immediately after each individual fix is done and verified —
-  don't batch multiple fixes into one commit-at-the-end.** If a session
-  involves fixing 3 separate things, that's 3 separate commit proposals at
-  3 separate points, not one summary commit after everything is done. As
-  soon as one fix is complete and verified, stop and propose committing
-  just that fix before moving to the next one.
-- **A commit should touch the smallest number of files possible for the
-  one change it represents.** If you're about to commit and the file list
-  includes anything not directly required for the one fix being committed
-  (e.g. an unrelated formatting change, a file you touched while
-  investigating but didn't actually need to change), stop and either
-  revert that unrelated change or ask whether it should be a separate
-  commit.
-- **Keep commits atomic.** Each commit should represent one logical change —
-  not a grab-bag of everything done in a session. If a task naturally splits
-  into unrelated parts (e.g. "migrate assertions" + "fix unrelated .env typo"
-  + "suppress a migration warning"), commit them separately, even if they
-  happened back-to-back in the same session.
-- **Commit message should describe the one thing, not summarize everything.**
-  If you're struggling to write a single clear sentence for what changed,
-  that's a sign the commit should be split.
-- **Don't bundle unrelated fixes "while you're in there."** If you notice an
-  unrelated issue while working on something else, mention it and ask, or
-  commit it separately — don't fold it into the current commit.
+- **No Unsolicited Package Changes:** Never add, remove, or upgrade any packages in `package.json` or `.csproj` files unless explicitly requested to resolve a specific bug or feature requirement.
+- **No Swapping Established Libraries:** Do not replace existing architectural libraries (e.g., replacing Axios with native Fetch, or changing the test runner). Work strictly within the established tech stack.
 
-## Docker Workflow
+### Anti-Churn & Code Preservation
+
+- **Strict Scope Containment:** Do not refactor, rewrite, or "clean up" working code outside the immediate scope of the assigned task. If you notice messy code or technical debt nearby, point it out to the user in chat—do not touch it "while you're in there".
+- **No Style Conversions for Aesthetics:** If existing code is functional and matches the codebase style guidelines, leave it alone. Do not change working syntax (e.g., converting standard functions to arrow functions, or loop styles) unless aligning a newly written feature.
+
+### Reuse Existing Architecture
+
+- **Audit Existing Utilities First:** Before creating a new helper function, service, or utility method, explicitly search the codebase to see if a similar mechanism already exists[cite: 2]. 
+- **Utilize Project Helpers:** Always prioritize using existing project utilities (for example, using the existing `SlugHelper` for text manipulation or using established repository patterns) over inventing local custom logic[cite: 2].
+
+### Environment Variable Guardrails[cite: 2]
+
+- **No Secret or Env Inventions:** Never introduce a new `Environment.GetEnvironmentVariable()` or `process.env` dependency without explicitly calling it out to the user first[cite: 2]. 
+- **Documentation Requirement:** Any new environment variables must be simultaneously documented in the root `.env` template or the designated setup file inside the same session[cite: 2].
+
+## Agent Behavior Guidelines[cite: 2]
+
+- **Load the `wikipoc-mcp` and `wikipoc-frontend` skills first thing in every session.** These load the MCP tool reference, frontend conventions, and trigger the proactive session start workflow (checking for handoff notes and persistent context in WikiPOC)[cite: 2].
+- **When doing backend work, load `wikipoc-backend` as well.** It covers the .NET stack, repository patterns, entity relationships, auth system, and the critical FK naming gotchas (e.g. `ForumPost.UserId` → `UserProfiles.Id`)[cite: 2].
+- **Avoid over-deliberation.** Plan once, then act[cite: 2]. Do not re-plan or second-guess a chosen approach more than once before executing, unless new information (e.g. a build error) genuinely changes the picture[cite: 2].
+- **Stop after completing the requested task.** Summarize what you did and what you found, then wait for the next instruction[cite: 2]. Do not move on to a new task — commits, cleanup, further refactors, starting the next item on a todo list — unless explicitly asked, even if it seems like the obvious next step[cite: 2].
+- **Reserve deep reasoning for genuinely ambiguous or destructive decisions** (see confirmation rule above), not for routine refactors or migrations with a clear precedent already in this codebase[cite: 2].
+
+## Commit Discipline[cite: 2]
+
+- **Always ask before committing or pushing, full stop — no exceptions.** This applies to code changes too, not just housekeeping files[cite: 2]. Before running `git commit` or `git push`, show me what you're about to commit (`git status` / `git diff --stat` and the proposed commit message) and wait for my confirmation[cite: 2]. Do not commit as an automatic last step of finishing a task, even if the fix is small and confirmed working[cite: 2].
+- **Commit immediately after each individual fix is done and verified — don't batch multiple fixes into one commit-at-the-end.** If a session involves fixing 3 separate things, that's 3 separate commit proposals at 3 separate points, not one summary commit after everything is done[cite: 2]. As soon as one fix is complete and verified, stop and propose committing just that fix before moving to the next one[cite: 2].
+- **A commit should touch the smallest number of files possible for the one change it represents.** If you're about to commit and the file list includes anything not directly required for the one fix being committed (e.g. an unrelated formatting change, a file you touched while investigating but didn't actually need to change), stop and either revert that unrelated change or ask whether it should be a separate commit[cite: 2].
+- **Keep commits atomic.** Each commit should represent one logical change — not a grab-bag of everything done in a session[cite: 2]. If a task naturally splits into unrelated parts (e.g. "migrate assertions" + "fix unrelated .env typo" + "suppress a migration warning"), commit them separately, even if they happened back-to-back in the same session[cite: 2].
+- **Commit message should describe the one thing, not summarize everything.** If you're struggling to write a single clear sentence for what changed, that's a sign the commit should be split[cite: 2].
+- **Don't bundle unrelated fixes "while you're in there."** If you notice an unrelated issue while working on something else, mention it and ask, or commit it separately — don't fold it into the current commit[cite: 2].
+
+## CI/CD Pipeline & GitHub Actions
+
+The repository enforces a highly optimized, DAG-based CI/CD pipeline via GitHub Actions to ensure maximum speed and safety. Any changes you make to the codebase *must* keep this pipeline green.
+
+### Pipeline Workflows
+1. **`backend-tests.yml` (Reusable):** Runs type-checking (`tsc --noEmit`), build check, and backend tests against a live SQL Server container on every push/PR[cite: 2].
+2. **`ci.yml` (Primary Pipeline):** An optimized, non-linear dependency tree designed to minimize run times and fail-fast[cite: 2]:
+   * **Stage 1 (Immediate parallel execution):** 
+     * `frontend-lint` (no dependencies; starts immediately)
+     * `backend-build` (no dependencies; starts immediately)
+     * `codeql-javascript` (no dependencies; starts immediately)
+   * **Stage 2 (Build-dependent parallel execution):**
+     * `backend-test` (runs in parallel with `codeql-csharp` after `backend-build` succeeds; automatically skipped on build failure to save ~2-3 min)
+     * `codeql-csharp` (runs in parallel with `backend-test` after `backend-build` succeeds; automatically skipped on build failure to save ~2-3 min)
+   * **Stage 3 (Validation & Publish):**
+     * `docker-build` (requires **all five** preceding jobs to pass successfully before starting)
+     * `docker-publish` (runs after `docker-build` succeeds; restricted to the `main` branch)[cite: 2]
+     * `deploy` (runs after `docker-publish` succeeds; restricted to the `main` branch)[cite: 2]
+
+### Security & Compliance Constraints
+- **CodeQL Integration:** Every PR/merge runs CodeQL analysis for C# (build-dependent) and JS/TS (independent)[cite: 2]. Avoid introducing patterns that trigger security alerts (e.g., path traversal, unvalidated redirects, XSS)[cite: 2].
+- **Trivy Vulnerability Scan:** The Docker publish stage runs a Trivy scan[cite: 2]. If you add third-party dependencies or change base images, verify they do not introduce HIGH or CRITICAL vulnerabilities, or the deployment will fail[cite: 2].
+- **Non-Root Runtime Container:** The final stage of the `Dockerfile` enforces a non-root `USER` directive[cite: 2]. Do not write scripts or backend code that assume root-level directory write access at runtime[cite: 2].
+
+### Branch Protection & Merging
+- Direct pushes to `main` are restricted[cite: 2]. All changes must go through a Pull Request, requiring a passing CI run and peer approval before merging[cite: 2]. Use the `PULL_REQUEST_TEMPLATE.md` guidelines for PR descriptions[cite: 2].
+
+## Docker Workflow[cite: 2]
 
 - **Run Docker commands one at a time, not chained with `&&`.** Check the
   result of each command before running the next. If a command fails,
@@ -522,6 +533,9 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 - `wiki-frontend/src/Api/apiClient.ts` - Centralized HTTP client
 - `wiki-frontend/src/Components/contexts/SiteSettingsContext.tsx` - Wiki name and logo for embeds
 - `wiki-frontend/public/img/logo.png` - Bundled fallback logo asset (in wwwroot)
-- `docker-compose.yml` - Service orchestration
 - `wikipoc-mcp/src/index.ts` - MCP server entry point (tools, transport, API client)
 - `wikipoc-mcp/README.md` - MCP server documentation and opencode.json config
+- `.github/workflows/ci.yml` — the primary CI/CD pipeline (we just optimized it)
+- `.github/workflows/backend-tests.yml` — reusable test workflow
+- `wiki-backend/wiki-backend/Controllers/OtherControllers/ImageController.cs` — CodeQL path-injection fix
+- `wiki-frontend/eslint.config.js` — ESLint flat config (the varsIgnorePattern we added)
