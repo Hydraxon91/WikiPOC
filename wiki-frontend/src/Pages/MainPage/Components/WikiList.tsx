@@ -165,7 +165,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
   }
   
 return (
-  <div className="sidebar">
+  <div className="sidebar" role="navigation" aria-label="Sidebar navigation">
     <div className="navigation">
       <h2 style={{marginBottom:"5px", fontSize:'110%'}}>Categories</h2>
       {categories && categories.map((category, index) => (

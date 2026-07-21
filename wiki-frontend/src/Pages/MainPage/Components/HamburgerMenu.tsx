@@ -26,14 +26,14 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
 
   return (
     <>
-      <button className={`hamburger-toggle${isOpen ? ' hidden' : ''}`} onClick={() => setIsOpen(true)} aria-label="Menu">
+      <button className={`hamburger-toggle${isOpen ? ' hidden' : ''}`} onClick={() => setIsOpen(true)} aria-label="Open navigation menu" aria-expanded={isOpen} aria-controls="hamburger-drawer">
         <span className="hamburger-line"></span>
         <span className="hamburger-line"></span>
         <span className="hamburger-line"></span>
       </button>
       <div className={`hamburger-overlay${isOpen ? ' open' : ''}`} onClick={closeDrawer}>
-        <div className={`hamburger-drawer${isOpen ? ' open' : ''}`} onClick={e => e.stopPropagation()} style={{ '--drawer-bg': styles.articleColor, '--drawer-text': styles.footerListTextColor, '--drawer-link': styles.footerListLinkTextColor, '--drawer-heading': styles.articleRightColor } as CSSProperties}>
-          <button className="hamburger-close" onClick={closeDrawer}>×</button>
+        <div id="hamburger-drawer" className={`hamburger-drawer${isOpen ? ' open' : ''}`} onClick={e => e.stopPropagation()} role="dialog" aria-modal={isOpen} aria-label="Navigation menu" style={{ '--drawer-bg': styles.articleColor, '--drawer-text': styles.footerListTextColor, '--drawer-link': styles.footerListLinkTextColor, '--drawer-heading': styles.articleRightColor } as CSSProperties}>
+          <button className="hamburger-close" onClick={closeDrawer} aria-label="Close navigation menu">×</button>
 
             <h2 style={{ marginBottom: '5px', fontSize: '110%' }}>Categories</h2>
             {categories && categories.map((category, index) => (
