@@ -1,0 +1,153 @@
+.flagged-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.flagged-card {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.flagged-comment-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.flagged-comment-text {
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.flagged-meta {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.flagged-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.flagged-actions button {
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-resolve {
+    background-color: #28a745;
+    color: white;
+}
+
+/* Flag modal styles */
+.flag-modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.flag-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    width: 40%;
+    max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.flag-modal h4 {
+    margin: 0 0 0.5rem;
+}
+
+.flag-modal p {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.flag-modal textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    resize: vertical;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.flag-modal-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+}
+
+.flag-modal-actions button {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.flag-modal-actions button:first-child {
+    background-color: #dc3545;
+    color: white;
+}
+
+.flag-modal-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.flag-button {
+    height: 2em;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 0.625rem;
+    font-weight: bold;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background-color: #ffc107;
+    color: #333;
+}
+
+@media (max-width: 768px) {
+    .flagged-card {
+        flex-direction: column;
+    }
+
+    .flagged-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .flag-modal {
+        width: 90%;
+    }
+}

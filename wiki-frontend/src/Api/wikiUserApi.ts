@@ -10,6 +10,9 @@ export const postComment = async (comment: Partial<UserComment>, token: string) 
   return post<UserComment>('/api/UserComment/comment/', comment, token);
 };
 
+export const flagUserComment = async (commentId: string, reason: string, token: string) =>
+  post(`/api/UserComment/${commentId}/flag`, reason, token);
+
 export const postEditedComment = async (commentId: string, editedComment: string, token: string) => {
   return put(`/api/UserComment/comment/${commentId}`, editedComment, token);
 };
