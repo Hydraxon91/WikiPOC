@@ -107,3 +107,81 @@ All 35 tools from the original spec are implemented — no remaining future tool
 ## UI Issues
 
 - [x] **LOW** Frutiger Aero era: sidebar background doesn't use `--custom-body-color` CSS variable (`.era-frutiger .sidebar` is hardcoded; unlike `.era-modern .sidebar` which references the variable). Update to respect theme color.
+
+---
+
+## Performance (Lighthouse/PageSpeed)
+
+**Mobile: 61/100 — Desktop: 75/100**
+
+### Mobile
+
+#### Accessibility (94/100)
+- [ ] **MEDIUM** Increase hamburger toggle button size and spacing — currently `width: 2rem, height: 2rem` is too small for mobile touch targets (minimum 44x44px per WCAG). Increase to `min-width: 44px; min-height: 44px` in `hamburgermenu.css`. Add `padding: 8px` to drawer links for better tap targets.
+
+#### Best Practices (96/100)
+- [ ] **MEDIUM** Fix `logo_pfp.png` 404 console error — the site tries to fetch `/api/Image/logo_pfp.png` which returns 404. Either suppress the error in `SiteSettingsContext.tsx` or add a guard to skip fetching if the logo is the default placeholder.
+- [ ] **LOW** Enable source map generation in production builds (`build.sourcemap: true` in `vite.config.js`) for easier debugging — or suppress the Lighthouse warning if intentionally disabled.
+
+#### Cache & Server
+- [ ] **HIGH** Add `Cache-Control: public, max-age=31536000, immutable` to `UseStaticFiles()` in `Program.cs` for JS/CSS/fonts/images. Est savings: **1,314 KiB** on repeat visits.
+- [ ] **MEDIUM** Configure Azure App Service caching rules via `web.config` or portal for static assets.
+
+#### Fonts
+- [ ] **HIGH** Add `font-display: swap` to the `@font-face` declaration for LinLibertine in `style.css`. Est savings: **1,720ms** FCP/LCP improvement.
+
+#### CSS
+- [ ] **HIGH** Eliminate render-blocking CSS — extract critical CSS and inline it in `index.html`, defer full bundle with `rel="preload"`. Est savings: **1,650ms** render-blocking delay.
+- [ ] **MEDIUM** Reduce unused CSS — scope Bootstrap imports or add PurgeCSS. Est savings: **293 KiB**.
+
+#### JavaScript
+- [ ] **HIGH** Code-split heavy routes with `React.lazy()` + `Suspense` (edit page, forum pages, style page, moderation page — any page importing Quill editor). Est savings: **345 KiB** unused JS, reduces main-thread work (currently 32.3s).
+- [ ] **MEDIUM** Break up 15 long tasks by deferring non-critical initialization (token refresh, notification timers) with `setTimeout` or `requestIdleCallback`.
+
+#### Images
+- [ ] **HIGH** Add explicit `width` and `height` attributes to the logo `<img>` in `HeaderComponent.tsx` and the edit button in `WikiPageComponent.tsx`.
+- [ ] **MEDIUM** Serve logo as WebP with `<picture>` fallback or build-time conversion. Est savings: **34 KiB**.
+- [ ] **LOW** Add `loading="lazy"` to below-the-fold images.
+
+#### Animations
+- [ ] **LOW** Fix non-composited animation — ensure animated elements use `transform` and `opacity` only (1 animated element found).
+
+### Desktop
+
+**Best Practices (96/100) — same issues as mobile (logo_pfp.png 404, source maps)**
+**Trust & Safety — same missing headers as mobile (covered under Cross-Platform)**
+
+#### Accessibility (82/100)
+- [ ] **HIGH** Fix `<a href="/profile/null">` link — the profile link renders with a null username, creating a broken inaccessible link. Likely occurs when `userName` is not available. Add a guard in `HeaderComponent.tsx` to skip rendering the profile link if `userName` is null.
+- [ ] **MEDIUM** Wrap page content in a `<main>` landmark element in `MainPage.tsx` around the `<Outlet />` for screen reader navigation.
+- [ ] **MEDIUM** Fix heading order — ensure headings don't skip levels (e.g., if `h2` is followed by `h4`, restructure). Check the sidebar category heading hierarchy.
+- [ ] **MEDIUM** Increase sidebar link touch targets on desktop — same fix as mobile hamburger (minimum 44x44px tap targets).
+
+#### Cumulative Layout Shift (0.241)
+- [ ] **HIGH** Fix CLS by setting explicit `width` and `height` on all `<img>` elements (logo, edit button, profile pictures). Currently no images have intrinsic dimensions, causing layout shifts as images load.
+- [ ] **MEDIUM** Add `aspect-ratio` CSS property to image containers to reserve space before the image URL resolves.
+
+#### Fonts
+- [ ] **HIGH** Add `font-display: swap` — shares the same 1-line fix as mobile. Est savings: **1,050ms**.
+
+#### CSS
+- [ ] **HIGH** Defer render-blocking CSS. Est savings: **280ms**.
+
+#### JavaScript
+- [ ] **HIGH** Code-split heavy routes. Est savings: **344 KiB** unused JS, main-thread work currently **5.7s**.
+
+#### Images
+- [ ] **MEDIUM** Serve logo as WebP. Est savings: **33 KiB**.
+
+#### Animations
+- [ ] **LOW** Fix non-composited animations — ensure animated elements use `transform` and `opacity` only (2 animated elements found on desktop).
+
+### Cross-Platform (applies to both mobile & desktop)
+
+#### Security Headers (Trust & Safety — not scored, all headers missing)
+All security headers currently missing:
+- [ ] **CRIT** Add `Content-Security-Policy` header in `Program.cs` middleware.
+- [ ] **CRIT** Add `Strict-Transport-Security` header (`max-age=31536000; includeSubDomains`).
+- [ ] **CRIT** Add `X-Frame-Options: DENY` header to prevent clickjacking.
+- [ ] **CRIT** Add `Cross-Origin-Opener-Policy: same-origin` header.
+- [ ] **MEDIUM** Add `X-Content-Type-Options: nosniff` and `Referrer-Policy: strict-origin-when-cross-origin` headers.

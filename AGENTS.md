@@ -485,43 +485,79 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 
 `ScraperEmbedMiddleware` was refactored from inline Program.cs code into a proper middleware class. The `/debug-middleware` endpoint and the old path-rewrite approach were removed.
 
-## Session Handoff (July 2026)
+## Session Handoff (July 2026 — Session 2)
 
 ### Current State
 - Backend serves the SPA via `UseStaticFiles()` + `MapFallbackToFile("index.html")` — single container, one Azure App Service
 - Multi-stage Docker build (Node 22 → .NET SDK → runtime)
 - Azure SWA workflow deleted (deprecated)
-- `docker-compose-workflow.yml` deleted — single pipeline (`ci.yml`) covers everything
 - Embed system working: server-side OG tags for Discord/Telegram/Twitter/Facebook/etc.
 - Image fallback: bundled `/img/logo.png` in wwwroot (replaces nonexistent DB-seeded `logo_pfp.png`)
-- **All tech debt items completed** — see TODO.md for full list
 - **0 ESLint warnings**, **0 Roslyn warnings**, both projects build clean
 - CI/CD pipeline includes lint, build, test, CodeQL (C# + JS/TS), Docker build/publish, Trivy scan, Azure deploy with fail-fast DAG
+- **Comment flagging & moderation system fully implemented** — users can flag comments, moderators/admins/owners can review and act on them
+- **Forum comments use soft delete** (`IsDeleted` flag) — preserves quote references so replies show `[Quoted message has been deleted]`
+- **Wiki comments use hard delete with cascade** — deleting a parent also removes child replies
+- **Moderators, Admins, and Owners can now delete any comment** (previously only Admins could)
+- **`GET /api/Users/GetUsers` now returns `userProfileId`** alongside `id` — fixes the MCP UserProfileId vs ApplicationUser ID confusion
+- **Performance audit logged** — TODO.md contains all Lighthouse findings (Mobile 61/100, Desktop 75/100)
 
-### Tech Debt Resolved (July 2026)
-- Fixed path injection in `ImageController.cs` (CodeQL HIGH) — `Directory.GetFiles()` enumeration pattern
-- Fixed XSS-through-DOM in `DisplayProfileImageElement.tsx` — blob URL origin validation
-- Upgraded Swashbuckle 10.0.0→10.2.3, removed NU1903 suppression
-- Enabled `TreatWarningsAsErrors` + `EnforceCodeStyleInBuild` on test projects
-- Replaced 13 `var` → `let`/`const` across frontend
-- Fixed 6 `@typescript-eslint/no-unused-expressions` violations
-- Fixed all `@typescript-eslint/no-explicit-any` (~64 violations), `no-unused-vars`, and `react-hooks/exhaustive-deps` (~29 violations) across frontend
-- Fixed runtime regressions from exhaustive-deps changes (infinite token refresh loop, forum post crash, profile edit revert)
-- Deleted legacy `docker-compose-workflow.yml` (redundant with `ci.yml`, skipped lint/CodeQL/Trivy)
-- Added `needs: [backend-build]` constraints so tests and CodeQL skip automatically on build failure
+### Built This Session (July 2026 — Session 2)
+
+#### Comment Flagging System
+- **`CommentFlag` model** with `CommentId`, `CommentType` (Forum/Wiki), `FlaggedByUserProfileId`, `Reason`, resolved state — single polymorphic table, no FK constraint on CommentId
+- **`ICommentFlagRepository` / `CommentFlagRepository`** — AddFlag, GetUnresolvedFlags, GetUnresolvedCount, ResolveFlag, ResolveAllFlagsForComment, DeleteFlag, DeleteFlagsForComment
+- **`DbSet<CommentFlag>`** in `WikiDbContext` + fluent config for FlaggedBy/ResolvedBy relationships
+- **EF Migration** `AddCommentFlags`
+
+#### Flag Endpoints
+- `POST /api/ForumComment/{id}/flag` — any authenticated user can flag a forum comment (body: reason string)
+- `POST /api/UserComment/{id}/flag` — any authenticated user can flag a wiki comment (body: reason string)
+
+#### Moderation Controller
+- `GET /api/Moderation/flagged-comments` — lists unresolved flags with denormalized comment content/author (Moderator+)
+- `GET /api/Moderation/flagged-comments/count` — count for badge (Moderator+)
+- `PUT /api/Moderation/flagged-comments/{flagId}/resolve` — dismiss a flag (Moderator+)
+- `DELETE /api/Moderation/flagged-comments/{flagId}/delete-comment` — soft-deletes forum comment or hard-deletes wiki comment, resolves all its flags (Moderator+)
+- `DELETE /api/Moderation/flagged-comments/{flagId}` — admin-only hard delete of flag record
+
+#### Frontend UI
+- **"Flag" button** on each forum comment (next to Quote) and wiki comment (next to Edit/Reply) — only shows for authenticated users
+- **`FlagCommentModal`** — centered overlay with reason textarea, responsive (40% desktop / 90% mobile)
+- **`/moderation/flagged-comments` page** — lists flagged comments with Delete & Resolve / Dismiss buttons
+- **Sidebar badge** — shows unresolved count in both desktop sidebar (`WikiList.tsx`) and hamburger menu (`HamburgerMenu.tsx`)
+- **Nav route** added in `App.tsx` — `ProtectedRoute` for Moderator+, Admin+, Owner+
+
+#### MCP Tools
+- `flag_forum_comment` — flag a forum comment
+- `flag_wiki_comment` — flag a wiki comment
+- `get_flagged_comments` — list flagged comments (moderator+)
+- `resolve_comment_flag` — resolve a flag
+
+#### Fixes & Improvements
+- **Auth fix**: Both `ForumCommentController` and `UserCommentController` now use `IsUserModerator` instead of `IsUserAdmin` — grants delete access to Moderator, Admin, AND Owner roles (previously only Admin)
+- **`IUserAuthorizationService` extended**: Added `IsUserModerator(userName)` checking for "Moderator", "Admin", or "Owner" Identity roles
+- **Forum comment soft delete**: `DeleteAsync` sets `Content = null, IsDeleted = true` instead of removing the row. Children with `ReplyToCommentId` pointing to the deleted parent are preserved — FK reference stays intact, frontend shows placeholder
+- **Wiki comment cascade delete**: `UserCommentRepository.DeleteAsync` now loads and recursively deletes child replies before removing the parent
+- **Forum quote placeholder**: `renderQuote` checks `replyComment?.isDeleted` — shows `[Quoted message has been deleted]` when the quoted comment was soft-deleted. Also checks `response`;
+- **Flagged comments page**: Now uses `dangerouslySetInnerHTML` to properly render HTML content from web-posted comments
+- **`GetUsers` returns `userProfileId`**: Added `user.ProfileId` as both `ProfileId` and `UserProfileId` to the response DTO — LLMs can now use this directly for comment/post creation
+- **Wiki comment layout**: Edit and Flag buttons moved inline into the name/dateline (`.wikipage-comment-data`) instead of rendering below the comment text
+- **Desktop sidebar link**: Added "Flagged Comments" to `WikiList.tsx` (the visible desktop sidebar, not just the hamburger drawer)
+- **`.flag-badge` CSS** moved to `style.css` for global availability
+- **Frutiger Aero sidebar**: Background gradient now uses `color-mix(in srgb, var(--custom-body-color, ...), white)` instead of hardcoded rgba values
 
 ### Known Issues
-1. `ScraperEmbedMiddleware` is refactored — path rewrite doesn't route to controllers on Azure/ASP.NET Core 10, so middleware generates embed HTML directly at the request path.
-2. `logo_pfp.png` doesn't exist on Azure filesystem — all fallbacks now use `/img/logo.png`
-3. Images persist only within a container session; they are lost if the container is fully killed and rehosted (Azure Free Tier limitation). Uploading a custom logo via `/site-settings` works within session but will not survive a full restart.
-4. [x] ~~Frutiger Aero era: sidebar background doesn't use `--custom-body-color` CSS variable~~ — Fixed July 2026.
-5. Token refresh effect in `App.tsx` intentionally runs once on mount (not in dep array) to avoid refresh loop — role-changed middleware handles token refresh on 401 via `apiClient.ts`.
+1. `ScraperEmbedMiddleware` generates embed HTML directly (no path rewrite) — `context.Request.Path` rewrite doesn't route to controllers on Azure/ASP.NET Core 10.
+2. `logo_pfp.png` doesn't exist on Azure filesystem — all fallbacks use `/img/logo.png`. This also causes a 404 console error logged by Lighthouse (Best Practices).
+3. Images persist only within a container session; lost if fully killed and rehosted (Azure Free Tier limitation). Custom logo upload via `/site-settings` survives within session but not a full restart.
+4. Token refresh effect in `App.tsx` intentionally runs once on mount (not in dep array) to avoid refresh loop.
+5. Performance scores: Mobile 61, Desktop 75. Lighthouse audit results in TODO.md under Performance section.
+6. No security headers (CSP, HSTS, XFO, COOP) are set — noted as CRIT in TODO.md.
 
-### Done (July 2026)
-- [x] Fix Frutiger Aero era sidebar color to respect theme color
-- [x] Set `FRONTEND_URL` in Azure App Service Configuration
-- [x] Verify favicon shows wiki logo (via `usePageMeta.ts`)
-- [x] Upload a custom logo via `/site-settings` to test custom logo in embeds (works within container session; lost on full restart)
+### Required Next Steps
+- See `TODO.md` for full performance/accessibility/security improvement backlog
+- Priority items: cache headers, `font-display: swap`, image width/height attributes, security headers
 
 ## Files of Interest
 
@@ -529,16 +565,25 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 - `wiki-backend/wiki-backend/Identity/IdentityData.cs` - Role/policy constants
 - `wiki-backend/wiki-backend/Identity/BotPatterns.cs` - Shared scraper UA regex for embeds
 - `wiki-backend/wiki-backend/Controllers/OtherControllers/EmbedController.cs` - Reusable embed endpoint
+- `wiki-backend/wiki-backend/Controllers/OtherControllers/ModerationController.cs` - Flagged comments moderation endpoints
 - `wiki-backend/wiki-backend/Middleware/ScraperEmbedMiddleware.cs` - Inline embed generation for wiki pages and forum posts
-- `wiki-frontend/src/App.tsx` - React router, protected routes
-- `wiki-frontend/src/hooks/usePageMeta.ts` - Dynamic page title, favicon, OG tags
-- `wiki-frontend/src/Api/wikiApi.ts` - API client for wiki operations
-- `wiki-frontend/src/Api/apiClient.ts` - Centralized HTTP client
-- `wiki-frontend/src/Components/contexts/SiteSettingsContext.tsx` - Wiki name and logo for embeds
-- `wiki-frontend/public/img/logo.png` - Bundled fallback logo asset (in wwwroot)
-- `wikipoc-mcp/src/index.ts` - MCP server entry point (tools, transport, API client)
+- `wiki-backend/wiki-backend/Models/Other Models/CommentFlag.cs` - Comment flag entity model
+- `wiki-backend/wiki-backend/DatabaseServices/Repositories/CommentFlagRepository/` - Comment flag repository
+- `wiki-backend/wiki-backend/Services/UserAuthorizationService.cs` - Role-check service (IsUserAdmin, IsUserModerator)
+- `wiki-frontend/src/App.tsx` - React router, protected routes, moderation route
+- `wiki-frontend/src/Api/moderationApi.ts` - API client for flagged comments
+- `wiki-frontend/src/Api/forumApi.ts` - Added `flagForumComment`
+- `wiki-frontend/src/Api/wikiUserApi.ts` - Added `flagUserComment`
+- `wiki-frontend/src/Components/FlagCommentModal.tsx` - Reusable flag reason dialog
+- `wiki-frontend/src/Pages/Moderation/FlaggedCommentsPage.tsx` - Moderation queue page
+- `wiki-frontend/src/Pages/Moderation/Moderation.css` - Moderation page styles
+- `wiki-frontend/src/Pages/MainPage/Components/WikiList.tsx` - Desktop sidebar with flagged comments link
+- `wiki-frontend/src/Pages/MainPage/Components/HamburgerMenu.tsx` - Mobile drawer with flagged comments link + badge
+- `wiki-frontend/src/Styles/style.css` - Global styles (flag-badge, Frutiger Aero sidebar fix)
+- `wiki-frontend/src/Styles/wikipage.css` - Wiki comment data line flex layout
+- `wiki-frontend/src/types/models.ts` - Added `isDeleted` to ForumComment
+- `wikipoc-mcp/src/index.ts` - MCP server entry point (has flagging tools now)
 - `wikipoc-mcp/README.md` - MCP server documentation and opencode.json config
-- `.github/workflows/ci.yml` — the primary CI/CD pipeline (we just optimized it)
+- `.github/workflows/ci.yml` — primary CI/CD pipeline
 - `.github/workflows/backend-tests.yml` — reusable test workflow
-- `wiki-backend/wiki-backend/Controllers/OtherControllers/ImageController.cs` — CodeQL path-injection fix
-- `wiki-frontend/eslint.config.js` — ESLint flat config (the varsIgnorePattern we added)
+- `TODO.md` — Full backlog including performance audit results
