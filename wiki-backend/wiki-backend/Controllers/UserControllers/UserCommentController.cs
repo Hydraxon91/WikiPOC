@@ -124,6 +124,6 @@ public class UserCommentController : ControllerBase
     
     private async Task<bool> IsAuthorizedToModifyComment(string? userName, UserComment comment)
     {
-        return userName == comment.UserProfile?.UserName || await _authorizationService.IsUserAdmin(userName);
+        return userName == comment.UserProfile?.UserName || await _authorizationService.IsUserModerator(userName);
     }
 }

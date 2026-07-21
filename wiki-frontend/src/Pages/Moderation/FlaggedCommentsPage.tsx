@@ -62,7 +62,7 @@ const FlaggedCommentsPage = () => {
                     {flags.map(item => (
                         <div key={item.flag.id} className="flagged-card">
                             <div className="flagged-comment-content">
-                                <p className="flagged-comment-text">{item.commentContent || '(comment deleted)'}</p>
+                                <p className="flagged-comment-text" dangerouslySetInnerHTML={{ __html: item.commentContent || '(comment deleted)' }}></p>
                                 <p className="flagged-meta">
                                     Author: {item.commentAuthorName || 'Unknown'} &middot;
                                     Flagged by: {item.flag.flaggedByUserProfile?.displayName || 'Unknown'} &middot;

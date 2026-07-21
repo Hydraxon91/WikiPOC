@@ -48,7 +48,15 @@ public class ForumCommentRepository : IForumCommentRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        var existingComment = await _context.ForumComments.SingleOrDefaultAsync(uc => uc.Id == id);
+        var children = await _context.ForumComments
+            .Where(c => c.ReplyToCommentId == id)
+            .ToListAsync();
+        foreach (var child in children)
+        {
+            await DeleteAsync(child.Id);
+        }
+
+        var existingComment = await _context.ForumComments.FindAsync(id);
         if (existingComment != null)
         {
             _context.ForumComments.Remove(existingComment);

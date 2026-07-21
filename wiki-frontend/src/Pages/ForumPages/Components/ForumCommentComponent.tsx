@@ -52,8 +52,16 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
 
     const renderQuote = (comment, currentDepth, maxDepth) => {
         const replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
-        if (!replyComment || currentDepth >= maxDepth) {
+        if (currentDepth >= maxDepth) {
             return null;
+        }
+
+        if (!replyComment) {
+            return (
+                <div className="quoted-comment">
+                    <p><em>[Quoted message has been deleted]</em></p>
+                </div>
+            );
         }
         
         return (

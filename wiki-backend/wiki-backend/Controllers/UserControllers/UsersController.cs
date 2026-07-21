@@ -41,6 +41,8 @@ public class UsersController : ControllerBase
                     user.Id,
                     user.UserName,
                     user.Email,
+                    user.ProfileId,
+                    UserProfileId = user.ProfileId,
                     Roles = roles
                 });
             }
