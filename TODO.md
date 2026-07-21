@@ -144,7 +144,7 @@ All 35 tools from the original spec are implemented — no remaining future tool
 - [x] **LOW** Add `loading="lazy"` to below-the-fold images — added to `DisplayProfileImageElement`, `UserImagesContainer`, and `CustomHTMLPopup` preview.
 
 #### Animations
-- [ ] **LOW** Fix non-composited animation — ensure animated elements use `transform` and `opacity` only (1 animated element found).
+- [x] **LOW** Fix non-composited animation — added `will-change: max-height` to `.post-content-area img` in `forumpost.css` to hint the compositor about the max-height transition.
 
 ### Desktop
 
@@ -174,7 +174,7 @@ All 35 tools from the original spec are implemented — no remaining future tool
 - [ ] **MEDIUM** Serve logo as WebP. Est savings: **33 KiB**.
 
 #### Animations
-- [ ] **LOW** Fix non-composited animations — ensure animated elements use `transform` and `opacity` only (2 animated elements found on desktop).
+- [x] **LOW** Fix non-composited animations — same fix as mobile (`will-change: max-height` on `.post-content-area img`).
 
 ### Cross-Platform (applies to both mobile & desktop)
 
