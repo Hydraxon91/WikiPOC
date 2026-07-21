@@ -485,7 +485,7 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 
 `ScraperEmbedMiddleware` was refactored from inline Program.cs code into a proper middleware class. The `/debug-middleware` endpoint and the old path-rewrite approach were removed.
 
-## Session Handoff (August 2026)
+## Session Handoff (July 2026)
 
 ### Current State
 - Backend serves the SPA via `UseStaticFiles()` + `MapFallbackToFile("index.html")` — single container, one Azure App Service
@@ -498,7 +498,7 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 - **0 ESLint warnings**, **0 Roslyn warnings**, both projects build clean
 - CI/CD pipeline includes lint, build, test, CodeQL (C# + JS/TS), Docker build/publish, Trivy scan, Azure deploy with fail-fast DAG
 
-### Tech Debt Resolved (July/August 2026 Sessions)
+### Tech Debt Resolved (July 2026)
 - Fixed path injection in `ImageController.cs` (CodeQL HIGH) — `Directory.GetFiles()` enumeration pattern
 - Fixed XSS-through-DOM in `DisplayProfileImageElement.tsx` — blob URL origin validation
 - Upgraded Swashbuckle 10.0.0→10.2.3, removed NU1903 suppression
