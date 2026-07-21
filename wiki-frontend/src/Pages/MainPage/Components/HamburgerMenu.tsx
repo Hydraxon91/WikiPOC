@@ -1,14 +1,26 @@
-import { useState, CSSProperties } from 'react';
+import { useState, useEffect, CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
+import { getFlaggedCommentsCount } from '../../../Api/moderationApi';
 import '../Styles/hamburgermenu.css';
 
 const HamburgerMenu = ({ categories, handleLogout }) => {
   const { decodedTokenContext, updateUser } = useUserContext();
   const { styles } = useStyleContext();
   const [isOpen, setIsOpen] = useState(false);
+  const [flaggedCount, setFlaggedCount] = useState(0);
+  const [cookies] = useCookies(['jwt_token']);
   const role = decodedTokenContext?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+  const token = cookies['jwt_token'];
+
+  useEffect(() => {
+    if (token && (role === 'Moderator' || role === 'Admin' || role === 'Owner')) {
+      getFlaggedCommentsCount(token).then(data => setFlaggedCount(data.count)).catch(() => {});
+    }
+  }, [token, role]);
 
   const closeDrawer = () => setIsOpen(false);
 
@@ -61,6 +73,9 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
                   <Link to="/admin/users" onClick={closeDrawer}>
                     <p style={{ marginBottom: '4px', fontSize: '80%' }}>Manage Users</p>
                   </Link>
+                  <Link to="/moderation/flagged-comments" onClick={closeDrawer}>
+                    <p style={{ marginBottom: '4px', fontSize: '80%' }}>Flagged Comments{flaggedCount > 0 && <span className="flag-badge">{flaggedCount}</span>}</p>
+                  </Link>
                   <button onClick={() => { handleLogout(updateUser); closeDrawer(); }} className="logout-button" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '80%', marginBottom: '4px', color: '#024185', textDecoration: 'underline' }}>
                     Logout
                   </button>
@@ -76,6 +91,9 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
                   </Link>
                   <Link to="/create" onClick={closeDrawer}>
                     <p style={{ marginBottom: '4px', fontSize: '80%' }}>Create New Page</p>
+                  </Link>
+                  <Link to="/moderation/flagged-comments" onClick={closeDrawer}>
+                    <p style={{ marginBottom: '4px', fontSize: '80%' }}>Flagged Comments{flaggedCount > 0 && <span className="flag-badge">{flaggedCount}</span>}</p>
                   </Link>
                   <button onClick={() => { handleLogout(updateUser); closeDrawer(); }} className="logout-button" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '80%', marginBottom: '4px', color: '#024185', textDecoration: 'underline' }}>
                     Logout

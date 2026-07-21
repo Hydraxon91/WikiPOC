@@ -152,7 +152,9 @@ namespace UnitTests.RepositoryTests
 
             // Assert
             var deletedComment = await _wikiDbContext.ForumComments.FindAsync(commentId);
-            Assert.That(deletedComment, Is.Null);
+            Assert.That(deletedComment, Is.Not.Null);
+            Assert.That(deletedComment.IsDeleted, Is.True);
+            Assert.That(deletedComment.Content, Is.Null);
         }
     }
 }

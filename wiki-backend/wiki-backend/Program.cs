@@ -221,6 +221,7 @@ void AddServices()
     builder.Services.AddScoped<IForumPostRepository, ForumPostRepository>();
     builder.Services.AddScoped<IForumTopicRepository, ForumTopicRepository>();
     builder.Services.AddScoped<IForumCommentRepository, ForumCommentRepository>();
+    builder.Services.AddScoped<ICommentFlagRepository, CommentFlagRepository>();
     builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
     builder.Services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
     builder.Services.AddScoped<IAuthService, AuthService>();

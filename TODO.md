@@ -18,7 +18,7 @@
 ### Known Issues
 - `ScraperEmbedMiddleware` generates embed HTML directly (no path rewrite) — `context.Request.Path` rewrite doesn't route to controllers on Azure/ASP.NET Core 10
 - `logo_pfp.png` doesn't exist on Azure — all fallbacks use `/img/logo.png` instead
-- Azure Free Tier has no persistent storage — image uploads (custom logos) don't work
+- Images persist only within a container session; they are lost if the container is fully killed and rehosted (Azure Free Tier limitation)
 
 ---
 
@@ -90,19 +90,20 @@ All read, auth, and write tools are implemented. Full list:
 | `delete_wiki_page` | `DELETE /api/WikiPages/{id}` | Moderator+ |
 | `delete_forum_post` | `DELETE /api/ForumPost/{id}` | Authorize |
 
-### Future tools
-- [ ] **LOW** `delete_forum_comment` — delete forum comment
-- [ ] **LOW** `delete_wiki_comment` — delete wiki comment
-- [ ] **LOW** `edit_forum_comment` — edit forum comment
-- [ ] **LOW** `edit_wiki_comment` — edit wiki comment
-- [ ] **LOW** `update_forum_post` — update forum post
-- [ ] **LOW** `search_wiki_articles` — search wiki articles
-- [ ] **LOW** `search_forum_topics` — search forum topics
-- [ ] **LOW** `search_forum_posts` — search forum posts
-- [ ] **LOW** `ensure_agent_notes_category` — create or verify Agent Notes category
+### All tools implemented (July 2026)
+All 35 tools from the original spec are implemented — no remaining future tools. See `wikipoc-mcp/src/index.ts` and the available tool listing in the system prompt for the full list.
+- [x] **LOW** `delete_forum_comment` — delete forum comment
+- [x] **LOW** `delete_wiki_comment` — delete wiki comment
+- [x] **LOW** `edit_forum_comment` — edit forum comment
+- [x] **LOW** `edit_wiki_comment` — edit wiki comment
+- [x] **LOW** `update_forum_post` — update forum post
+- [x] **LOW** `search_wiki_articles` — search wiki articles
+- [x] **LOW** `search_forum_topics` — search forum topics
+- [x] **LOW** `search_forum_posts` — search forum posts
+- [x] **LOW** `ensure_agent_notes_category` — create or verify Agent Notes category
 
 ---
 
 ## UI Issues
 
-- [ ] **LOW** Frutiger Aero era: sidebar background doesn't use `--custom-body-color` CSS variable (`.era-frutiger .sidebar` is hardcoded; unlike `.era-modern .sidebar` which references the variable). Update to respect theme color.
+- [x] **LOW** Frutiger Aero era: sidebar background doesn't use `--custom-body-color` CSS variable (`.era-frutiger .sidebar` is hardcoded; unlike `.era-modern .sidebar` which references the variable). Update to respect theme color.

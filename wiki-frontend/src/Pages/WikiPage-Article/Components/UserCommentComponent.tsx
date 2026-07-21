@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { formatDate } from '../../../utils/formatDate';
+import { flagUserComment } from '../../../Api/wikiUserApi';
 import WikiPageReplyComponent from './WikiPageReplyComponent';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
+import FlagCommentModal from '../../../Components/FlagCommentModal';
 
 const UserCommentComponent = ({ comment, user, jwtToken, handleCommentSubmit, postComment, postEditedComment, page, index, showRepliesIndex, toggleRepliesIndex: _toggleRepliesIndex, setFocusedCommentId, isFocused = false }) => {
     const [editingCommentIndex, setEditingCommentIndex] = useState(null);
     const [editedComment, setEditedComment] = useState("");
     const [showReplyBox, setShowReplyBox] = useState(false);
+    const [showFlagModal, setShowFlagModal] = useState(false);
 
     const handleEditClick = (initialContent) => {
         setEditingCommentIndex(index);
@@ -42,6 +45,12 @@ const UserCommentComponent = ({ comment, user, jwtToken, handleCommentSubmit, po
                     </a>
                     {" | "}
                     <span>{formatDate(comment.postDate)}</span>
+                    { user && comment.userProfile && user.id === comment.userProfile.id && editingCommentIndex !== index && (<span className="wikipage-comment-action">
+                        {" | "}<a href="#" onClick={() => handleEditClick(comment.content)}> Edit</a>
+                    </span>)}
+                    { jwtToken && (<span className="wikipage-comment-action">
+                        {" | "}<a href="#" onClick={() => setShowFlagModal(true)}> Flag</a>
+                    </span>)}
                 </div>
                 <div className='wikipage-comment-text'>
                     {editingCommentIndex === index ? (
@@ -56,12 +65,18 @@ const UserCommentComponent = ({ comment, user, jwtToken, handleCommentSubmit, po
                         <p>{comment.content} {comment.isEdited && "(edited)"}</p>
                         )}
                 </div>
-                { user && comment.userProfile && user.id === comment.userProfile.id && editingCommentIndex !== index && (<div>
-                    <a href="#" onClick={() => handleEditClick(comment.content)}> Edit</a>
-                </div>)}
                 { user && (<div>
                     <a href="#" onClick={() => setShowReplyBox(!showReplyBox)}> Reply</a>
                 </div>)}
+                {showFlagModal && (
+                    <FlagCommentModal
+                        onSubmit={async (reason) => {
+                            await flagUserComment(comment.id, reason, jwtToken);
+                            setShowFlagModal(false);
+                        }}
+                        onCancel={() => setShowFlagModal(false)}
+                    />
+                )}
                 {showReplyBox && (
                     <WikiPageReplyComponent user={user} page={page} jwtToken={jwtToken} handleCommentSubmit={handleCommentSubmit} postComment={postComment} replyTo={comment} showReplyBoxRemoveIndex={() => setShowReplyBox(false)} index={index} />
                 )}

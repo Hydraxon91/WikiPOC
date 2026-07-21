@@ -34,6 +34,7 @@ public class WikiDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ForumTopic> ForumTopics { get; set; }
     public DbSet<ForumComment> ForumComments { get; set; }
     public DbSet<SiteSettings> SiteSettings { get; set; }
+    public DbSet<CommentFlag> CommentFlags { get; set; }
 
 protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -109,6 +110,18 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
             .WithOne(c => c.ForumPost)
             .HasForeignKey(c => c.ForumPostId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<CommentFlag>()
+            .HasOne(cf => cf.FlaggedByUserProfile)
+            .WithMany()
+            .HasForeignKey(cf => cf.FlaggedByUserProfileId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<CommentFlag>()
+            .HasOne(cf => cf.ResolvedByUserProfile)
+            .WithMany()
+            .HasForeignKey(cf => cf.ResolvedByUserProfileId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<ForumComment>()
             .HasOne(fc => fc.UserProfile)

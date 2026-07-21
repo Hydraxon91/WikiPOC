@@ -31,3 +31,6 @@ export const postForumComment = async (comment: Partial<ForumComment> & { wikiPa
   updatedComment.forumPostId = wikiPageId;
   return post<ForumComment>('/api/ForumComment/comment/', updatedComment, token);
 };
+
+export const flagForumComment = async (commentId: string, reason: string, token: string) =>
+  post(`/api/ForumComment/${commentId}/flag`, reason, token);

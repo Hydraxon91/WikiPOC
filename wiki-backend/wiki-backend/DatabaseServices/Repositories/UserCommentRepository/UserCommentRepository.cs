@@ -55,9 +55,15 @@ public class UserCommentRepository : IUserCommentRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        var existingComment = await _context.UserComments.SingleOrDefaultAsync(uc => uc.Id == id);
+        var existingComment = await _context.UserComments
+            .Include(uc => uc.Replies)
+            .FirstOrDefaultAsync(uc => uc.Id == id);
         if (existingComment != null)
         {
+            foreach (var reply in existingComment.Replies.ToList())
+            {
+                await DeleteAsync(reply.Id);
+            }
             _context.UserComments.Remove(existingComment);
             await _context.SaveChangesAsync();
         }

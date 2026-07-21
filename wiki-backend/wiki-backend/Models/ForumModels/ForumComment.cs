@@ -25,4 +25,5 @@ public class ForumComment
     public Guid? ReplyToCommentId { get; set; }
 
     public bool IsEdited { get; set; } = false;
+    public bool IsDeleted { get; set; } = false;
 }

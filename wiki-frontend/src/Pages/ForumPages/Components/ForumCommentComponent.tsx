@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getUserProfileByUsername } from '../../../Api/wikiUserApi';
-import { postForumComment } from '../../../Api/forumApi';
+import { flagForumComment, postForumComment } from '../../../Api/forumApi';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { formatDate } from '../../../utils/formatDate';
 import DisplayProfileImageElement from '../../ProfilePage/Components/DisplayProfileImageElement';
 import ForumSubmitCommentComponent from './ForumSubmitCommentComponent';
+import FlagCommentModal from '../../../Components/FlagCommentModal';
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import type { UserProfile } from '../../../types/models';
 import "../Styles/forumpost.css";
@@ -20,6 +21,7 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
 
     const [currentPage, setCurrentPage] = useState(1);
     const [commentsPerPage] = useState(20);
+    const [flaggingCommentId, setFlaggingCommentId] = useState<string | null>(null);
 
     useEffect(() => {
         const decodedTokenName = decodedTokenContext?.["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
@@ -36,6 +38,11 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
         if (refreshPost) refreshPost();
     };
 
+    const handleFlagSubmit = async (commentId: string, reason: string) => {
+        await flagForumComment(commentId, reason, jwtToken);
+        setFlaggingCommentId(null);
+    };
+
     const handleContentClick = (e) => {
         const img = e.target.closest('img');
         if (img && !img.closest('.forum-profilepic')) {
@@ -44,9 +51,17 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
     };
 
     const renderQuote = (comment, currentDepth, maxDepth) => {
-        const replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
-        if (!replyComment || currentDepth >= maxDepth) {
+        if (!comment.replyToCommentId || currentDepth >= maxDepth) {
             return null;
+        }
+
+        const replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
+        if (!replyComment || replyComment.isDeleted) {
+            return (
+                <div className="quoted-comment">
+                    <p><em>[Quoted message has been deleted]</em></p>
+                </div>
+            );
         }
         
         return (
@@ -126,10 +141,25 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
                                             <span className="post-date">Posted: {formatDate(comment.postDate)}</span>
                                         </div>
                                         {renderQuote(comment, 0, maxQuoteDepth)}
-                                        <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
+                                        {comment.isDeleted ? (
+                                            <p className="deleted-comment-message"><em>[This comment has been deleted]</em></p>
+                                        ) : (
+                                            <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
+                                        )}
+                                        {!comment.isDeleted && (
                                         <div className="post-actions">
                                             <button className="quote-button" style={{ backgroundColor: styles.articleColor }} onClick={(e) => { e.stopPropagation(); setQuotedPostMethod(comment); }}>Quote</button>
+                                            {jwtToken && (
+                                                <button className="flag-button" onClick={(e) => { e.stopPropagation(); setFlaggingCommentId(comment.id); }}>Flag</button>
+                                            )}
                                         </div>
+                                        )}
+                                        {flaggingCommentId === comment.id && (
+                                            <FlagCommentModal
+                                                onSubmit={async (reason) => { await handleFlagSubmit(comment.id, reason); }}
+                                                onCancel={() => setFlaggingCommentId(null)}
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             </div>

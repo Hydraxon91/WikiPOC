@@ -48,11 +48,12 @@ public class ForumCommentRepository : IForumCommentRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        var existingComment = await _context.ForumComments.SingleOrDefaultAsync(uc => uc.Id == id);
-        if (existingComment != null)
-        {
-            _context.ForumComments.Remove(existingComment);
-            await _context.SaveChangesAsync();
-        }
+        var existingComment = await _context.ForumComments.FindAsync(id);
+        if (existingComment == null)
+            return;
+
+        existingComment.Content = null;
+        existingComment.IsDeleted = true;
+        await _context.SaveChangesAsync();
     }
 }

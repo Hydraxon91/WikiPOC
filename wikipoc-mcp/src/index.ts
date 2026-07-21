@@ -463,6 +463,47 @@ server.tool(
   }),
 );
 
+// --- Moderation / Flagging tools ---
+
+server.tool(
+  "flag_forum_comment",
+  "Flag a forum comment as inappropriate. Requires login.",
+  { id: z.string(), reason: z.string() },
+  wrap(async (args: any) => {
+    const data = await postJson("/api/ForumComment/" + args.id + "/flag", args.reason, requireToken());
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+  }),
+);
+
+server.tool(
+  "flag_wiki_comment",
+  "Flag a wiki article comment as inappropriate. Requires login.",
+  { id: z.string(), reason: z.string() },
+  wrap(async (args: any) => {
+    const data = await postJson("/api/UserComment/" + args.id + "/flag", args.reason, requireToken());
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+  }),
+);
+
+server.tool(
+  "get_flagged_comments",
+  "List all flagged comments awaiting moderation. Requires moderator+ login.",
+  {},
+  wrap(async () => {
+    return { content: [{ type: "text", text: await getJson("/api/Moderation/flagged-comments", requireToken()) }] };
+  }),
+);
+
+server.tool(
+  "resolve_comment_flag",
+  "Resolve (dismiss) a comment flag without deleting the comment. Requires moderator+ login.",
+  { flagId: z.string() },
+  wrap(async (args: any) => {
+    const data = await putJson("/api/Moderation/flagged-comments/" + args.flagId + "/resolve", undefined, requireToken());
+    return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+  }),
+);
+
 // --- Startup ---
 
 const transport = new StdioServerTransport();

@@ -29,6 +29,7 @@ export interface ForumComment {
   forumPostId?: string;
   postDate?: string;
   isEdited?: boolean;
+  isDeleted?: boolean;
 }
 
 export interface UserProfile {

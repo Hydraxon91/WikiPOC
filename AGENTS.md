@@ -513,15 +513,15 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 ### Known Issues
 1. `ScraperEmbedMiddleware` is refactored — path rewrite doesn't route to controllers on Azure/ASP.NET Core 10, so middleware generates embed HTML directly at the request path.
 2. `logo_pfp.png` doesn't exist on Azure filesystem — all fallbacks now use `/img/logo.png`
-3. Azure Free Tier has no persistent storage — `PICTURES_PATH` cannot be mounted, so image uploads (including custom logos) don't work. **Unresolved** — requires paid tier, not happening.
-4. Frutiger Aero era: sidebar background doesn't use `--custom-body-color` CSS variable (`.era-frutiger .sidebar` is hardcoded). See `TODO.md` UI Issues section.
+3. Images persist only within a container session; they are lost if the container is fully killed and rehosted (Azure Free Tier limitation). Uploading a custom logo via `/site-settings` works within session but will not survive a full restart.
+4. [x] ~~Frutiger Aero era: sidebar background doesn't use `--custom-body-color` CSS variable~~ — Fixed July 2026.
 5. Token refresh effect in `App.tsx` intentionally runs once on mount (not in dep array) to avoid refresh loop — role-changed middleware handles token refresh on 401 via `apiClient.ts`.
 
-### Next Tasks
-- Fix Frutiger Aero era sidebar color to respect theme color
-- Upload a custom logo via `/site-settings` to test custom logo in embeds (blocked: no persistent storage on Azure Free Tier)
-- Verify favicon shows wiki logo (via `usePageMeta.ts`)
-- Set `FRONTEND_URL` in Azure App Service Configuration
+### Done (July 2026)
+- [x] Fix Frutiger Aero era sidebar color to respect theme color
+- [x] Set `FRONTEND_URL` in Azure App Service Configuration
+- [x] Verify favicon shows wiki logo (via `usePageMeta.ts`)
+- [x] Upload a custom logo via `/site-settings` to test custom logo in embeds (works within container session; lost on full restart)
 
 ## Files of Interest
 

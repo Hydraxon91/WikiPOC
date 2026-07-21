@@ -160,6 +160,12 @@
     width: 100%;
 }
 
+.deleted-comment-message {
+    font-style: italic;
+    opacity: 0.6;
+    margin: 0.5em 0;
+}
+
 .post-content-area img {
     max-width: 100%;
     max-height: 80px;

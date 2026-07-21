@@ -156,7 +156,9 @@ public class ForumCommentRepositoryTests : IntegrationTestBase
 
             // Assert
             var deletedComment = await DbContext.ForumComments.FindAsync(comment.Id);
-            Assert.That(deletedComment, Is.Null);
+            Assert.That(deletedComment, Is.Not.Null);
+            Assert.That(deletedComment.IsDeleted, Is.True);
+            Assert.That(deletedComment.Content, Is.Null);
         }
         
         [Test]
