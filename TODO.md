@@ -195,3 +195,10 @@ All security headers now added via middleware in `Program.cs`:
 - [x] **MEDIUM** Add JSON-LD structured data (WebSite + SearchAction schema) in `index.html`.
 - [x] **MEDIUM** Add `robots.txt` and `sitemap.xml` to `public/` for crawler discovery.
 - [x] **LOW** Add `<link rel="sitemap">` tag in `index.html`.
+
+---
+
+## CSS Orphans & Code Cleanup
+
+- [ ] **LOW** `src/Styles/glass-card.css` has 113 lines of forum comment card styles with per-era definitions but is never imported AND the `glass-card` class is never used in any TSX/TS file. Investigate if these styles were meant to be applied to forum/wiki comments and add the class to the appropriate components.
+- [ ] **LOW** `src/App.css` (12 lines, contains `@keyframes App-logo-spin`) is never imported anywhere — safe to delete.

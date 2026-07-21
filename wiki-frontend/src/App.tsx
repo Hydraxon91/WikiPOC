@@ -1,5 +1,6 @@
 import {useState, useEffect, lazy, Suspense} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
+import './Styles/style.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MainPage from "./Pages/MainPage/MainPage";
 import HomeComponent from "./Pages/MainPage/Components/HomeComponent";

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams} from 'react-router-dom';
 import type { CSSProperties } from 'react';
-import '../../../Styles/style.css';
 import '../../WikiPage-Article/Style/wikipagecomponent.css'
 import { useStyleContext } from '../../../Components/contexts/StyleContext';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
