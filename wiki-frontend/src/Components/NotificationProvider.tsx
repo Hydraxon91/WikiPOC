@@ -24,7 +24,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     <NotificationContext.Provider value={{ showNotification }}>
       {children}
       {message && (
-        <div style={{
+        <div role="alert" aria-live="polite" style={{
           position: 'fixed',
           bottom: '20px',
           left: '50%',

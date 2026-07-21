@@ -56,7 +56,9 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
   const era = styles.interfaceEra || 'wikipedia';
 
   return (
-    <div className={`wrapAll clearfix era-${era}`} style={{
+    <>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <div className={`wrapAll clearfix era-${era}`} style={{
       minHeight: "100vh",
       fontWeight: "bold",
       fontFamily: styles.fontFamily,
@@ -79,9 +81,9 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
         </HeaderComponent>
         <WikiList handleLogout={handleLogout} jwtToken={jwtToken} categories={categories} />
         <div className="mainsection">
-          <div style={{ flex: 1 }}>
+          <main id="main-content" style={{ flex: 1 }}>
             <Outlet />
-          </div>
+          </main>
           <div className="pagefooter" style={{ color: styles.footerListTextColor }}>
             Created by <a href="https://github.com/Hydraxon91" target="_blank" rel="nofollow" style={{ color: styles.footerListLinkTextColor }}>Hydraxon</a>
             <div className="footerlinks">
@@ -92,6 +94,7 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
         </div>
       </div>
     </div>
+    </>
   );
 };
 

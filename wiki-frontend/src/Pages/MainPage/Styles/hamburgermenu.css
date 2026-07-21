@@ -3,12 +3,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 2rem;
-    height: 2rem;
+    min-width: 44px;
+    min-height: 44px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0;
+    padding: 8px;
     gap: 4px;
 }
 
@@ -61,9 +61,11 @@
 .hamburger-drawer a {
     color: var(--drawer-link, #024185);
     text-decoration: none;
+    display: block;
+    padding: 0.4em 0;
 }
 
-.hamburger-drawer h3 {
+.hamburger-drawer h2 {
     color: var(--drawer-text, #333);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     padding-bottom: 0.25em;

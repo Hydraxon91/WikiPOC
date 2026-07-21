@@ -5,12 +5,12 @@ import { getLogo } from "../../../Api/wikiApi";
 import '../Styles/headercomponent.css';
 const HeaderComponent = ({userName, userRole, children}) => { 
     const { settings } = useSiteSettings();
-    const [imageSrc, setImageSrc] = useState("/img/logo.png");
+    const [imageSrc, setImageSrc] = useState("/img/logo.webp");
     const [title, setTitle] = useState("Default Title");
     const blobUrlRef = useRef(null);
 
     useEffect(()=>{
-        if (settings?.logo) {
+        if (settings?.logo && settings.logo !== 'logo_pfp.png') {
             setTitle(settings.wikiName || 'WikiPOC');
             getLogo(settings.logo)
                 .then(data => {
@@ -28,7 +28,7 @@ const HeaderComponent = ({userName, userRole, children}) => {
                 })
                 .catch(error => {
                     console.error('Error fetching profile picture:', error);
-                    setImageSrc("/img/logo.png");
+                    setImageSrc("/img/logo.webp");
                 });
         }
     },[settings?.logo, settings?.wikiName])
@@ -37,12 +37,12 @@ const HeaderComponent = ({userName, userRole, children}) => {
         <div className="top-header">
             {children}
             <div className="logo-container">
-                <Link to="/"><img src={imageSrc} alt="logo" className="site-logo"/></Link>
+                <Link to="/"><img src={imageSrc} alt="logo" className="site-logo" width="100" height="100" /></Link>
             </div>
             <div className="title-container">
                 <Link to="/"><h1 className="page-title">{title}</h1></Link>
             </div>
-            <div className="headerLinks"><a href={`/profile/${userName}`}>{userName}</a> {userRole}</div>
+            <div className="headerLinks">{userName && <a href={`/profile/${userName}`}>{userName}</a>} {userRole}</div>
         </div>
     );
 }

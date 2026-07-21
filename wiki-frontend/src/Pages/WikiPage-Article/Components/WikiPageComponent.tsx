@@ -37,7 +37,10 @@ const WikiPageComponent = ({page, setDecodedSlug, activeTab, images}) => {
     if (window.location.pathname.includes('/edit')) return null;
     return (
       <Link to={`/page/${page.slug}/edit`}>
-        <img className="editButton" src="/img/edit.png" alt="Edit" />
+        <picture>
+          <source srcSet="/img/edit.webp" type="image/webp" />
+          <img className="editButton" src="/img/edit.png" alt="Edit" width="24" height="24" />
+        </picture>
       </Link>
     );
   };

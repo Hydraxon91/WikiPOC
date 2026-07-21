@@ -173,6 +173,7 @@
     object-fit: contain;
     border-radius: 2px;
     transition: max-height 0.2s ease;
+    will-change: max-height;
 }
 
 .post-content-area img.fp-expanded {

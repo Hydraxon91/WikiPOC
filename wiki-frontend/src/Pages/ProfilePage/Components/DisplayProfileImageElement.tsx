@@ -43,7 +43,7 @@ function DisplayProfileImageElement({profilePicture, classNameProp}: {profilePic
 
     return (
         <div className={classNameProp}>
-            <img src={imageSrc} alt="Uploaded"/>
+            <img src={imageSrc} alt="Uploaded" loading="lazy"/>
         </div>
     );
 }

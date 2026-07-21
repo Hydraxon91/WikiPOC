@@ -1,9 +1,6 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, lazy, Suspense} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import EditPage from "./Pages/CreateEditArticle/EditPage";
-import EditStylePage from "./Pages/EditStylePage/EditStylePage";
-import SiteSettingsPage from "./Pages/SiteSettingsPage/SiteSettingsPage";
 import MainPage from "./Pages/MainPage/MainPage";
 import HomeComponent from "./Pages/MainPage/Components/HomeComponent";
 import { StyleProvider  } from "./Components/contexts/StyleContext";
@@ -15,6 +12,30 @@ import { jwtDecode } from 'jwt-decode';
 import { useNotification } from './Components/NotificationProvider';
 import { UserContextProvider } from "./Components/contexts/UserContextProvider";
 import type { DecodedToken } from "./types/contexts";
+import ProtectedRoute from "./Components/ProtectedRoute";
+import PublicRoute from "./Components/PublicRoute";
+import LoadingSpinner from "./Components/LoadingSpinner";
+
+const EditPage = lazy(() => import("./Pages/CreateEditArticle/EditPage"));
+const EditStylePage = lazy(() => import("./Pages/EditStylePage/EditStylePage"));
+const SiteSettingsPage = lazy(() => import("./Pages/SiteSettingsPage/SiteSettingsPage"));
+const WikiPage = lazy(() => import("./Pages/WikiPage-Article/WikiPage"));
+const ProfilePage = lazy(() => import("./Pages/ProfilePage/ProfilePage"));
+const EditProfilePage = lazy(() => import("./Pages/ProfilePage/EditProfilePage"));
+const CategoryPageComponent = lazy(() => import("./Pages/Categories/CategoryPageComponent"));
+const EditCategoriesPage = lazy(() => import("./Pages/Categories/EditCategoriesPage"));
+const ForumLandingPage = lazy(() => import("./Pages/ForumPages/ForumLandingPage"));
+const ForumPage = lazy(() => import("./Pages/ForumPages/ForumPage"));
+const ForumPost = lazy(() => import("./Pages/ForumPages/ForumPost"));
+const CreateTopicPage = lazy(() => import("./Pages/ForumPages/CreateTopicPage"));
+const CreatePostPage = lazy(() => import("./Pages/ForumPages/CreatePostPage"));
+const UserRequestsPageComponent = lazy(() => import("./Pages/UserSubmittedArticle-Update/UserRequestsPageComponent"));
+const CompareUpdatePage = lazy(() => import("./Pages/UserSubmittedArticle-Update/CompareUpdatePage"));
+const CheckUserSubmittedPage = lazy(() => import("./Pages/UserSubmittedArticle-Update/CheckUserSubmittedPage"));
+const UserManagementPage = lazy(() => import("./Pages/UserManagement/UserManagementPage"));
+const DebugRolesPage = lazy(() => import("./Pages/DebugRoles/DebugRolesPage"));
+const FlaggedCommentsPage = lazy(() => import("./Pages/Moderation/FlaggedCommentsPage"));
+import RegisterPageComponent from "./Pages/LoginLogoutPages/RegisterPageComponent";
 
 const decodeToken = (token: string): DecodedToken | null => {
   try {
@@ -27,25 +48,6 @@ const decodeToken = (token: string): DecodedToken | null => {
     return null;
   }
 };
-import RegisterPageComponent from "./Pages/LoginLogoutPages/RegisterPageComponent";
-import UserRequestsPageComponent from "./Pages/UserSubmittedArticle-Update/UserRequestsPageComponent";
-import CompareUpdatePage from "./Pages/UserSubmittedArticle-Update/CompareUpdatePage";
-import CheckUserSubmittedPage from "./Pages/UserSubmittedArticle-Update/CheckUserSubmittedPage";
-import UserManagementPage from "./Pages/UserManagement/UserManagementPage";
-import DebugRolesPage from "./Pages/DebugRoles/DebugRolesPage";
-import FlaggedCommentsPage from "./Pages/Moderation/FlaggedCommentsPage";
-import WikiPage from "./Pages/WikiPage-Article/WikiPage";
-import ProfilePage from "./Pages/ProfilePage/ProfilePage";
-import EditProfilePage from "./Pages/ProfilePage/EditProfilePage";
-import CategoryPageComponent from "./Pages/Categories/CategoryPageComponent";
-import EditCategoriesPage from "./Pages/Categories/EditCategoriesPage";
-import ForumLandingPage from "./Pages/ForumPages/ForumLandingPage";
-import ForumPage from "./Pages/ForumPages/ForumPage";
-import ForumPost from "./Pages/ForumPages/ForumPost";
-import CreateTopicPage from "./Pages/ForumPages/CreateTopicPage";
-import CreatePostPage from "./Pages/ForumPages/CreatePostPage";
-import ProtectedRoute from "./Components/ProtectedRoute";
-import PublicRoute from "./Components/PublicRoute";
 
 function App() {
 
@@ -74,33 +76,39 @@ function App() {
     if (jwtToken) {
       setDecodedToken(decodeToken(jwtToken));
     }
-    fetchCategories()
-      .then(categories => {
-        const categoryNames = categories.map(category => category.categoryName);
-        categoryNames.push("Uncategorized");
-        setCategories(categoryNames);
-      })
-      .catch(error => {
-        console.error('Error fetching categories:', error);
-        showNotification('Failed to load categories.');
-      });
+    const timeout = setTimeout(() => {
+      fetchCategories()
+        .then(categories => {
+          const categoryNames = categories.map(category => category.categoryName);
+          categoryNames.push("Uncategorized");
+          setCategories(categoryNames);
+        })
+        .catch(error => {
+          console.error('Error fetching categories:', error);
+          showNotification('Failed to load categories.');
+        });
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [jwtToken, showNotification]);
 
   // On page load, silently refresh the token so role changes take effect immediately
   useEffect(() => {
     const token = cookies["jwt_token"];
     if (!token) return;
-    fetch(`${import.meta.env.VITE_API_URL}/api/Users/RefreshToken`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` }
-    }).then(res => {
-      if (res.ok) return res.json();
-      return null;
-    }).then(data => {
-      if (data?.token && data.token !== token) {
-        setCookie("jwt_token", data.token, { path: "/" });
-      }
-    });
+    const timeout = setTimeout(() => {
+      fetch(`${import.meta.env.VITE_API_URL}/api/Users/RefreshToken`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => {
+        if (res.ok) return res.json();
+        return null;
+      }).then(data => {
+        if (data?.token && data.token !== token) {
+          setCookie("jwt_token", data.token, { path: "/" });
+        }
+      });
+    }, 0);
+    return () => clearTimeout(timeout);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -166,6 +174,7 @@ function App() {
         <Router>
           <SiteSettingsProvider>
           <StyleProvider>
+            <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               <Route path="/" element={<MainPage decodedToken={decodedToken} handleLogout={handleLogout} jwtToken={cookies} setWikiPageTitles={setWikiPageTitles} categories={categories} />}>
                 <Route path="/" element={<HomeComponent pages={wikiPageTitles} categories={categories} />} />
@@ -268,6 +277,7 @@ function App() {
                 <Route path="*" element={<div style={{ padding: '2rem', textAlign: 'center' }}><h2>Page Not Found</h2></div>} />
               </Route>
             </Routes>
+            </Suspense>
           </StyleProvider>
           </SiteSettingsProvider>
         </Router>

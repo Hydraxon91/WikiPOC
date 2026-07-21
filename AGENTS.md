@@ -481,6 +481,12 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 
 10. **ScraperEmbedMiddleware uses direct HTML generation (no path rewrite):** Because `context.Request.Path` modification in middleware does NOT route to controllers on ASP.NET Core 10 + Azure, the middleware generates embed HTML directly inline instead of rewriting the path. Do NOT change it back to a path-rewrite approach.
 
+11. **PurgeCSS Safelist (CSS Tree-Shaking):** Production builds use `@fullhuman/postcss-purgecss` via `postcss.config.cjs` to remove unused Bootstrap and custom CSS. If you add new CSS classes that are applied dynamically (template literals, state-driven, user-configured), they **must** be added to the safelist in `postcss.config.cjs` or they will be stripped in production builds. The safelist has three tiers:
+    - **`standard`** (exact/regex match): `era-*`, `glass-*`, `frutiger-*`, `ql-*`, `flag-badge`, `depth-N`, `fp-*`
+    - **`deep`** (children preserved): `wikipage-*`, `hamburger-*`, `profile-*`, `sidebar`, `top-header`, `editButton`, `era-button`, `aero-*`, etc.
+    - **`greedy`** (entire rule kept): All Bootstrap component prefixes (`btn*`, `form-*`, `modal*`, `nav*`, `dropdown*`, etc.)
+    If you add a new component with its own CSS prefix, add it to the appropriate tier. If PurgeCSS strips needed styles in production but not dev, that means the safelist is missing an entry.
+
 ## Embed Middleware (Refactored July 2026)
 
 `ScraperEmbedMiddleware` was refactored from inline Program.cs code into a proper middleware class. The `/debug-middleware` endpoint and the old path-rewrite approach were removed.
