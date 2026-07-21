@@ -5,7 +5,7 @@ const UserImagesContainer = ({ images, insertImage }) => {
                 <div className='editor-image-container'>
                     {images.map((image, index) => (
                         <div key={index} className="image-preview" onClick={()=> insertImage(image.name)}>
-                            <img src={image.dataURL} alt={`Image ${index}`} />
+                            <img src={image.dataURL} alt={`Image ${index}`} loading="lazy" />
                             <div>{image.name}</div>
                         </div>
                     ))}

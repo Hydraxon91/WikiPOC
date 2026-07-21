@@ -63,7 +63,7 @@ const CustomHTMLPopup = ({ insertCustomHTML, togglePopupVisibility, images }) =>
             <div className='article-container'>
             <div className={`thumbnail ${orientation}`}>
               <div className='thumbnail-inner'>
-                <img className="paragraph-image" src={imageData} alt="logo"/>
+                <img className="paragraph-image" src={imageData} alt="logo" loading="lazy"/>
               </div>
               <div className="wikipage-content-container">{trimText(text)}</div>
             </div>

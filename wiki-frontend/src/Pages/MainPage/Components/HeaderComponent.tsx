@@ -5,7 +5,7 @@ import { getLogo } from "../../../Api/wikiApi";
 import '../Styles/headercomponent.css';
 const HeaderComponent = ({userName, userRole, children}) => { 
     const { settings } = useSiteSettings();
-    const [imageSrc, setImageSrc] = useState("/img/logo.png");
+    const [imageSrc, setImageSrc] = useState("/img/logo.webp");
     const [title, setTitle] = useState("Default Title");
     const blobUrlRef = useRef(null);
 
@@ -28,7 +28,7 @@ const HeaderComponent = ({userName, userRole, children}) => {
                 })
                 .catch(error => {
                     console.error('Error fetching profile picture:', error);
-                    setImageSrc("/img/logo.png");
+                    setImageSrc("/img/logo.webp");
                 });
         }
     },[settings?.logo, settings?.wikiName])
