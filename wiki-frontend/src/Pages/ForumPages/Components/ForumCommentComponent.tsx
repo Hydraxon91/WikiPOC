@@ -56,7 +56,7 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
         }
 
         const replyComment = currPost.comments.find(c => c.id === comment.replyToCommentId);
-        if (!replyComment) {
+        if (!replyComment || replyComment.isDeleted) {
             return (
                 <div className="quoted-comment">
                     <p><em>[Quoted message has been deleted]</em></p>
@@ -141,13 +141,19 @@ const ForumCommentComponent = ({ post, jwtToken, quotedPostId, setQuotedPostMeth
                                             <span className="post-date">Posted: {formatDate(comment.postDate)}</span>
                                         </div>
                                         {renderQuote(comment, 0, maxQuoteDepth)}
-                                        <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
+                                        {comment.isDeleted ? (
+                                            <p className="deleted-comment-message"><em>[This comment has been deleted]</em></p>
+                                        ) : (
+                                            <div dangerouslySetInnerHTML={{ __html: comment.content }}></div>
+                                        )}
+                                        {!comment.isDeleted && (
                                         <div className="post-actions">
                                             <button className="quote-button" style={{ backgroundColor: styles.articleColor }} onClick={(e) => { e.stopPropagation(); setQuotedPostMethod(comment); }}>Quote</button>
                                             {jwtToken && (
                                                 <button className="flag-button" onClick={(e) => { e.stopPropagation(); setFlaggingCommentId(comment.id); }}>Flag</button>
                                             )}
                                         </div>
+                                        )}
                                         {flaggingCommentId === comment.id && (
                                             <FlagCommentModal
                                                 onSubmit={async (reason) => { await handleFlagSubmit(comment.id, reason); }}

@@ -52,15 +52,8 @@ public class ForumCommentRepository : IForumCommentRepository
         if (existingComment == null)
             return;
 
-        var children = await _context.ForumComments
-            .Where(c => c.ReplyToCommentId == id)
-            .ToListAsync();
-        foreach (var child in children)
-        {
-            child.ReplyToCommentId = null;
-        }
-
-        _context.ForumComments.Remove(existingComment);
+        existingComment.Content = null;
+        existingComment.IsDeleted = true;
         await _context.SaveChangesAsync();
     }
 }
