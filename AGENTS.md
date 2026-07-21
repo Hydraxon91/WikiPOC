@@ -485,20 +485,21 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 
 `ScraperEmbedMiddleware` was refactored from inline Program.cs code into a proper middleware class. The `/debug-middleware` endpoint and the old path-rewrite approach were removed.
 
-## Session Handoff (July 2026)
+## Session Handoff (August 2026)
 
 ### Current State
 - Backend serves the SPA via `UseStaticFiles()` + `MapFallbackToFile("index.html")` — single container, one Azure App Service
 - Multi-stage Docker build (Node 22 → .NET SDK → runtime)
 - Azure SWA workflow deleted (deprecated)
+- `docker-compose-workflow.yml` deleted — single pipeline (`ci.yml`) covers everything
 - Embed system working: server-side OG tags for Discord/Telegram/Twitter/Facebook/etc.
 - Image fallback: bundled `/img/logo.png` in wwwroot (replaces nonexistent DB-seeded `logo_pfp.png`)
 - **All tech debt items completed** — see TODO.md for full list
 - **0 ESLint warnings**, **0 Roslyn warnings**, both projects build clean
-- CI/CD pipeline includes lint, build, test, CodeQL (C# + JS/TS), Docker build/publish, Trivy scan, Azure deploy
+- CI/CD pipeline includes lint, build, test, CodeQL (C# + JS/TS), Docker build/publish, Trivy scan, Azure deploy with fail-fast DAG
 
-### Tech Debt Resolved (July 2026 Session)
-- Fixed path injection in `ImageController.cs` (CodeQL HIGH) — `Path.GetFullPath()` + `StartsWith()` containment check
+### Tech Debt Resolved (July/August 2026 Sessions)
+- Fixed path injection in `ImageController.cs` (CodeQL HIGH) — `Directory.GetFiles()` enumeration pattern
 - Fixed XSS-through-DOM in `DisplayProfileImageElement.tsx` — blob URL origin validation
 - Upgraded Swashbuckle 10.0.0→10.2.3, removed NU1903 suppression
 - Enabled `TreatWarningsAsErrors` + `EnforceCodeStyleInBuild` on test projects
@@ -506,6 +507,8 @@ The embed system provides correct OG meta tags (title, description, image, URL, 
 - Fixed 6 `@typescript-eslint/no-unused-expressions` violations
 - Fixed all `@typescript-eslint/no-explicit-any` (~64 violations), `no-unused-vars`, and `react-hooks/exhaustive-deps` (~29 violations) across frontend
 - Fixed runtime regressions from exhaustive-deps changes (infinite token refresh loop, forum post crash, profile edit revert)
+- Deleted legacy `docker-compose-workflow.yml` (redundant with `ci.yml`, skipped lint/CodeQL/Trivy)
+- Added `needs: [backend-build]` constraints so tests and CodeQL skip automatically on build failure
 
 ### Known Issues
 1. `ScraperEmbedMiddleware` is refactored — path rewrite doesn't route to controllers on Azure/ASP.NET Core 10, so middleware generates embed HTML directly at the request path.
