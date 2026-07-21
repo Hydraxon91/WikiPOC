@@ -121,7 +121,7 @@ All 35 tools from the original spec are implemented — no remaining future tool
 
 #### Best Practices (96/100)
 - [x] **MEDIUM** Fix `logo_pfp.png` 404 console error — added guard in `HeaderComponent.tsx` to skip fetching if logo is the default placeholder (`logo_pfp.png`).
-- [ ] **LOW** Enable source map generation in production builds (`build.sourcemap: true` in `vite.config.js`) for easier debugging — or suppress the Lighthouse warning if intentionally disabled.
+- [x] **LOW** Enable source map generation in production builds (`build.sourcemap: true` in `vite.config.js`).
 
 #### Cache & Server
 - [x] **HIGH** Add `Cache-Control: public, max-age=31536000, immutable` to `UseStaticFiles()` in `Program.cs` for JS/CSS/fonts/images. Added `StaticFileOptions` with `OnPrepareResponse` handler that sets cache headers for all hashed asset extensions.
@@ -132,7 +132,7 @@ All 35 tools from the original spec are implemented — no remaining future tool
 
 #### CSS
 - [x] **HIGH** Eliminate render-blocking CSS — inlined critical font-face + body styles in `index.html`. Converted all heavy route imports to `React.lazy()` + `Suspense` in `App.tsx`, which defers their CSS to on-demand loading.
-- [ ] **MEDIUM** Reduce unused CSS — scope Bootstrap imports or add PurgeCSS. Requires adding `sass` or `purgecss` package. Skipped pending approval.
+- [x] **MEDIUM** Reduce unused CSS — added `@fullhuman/postcss-purgecss` with PostCSS config (`postcss.config.cjs`) for production builds. Comprehensive safelist covers all era-, Bootstrap, Quill, and dynamic classes. Main CSS reduced from ~330KB to ~129KB.
 
 #### JavaScript
 - [x] **HIGH** Code-split heavy routes with `React.lazy()` + `Suspense` — all non-landing-page routes now lazy-loaded. Main bundle reduced to 237KB (73KB gzipped). Individual chunks for EditPage, EditStylePage, ForumLandingPage, ForumPost, etc.
@@ -140,8 +140,8 @@ All 35 tools from the original spec are implemented — no remaining future tool
 
 #### Images
 - [x] **HIGH** Add explicit `width` and `height` attributes to the logo `<img>` in `HeaderComponent.tsx` and the edit button in `WikiPageComponent.tsx`.
-- [ ] **MEDIUM** Serve logo as WebP with `<picture>` fallback or build-time conversion. Est savings: **34 KiB**.
-- [ ] **LOW** Add `loading="lazy"` to below-the-fold images.
+- [x] **MEDIUM** Serve logo as WebP with `<picture>` fallback — converted `logo.png`, `edit.png`, and `logo192.png` to WebP. Updated `HeaderComponent` default, `WikiPageComponent` edit button (`<picture>` element), and `index.html` og/twitter/apple-touch-icon references.
+- [x] **LOW** Add `loading="lazy"` to below-the-fold images — added to `DisplayProfileImageElement`, `UserImagesContainer`, and `CustomHTMLPopup` preview.
 
 #### Animations
 - [ ] **LOW** Fix non-composited animation — ensure animated elements use `transform` and `opacity` only (1 animated element found).
