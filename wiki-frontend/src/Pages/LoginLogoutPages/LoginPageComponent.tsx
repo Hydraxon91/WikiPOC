@@ -42,11 +42,13 @@ export default function LoginPageComponent({handleLogin}){
                 <form onSubmit={HandleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <h2 style={{ margin: '0 0 0.5em 0', fontSize: '1.5em', fontWeight: 'bold' }}>Login</h2>
                     <div>
-                        <input type="text" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email/Username"
+                        <label htmlFor="login-email" style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',border:0}}>Email or Username</label>
+                        <input id="login-email" type="text" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email/Username"
                             style={{ width: '100%', padding: '0.5em', fontSize: '1em', border: '1px solid #ccc', borderRadius: '3px', boxSizing: 'border-box' }} />
                     </div>
                     <div>
-                        <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password"
+                        <label htmlFor="login-password" style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',border:0}}>Password</label>
+                        <input id="login-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password"
                             style={{ width: '100%', padding: '0.5em', fontSize: '1em', border: '1px solid #ccc', borderRadius: '3px', boxSizing: 'border-box' }} />
                     </div>
                     {response && !response.token && (

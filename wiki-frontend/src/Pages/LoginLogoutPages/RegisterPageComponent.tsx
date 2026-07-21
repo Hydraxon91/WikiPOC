@@ -40,15 +40,18 @@ export default function RegisterPageComponent(){
                 <form onSubmit={HandleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <h2 style={{ margin: '0 0 0.5em 0', fontSize: '1.5em', fontWeight: 'bold' }}>Register</h2>
                     <div>
-                        <input type="text" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email"
+                        <label htmlFor="reg-email" style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',border:0}}>Email</label>
+                        <input id="reg-email" type="text" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email"
                             style={{ width: '100%', padding: '0.5em', fontSize: '1em', border: '1px solid #ccc', borderRadius: '3px', boxSizing: 'border-box' }} />
                     </div>
                     <div>
-                        <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username"
+                        <label htmlFor="reg-username" style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',border:0}}>Username</label>
+                        <input id="reg-username" type="text" required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username"
                             style={{ width: '100%', padding: '0.5em', fontSize: '1em', border: '1px solid #ccc', borderRadius: '3px', boxSizing: 'border-box' }} />
                     </div>
                     <div>
-                        <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password"
+                        <label htmlFor="reg-password" style={{position:'absolute',width:'1px',height:'1px',padding:0,margin:'-1px',overflow:'hidden',clip:'rect(0,0,0,0)',border:0}}>Password</label>
+                        <input id="reg-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password"
                             style={{ width: '100%', padding: '0.5em', fontSize: '1em', border: '1px solid #ccc', borderRadius: '3px', boxSizing: 'border-box' }} />
                     </div>
                     <button type="submit" className="modular-button" style={{ backgroundColor: styles.articleColor, border: '1px solid ' + styles.footerListLinkTextColor, borderRadius: '3px', padding: '0.5em 1em', color: '#fff', cursor: 'pointer', fontSize: '0.9em', alignSelf: 'flex-start' }}>Register</button>
