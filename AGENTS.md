@@ -585,6 +585,21 @@ Full PageSpeed Insights improvement pass covering all Lighthouse categories. PR 
 #### Known CodeQL Issue
 - `DisplayProfileImageElement.tsx` triggers `js/xss-through-dom` false positive — blob URL is validated with same-origin check. Dismiss in GitHub UI.
 
+### Hotfix (Post-Merge — July 21, 2026)
+
+**Critical CSS import bug found and fixed immediately after PR #49 merged.**
+
+Root cause: `style.css` (1565 lines — era themes, `:root` CSS vars, `@font-face`, global layout, skip-link, focus-visible) was only imported in `WikiPageComponent.tsx`. Before code-splitting this worked because `WikiPageComponent` was eagerly imported. After `React.lazy()`, Vite moved the CSS into the wiki page's lazy chunk. Home/forum/login/register pages loaded only Bootstrap — era theming, layout, and all custom styles were missing.
+
+Fix:
+- Removed `import '../../../Styles/style.css'` from `WikiPageComponent.tsx`
+- Added `import './Styles/style.css'` to `App.tsx` (alongside the Bootstrap import)
+- PurgeCSS safelist correctly preserves all needed classes (verified `.sidebar`, `.wrapAll`, `.mainsection`, `.navigation`, `.era-wikipedia`, `.btn`, `.top-header`, `.site-logo`, `.hamburger-toggle` all present in production build)
+- Deleted orphaned `src/App.css` (unused)
+- Added TODO to investigate `src/Styles/glass-card.css` (113 lines, `glass-card` class never used in any TSX/TS component — may need to be applied to forum/wiki comment cards)
+
+**Lesson learned:** When using `React.lazy()` for code-splitting, any CSS imported only by lazy components gets deferred too. Global stylesheets must be imported at the entry point (App.tsx or index.tsx).
+
 ### Known Issues (Updated)
 1. `ScraperEmbedMiddleware` generates embed HTML directly (no path rewrite) — known limitation on Azure/ASP.NET Core 10.
 2. Images persist only within a container session; lost if fully killed and rehosted (Azure Free Tier limitation).
