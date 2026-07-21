@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
 import { getNewPageTitles, getUpdatePageTitles } from "../../../Api/wikiApi";
+import { getFlaggedCommentsCount } from '../../../Api/moderationApi';
 
 const WikiList = ({ handleLogout, jwtToken, categories}) => {
   const {decodedTokenContext, updateUser} = useUserContext();
@@ -9,6 +10,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
   const [role, setRole] = useState(null);
   const [pagesWaitingForApproval, setPagesWaitingForApproval] = useState();
   const [updatesWaitingForApproval, setUpdatesWaitingForApproval] = useState();
+  const [flaggedCount, setFlaggedCount] = useState(0);
 
 
   useEffect(() => {
@@ -18,6 +20,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
       if (role === "Admin" || role === "Owner" || role === "Moderator") {
         fetchNewPageTitles(jwtToken["jwt_token"]);
         fetchUpdatePageTitles(jwtToken["jwt_token"]);
+        getFlaggedCommentsCount(jwtToken["jwt_token"]).then(data => setFlaggedCount(data.count)).catch(() => {});
       }
     }
   }, [decodedTokenContext, location, jwtToken]);
@@ -57,6 +60,11 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
         <li>
           <Link key="create-new-page-link" to="/create">
             Create New Page
+          </Link>
+        </li>
+        <li>
+          <Link key="flagged-comments-mod" to="/moderation/flagged-comments">
+            Flagged Comments{flaggedCount > 0 && <span className="flag-badge">{flaggedCount}</span>}
           </Link>
         </li>
         <li>
@@ -102,6 +110,11 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
         <li>
           <Link key="manage-users" to="/admin/users">
             Manage Users
+          </Link>
+        </li>
+        <li>
+          <Link key="flagged-comments-admin" to="/moderation/flagged-comments">
+            Flagged Comments{flaggedCount > 0 && <span className="flag-badge">{flaggedCount}</span>}
           </Link>
         </li>
         <li>
