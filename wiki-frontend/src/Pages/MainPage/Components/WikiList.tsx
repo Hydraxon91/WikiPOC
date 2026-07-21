@@ -45,7 +45,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
 
   const ModeratorTools = () => (
     <>
-      <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Admin Tools</h3>
+      <h2 style={{ marginBottom: '5px', fontSize: '110%' }}>Admin Tools</h2>
       <ul>
         <li>
           <Link key="approve-new-page-link" to="/user-submissions">
@@ -78,7 +78,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
 
   const AdminTools = () => (
     <>
-      <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Admin Tools</h3>
+      <h2 style={{ marginBottom: '5px', fontSize: '110%' }}>Admin Tools</h2>
       <ul>
         <li>
           <Link key="approve-new-page-link" to="/user-submissions">
@@ -128,7 +128,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
 
   const UserTools = () => (
     <>
-      <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>User Tools</h3>
+      <h2 style={{ marginBottom: '5px', fontSize: '110%' }}>User Tools</h2>
       <ul>
         <li>
           <Link key="create-new-page-link" to="/create">
@@ -147,7 +147,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
   const LoginTools = () => {
     return(
       <>
-      <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Login Tools</h3>
+      <h2 style={{marginBottom:"5px", fontSize:'110%'}}>Login Tools</h2>
           <ul>
               <li>
                 <Link key="login-page-link" to="/login">
@@ -167,7 +167,7 @@ const WikiList = ({ handleLogout, jwtToken, categories}) => {
 return (
   <div className="sidebar">
     <div className="navigation">
-      <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Categories</h3>
+      <h2 style={{marginBottom:"5px", fontSize:'110%'}}>Categories</h2>
       {categories && categories.map((category, index) => (
         <div key={index}>
           <Link to={`/categories/${encodeURIComponent(category)}`}>
@@ -175,7 +175,7 @@ return (
           </Link>
         </div>
       ))}
-      <h3 style={{marginBottom:"5px", fontSize:'110%'}}>Forum Tools</h3>
+      <h2 style={{marginBottom:"5px", fontSize:'110%'}}>Forum Tools</h2>
       <ul>
         <li>
           <Link key="forum-page-link" to="/forum">

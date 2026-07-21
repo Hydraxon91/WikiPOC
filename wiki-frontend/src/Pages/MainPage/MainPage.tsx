@@ -79,9 +79,9 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
         </HeaderComponent>
         <WikiList handleLogout={handleLogout} jwtToken={jwtToken} categories={categories} />
         <div className="mainsection">
-          <div style={{ flex: 1 }}>
+          <main style={{ flex: 1 }}>
             <Outlet />
-          </div>
+          </main>
           <div className="pagefooter" style={{ color: styles.footerListTextColor }}>
             Created by <a href="https://github.com/Hydraxon91" target="_blank" rel="nofollow" style={{ color: styles.footerListLinkTextColor }}>Hydraxon</a>
             <div className="footerlinks">

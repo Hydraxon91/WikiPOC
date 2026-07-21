@@ -35,7 +35,7 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
         <div className={`hamburger-drawer${isOpen ? ' open' : ''}`} onClick={e => e.stopPropagation()} style={{ '--drawer-bg': styles.articleColor, '--drawer-text': styles.footerListTextColor, '--drawer-link': styles.footerListLinkTextColor, '--drawer-heading': styles.articleRightColor } as CSSProperties}>
           <button className="hamburger-close" onClick={closeDrawer}>×</button>
 
-            <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Categories</h3>
+            <h2 style={{ marginBottom: '5px', fontSize: '110%' }}>Categories</h2>
             {categories && categories.map((category, index) => (
               <div key={index}>
                 <Link to={`/categories/${encodeURIComponent(category)}`} onClick={closeDrawer}>
@@ -44,7 +44,7 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
               </div>
             ))}
 
-            <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Forum Tools</h3>
+            <h2 style={{ marginBottom: '5px', fontSize: '110%' }}>Forum Tools</h2>
             <Link to="/forum" onClick={closeDrawer}>
               <p style={{ marginBottom: '4px', fontSize: '80%' }}>Forum</p>
             </Link>
@@ -52,7 +52,7 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
             {decodedTokenContext ? (
               role === 'Admin' || role === 'Owner' ? (
                 <>
-                  <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Admin Tools</h3>
+                  <h2 style={{ marginBottom: '5px', fontSize: '110%' }}>Admin Tools</h2>
                   <Link to="/user-submissions" onClick={closeDrawer}>
                     <p style={{ marginBottom: '4px', fontSize: '80%' }}>Pages Awaiting Approval</p>
                   </Link>
@@ -82,7 +82,7 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
                 </>
               ) : role === 'Moderator' ? (
                 <>
-                  <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Moderator Tools</h3>
+                  <h2 style={{ marginBottom: '5px', fontSize: '110%' }}>Moderator Tools</h2>
                   <Link to="/user-submissions" onClick={closeDrawer}>
                     <p style={{ marginBottom: '4px', fontSize: '80%' }}>Pages Awaiting Approval</p>
                   </Link>
@@ -101,7 +101,7 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
                 </>
               ) : (
                 <>
-                  <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>User Tools</h3>
+                  <h2 style={{ marginBottom: '5px', fontSize: '110%' }}>User Tools</h2>
                   <Link to="/create" onClick={closeDrawer}>
                     <p style={{ marginBottom: '4px', fontSize: '80%' }}>Create New Page</p>
                   </Link>
@@ -112,7 +112,7 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
               )
             ) : (
               <>
-                <h3 style={{ marginBottom: '5px', fontSize: '110%' }}>Login Tools</h3>
+                <h2 style={{ marginBottom: '5px', fontSize: '110%' }}>Login Tools</h2>
                 <Link to="/login" onClick={closeDrawer}>
                   <p style={{ marginBottom: '4px', fontSize: '80%' }}>Login</p>
                 </Link>
