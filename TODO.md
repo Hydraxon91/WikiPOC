@@ -118,6 +118,10 @@ All 35 tools from the original spec are implemented — no remaining future tool
 
 #### Accessibility (94/100)
 - [x] **MEDIUM** Increase hamburger toggle button size and spacing — changed to `min-width: 44px; min-height: 44px` + `padding: 8px` in `hamburgermenu.css`. Added `display: block; padding: 0.4em 0` to drawer links for better tap targets.
+- [x] **HIGH** Add skip-to-content link — visible-on-focus skip link in `MainPage.tsx`, styled in `style.css`.
+- [x] **HIGH** Add visible focus indicators — `:focus-visible` outline on all elements in `style.css`.
+- [x] **HIGH** Add form label associations — added `<label htmlFor>` with visually-hidden styles to login and register forms.
+- [x] **HIGH** Add ARIA attributes — `role="alert"` + `aria-live="polite"` on notifications; `aria-expanded`/`aria-controls`/`aria-modal`/`role="dialog"` on hamburger menu; `role="navigation"` on sidebar.
 
 #### Best Practices (96/100)
 - [x] **MEDIUM** Fix `logo_pfp.png` 404 console error — added guard in `HeaderComponent.tsx` to skip fetching if logo is the default placeholder (`logo_pfp.png`).
@@ -186,3 +190,8 @@ All security headers now added via middleware in `Program.cs`:
 - [x] **CRIT** Add `X-Frame-Options: DENY` header to prevent clickjacking.
 - [x] **CRIT** Add `Cross-Origin-Opener-Policy: same-origin` header.
 - [x] **MEDIUM** Add `X-Content-Type-Options: nosniff` and `Referrer-Policy: strict-origin-when-cross-origin` headers.
+
+### Agentic Browsing & SEO
+- [x] **MEDIUM** Add JSON-LD structured data (WebSite + SearchAction schema) in `index.html`.
+- [x] **MEDIUM** Add `robots.txt` and `sitemap.xml` to `public/` for crawler discovery.
+- [x] **LOW** Add `<link rel="sitemap">` tag in `index.html`.
