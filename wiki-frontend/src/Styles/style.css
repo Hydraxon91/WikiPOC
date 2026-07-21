@@ -1,6 +1,7 @@
 @font-face {
 	font-family: "Linux Libertine";
 	src: url("fonts/LinLibertine_RZ.woff") format('woff');
+	font-display: swap;
 }
 
 /* === LIQUID GLASS DESIGN TOKENS === */
