@@ -714,3 +714,33 @@ Three eras were visually overhauled on branch `feat/era-redesign` (6 commits, 30
 - `wiki-backend/wiki-backend/Models/Other Models/StyleModel.cs` — Added GlassGlowIntensity, BubbleCountDesktop, BubbleCountMobile
 - `wiki-backend/wiki-backend/DatabaseServices/Repositories/StyleRepository/StyleRepository.cs` — Added 3 property copy lines
 - `wiki-frontend/postcss.config.cjs` — Added `/^preset-/` to deep safelist
+
+## PR Template
+
+Every PR description should follow this format (template at `.github/PULL_REQUEST_TEMPLATE.md`):
+
+```markdown
+## Summary
+
+<!-- What does this PR do, and why? -->
+
+## Changes
+
+<!-- List the key changes, file by file if helpful -->
+
+## Testing
+
+<!-- How did you verify this works? -->
+
+- [ ] Unit tests pass
+- [ ] Frontend builds cleanly (`npm run build`)
+- [ ] Docker image builds (`docker-compose build`)
+- [ ] Manual smoke test (if applicable)
+
+## Checklist
+
+- [ ] My code follows the project's code style (Roslyn analyzers / ESLint pass)
+- [ ] I've added tests for new functionality
+- [ ] I've updated documentation if needed
+- [ ] Commit history is clean and atomic
+```
