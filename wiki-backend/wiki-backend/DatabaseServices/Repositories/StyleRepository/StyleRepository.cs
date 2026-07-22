@@ -68,6 +68,9 @@ public class StyleRepository : IStyleRepository
             existingStyles.BgMeshGradient = updatedStyles.BgMeshGradient;
             existingStyles.BorderRadius = updatedStyles.BorderRadius;
             existingStyles.BorderStyle = updatedStyles.BorderStyle;
+            existingStyles.GlassGlowIntensity = updatedStyles.GlassGlowIntensity;
+            existingStyles.BubbleCountDesktop = updatedStyles.BubbleCountDesktop;
+            existingStyles.BubbleCountMobile = updatedStyles.BubbleCountMobile;
         }
         else
         {

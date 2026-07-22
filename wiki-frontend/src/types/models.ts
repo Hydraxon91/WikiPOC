@@ -74,4 +74,7 @@ export interface StyleModel {
   bgMeshGradient?: string;
   borderRadius?: string;
   borderStyle?: string;
+  glassGlowIntensity?: number;
+  bubbleCountDesktop?: number;
+  bubbleCountMobile?: number;
 }

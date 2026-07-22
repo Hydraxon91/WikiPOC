@@ -229,6 +229,216 @@ body.era-glass {
 	border-bottom: 2px solid var(--footer-link-color, #1d305e);
 }
 
+/* === ERA-GLASS: SIDEBAR ENHANCEMENTS === */
+.era-glass .sidebar h2 {
+	padding: 0.3em 0;
+	margin: 0.8em 0 0.3em 0;
+	border-bottom: 1px solid rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.15 + 0.1));
+}
+
+.era-glass .sidebar a {
+	transition: transform 0.2s ease, text-shadow 0.3s ease;
+}
+
+.era-glass .sidebar a:hover {
+	transform: translateX(4px);
+	text-shadow: 0 0 12px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.5));
+}
+
+.era-glass .sidebar::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 4px;
+	background: linear-gradient(180deg,
+		color-mix(in srgb, var(--custom-sidebar-color, #3c5fb8) 80%, white) 0%,
+		var(--article-right-inner-color, #2b4ea6) 50%,
+		color-mix(in srgb, var(--custom-sidebar-color, #3c5fb8) 80%, white) 100%);
+	background-size: 100% 200%;
+	opacity: calc(var(--glass-glow-intensity, 0) * 0.9);
+	pointer-events: none;
+	border-radius: var(--custom-border-radius, 12px) 0 0 var(--custom-border-radius, 12px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.era-glass .sidebar::before {
+		animation: aero-aurora-rotate 8s linear infinite;
+	}
+}
+
+.era-glass .sidebar::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: linear-gradient(90deg,
+		transparent 0%,
+		rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.4)) 20%,
+		rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.2)) 50%,
+		rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.4)) 80%,
+		transparent 100%);
+	pointer-events: none;
+}
+
+/* === ERA-GLASS: TOP HEADER ENHANCEMENTS === */
+.era-glass .top-header {
+	position: relative;
+	overflow: hidden;
+}
+
+.era-glass .top-header::before {
+	content: '';
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 200%;
+	height: 200%;
+	background: linear-gradient(105deg,
+		transparent 40%,
+		rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.15)) 45%,
+		rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.08)) 50%,
+		transparent 55%);
+	background-size: 200% 200%;
+	background-position: 0 0;
+	pointer-events: none;
+	z-index: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.era-glass .top-header::before {
+		animation: lgb-header-sheen 12s ease-in-out infinite alternate;
+	}
+}
+
+.era-glass .top-header::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient(90deg,
+		var(--custom-sidebar-color, #3c5fb8) 0%,
+		color-mix(in srgb, var(--article-right-inner-color, #2b4ea6) 50%, white) 30%,
+		var(--footer-link-color, #1d305e) 60%,
+		var(--custom-sidebar-color, #3c5fb8) 100%);
+	background-size: 200% 100%;
+	opacity: calc(var(--glass-glow-intensity, 0) * 0.8);
+	pointer-events: none;
+	z-index: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.era-glass .top-header::after {
+		animation: aero-aurora-rotate 6s linear infinite;
+	}
+}
+
+.era-glass .site-logo {
+	filter: drop-shadow(0 0 12px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.6)));
+	transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.era-glass .site-logo:hover {
+	transform: scale(1.05);
+	filter: drop-shadow(0 0 18px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.8)));
+}
+
+.era-glass .page-title a,
+.era-glass .title-container a {
+	color: var(--footer-link-color, #1d305e) !important;
+	background: linear-gradient(90deg,
+		var(--footer-link-color, #1d305e) 0%,
+		color-mix(in srgb, var(--custom-sidebar-color, #3c5fb8) 50%, white) 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+	opacity: calc(1 - (1 - var(--glass-glow-intensity, 0)) * 0.3);
+	transition: opacity 0.3s ease;
+}
+
+/* === ERA-GLASS: HOME COMPONENT ENHANCEMENTS === */
+.era-glass .lgb-search-bar {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	background: rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.08 + 0.06));
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, 0.18));
+	border-radius: var(--custom-border-radius, 12px);
+	padding: 0.5em 0.75em;
+	margin-bottom: 1em;
+	transition: box-shadow 0.3s ease;
+}
+
+.era-glass .lgb-search-bar:focus-within {
+	box-shadow: 0 0 16px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.25));
+}
+
+.era-glass .lgb-search-bar input {
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	outline: none !important;
+	color: var(--footer-text-color, #233a71) !important;
+	flex: 1;
+	font-size: 1em;
+	padding: 0 !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+}
+
+.era-glass .lgb-search-icon {
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	opacity: 0.5;
+}
+
+.era-glass .lgb-welcome {
+	color: var(--footer-text-color, #233a71);
+	margin-bottom: 10px;
+	font-size: 1.4em;
+	letter-spacing: 0.02em;
+}
+
+.era-glass .lgb-article-list a {
+	transition: transform 0.2s ease, text-shadow 0.3s ease;
+	display: inline-block;
+}
+
+.era-glass .lgb-article-list a:hover {
+	transform: translateX(4px);
+	text-shadow: 0 0 10px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.4));
+}
+
+.era-glass .lgb-search-results {
+	animation: lgb-fade-in 0.2s ease;
+}
+
+@keyframes lgb-header-sheen {
+	from { background-position: 0 0; }
+	to   { background-position: 100% 0; }
+}
+
+@keyframes lgb-fade-in {
+	from { opacity: 0; transform: translateY(-4px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+	.era-glass .sidebar::before {
+		opacity: calc(var(--glass-glow-intensity, 0) * 0.4);
+	}
+
+	.era-glass .site-logo {
+		filter: drop-shadow(0 0 6px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.4)));
+	}
+}
+
 /* === ERA: MODERN SLEEK === */
 body.era-modern {
 	background: var(--custom-body-color, #09090b) !important;
@@ -464,10 +674,10 @@ body.era-frutiger {
 	background: color-mix(in srgb, var(--article-color, #526cad) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
 	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
 	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
-	border-radius: var(--custom-border-radius, 12px) !important;
+	border-radius: 0 0 var(--custom-border-radius, 12px) var(--custom-border-radius, 12px) !important;
 	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2) !important;
 	padding: 1.5em !important;
-	margin: 0.5em 0 !important;
+	margin: 0 0 0.5em 0 !important;
 	box-sizing: border-box !important;
 }
 .era-frutiger .wiki-article-content {
@@ -1468,76 +1678,15 @@ body.era-frutiger::after {
 	50%      { opacity: 1; transform: scale(1.15); }
 }
 
-/* === GLASS ERA: ANIMATED MESH GRADIENT AURORA === */
+/* Glass era dark base (overridden by LiquidGlassBackground) */
 body.era-glass {
-	background:
-		/* Animated mesh blobs */
-		radial-gradient(ellipse 600px 400px at 20% 30%, rgba(120, 100, 255, 0.35) 0%, transparent 60%),
-		radial-gradient(ellipse 500px 500px at 80% 70%, rgba(100, 200, 255, 0.35) 0%, transparent 60%),
-		radial-gradient(ellipse 700px 500px at 50% 100%, rgba(180, 100, 255, 0.25) 0%, transparent 60%),
-		conic-gradient(
-			from var(--aero-angle, 0deg) at 30% 30%,
-			#1e1b4b 0%,
-			#311042 20%,
-			#172554 40%,
-			#0f172a 60%,
-			#1e1b4b 80%,
-			#311042 100%
-		) !important;
-	background-attachment: fixed !important;
-	background-size: 100% 100%, 100% 100%, 100% 100%, 200% 200% !important;
-	animation: aero-aurora-rotate 60s linear infinite !important;
+	background: #05050f !important;
 }
 
-/* Glass floating orbs */
-body.era-glass::before {
-	content: '';
-	position: fixed;
-	top: 15%;
-	right: 10%;
-	width: 40vmax;
-	height: 40vmax;
-	background: radial-gradient(circle, rgba(160, 180, 255, 0.25) 0%, rgba(120, 100, 255, 0.1) 40%, transparent 70%);
-	filter: blur(60px);
-	border-radius: 50%;
-	pointer-events: none;
-	z-index: 0;
-	animation: aero-orb-drift-1 40s ease-in-out infinite;
-}
-body.era-glass::after {
-	content: '';
-	position: fixed;
-	bottom: 10%;
-	left: 5%;
-	width: 50vmax;
-	height: 50vmax;
-	background: radial-gradient(circle, rgba(100, 200, 255, 0.2) 0%, rgba(80, 100, 200, 0.1) 40%, transparent 70%);
-	filter: blur(60px);
-	border-radius: 50%;
-	pointer-events: none;
-	z-index: 0;
-	animation: aero-orb-drift-2 50s ease-in-out infinite;
-}
 .era-glass .top-header,
 .era-glass .sidebar,
 .era-glass .article,
 .era-glass .glass-card {
-	position: relative;
-	z-index: 2;
-}
-
-/* Glass article has a subtle light leak at top */
-.era-glass .article::before {
-	content: '';
-	position: absolute;
-	top: 0; left: 0; right: 0;
-	height: 30%;
-	background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%) !important;
-	pointer-events: none;
-	border-radius: inherit;
-	z-index: 1;
-}
-.era-glass .article > * {
 	position: relative;
 	z-index: 2;
 }

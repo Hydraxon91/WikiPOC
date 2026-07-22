@@ -44,6 +44,7 @@ module.exports = {
                 /^logout-button/,
                 /^era-button/,
                 /^aero-/,
+                /^lgb-/,
               ],
               greedy: [
                 /^btn/,

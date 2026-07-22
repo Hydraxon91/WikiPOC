@@ -21,4 +21,7 @@ public class StyleModel
     public string? BgMeshGradient { get; set; }
     public string? BorderRadius { get; set; }
     public string? BorderStyle { get; set; }
+    public double? GlassGlowIntensity { get; set; }
+    public int? BubbleCountDesktop { get; set; }
+    public int? BubbleCountMobile { get; set; }
 }

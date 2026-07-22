@@ -7,6 +7,7 @@ import { useStyleContext } from '../../Components/contexts/StyleContext';
 import { useUserContext } from '../../Components/contexts/UserContextProvider';
 import { getWikiPageTitles } from '../../Api/wikiApi';
 import { usePageMeta } from '../../hooks/usePageMeta';
+import LiquidGlassBackground from '../../Components/LiquidGlassBackground/LiquidGlassBackground';
 
 const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, categories }) => {
   const location = useLocation();
@@ -75,6 +76,7 @@ const MainPage = ({ decodedToken, handleLogout, jwtToken, setWikiPageTitles, cat
       '--custom-sidebar-color': styles.articleRightColor,
       '--panel-opacity': styles.glassBgOpacity ?? 0.12,
     } as CSSProperties}>
+      {(era === 'glass' || era === 'frutiger') && <LiquidGlassBackground />}
       <div>
         <HeaderComponent userName={userName} userRole={userRole}>
           <HamburgerMenu handleLogout={handleLogout} categories={categories} />

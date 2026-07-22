@@ -141,13 +141,14 @@ const ManualEditStylesComponent = ({
       {/* === LEGIBILITY PREVIEW === */}
       <h3>Text Legibility Preview</h3>
       <p style={{ fontSize: "0.8em", opacity: 0.7, margin: "0 0 0.5em 0" }}>
-        See how your text reads against the current body. The smart
+        See how your text reads against the current body and sidebar. The smart
         contrast suggestion adapts to your background automatically.
       </p>
       {(() => {
         const textCol = newStyles.footerListTextColor || "#202122";
         const linkCol = newStyles.footerListLinkTextColor || "#0645ad";
         const bodyCol = newStyles.bodyColor || "#f8f9fa";
+        const sidebarCol = newStyles.articleRightColor || "#f8f9fa";
         const suggText = suggestText(bodyCol);
         const suggLink = suggestLink(bodyCol, suggText);
         const curRatio = contrastRatio(textCol, bodyCol);
@@ -158,7 +159,7 @@ const ManualEditStylesComponent = ({
         const sugg = contrastBadge(suggRatio);
         const linkB = contrastBadge(linkRatio);
         const suggLinkB = contrastBadge(suggLinkRatio);
-        const Badge = ({ b }: { b: { label: string; color: string } }) => (
+        const Badge = ({ b, ratio }: { b: { label: string; color: string }; ratio: number }) => (
           <span
             style={{
               display: "inline-block",
@@ -172,71 +173,82 @@ const ManualEditStylesComponent = ({
               verticalAlign: "middle",
             }}
           >
-            {b.label} {curRatio.toFixed(1)}:1
+            {b.label} {ratio.toFixed(1)}:1
           </span>
         );
         return (
-          <div
-            style={{
-              background: bodyCol,
-              borderRadius: newStyles.borderRadius || "0px",
-              border: newStyles.borderStyle || "1px solid #a2a9b1",
-              padding: "1.5em",
-              marginBottom: "1em",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
+          <div style={{ marginBottom: "1em" }}>
             <div
               style={{
-                position: "absolute",
-                inset: 0,
-                background: newStyles.articleColor || "#ffffff",
-                opacity: 1 - (newStyles.glassBgOpacity ?? 1),
-                pointerEvents: "none",
-              }}
-            />
-            <div
-              style={{
+                background: bodyCol,
+                borderRadius: newStyles.borderRadius || "0px",
+                border: newStyles.borderStyle || "1px solid #a2a9b1",
+                padding: "1.2em",
                 position: "relative",
-                backdropFilter: `blur(${newStyles.glassBlurRadius || 0}px)`,
-                WebkitBackdropFilter: `blur(${newStyles.glassBlurRadius || 0}px)`,
-                padding: "1em",
-                borderRadius: (newStyles.borderRadius ? parseInt(newStyles.borderRadius) / 2 : 0) + "px",
+                overflow: "hidden",
               }}
             >
               <div
                 style={{
-                  display: "flex",
-                  gap: "1.5em",
-                  marginBottom: "0.75em",
-                  fontSize: "0.8em",
-                  flexWrap: "wrap",
+                  position: "absolute",
+                  inset: 0,
+                  background: newStyles.articleColor || "#ffffff",
+                  opacity: 1 - (newStyles.glassBgOpacity ?? 1),
+                  pointerEvents: "none",
                 }}
-              >
-                <div>
-                  <strong>Text:</strong>
-                  <code
-                    style={{
-                      background: "rgba(255,255,255,0.15)",
-                      padding: "0 0.4em",
-                      borderRadius: 4,
-                      marginLeft: 6,
-                    }}
-                  >
-                    {textCol}
-                  </code>
-                  <Badge b={cur} />
-                  {suggText !== textCol && (
-                    <span style={{ marginLeft: 8, opacity: 0.8 }}>
+              />
+              <div style={{ position: "relative" }}>
+                <h2 style={{ color: textCol, fontSize: "1.1em", margin: "0 0 0.3em 0", fontFamily: newStyles.fontFamily }}>
+                  Sample Heading
+                </h2>
+                <h3 style={{ color: textCol, fontSize: "0.9em", margin: "0 0 0.5em 0", fontFamily: newStyles.fontFamily, opacity: 0.85 }}>
+                  Smaller Subheading
+                </h3>
+                <p
+                  style={{
+                    color: textCol,
+                    fontFamily: newStyles.fontFamily,
+                    margin: "0 0 1em 0",
+                    lineHeight: 1.6,
+                    fontSize: "0.9em",
+                  }}
+                >
+                  Sample paragraph at the current text color.{" "}
+                  <a href="#" style={{ color: linkCol }}>Here is a link</a>{" "}
+                  using the current link color. Try{" "}
+                  <strong>bold</strong>, <em>italic</em>, and{" "}
+                  <span style={{ textDecoration: "underline" }}>underlined</span>{" "}
+                  text — all should remain readable.
+                </p>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "1em",
+                    fontSize: "0.78em",
+                    marginTop: "0.5em",
+                    paddingTop: "0.5em",
+                    borderTop: "1px solid rgba(255,255,255,0.15)",
+                  }}
+                >
+                  <div>
+                    <strong>Text</strong>{" "}
+                    <code style={{ background: "rgba(255,255,255,0.12)", padding: "0 0.4em", borderRadius: 4 }}>
+                      {textCol}
+                    </code>
+                    <Badge b={cur} ratio={curRatio} />
+                    {suggText !== textCol && (
                       <button
                         type="button"
                         onClick={() => handleChange("footerListTextColor", suggText)}
                         style={{
+                          display: "block",
+                          marginTop: 4,
                           background: sugg.color,
                           color: "#fff",
                           border: "none",
-                          padding: "2px 8px",
+                          padding: "2px 6px",
                           borderRadius: 4,
                           cursor: "pointer",
                           fontSize: "0.85em",
@@ -244,34 +256,27 @@ const ManualEditStylesComponent = ({
                         }}
                         title={`Use suggested ${suggText} (${suggRatio.toFixed(1)}:1 ${sugg.label})`}
                       >
-                        Use {suggText} ({sugg.label} {suggRatio.toFixed(1)}:1)
+                        Use {suggText}
                       </button>
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <strong>Link:</strong>
-                  <code
-                    style={{
-                      background: "rgba(255,255,255,0.15)",
-                      padding: "0 0.4em",
-                      borderRadius: 4,
-                      marginLeft: 6,
-                    }}
-                  >
-                    {linkCol}
-                  </code>
-                  <Badge b={linkB} />
-                  {suggLink !== linkCol && (
-                    <span style={{ marginLeft: 8, opacity: 0.8 }}>
+                    )}
+                  </div>
+                  <div>
+                    <strong>Link</strong>{" "}
+                    <code style={{ background: "rgba(255,255,255,0.12)", padding: "0 0.4em", borderRadius: 4 }}>
+                      {linkCol}
+                    </code>
+                    <Badge b={linkB} ratio={linkRatio} />
+                    {suggLink !== linkCol && (
                       <button
                         type="button"
                         onClick={() => handleChange("footerListLinkTextColor", suggLink)}
                         style={{
+                          display: "block",
+                          marginTop: 4,
                           background: suggLinkB.color,
                           color: "#fff",
                           border: "none",
-                          padding: "2px 8px",
+                          padding: "2px 6px",
                           borderRadius: 4,
                           cursor: "pointer",
                           fontSize: "0.85em",
@@ -279,33 +284,56 @@ const ManualEditStylesComponent = ({
                         }}
                         title={`Use suggested ${suggLink} (${suggLinkRatio.toFixed(1)}:1 ${suggLinkB.label})`}
                       >
-                        Use {suggLink} ({suggLinkB.label} {suggLinkRatio.toFixed(1)}:1)
+                        Use {suggLink}
                       </button>
-                    </span>
+                    )}
+                  </div>
+                  {(suggText !== textCol || suggLink !== linkCol) && (
+                    <div style={{ gridColumn: "1 / -1" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleChange("footerListTextColor", suggText);
+                          handleChange("footerListLinkTextColor", suggLink);
+                        }}
+                        style={{
+                          background: "rgba(255,255,255,0.15)",
+                          color: textCol,
+                          border: "1px solid rgba(255,255,255,0.2)",
+                          padding: "3px 10px",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                          fontSize: "0.8em",
+                          width: "100%",
+                        }}
+                      >
+                        Reset both to recommended defaults
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
-              <p
-                style={{
-                  color: textCol,
-                  fontFamily: newStyles.fontFamily,
-                  margin: 0,
-                  lineHeight: 1.6,
-                  fontSize: "0.95em",
-                }}
-              >
-                Sample paragraph at the current text color.{" "}
-                <a
-                  href="#"
-                  style={{ color: linkCol }}
-                >
-                  Here is a link
-                </a>{" "}
-                using the current link color. Try{" "}
-                <strong>bold</strong>, <em>italic</em>, and{" "}
-                <span style={{ textDecoration: "underline" }}>underlined</span>{" "}
-                text — all should remain readable.
-              </p>
+            </div>
+
+            <div
+              style={{
+                marginTop: "0.5em",
+                padding: "0.7em 1em",
+                background: sidebarCol,
+                borderRadius: newStyles.borderRadius || "0px",
+                border: newStyles.borderStyle || "1px solid #a2a9b1",
+                fontSize: "0.78em",
+                display: "flex",
+                gap: "1em",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ color: textCol, fontFamily: newStyles.fontFamily, fontWeight: 600 }}>
+                Sidebar Preview
+              </span>
+              <a href="#" style={{ color: linkCol, fontFamily: newStyles.fontFamily }}>
+                Sample Link
+              </a>
             </div>
           </div>
         );
@@ -359,6 +387,55 @@ const ManualEditStylesComponent = ({
               style={{ width: "100%", fontFamily: "monospace", fontSize: "0.85em" }}
               value={newStyles.bgMeshGradient || ""}
               onChange={(e) => handleChange("bgMeshGradient", e.target.value)}
+            />
+          </div>
+        </>
+      )}
+
+      {/* === GLOW & BUBBLE CONFIG === */}
+      <h3>Glow & Bubbles</h3>
+
+      <div className="form-group">
+        <label>Glass Glow Intensity ({Math.round((newStyles.glassGlowIntensity ?? 0) * 100)}%):</label>
+        <input
+          type="range"
+          min="0"
+          max="1.0"
+          step="0.05"
+          value={newStyles.glassGlowIntensity ?? 0}
+          onChange={(e) => handleChange("glassGlowIntensity", parseFloat(e.target.value))}
+        />
+      </div>
+
+      {(newStyles.interfaceEra === 'glass' || newStyles.interfaceEra === 'frutiger') && (
+        <>
+          <div className="form-group">
+            <label>Bubble Count (Desktop — {newStyles.bubbleCountDesktop ?? 0}):</label>
+            <input
+              type="range"
+              min="0"
+              max="40"
+              step="2"
+              value={newStyles.bubbleCountDesktop ?? 0}
+              onChange={(e) => {
+                const raw = parseInt(e.target.value, 10);
+                handleChange("bubbleCountDesktop", Math.round(raw / 2) * 2);
+              }}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Bubble Count (Mobile — {newStyles.bubbleCountMobile ?? 0}):</label>
+            <input
+              type="range"
+              min="0"
+              max="20"
+              step="2"
+              value={newStyles.bubbleCountMobile ?? 0}
+              onChange={(e) => {
+                const raw = parseInt(e.target.value, 10);
+                handleChange("bubbleCountMobile", Math.round(raw / 2) * 2);
+              }}
             />
           </div>
         </>
