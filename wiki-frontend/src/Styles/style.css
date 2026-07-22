@@ -474,12 +474,12 @@ body.era-frutiger {
 	background:
 		linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 50%, rgba(220, 240, 255, 0.85) 100%) !important;
 	border: var(--custom-border-style, 2px solid #4a90e2) !important;
-	border-radius: var(--custom-border-radius, 24px) !important;
+	border-radius: 0 0 var(--custom-border-radius, 24px) var(--custom-border-radius, 24px) !important;
 	box-shadow:
 		0 8px 24px rgba(0, 64, 128, 0.2),
 		inset 0 2px 4px rgba(255, 255, 255, 0.9) !important;
 	padding: 1.5em !important;
-	margin: 0.5em 0 !important;
+	margin: 0 0 0.5em 0 !important;
 	box-sizing: border-box !important;
 }
 .era-glass .form-control,
@@ -1250,65 +1250,55 @@ span.user {
 	inherits: false;
 }
 
-/* === FRUTIGER AERO: FULL AURORA SKY BACKGROUND === */
+/* === FRUTIGER AERO: BLUE SKY + GREEN FIELD BACKGROUND === */
 body.era-frutiger {
 	background:
-		/* Light leak blobs floating across the sky */
-		radial-gradient(ellipse 800px 600px at 15% 20%, rgba(255, 220, 180, 0.45) 0%, transparent 60%),
-		radial-gradient(ellipse 700px 500px at 85% 30%, rgba(180, 220, 255, 0.4) 0%, transparent 60%),
-		radial-gradient(ellipse 600px 600px at 50% 90%, rgba(200, 255, 220, 0.3) 0%, transparent 65%),
-		/* Aurora layer that animates */
-		conic-gradient(
-			from var(--aero-angle, 0deg) at 50% 50%,
-			#2b7cd3 0%,
-			#51a7e9 15%,
-			#8fd3f4 28%,
-			#bbf2f6 40%,
-			#c8e6c9 52%,
-			#a5d6a7 64%,
-			#66bb6a 76%,
-			#2e7d32 88%,
-			#1b5e20 100%
-		),
-		linear-gradient(180deg, #2b7cd3 0%, #51a7e9 35%, #8fd3f4 60%, #bbf2f6 100%) !important;
+		/* Rolling hills: far hill (lighter green) */
+		radial-gradient(ellipse 140% 28% at 30% 100%, #7ec87e 0%, transparent 70%),
+		/* Rolling hills: near hill (darker green) */
+		radial-gradient(ellipse 120% 32% at 65% 100%, #5daa5d 0%, transparent 65%),
+		/* Blue sky gradient */
+		linear-gradient(180deg, #3a7bd5 0%, #6bb3e8 35%, #a8d8f0 60%, #d4eeff 100%) !important;
 	background-attachment: fixed !important;
-	background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%, 100% 100% !important;
-	animation: aero-aurora-rotate 30s linear infinite, aero-aurora-rotate 30s linear infinite, aero-aurora-rotate 30s linear infinite, none, none !important;
+	background-size: 100% 100%, 100% 100%, 100% 100% !important;
 	position: relative !important;
 	overflow-x: hidden !important;
 }
 
-/* Floating orbs that drift across the screen — ::before and ::after on body */
+/* Clouds drifting across the sky — ::before on body */
 body.era-frutiger::before {
 	content: '';
 	position: fixed;
-	top: 10%;
-	left: -10%;
-	width: 50vmax;
-	height: 50vmax;
-	background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6) 0%, rgba(180, 220, 255, 0.3) 30%, transparent 70%);
-	filter: blur(40px);
-	border-radius: 50%;
+	top: 0; left: 0; right: 0; bottom: 0;
+	background:
+		radial-gradient(ellipse 400px 100px at 15% 12%, rgba(255, 255, 255, 0.7) 0%, transparent 70%),
+		radial-gradient(ellipse 350px 80px at 45% 18%, rgba(255, 255, 255, 0.6) 0%, transparent 70%),
+		radial-gradient(ellipse 300px 90px at 75% 10%, rgba(255, 255, 255, 0.5) 0%, transparent 70%),
+		radial-gradient(ellipse 280px 70px at 25% 25%, rgba(255, 255, 255, 0.4) 0%, transparent 70%),
+		radial-gradient(ellipse 320px 80px at 60% 22%, rgba(255, 255, 255, 0.45) 0%, transparent 70%);
+	background-position: 0 0;
 	pointer-events: none;
-	z-index: 0;
-	animation: aero-orb-drift-1 25s ease-in-out infinite;
+	z-index: 1;
+	animation: aero-clouds-drift 30s ease-in-out infinite;
 }
+
+/* Subtle sun glow in the sky */
 body.era-frutiger::after {
 	content: '';
 	position: fixed;
-	bottom: -20%;
-	right: -10%;
-	width: 60vmax;
-	height: 60vmax;
-	background: radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.45) 0%, rgba(180, 255, 200, 0.25) 35%, transparent 70%);
-	filter: blur(50px);
+	top: 5%;
+	right: 10%;
+	width: 140px;
+	height: 140px;
+	background: radial-gradient(circle, rgba(255, 230, 150, 0.35) 0%, rgba(255, 200, 100, 0.12) 40%, transparent 70%);
 	border-radius: 50%;
+	filter: blur(5px);
 	pointer-events: none;
-	z-index: 0;
-	animation: aero-orb-drift-2 35s ease-in-out infinite;
+	z-index: 1;
+	animation: aero-sun-pulse 8s ease-in-out infinite;
 }
 
-/* Make the content layer sit above the orbs */
+/* Make the content layer sit above clouds and sun */
 .era-frutiger .top-header,
 .era-frutiger .sidebar,
 .era-frutiger .article,
@@ -1317,19 +1307,15 @@ body.era-frutiger::after {
 	z-index: 2;
 }
 
-/* === FRUTIGER AERO: SKY CLOUDS PARALLAX OVERLAY === */
+/* === FRUTIGER AERO: GLASS SHEEN ON ARTICLE PANEL === */
 .era-frutiger .article::before {
 	content: '';
 	position: absolute;
 	top: 0; left: 0; right: 0; bottom: 0;
-	background:
-		radial-gradient(ellipse 300px 80px at 20% 15%, rgba(255, 255, 255, 0.5) 0%, transparent 70%),
-		radial-gradient(ellipse 250px 70px at 70% 25%, rgba(255, 255, 255, 0.4) 0%, transparent 70%),
-		radial-gradient(ellipse 200px 60px at 45% 80%, rgba(255, 255, 255, 0.35) 0%, transparent 70%);
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%);
 	pointer-events: none;
 	border-radius: inherit;
 	z-index: 1;
-	animation: aero-clouds-drift 20s ease-in-out infinite;
 }
 .era-frutiger .article > * {
 	position: relative;
@@ -1468,14 +1454,18 @@ body.era-frutiger::after {
 	100% { transform: translate(0, 0) scale(1); }
 }
 @keyframes aero-clouds-drift {
-	0%   { transform: translate(0, 0); opacity: 0.7; }
-	50%  { transform: translate(20px, -10px); opacity: 1; }
-	100% { transform: translate(0, 0); opacity: 0.7; }
+	0%   { background-position: 0 0; opacity: 0.7; }
+	50%  { background-position: 60px 0; opacity: 1; }
+	100% { background-position: 0 0; opacity: 0.7; }
 }
 @keyframes aero-bubble-float {
 	0%   { transform: translate(0, 0) scale(1); opacity: 0.8; }
 	50%  { transform: translate(15px, -20px) scale(1.2); opacity: 1; }
 	100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+}
+@keyframes aero-sun-pulse {
+	0%, 100% { opacity: 0.5; transform: scale(1); }
+	50%      { opacity: 1; transform: scale(1.15); }
 }
 
 /* === GLASS ERA: ANIMATED MESH GRADIENT AURORA === */
