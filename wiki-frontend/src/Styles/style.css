@@ -116,7 +116,7 @@
 /* === ERA: WIKIPEDIA CLASSIC === */
 .era-wikipedia .form-control,
 .era-wikipedia .btn,
-.era-wikipedia input,
+.era-wikipedia input:not([type="range"]):not([type="color"]),
 .era-wikipedia select,
 .era-wikipedia textarea {
 	background: #ffffff !important;
@@ -497,8 +497,8 @@ body.era-modern {
 	border-radius: 0 !important;
 	box-shadow: none !important;
 }
-.era-modern .form-control:not([type="color"]),
-.era-modern input:not([type="color"]),
+.era-modern .form-control:not([type="color"]):not([type="range"]),
+.era-modern input:not([type="color"]):not([type="range"]),
 .era-modern select,
 .era-modern textarea {
 	background: #09090b !important;
@@ -589,7 +589,7 @@ body.era-frutiger {
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), inset 0 2px 3px #fff !important;
 }
 .era-frutiger .form-control,
-.era-frutiger input {
+.era-frutiger input:not([type="range"]):not([type="color"]) {
 	background: rgba(255, 255, 255, 0.85) !important;
 	color: #111827 !important;
 	border-radius: 24px !important;
@@ -693,7 +693,7 @@ body.era-frutiger {
 	box-sizing: border-box !important;
 }
 .era-glass .form-control,
-.era-glass input {
+.era-glass input:not([type="range"]) {
 	box-sizing: border-box !important;
 	overflow: hidden !important;
 }
