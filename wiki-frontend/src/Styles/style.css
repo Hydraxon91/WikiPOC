@@ -1327,6 +1327,8 @@ span.user {
 	content: "";
 }
 .pagefooter {
+	position: relative;
+	z-index: 1;
 	padding: 1.5vh 1vh;
 	font-size: 75%;
 	line-height: 2em;
