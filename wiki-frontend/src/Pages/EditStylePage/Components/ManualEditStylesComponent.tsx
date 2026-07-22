@@ -96,7 +96,7 @@ const ManualEditStylesComponent = ({
       {/* === ERA SWITCHER === */}
       <h3>Era Workspace</h3>
 
-      <div style={{ display: "flex", gap: "0.5em", flexWrap: "wrap", marginBottom: "1em" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5em", marginBottom: "1em" }}>
         {EPOCHS.map((era) => (
           <button
             key={era}

@@ -715,6 +715,14 @@ Three eras were visually overhauled on branch `feat/era-redesign` (6 commits, 30
 - `wiki-backend/wiki-backend/DatabaseServices/Repositories/StyleRepository/StyleRepository.cs` — Added 3 property copy lines
 - `wiki-frontend/postcss.config.cjs` — Added `/^preset-/` to deep safelist
 
+### Post-PR Fixes (July 2026 — Session 4 continued)
+
+- **Glass blob customizer**: 8 new StyleModel fields (GlassBaseColor, GlassBlob1/2/3Color + Outer, GlassBlob3Opacity) added with EF migration + CSS custom property injection. LiquidGlassBackground.css reads all blob colors and base color via `var(--glass-*-color, fallback)`. Color pickers + opacity slider in glass-era Aesthetic Modifiers section.
+- **Hamburger z-index fix**: era-glass article `z-index: 2` + header `backdrop-filter` created a stacking context that trapped the hamburger overlay. Fixed by using `React.createPortal` to render the overlay+drawer into `document.body`, escaping the header's stacking context entirely.
+- **Era workspace grid**: era workspace buttons (Wikipedia/Glass/Modern/Frutiger) changed from `display: flex; flexWrap: wrap` to `display: grid; gridTemplateColumns: 1fr 1fr` for consistent 2×2 layout on all viewports.
+- **Mobile form-group layout**: added `@media (max-width: 768px)` rule for `.form-group` — labels allow wrapping (`white-space: normal`), gap reduced to 0.5rem, range inputs capped at 100px so blob slider labels don't overflow on narrow screens.
+- **PR template**: `.github/PULL_REQUEST_TEMPLATE.md` added; referenced in AGENTS.md under PR conventions.
+
 ## PR Template
 
 Every PR description should follow this format (template at `.github/PULL_REQUEST_TEMPLATE.md`):
