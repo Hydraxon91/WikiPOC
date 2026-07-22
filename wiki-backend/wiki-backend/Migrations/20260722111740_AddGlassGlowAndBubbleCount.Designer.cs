@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using wiki_backend.DatabaseServices;
 
@@ -11,9 +12,11 @@ using wiki_backend.DatabaseServices;
 namespace wiki_backend.Migrations
 {
     [DbContext(typeof(WikiDbContext))]
-    partial class WikiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260722111740_AddGlassGlowAndBubbleCount")]
+    partial class AddGlassGlowAndBubbleCount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -482,31 +485,7 @@ namespace wiki_backend.Migrations
                     b.Property<string>("FooterListTextColor")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GlassBaseColor")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<double?>("GlassBgOpacity")
-                        .HasColumnType("float");
-
-                    b.Property<string>("GlassBlob1Color")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GlassBlob1ColorOuter")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GlassBlob2Color")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GlassBlob2ColorOuter")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GlassBlob3Color")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GlassBlob3ColorOuter")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double?>("GlassBlob3Opacity")
                         .HasColumnType("float");
 
                     b.Property<double?>("GlassBlurRadius")

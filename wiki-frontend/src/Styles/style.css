@@ -116,7 +116,7 @@
 /* === ERA: WIKIPEDIA CLASSIC === */
 .era-wikipedia .form-control,
 .era-wikipedia .btn,
-.era-wikipedia input,
+.era-wikipedia input:not([type="range"]):not([type="color"]),
 .era-wikipedia select,
 .era-wikipedia textarea {
 	background: #ffffff !important;
@@ -229,39 +229,264 @@ body.era-glass {
 	border-bottom: 2px solid var(--footer-link-color, #1d305e);
 }
 
+/* === ERA-GLASS: SIDEBAR ENHANCEMENTS === */
+.era-glass .sidebar h2 {
+	padding: 0.3em 0;
+	margin: 0.8em 0 0.3em 0;
+	border-bottom: 1px solid rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.15 + 0.1));
+}
+
+.era-glass .sidebar a {
+	transition: transform 0.2s ease, text-shadow 0.3s ease;
+}
+
+.era-glass .sidebar a:hover {
+	transform: translateX(4px);
+	text-shadow: 0 0 12px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.5));
+}
+
+.era-glass .sidebar::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 4px;
+	background: linear-gradient(180deg,
+		color-mix(in srgb, var(--custom-sidebar-color, #3c5fb8) 80%, white) 0%,
+		var(--article-right-inner-color, #2b4ea6) 50%,
+		color-mix(in srgb, var(--custom-sidebar-color, #3c5fb8) 80%, white) 100%);
+	background-size: 100% 200%;
+	opacity: calc(var(--glass-glow-intensity, 0) * 0.9);
+	pointer-events: none;
+	border-radius: var(--custom-border-radius, 12px) 0 0 var(--custom-border-radius, 12px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.era-glass .sidebar::before {
+		animation: aero-aurora-rotate 8s linear infinite;
+	}
+}
+
+.era-glass .sidebar::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: linear-gradient(90deg,
+		transparent 0%,
+		rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.4)) 20%,
+		rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.2)) 50%,
+		rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.4)) 80%,
+		transparent 100%);
+	pointer-events: none;
+}
+
+/* === ERA-GLASS: TOP HEADER ENHANCEMENTS === */
+.era-glass .top-header {
+	position: relative;
+	overflow: hidden;
+}
+
+.era-glass .top-header::before {
+	content: '';
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 200%;
+	height: 200%;
+	background: linear-gradient(105deg,
+		transparent 40%,
+		rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.15)) 45%,
+		rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.08)) 50%,
+		transparent 55%);
+	background-size: 200% 200%;
+	background-position: 0 0;
+	pointer-events: none;
+	z-index: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.era-glass .top-header::before {
+		animation: lgb-header-sheen 12s ease-in-out infinite alternate;
+	}
+}
+
+.era-glass .top-header::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient(90deg,
+		var(--custom-sidebar-color, #3c5fb8) 0%,
+		color-mix(in srgb, var(--article-right-inner-color, #2b4ea6) 50%, white) 30%,
+		var(--footer-link-color, #1d305e) 60%,
+		var(--custom-sidebar-color, #3c5fb8) 100%);
+	background-size: 200% 100%;
+	opacity: calc(var(--glass-glow-intensity, 0) * 0.8);
+	pointer-events: none;
+	z-index: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.era-glass .top-header::after {
+		animation: aero-aurora-rotate 6s linear infinite;
+	}
+}
+
+.era-glass .site-logo {
+	filter: drop-shadow(0 0 12px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.6)));
+	transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.era-glass .site-logo:hover {
+	transform: scale(1.05);
+	filter: drop-shadow(0 0 18px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.8)));
+}
+
+.era-glass .page-title a,
+.era-glass .title-container a {
+	color: var(--footer-link-color, #1d305e) !important;
+	background: linear-gradient(90deg,
+		var(--footer-link-color, #1d305e) 0%,
+		color-mix(in srgb, var(--custom-sidebar-color, #3c5fb8) 50%, white) 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+	opacity: calc(1 - (1 - var(--glass-glow-intensity, 0)) * 0.3);
+	transition: opacity 0.3s ease;
+}
+
+/* === ERA-GLASS: HOME COMPONENT ENHANCEMENTS === */
+.era-glass .lgb-search-bar {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	background: rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.08 + 0.06));
+	border: var(--custom-border-style, 1px solid rgba(255, 255, 255, 0.18));
+	border-radius: var(--custom-border-radius, 12px);
+	padding: 0.5em 0.75em;
+	margin-bottom: 1em;
+	transition: box-shadow 0.3s ease;
+}
+
+.era-glass .lgb-search-bar:focus-within {
+	box-shadow: 0 0 16px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.25));
+}
+
+.era-glass .lgb-search-bar input {
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	outline: none !important;
+	color: var(--footer-text-color, #233a71) !important;
+	flex: 1;
+	font-size: 1em;
+	padding: 0 !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+}
+
+.lgb-search-icon {
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	opacity: 0.5;
+}
+
+.era-glass .lgb-welcome {
+	color: var(--footer-text-color, #233a71);
+	margin-bottom: 10px;
+	font-size: 1.4em;
+	letter-spacing: 0.02em;
+}
+
+.era-glass .lgb-article-list a {
+	transition: transform 0.2s ease, text-shadow 0.3s ease;
+	display: inline-block;
+}
+
+.era-glass .lgb-article-list a:hover {
+	transform: translateX(4px);
+	text-shadow: 0 0 10px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.4));
+}
+
+.era-glass .lgb-search-results {
+	animation: lgb-fade-in 0.2s ease;
+}
+
+@keyframes lgb-header-sheen {
+	from { background-position: 0 0; }
+	to   { background-position: 100% 0; }
+}
+
+@keyframes lgb-fade-in {
+	from { opacity: 0; transform: translateY(-4px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+	.era-glass .sidebar::before {
+		opacity: calc(var(--glass-glow-intensity, 0) * 0.4);
+	}
+
+	.era-glass .site-logo {
+		filter: drop-shadow(0 0 6px rgba(255, 255, 255, calc(var(--glass-glow-intensity, 0) * 0.4)));
+	}
+}
+
 /* === ERA: MODERN SLEEK === */
 body.era-modern {
-	background: var(--custom-body-color, #09090b) !important;
+	background:
+		radial-gradient(ellipse 800px 500px at 20% 15%, rgba(99, 102, 241, 0.10) 0%, transparent 55%),
+		radial-gradient(ellipse 700px 600px at 80% 75%, rgba(108, 99, 255, 0.08) 0%, transparent 60%),
+		var(--custom-body-color, #0a0a0f) !important;
+	background-attachment: fixed !important;
+	background-size: 100% 100%, 100% 100%, 100% 100% !important;
 }
 .era-modern .top-header {
-	background: var(--custom-header-color, #121214) !important;
+	background: var(--custom-header-color, rgba(15, 17, 23, 0.85)) !important;
 	color: var(--footer-text-color, #ffffff) !important;
-	border-radius: 0 !important;
-	box-shadow: none !important;
-	backdrop-filter: none !important;
 	border: none !important;
-	border-bottom: 1px solid #27272a !important;
+	border-bottom: 1px solid rgba(99, 102, 241, 0.20) !important;
+	border-radius: 0 !important;
+	backdrop-filter: blur(8px) saturate(140%) !important;
+	-webkit-backdrop-filter: blur(8px) saturate(140%) !important;
+	box-shadow: 0 1px 20px rgba(99, 102, 241, 0.08) !important;
 	letter-spacing: 0.025em;
 }
 .era-modern .article {
-	background: var(--article-color, #18181b) !important;
+	background: var(--article-color, rgba(26, 29, 39, 0.7)) !important;
 	color: var(--footer-text-color, #ffffff) !important;
-	border-radius: 0 !important;
-	box-shadow: none !important;
-	backdrop-filter: none !important;
-	border: 1px solid #27272a !important;
+	border: 1px solid rgba(255, 255, 255, 0.04) !important;
 	border-left: 4px solid var(--footer-link-color, #6366f1) !important;
+	border-radius: var(--custom-border-radius, 8px) !important;
+	backdrop-filter: blur(6px) !important;
+	-webkit-backdrop-filter: blur(6px) !important;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
 	letter-spacing: 0.025em;
-	padding: 1.25em !important;
+	padding: 1.5em !important;
 	margin-top: 1.5rem !important;
 }
-.era-modern a { color: var(--footer-link-color, #6366f1); }
+.era-modern a {
+	color: var(--footer-link-color, #6366f1);
+	transition: text-shadow 0.2s ease;
+}
+.era-modern a:hover {
+	text-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
 .era-modern .wiki-navbar {
-	background: var(--article-right-inner-color, #2a2f45);
+	background: rgba(42, 47, 69, 0.6) !important;
+	backdrop-filter: blur(6px) !important;
+	-webkit-backdrop-filter: blur(6px) !important;
 	color: var(--footer-text-color, #ffffff);
 	display: flex;
 	width: 100%;
-	border-bottom: 1px solid var(--footer-link-color, #6366f1) !important;
+	border-bottom: 1px solid rgba(99, 102, 241, 0.20) !important;
 	border-radius: 0;
 }
 .era-modern .wiki-navbar-button {
@@ -274,30 +499,48 @@ body.era-modern {
 	border-bottom: 2px solid var(--footer-link-color, #6366f1);
 }
 .era-modern .sidebar {
-	background: var(--custom-sidebar-color, #121214) !important;
+	background: var(--custom-sidebar-color, rgba(15, 17, 23, 0.6)) !important;
 	border: none !important;
-	border-right: 1px solid #27272a !important;
+	border-right: 1px solid rgba(99, 102, 241, 0.18) !important;
 	border-left: none !important;
+	border-radius: 0 !important;
+	backdrop-filter: blur(6px) !important;
+	-webkit-backdrop-filter: blur(6px) !important;
+	box-shadow: 1px 0 20px rgba(99, 102, 241, 0.06) !important;
 	margin-top: 1.5rem !important;
 }
 .era-modern .btn {
-	background: #6366f1 !important;
-	border: none !important;
+	background: linear-gradient(135deg, #6c63ff 0%, #5046e5 100%) !important;
+	border: 1px solid rgba(255, 255, 255, 0.06) !important;
 	color: #ffffff !important;
-	border-radius: 0 !important;
-	box-shadow: none !important;
+	border-radius: 6px !important;
+	box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25) !important;
+	transition: box-shadow 0.2s ease, transform 0.2s ease !important;
 }
-.era-modern .form-control:not([type="color"]),
-.era-modern input:not([type="color"]),
+.era-modern .btn:hover {
+	box-shadow: 0 4px 16px rgba(99, 102, 241, 0.45) !important;
+	transform: translateY(-1px) !important;
+}
+.era-modern .form-control:not([type="color"]):not([type="range"]),
+.era-modern input:not([type="color"]):not([type="range"]),
 .era-modern select,
 .era-modern textarea {
-	background: #09090b !important;
-	border: 1px solid #27272a !important;
+	background: rgba(15, 17, 23, 0.6) !important;
+	border: 1px solid rgba(255, 255, 255, 0.08) !important;
 	color: var(--footer-text-color, #ffffff) !important;
 	padding: 0.5rem 0.75rem !important;
 	height: 38px !important;
+	border-radius: 6px !important;
 	box-sizing: border-box !important;
-	border-left: none !important;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+.era-modern .form-control:not([type="color"]):not([type="range"]):focus,
+.era-modern input:not([type="color"]):not([type="range"]):focus,
+.era-modern textarea:focus,
+.era-modern select:focus {
+	border-color: var(--footer-link-color, #6366f1) !important;
+	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.20) !important;
+	outline: none !important;
 }
 .era-modern input[type="color"] {
 	background: transparent !important;
@@ -316,7 +559,10 @@ body.era-modern {
 	border: none !important;
 	border-radius: 3px !important;
 }
-.era-modern h1,
+.era-modern h1 {
+	color: #ffffff !important;
+	text-shadow: 0 0 30px rgba(99, 102, 241, 0.20) !important;
+}
 .era-modern h2,
 .era-modern h3,
 .era-modern h4,
@@ -379,7 +625,7 @@ body.era-frutiger {
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), inset 0 2px 3px #fff !important;
 }
 .era-frutiger .form-control,
-.era-frutiger input {
+.era-frutiger input:not([type="range"]):not([type="color"]) {
 	background: rgba(255, 255, 255, 0.85) !important;
 	color: #111827 !important;
 	border-radius: 24px !important;
@@ -464,26 +710,26 @@ body.era-frutiger {
 	background: color-mix(in srgb, var(--article-color, #526cad) calc((1 - var(--glass-bg-opacity, 0.12)) * 100%), transparent) !important;
 	backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
 	-webkit-backdrop-filter: blur(var(--glass-blur-radius, var(--blur-radius, 20px))) saturate(160%) !important;
-	border-radius: var(--custom-border-radius, 12px) !important;
+	border-radius: 0 0 var(--custom-border-radius, 12px) var(--custom-border-radius, 12px) !important;
 	box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2) !important;
 	padding: 1.5em !important;
-	margin: 0.5em 0 !important;
+	margin: 0 0 0.5em 0 !important;
 	box-sizing: border-box !important;
 }
 .era-frutiger .wiki-article-content {
 	background:
 		linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 50%, rgba(220, 240, 255, 0.85) 100%) !important;
 	border: var(--custom-border-style, 2px solid #4a90e2) !important;
-	border-radius: var(--custom-border-radius, 24px) !important;
+	border-radius: 0 0 var(--custom-border-radius, 24px) var(--custom-border-radius, 24px) !important;
 	box-shadow:
 		0 8px 24px rgba(0, 64, 128, 0.2),
 		inset 0 2px 4px rgba(255, 255, 255, 0.9) !important;
 	padding: 1.5em !important;
-	margin: 0.5em 0 !important;
+	margin: 0 0 0.5em 0 !important;
 	box-sizing: border-box !important;
 }
 .era-glass .form-control,
-.era-glass input {
+.era-glass input:not([type="range"]) {
 	box-sizing: border-box !important;
 	overflow: hidden !important;
 }
@@ -1117,6 +1363,8 @@ span.user {
 	content: "";
 }
 .pagefooter {
+	position: relative;
+	z-index: 1;
 	padding: 1.5vh 1vh;
 	font-size: 75%;
 	line-height: 2em;
@@ -1250,65 +1498,55 @@ span.user {
 	inherits: false;
 }
 
-/* === FRUTIGER AERO: FULL AURORA SKY BACKGROUND === */
+/* === FRUTIGER AERO: BLUE SKY + GREEN FIELD BACKGROUND === */
 body.era-frutiger {
 	background:
-		/* Light leak blobs floating across the sky */
-		radial-gradient(ellipse 800px 600px at 15% 20%, rgba(255, 220, 180, 0.45) 0%, transparent 60%),
-		radial-gradient(ellipse 700px 500px at 85% 30%, rgba(180, 220, 255, 0.4) 0%, transparent 60%),
-		radial-gradient(ellipse 600px 600px at 50% 90%, rgba(200, 255, 220, 0.3) 0%, transparent 65%),
-		/* Aurora layer that animates */
-		conic-gradient(
-			from var(--aero-angle, 0deg) at 50% 50%,
-			#2b7cd3 0%,
-			#51a7e9 15%,
-			#8fd3f4 28%,
-			#bbf2f6 40%,
-			#c8e6c9 52%,
-			#a5d6a7 64%,
-			#66bb6a 76%,
-			#2e7d32 88%,
-			#1b5e20 100%
-		),
-		linear-gradient(180deg, #2b7cd3 0%, #51a7e9 35%, #8fd3f4 60%, #bbf2f6 100%) !important;
+		/* Rolling hills: far hill (lighter green) */
+		radial-gradient(ellipse 140% 28% at 30% 100%, #7ec87e 0%, transparent 70%),
+		/* Rolling hills: near hill (darker green) */
+		radial-gradient(ellipse 120% 32% at 65% 100%, #5daa5d 0%, transparent 65%),
+		/* Blue sky gradient */
+		linear-gradient(180deg, #3a7bd5 0%, #6bb3e8 35%, #a8d8f0 60%, #d4eeff 100%) !important;
 	background-attachment: fixed !important;
-	background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%, 100% 100% !important;
-	animation: aero-aurora-rotate 30s linear infinite, aero-aurora-rotate 30s linear infinite, aero-aurora-rotate 30s linear infinite, none, none !important;
+	background-size: 100% 100%, 100% 100%, 100% 100% !important;
 	position: relative !important;
 	overflow-x: hidden !important;
 }
 
-/* Floating orbs that drift across the screen — ::before and ::after on body */
+/* Clouds drifting across the sky — ::before on body */
 body.era-frutiger::before {
 	content: '';
 	position: fixed;
-	top: 10%;
-	left: -10%;
-	width: 50vmax;
-	height: 50vmax;
-	background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6) 0%, rgba(180, 220, 255, 0.3) 30%, transparent 70%);
-	filter: blur(40px);
-	border-radius: 50%;
+	top: 0; left: 0; right: 0; bottom: 0;
+	background:
+		radial-gradient(ellipse 400px 100px at 15% 12%, rgba(255, 255, 255, 0.7) 0%, transparent 70%),
+		radial-gradient(ellipse 350px 80px at 45% 18%, rgba(255, 255, 255, 0.6) 0%, transparent 70%),
+		radial-gradient(ellipse 300px 90px at 75% 10%, rgba(255, 255, 255, 0.5) 0%, transparent 70%),
+		radial-gradient(ellipse 280px 70px at 25% 25%, rgba(255, 255, 255, 0.4) 0%, transparent 70%),
+		radial-gradient(ellipse 320px 80px at 60% 22%, rgba(255, 255, 255, 0.45) 0%, transparent 70%);
+	background-position: 0 0;
 	pointer-events: none;
-	z-index: 0;
-	animation: aero-orb-drift-1 25s ease-in-out infinite;
+	z-index: 1;
+	animation: aero-clouds-drift 30s ease-in-out infinite;
 }
+
+/* Subtle sun glow in the sky */
 body.era-frutiger::after {
 	content: '';
 	position: fixed;
-	bottom: -20%;
-	right: -10%;
-	width: 60vmax;
-	height: 60vmax;
-	background: radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.45) 0%, rgba(180, 255, 200, 0.25) 35%, transparent 70%);
-	filter: blur(50px);
+	top: 5%;
+	right: 10%;
+	width: 140px;
+	height: 140px;
+	background: radial-gradient(circle, rgba(255, 230, 150, 0.35) 0%, rgba(255, 200, 100, 0.12) 40%, transparent 70%);
 	border-radius: 50%;
+	filter: blur(5px);
 	pointer-events: none;
-	z-index: 0;
-	animation: aero-orb-drift-2 35s ease-in-out infinite;
+	z-index: 1;
+	animation: aero-sun-pulse 8s ease-in-out infinite;
 }
 
-/* Make the content layer sit above the orbs */
+/* Make the content layer sit above clouds and sun */
 .era-frutiger .top-header,
 .era-frutiger .sidebar,
 .era-frutiger .article,
@@ -1317,19 +1555,15 @@ body.era-frutiger::after {
 	z-index: 2;
 }
 
-/* === FRUTIGER AERO: SKY CLOUDS PARALLAX OVERLAY === */
+/* === FRUTIGER AERO: GLASS SHEEN ON ARTICLE PANEL === */
 .era-frutiger .article::before {
 	content: '';
 	position: absolute;
 	top: 0; left: 0; right: 0; bottom: 0;
-	background:
-		radial-gradient(ellipse 300px 80px at 20% 15%, rgba(255, 255, 255, 0.5) 0%, transparent 70%),
-		radial-gradient(ellipse 250px 70px at 70% 25%, rgba(255, 255, 255, 0.4) 0%, transparent 70%),
-		radial-gradient(ellipse 200px 60px at 45% 80%, rgba(255, 255, 255, 0.35) 0%, transparent 70%);
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%);
 	pointer-events: none;
 	border-radius: inherit;
 	z-index: 1;
-	animation: aero-clouds-drift 20s ease-in-out infinite;
 }
 .era-frutiger .article > * {
 	position: relative;
@@ -1468,86 +1702,29 @@ body.era-frutiger::after {
 	100% { transform: translate(0, 0) scale(1); }
 }
 @keyframes aero-clouds-drift {
-	0%   { transform: translate(0, 0); opacity: 0.7; }
-	50%  { transform: translate(20px, -10px); opacity: 1; }
-	100% { transform: translate(0, 0); opacity: 0.7; }
+	0%   { background-position: 0 0; opacity: 0.7; }
+	50%  { background-position: 60px 0; opacity: 1; }
+	100% { background-position: 0 0; opacity: 0.7; }
 }
 @keyframes aero-bubble-float {
 	0%   { transform: translate(0, 0) scale(1); opacity: 0.8; }
 	50%  { transform: translate(15px, -20px) scale(1.2); opacity: 1; }
 	100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
 }
+@keyframes aero-sun-pulse {
+	0%, 100% { opacity: 0.5; transform: scale(1); }
+	50%      { opacity: 1; transform: scale(1.15); }
+}
 
-/* === GLASS ERA: ANIMATED MESH GRADIENT AURORA === */
+/* Glass era dark base (overridden by LiquidGlassBackground) */
 body.era-glass {
-	background:
-		/* Animated mesh blobs */
-		radial-gradient(ellipse 600px 400px at 20% 30%, rgba(120, 100, 255, 0.35) 0%, transparent 60%),
-		radial-gradient(ellipse 500px 500px at 80% 70%, rgba(100, 200, 255, 0.35) 0%, transparent 60%),
-		radial-gradient(ellipse 700px 500px at 50% 100%, rgba(180, 100, 255, 0.25) 0%, transparent 60%),
-		conic-gradient(
-			from var(--aero-angle, 0deg) at 30% 30%,
-			#1e1b4b 0%,
-			#311042 20%,
-			#172554 40%,
-			#0f172a 60%,
-			#1e1b4b 80%,
-			#311042 100%
-		) !important;
-	background-attachment: fixed !important;
-	background-size: 100% 100%, 100% 100%, 100% 100%, 200% 200% !important;
-	animation: aero-aurora-rotate 60s linear infinite !important;
+	background: #05050f !important;
 }
 
-/* Glass floating orbs */
-body.era-glass::before {
-	content: '';
-	position: fixed;
-	top: 15%;
-	right: 10%;
-	width: 40vmax;
-	height: 40vmax;
-	background: radial-gradient(circle, rgba(160, 180, 255, 0.25) 0%, rgba(120, 100, 255, 0.1) 40%, transparent 70%);
-	filter: blur(60px);
-	border-radius: 50%;
-	pointer-events: none;
-	z-index: 0;
-	animation: aero-orb-drift-1 40s ease-in-out infinite;
-}
-body.era-glass::after {
-	content: '';
-	position: fixed;
-	bottom: 10%;
-	left: 5%;
-	width: 50vmax;
-	height: 50vmax;
-	background: radial-gradient(circle, rgba(100, 200, 255, 0.2) 0%, rgba(80, 100, 200, 0.1) 40%, transparent 70%);
-	filter: blur(60px);
-	border-radius: 50%;
-	pointer-events: none;
-	z-index: 0;
-	animation: aero-orb-drift-2 50s ease-in-out infinite;
-}
 .era-glass .top-header,
 .era-glass .sidebar,
 .era-glass .article,
 .era-glass .glass-card {
-	position: relative;
-	z-index: 2;
-}
-
-/* Glass article has a subtle light leak at top */
-.era-glass .article::before {
-	content: '';
-	position: absolute;
-	top: 0; left: 0; right: 0;
-	height: 30%;
-	background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%) !important;
-	pointer-events: none;
-	border-radius: inherit;
-	z-index: 1;
-}
-.era-glass .article > * {
 	position: relative;
 	z-index: 2;
 }

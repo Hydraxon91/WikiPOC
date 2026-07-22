@@ -18,13 +18,48 @@
 
 .wikipage-preset-card-component{
     box-sizing: border-box;
-    display: block;
+    position: relative;
+    display: flex;
+    flex-direction: column;
     width: calc(50% - 1vh);
     min-width: 45%;
-    padding: 1.25em 1.5em 1.5em 1.5em;
+    padding: 0;
     border: 1px solid #c8ccd1;
     margin: 0;
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.wikipage-preset-card-component h4,
+.wikipage-preset-card-component .preset-era-tag,
+.wikipage-preset-card-component .preset-era-desc,
+.wikipage-preset-card-component .btn {
+    margin: 0;
+    padding: 0 1em;
+}
+
+.wikipage-preset-card-component h4 {
+    margin-top: 0.6em;
+    font-size: 0.95em;
+}
+
+.wikipage-preset-card-component .preset-era-tag {
+    font-size: 0.7em;
+    opacity: 0.65;
+    margin-top: 0.25em;
+}
+
+.wikipage-preset-card-component .preset-era-desc {
+    font-size: 0.72em;
+    opacity: 0.55;
+    margin-top: 0.4em;
+    margin-bottom: 0.6em;
+    line-height: 1.4;
+}
+
+.wikipage-preset-card-component .btn {
+    margin-top: auto;
+    margin-bottom: 1em;
 }
 
 @media (max-width: 768px) {
@@ -37,6 +72,173 @@
 	transform: scale(1.05);
 	box-shadow: 0 0 10px rgb(0, 0, 0);
 	cursor: pointer;
+}
+
+/* === PRESET CARD — ERA BACKGROUNDS + PANELS === */
+
+.preset-panel {
+    margin: 0.8em 0.8em 0.4em 0.8em;
+    padding: 0.8em 0.9em;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.wikipage-preset-card-component .preset-panel h4,
+.wikipage-preset-card-component .preset-panel .preset-panel-tag,
+.wikipage-preset-card-component .preset-panel .preset-panel-desc {
+    color: var(--preset-text, #202122) !important;
+}
+
+.wikipage-preset-card-component .preset-panel a {
+    color: var(--preset-link, #0645ad) !important;
+}
+
+.preset-panel h4 {
+    margin: 0 0 0.2em 0;
+    font-size: 0.92em;
+    padding: 0;
+}
+
+.preset-panel-tag {
+    font-size: 0.6em;
+    margin: 0 0 0.3em 0;
+    opacity: 0.7;
+}
+
+.preset-panel-desc {
+    font-size: 0.67em;
+    margin: 0 0 0.5em 0;
+    opacity: 0.6;
+    line-height: 1.35;
+}
+
+.preset-panel a {
+    font-size: 0.7em;
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+/* Active state */
+.preset-active {
+    border-color: rgba(255, 215, 0, 0.7) !important;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.35), 0 0 2px rgba(255, 215, 0, 0.5) !important;
+}
+
+.preset-active-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 3;
+    background: rgba(255, 215, 0, 0.85);
+    color: #1a1a1a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.65em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* Wikipedia — flat white body, clean panel */
+.preset-card-wikipedia {
+    background: #f8f9fa;
+}
+.preset-panel-wikipedia {
+    background: #ffffff !important;
+}
+
+/* Glass — dark body with colored blobs */
+.preset-card-glass {
+    background:
+        radial-gradient(circle at 25% 35%, rgba(80, 124, 237, 0.7) 0%, transparent 55%),
+        radial-gradient(circle at 75% 55%, rgba(82, 108, 173, 0.5) 0%, transparent 55%),
+        #1a2450;
+}
+.preset-panel-glass {
+    background: linear-gradient(135deg, rgba(82, 108, 173, 0.55) 0%, rgba(82, 108, 173, 0.35) 100%) !important;
+    backdrop-filter: blur(2px);
+}
+.preset-card-glass::before {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.10), 0 4px 12px rgba(0, 0, 0, 0.15);
+    top: 12%;
+    left: 8%;
+    z-index: 0;
+}
+.preset-card-glass::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.08), 0 4px 10px rgba(0, 0, 0, 0.12);
+    top: 48%;
+    right: 12%;
+    z-index: 0;
+}
+
+/* Modern — dark body with static mesh */
+.preset-card-modern {
+    background:
+        radial-gradient(ellipse 90% 70% at 30% 30%, rgba(99, 102, 241, 0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 90% 70% at 70% 70%, rgba(108, 99, 255, 0.14) 0%, transparent 70%),
+        #0a0a0f;
+}
+.preset-panel-modern {
+    border-left-width: 4px !important;
+    border-left-style: solid !important;
+    border-left-color: rgba(139, 125, 255, 0.6) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Frutiger — sky + hills + clouds */
+.preset-card-frutiger {
+    background:
+        linear-gradient(180deg,
+            #3a7bd5 0%,
+            #6bb3e8 40%,
+            #a8d8f0 65%,
+            #7ec87e 78%,
+            #5daa5d 100%);
+}
+.preset-card-frutiger::before {
+    content: '';
+    position: absolute;
+    width: 35%;
+    height: 22%;
+    background: radial-gradient(ellipse, rgba(255, 255, 255, 0.65) 0%, transparent 70%);
+    top: 8%;
+    left: 14%;
+    border-radius: 50%;
+    z-index: 0;
+}
+.preset-card-frutiger::after {
+    content: '';
+    position: absolute;
+    width: 28%;
+    height: 18%;
+    background: radial-gradient(ellipse, rgba(255, 255, 255, 0.45) 0%, transparent 70%);
+    top: 16%;
+    right: 10%;
+    border-radius: 50%;
+    z-index: 0;
+}
+.preset-panel-frutiger {
+    border-radius: 24px !important;
+    border-width: 2px !important;
+    border-color: rgba(74, 144, 226, 0.8) !important;
+    border-style: solid !important;
+    box-shadow: 0 8px 20px rgba(0, 64, 128, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
 }
 
 .article-right-preset {

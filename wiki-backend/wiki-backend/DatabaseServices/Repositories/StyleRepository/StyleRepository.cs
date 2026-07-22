@@ -68,6 +68,17 @@ public class StyleRepository : IStyleRepository
             existingStyles.BgMeshGradient = updatedStyles.BgMeshGradient;
             existingStyles.BorderRadius = updatedStyles.BorderRadius;
             existingStyles.BorderStyle = updatedStyles.BorderStyle;
+            existingStyles.GlassGlowIntensity = updatedStyles.GlassGlowIntensity;
+            existingStyles.BubbleCountDesktop = updatedStyles.BubbleCountDesktop;
+            existingStyles.BubbleCountMobile = updatedStyles.BubbleCountMobile;
+            existingStyles.GlassBaseColor = updatedStyles.GlassBaseColor;
+            existingStyles.GlassBlob1Color = updatedStyles.GlassBlob1Color;
+            existingStyles.GlassBlob1ColorOuter = updatedStyles.GlassBlob1ColorOuter;
+            existingStyles.GlassBlob2Color = updatedStyles.GlassBlob2Color;
+            existingStyles.GlassBlob2ColorOuter = updatedStyles.GlassBlob2ColorOuter;
+            existingStyles.GlassBlob3Color = updatedStyles.GlassBlob3Color;
+            existingStyles.GlassBlob3ColorOuter = updatedStyles.GlassBlob3ColorOuter;
+            existingStyles.GlassBlob3Opacity = updatedStyles.GlassBlob3Opacity;
         }
         else
         {

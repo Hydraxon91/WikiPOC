@@ -23,6 +23,9 @@ const ERA_FALLBACKS: Record<string, Partial<StyleModel>> = {
     bgMeshGradient: 'none',
     borderRadius: '0px',
     borderStyle: '1px solid #a2a9b1',
+    glassGlowIntensity: 0,
+    bubbleCountDesktop: 0,
+    bubbleCountMobile: 0,
   },
   glass: {
     interfaceEra: 'glass',
@@ -30,8 +33,8 @@ const ERA_FALLBACKS: Record<string, Partial<StyleModel>> = {
     articleColor: '#526cad',
     articleRightColor: '#3c5fb8',
     articleRightInnerColor: '#2b4ea6',
-    footerListTextColor: '#233a71',
-    footerListLinkTextColor: '#1d305e',
+    footerListTextColor: '#d0d8f0',
+    footerListLinkTextColor: '#8fb8ff',
     fontFamily: 'Arial, sans-serif',
     glassBgOpacity: 0.35,
     glassBlurRadius: 12,
@@ -39,6 +42,17 @@ const ERA_FALLBACKS: Record<string, Partial<StyleModel>> = {
     bgMeshGradient: 'radial-gradient(circle at 20% 80%, rgba(80,124,237,0.4) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(82,108,173,0.3) 0%, transparent 50%), linear-gradient(135deg, #1a2a6c, #2b4ea6, #507ced)',
     borderRadius: '12px',
     borderStyle: '1px solid rgba(255,255,255,0.12)',
+    glassGlowIntensity: 0.5,
+    bubbleCountDesktop: 20,
+    bubbleCountMobile: 10,
+    glassBaseColor: '#05050f',
+    glassBlob1Color: '#0055ff',
+    glassBlob1ColorOuter: '#00d2ff',
+    glassBlob2Color: '#7a00ff',
+    glassBlob2ColorOuter: '#b500ff',
+    glassBlob3Color: '#ff5100',
+    glassBlob3ColorOuter: '#ffaa00',
+    glassBlob3Opacity: 0.4,
   },
   modern: {
     interfaceEra: 'modern',
@@ -47,14 +61,17 @@ const ERA_FALLBACKS: Record<string, Partial<StyleModel>> = {
     articleRightColor: '#222639',
     articleRightInnerColor: '#2a2f45',
     footerListTextColor: '#8b8fa3',
-    footerListLinkTextColor: '#6c63ff',
+    footerListLinkTextColor: '#8b7dff',
     fontFamily: 'Inter, system-ui, sans-serif',
     glassBgOpacity: 0.95,
     glassBlurRadius: 0,
     glassBorderReflection: 0,
     bgMeshGradient: 'linear-gradient(135deg, #0f1117 0%, #1a1d27 50%, #222639 100%)',
-    borderRadius: '4px',
+    borderRadius: '8px',
     borderStyle: '1px solid rgba(255,255,255,0.06)',
+    glassGlowIntensity: 0.3,
+    bubbleCountDesktop: 0,
+    bubbleCountMobile: 0,
   },
   frutiger: {
     interfaceEra: 'frutiger',
@@ -71,6 +88,9 @@ const ERA_FALLBACKS: Record<string, Partial<StyleModel>> = {
     bgMeshGradient: 'linear-gradient(135deg, #2b8a3e 0%, #43a047 30%, #1b5e20 70%, #2b8a3e 100%)',
     borderRadius: '24px',
     borderStyle: '1px solid rgba(255,255,255,0.35)',
+    glassGlowIntensity: 0.25,
+    bubbleCountDesktop: 10,
+    bubbleCountMobile: 5,
   },
 };
 
@@ -141,6 +161,17 @@ export const StyleProvider = ({ children }: { children: React.ReactNode }) => {
     root.style.setProperty('--custom-border-radius', styles.borderRadius || '0px');
     root.style.setProperty('--custom-border-style', styles.borderStyle || '1px solid #a2a9b1');
     root.style.setProperty('--panel-opacity', String(styles.glassBgOpacity ?? 0.12));
+    root.style.setProperty('--glass-glow-intensity', String(styles.glassGlowIntensity ?? 0));
+    root.style.setProperty('--bubble-count-desktop', String(styles.bubbleCountDesktop ?? 0));
+    root.style.setProperty('--bubble-count-mobile', String(styles.bubbleCountMobile ?? 0));
+    root.style.setProperty('--glass-base-color', styles.glassBaseColor || '#05050f');
+    root.style.setProperty('--glass-blob-1-color', styles.glassBlob1Color || '#0055ff');
+    root.style.setProperty('--glass-blob-1-color-outer', styles.glassBlob1ColorOuter || '#00d2ff');
+    root.style.setProperty('--glass-blob-2-color', styles.glassBlob2Color || '#7a00ff');
+    root.style.setProperty('--glass-blob-2-color-outer', styles.glassBlob2ColorOuter || '#b500ff');
+    root.style.setProperty('--glass-blob-3-color', styles.glassBlob3Color || '#ff5100');
+    root.style.setProperty('--glass-blob-3-color-outer', styles.glassBlob3ColorOuter || '#ffaa00');
+    root.style.setProperty('--glass-blob-3-opacity', String(styles.glassBlob3Opacity ?? 0.4));
     root.style.setProperty('--footer-text-color-auto', autoText);
     root.style.setProperty('--footer-link-color-auto', autoLink);
     root.style.setProperty('--footer-text-color', textColor);

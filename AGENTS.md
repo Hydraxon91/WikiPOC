@@ -644,3 +644,103 @@ Fix:
 - `wiki-frontend/public/sitemap.xml` — Sitemap for crawler discovery
 - `wiki-frontend/vite.config.js` — Vite build config (sourcemaps, CSS splitting)
 - `wiki-frontend/index.html` — Critical CSS inline, JSON-LD structured data
+
+## Session Handoff (July 2026 — Session 4: Era Visual Redesign)
+
+### What Was Built
+
+Three eras were visually overhauled on branch `feat/era-redesign` (6 commits, 30+ files changed).
+
+#### Frutiger Aero (sky + hills + clouds)
+- Replaced spinning conic-gradient aurora with clean 3-layer CSS background: blue sky gradient + two overlapping green rolling hills via radial gradients (`style.css:1254-1279`)
+- Clouds replaced the floating orb pseudo-elements on `body.era-frutiger::before` — 5 soft white radial blobs drifting horizontally via `background-position` animation (no `transform` edge cuts)
+- Subtle sun glow via `body.era-frutiger::after`
+- Glass bubbles from LiquidGlassBackground component now also render in frutiger (10 desktop, 5 mobile, blobs hidden)
+- `.wiki-article-content` top margin and border-radius removed
+
+#### Liquid Glass (fluid blobs + bubbles + glow)
+- **New component** `LiquidGlassBackground.tsx/.css` — 3 colored gradient blobs (electric blue, royal purple, solar orange) with independent diagonal drift animations + 10-20 rising glass bubbles with `backdrop-filter: blur(6px)`, `mix-blend-mode: screen`
+- **Customizer fields**: `glassGlowIntensity`, `bubbleCountDesktop`, `bubbleCountMobile` added to `StyleModel` (TypeScript + C# backend + EF migration). Defaults: glass=0.5/20/10, frutiger=0.25/10/5, modern=0/0/0, wiki=0/0/0
+- **Sidebar**: left aurora edge (animated gradient via `aero-aurora-rotate`), top light highlight, link hover glow + 4px translateX, underline h2 separators (replaced sticky bg bar)
+- **Header**: subtle diagonal sheen (`lgb-header-sheen`, `background-position` only), logo drop-shadow + 1.05× hover, gradient text title using `-webkit-background-clip: text`, bottom aurora bar
+- **Home**: glass search bar with inline SVG magnifier + focus glow, "Welcome to [wikiName]" header, article list hover translate, empty-state SVG illustration, search results fade-in animation
+- **Preset cards**: card body shows dark blobs over `#1a2450`, mini article panel with translucent blue gradient + `backdrop-filter: blur(2px)`, text/link colors from preset data using CSS custom properties
+
+#### Modern Sleek (frosted panels + purple glow)
+- **Body**: static two-layer purple gradient mesh (`radial-gradient` at low opacity, no animation)
+- **Header**: `backdrop-filter: blur(8px) saturate(140%)`, `border-bottom: 1px solid rgba(99,102,241,0.20)`, `box-shadow: 0 1px 20px rgba(99,102,241,0.08)`
+- **Sidebar**: translucent with `backdrop-filter: blur(6px)`, `border-right: 1px solid rgba(99,102,241,0.18)`
+- **Article**: 8px radius, 4px purple left border, translucent bg, `backdrop-filter: blur(6px)`, `box-shadow: 0 8px 32px rgba(0,0,0,0.3)`
+- **Buttons**: gradient fill `#6c63ff → #5046e5`, 6px radius, purple shadow, lift-on-hover
+- **Form controls**: 6px radius, soft 1px `rgba(255,255,255,0.08)` border, purple focus ring
+- **Glass cards**: lift + accent border glow on hover (replaced `box-shadow: none`)
+- **h1**: `text-shadow: 0 0 30px rgba(99,102,241,0.20)`
+- **Defaults**: `borderRadius: 8px`, `footerListLinkTextColor: #8b7dff`, `glassGlowIntensity: 0.3`
+
+#### Preset Cards Redesign (`PresetsComponent.tsx` + `stylepage.css`)
+- Each system preset card now shows an era-representative mini-scene as its background (glass=dark+blobs, modern=purple mesh, frutiger=sky+hills, wiki=flat white)
+- A mini article panel overlays with era-appropriate styling (glass=translucent blue, modern=purple left border, frutiger=24px radius+blue border, wiki=1px gray border)
+- Text and link colors use the preset's own `footerListTextColor`/`footerListLinkTextColor` via CSS custom properties with `!important` to override the active era's text rules
+- Sample link with arrow shows rendered link appearance
+- Era-styled Load buttons per card (matching the era's actual button styling)
+- Active state: golden glow border + golden "Active" badge in top-right corner
+
+#### Fixes
+- **Sidebar h2**: replaced sticky blue background bar with transparent underline separator using `border-bottom: 1px solid rgba(255,255,255,0.15)`
+- **Slider fill**: excluded `[type="range"]` and `[type="color"]` from era-specific input padding/border rules across all 4 eras — style.css selectors updated with `:not()` for wikipedia, modern, frutiger, and glass era input rules
+- **Search icon**: `.lgb-search-icon` moved from era-scoped to generic rule, fixing 24px-native SVG rendering at huge size in non-glass eras
+- **Footer z-index**: `.pagefooter { position: relative; z-index: 1; }` so bubbles render behind the footer
+- **Wiki-article-content**: top border-radius and margin set to 0 on both `.era-glass` and `.era-frutiger` rules
+
+#### Key Architectural Decisions
+- All era animations use `transform`/`opacity`/`background-position` only (GPU composited, no layout thrashing)
+- All animations gated behind `@media (prefers-reduced-motion: reduce)`
+- PageSpeed-aware: `will-change` on animating bubbles, no `backdrop-filter` on mobile for bubbles, `content-visibility` respected
+- New classes use `lgb-` prefix for LiquidGlassBackground, `preset-` prefix for preset cards — both added to PurgeCSS `deep` safelist
+- CSS custom properties (`--preset-text`, `--preset-link`) used for preset card text colors so they can override active era's `!important` text rules
+- Backend fields nullable (`double?`, `int?`) so existing database rows don't break
+
+### Known Issues
+1. `ScraperEmbedMiddleware` generates embed HTML directly (no path rewrite) — known limitation on Azure/ASP.NET Core 10.
+2. `DisplayProfileImageElement.tsx` CodeQL false positive on blob URL origin validation.
+3. Images persist only within a container session; lost if fully killed and rehosted.
+4. PurgeCSS may strip new CSS classes if not safelisted — any new `lgb-*` or `preset-*` classes must be added to `postcss.config.cjs`.
+
+### Files of Interest (Session 4 additions)
+- `wiki-frontend/src/Components/LiquidGlassBackground/LiquidGlassBackground.tsx` — Fluid blob + glass bubble component for glass/frutiger eras
+- `wiki-frontend/src/Components/LiquidGlassBackground/LiquidGlassBackground.css` — Blob/bubble styles, keyframes, mobile optimizations
+- `wiki-frontend/src/Pages/EditStylePage/Components/PresetsComponent.tsx` — Rewritten preset cards with era-accurate mini-scenes
+- `wiki-frontend/src/Styles/stylepage.css` — Preset card scene CSS, active badge, panel styles
+- `wiki-backend/wiki-backend/Models/Other Models/StyleModel.cs` — Added GlassGlowIntensity, BubbleCountDesktop, BubbleCountMobile
+- `wiki-backend/wiki-backend/DatabaseServices/Repositories/StyleRepository/StyleRepository.cs` — Added 3 property copy lines
+- `wiki-frontend/postcss.config.cjs` — Added `/^preset-/` to deep safelist
+
+## PR Template
+
+Every PR description should follow this format (template at `.github/PULL_REQUEST_TEMPLATE.md`):
+
+```markdown
+## Summary
+
+<!-- What does this PR do, and why? -->
+
+## Changes
+
+<!-- List the key changes, file by file if helpful -->
+
+## Testing
+
+<!-- How did you verify this works? -->
+
+- [ ] Unit tests pass
+- [ ] Frontend builds cleanly (`npm run build`)
+- [ ] Docker image builds (`docker-compose build`)
+- [ ] Manual smoke test (if applicable)
+
+## Checklist
+
+- [ ] My code follows the project's code style (Roslyn analyzers / ESLint pass)
+- [ ] I've added tests for new functionality
+- [ ] I've updated documentation if needed
+- [ ] Commit history is clean and atomic
+```
