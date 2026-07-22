@@ -45,6 +45,14 @@ const ERA_FALLBACKS: Record<string, Partial<StyleModel>> = {
     glassGlowIntensity: 0.5,
     bubbleCountDesktop: 20,
     bubbleCountMobile: 10,
+    glassBaseColor: '#05050f',
+    glassBlob1Color: '#0055ff',
+    glassBlob1ColorOuter: '#00d2ff',
+    glassBlob2Color: '#7a00ff',
+    glassBlob2ColorOuter: '#b500ff',
+    glassBlob3Color: '#ff5100',
+    glassBlob3ColorOuter: '#ffaa00',
+    glassBlob3Opacity: 0.4,
   },
   modern: {
     interfaceEra: 'modern',
@@ -156,6 +164,14 @@ export const StyleProvider = ({ children }: { children: React.ReactNode }) => {
     root.style.setProperty('--glass-glow-intensity', String(styles.glassGlowIntensity ?? 0));
     root.style.setProperty('--bubble-count-desktop', String(styles.bubbleCountDesktop ?? 0));
     root.style.setProperty('--bubble-count-mobile', String(styles.bubbleCountMobile ?? 0));
+    root.style.setProperty('--glass-base-color', styles.glassBaseColor || '#05050f');
+    root.style.setProperty('--glass-blob-1-color', styles.glassBlob1Color || '#0055ff');
+    root.style.setProperty('--glass-blob-1-color-outer', styles.glassBlob1ColorOuter || '#00d2ff');
+    root.style.setProperty('--glass-blob-2-color', styles.glassBlob2Color || '#7a00ff');
+    root.style.setProperty('--glass-blob-2-color-outer', styles.glassBlob2ColorOuter || '#b500ff');
+    root.style.setProperty('--glass-blob-3-color', styles.glassBlob3Color || '#ff5100');
+    root.style.setProperty('--glass-blob-3-color-outer', styles.glassBlob3ColorOuter || '#ffaa00');
+    root.style.setProperty('--glass-blob-3-opacity', String(styles.glassBlob3Opacity ?? 0.4));
     root.style.setProperty('--footer-text-color-auto', autoText);
     root.style.setProperty('--footer-link-color-auto', autoLink);
     root.style.setProperty('--footer-text-color', textColor);

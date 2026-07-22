@@ -389,6 +389,86 @@ const ManualEditStylesComponent = ({
               onChange={(e) => handleChange("bgMeshGradient", e.target.value)}
             />
           </div>
+
+          <h4 style={{ marginTop: "1em", marginBottom: "0.5em" }}>Background Blobs</h4>
+
+          <div className="form-group">
+            <label>Base Background:</label>
+            <input
+              type="color"
+              className="form-control-color align-middle"
+              value={newStyles.glassBaseColor || "#05050f"}
+              onChange={(e) => handleChange("glassBaseColor", e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Blob 1 Inner:</label>
+            <input
+              type="color"
+              className="form-control-color align-middle"
+              value={newStyles.glassBlob1Color || "#0055ff"}
+              onChange={(e) => handleChange("glassBlob1Color", e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>Blob 1 Outer:</label>
+            <input
+              type="color"
+              className="form-control-color align-middle"
+              value={newStyles.glassBlob1ColorOuter || "#00d2ff"}
+              onChange={(e) => handleChange("glassBlob1ColorOuter", e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Blob 2 Inner:</label>
+            <input
+              type="color"
+              className="form-control-color align-middle"
+              value={newStyles.glassBlob2Color || "#7a00ff"}
+              onChange={(e) => handleChange("glassBlob2Color", e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>Blob 2 Outer:</label>
+            <input
+              type="color"
+              className="form-control-color align-middle"
+              value={newStyles.glassBlob2ColorOuter || "#b500ff"}
+              onChange={(e) => handleChange("glassBlob2ColorOuter", e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Blob 3 Inner:</label>
+            <input
+              type="color"
+              className="form-control-color align-middle"
+              value={newStyles.glassBlob3Color || "#ff5100"}
+              onChange={(e) => handleChange("glassBlob3Color", e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>Blob 3 Outer:</label>
+            <input
+              type="color"
+              className="form-control-color align-middle"
+              value={newStyles.glassBlob3ColorOuter || "#ffaa00"}
+              onChange={(e) => handleChange("glassBlob3ColorOuter", e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>Blob 3 Opacity ({Math.round((newStyles.glassBlob3Opacity ?? 0.4) * 100)}%):</label>
+            <input
+              type="range"
+              min="0"
+              max="1.0"
+              step="0.05"
+              value={newStyles.glassBlob3Opacity ?? 0.4}
+              onChange={(e) => handleChange("glassBlob3Opacity", parseFloat(e.target.value))}
+            />
+          </div>
         </>
       )}
 

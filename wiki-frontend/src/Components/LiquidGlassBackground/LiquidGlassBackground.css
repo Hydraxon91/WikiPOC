@@ -3,7 +3,7 @@
 	inset: 0;
 	z-index: 0;
 	pointer-events: none;
-	background: #05050f;
+	background: var(--glass-base-color, #05050f);
 	overflow: hidden;
 }
 
@@ -23,7 +23,7 @@
 	left: -10vw;
 	width: 50vw;
 	height: 50vw;
-	background: radial-gradient(circle, #0055ff 0%, #00d2ff 55%, transparent 100%);
+	background: radial-gradient(circle, var(--glass-blob-1-color, #0055ff) 0%, var(--glass-blob-1-color-outer, #00d2ff) 55%, transparent 100%);
 	filter: blur(80px);
 	animation: lgb-drift-1 20s ease-in-out infinite alternate;
 }
@@ -33,7 +33,7 @@
 	right: -10vw;
 	width: 60vw;
 	height: 60vw;
-	background: radial-gradient(circle, #7a00ff 0%, #b500ff 55%, transparent 100%);
+	background: radial-gradient(circle, var(--glass-blob-2-color, #7a00ff) 0%, var(--glass-blob-2-color-outer, #b500ff) 55%, transparent 100%);
 	filter: blur(80px);
 	animation: lgb-drift-2 28s ease-in-out infinite alternate;
 }
@@ -43,9 +43,9 @@
 	right: -5vw;
 	width: 35vw;
 	height: 35vw;
-	background: radial-gradient(circle, #ff5100 0%, #ffaa00 55%, transparent 100%);
+	background: radial-gradient(circle, var(--glass-blob-3-color, #ff5100) 0%, var(--glass-blob-3-color-outer, #ffaa00) 55%, transparent 100%);
 	filter: blur(80px);
-	opacity: 0.4;
+	opacity: var(--glass-blob-3-opacity, 0.4);
 	animation: lgb-drift-3 35s ease-in-out infinite alternate;
 }
 

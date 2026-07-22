@@ -77,4 +77,12 @@ export interface StyleModel {
   glassGlowIntensity?: number;
   bubbleCountDesktop?: number;
   bubbleCountMobile?: number;
+  glassBaseColor?: string;
+  glassBlob1Color?: string;
+  glassBlob1ColorOuter?: string;
+  glassBlob2Color?: string;
+  glassBlob2ColorOuter?: string;
+  glassBlob3Color?: string;
+  glassBlob3ColorOuter?: string;
+  glassBlob3Opacity?: number;
 }

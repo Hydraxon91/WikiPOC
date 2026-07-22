@@ -24,4 +24,12 @@ public class StyleModel
     public double? GlassGlowIntensity { get; set; }
     public int? BubbleCountDesktop { get; set; }
     public int? BubbleCountMobile { get; set; }
+    public string? GlassBaseColor { get; set; }
+    public string? GlassBlob1Color { get; set; }
+    public string? GlassBlob1ColorOuter { get; set; }
+    public string? GlassBlob2Color { get; set; }
+    public string? GlassBlob2ColorOuter { get; set; }
+    public string? GlassBlob3Color { get; set; }
+    public string? GlassBlob3ColorOuter { get; set; }
+    public double? GlassBlob3Opacity { get; set; }
 }
