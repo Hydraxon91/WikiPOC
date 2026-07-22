@@ -797,6 +797,21 @@ body.era-frutiger {
 	flex-shrink: 0 !important;
 }
 
+@media (max-width: 768px) {
+	.form-group {
+		gap: 0.5rem !important;
+	}
+
+	.form-group label {
+		white-space: normal !important;
+		font-size: 0.8em;
+	}
+
+	.form-group input[type="range"] {
+		max-width: 100px;
+	}
+}
+
 html {
 	font-family: sans-serif;
 	-ms-text-size-adjust: 100%;
@@ -1723,7 +1738,6 @@ body.era-glass {
 
 .era-glass .top-header,
 .era-glass .sidebar,
-.era-glass .article,
 .era-glass .glass-card {
 	position: relative;
 	z-index: 2;
