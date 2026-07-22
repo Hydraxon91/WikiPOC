@@ -1723,6 +1723,7 @@ body.era-glass {
 
 .era-glass .top-header,
 .era-glass .sidebar,
+.era-glass .article,
 .era-glass .glass-card {
 	position: relative;
 	z-index: 2;

@@ -1,4 +1,5 @@
 import { useState, useEffect, CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { useUserContext } from '../../../Components/contexts/UserContextProvider';
@@ -31,6 +32,7 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
         <span className="hamburger-line"></span>
         <span className="hamburger-line"></span>
       </button>
+      {createPortal(
       <div className={`hamburger-overlay${isOpen ? ' open' : ''}`} onClick={closeDrawer}>
         <div id="hamburger-drawer" className={`hamburger-drawer${isOpen ? ' open' : ''}`} onClick={e => e.stopPropagation()} role="dialog" aria-modal={isOpen} aria-label="Navigation menu" style={{ '--drawer-bg': styles.articleColor, '--drawer-text': styles.footerListTextColor, '--drawer-link': styles.footerListLinkTextColor, '--drawer-heading': styles.articleRightColor } as CSSProperties}>
           <button className="hamburger-close" onClick={closeDrawer} aria-label="Close navigation menu">×</button>
@@ -122,7 +124,9 @@ const HamburgerMenu = ({ categories, handleLogout }) => {
               </>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 };
